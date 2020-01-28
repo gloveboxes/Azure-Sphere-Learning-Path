@@ -1,16 +1,14 @@
-﻿#include <signal.h>
+﻿// Grove Temperature and Humidity Sensor
+#include "../MT3620_Grove_Shield/MT3620_Grove_Shield_Library/Grove.h"
+#include "../MT3620_Grove_Shield/MT3620_Grove_Shield_Library/Sensors/GroveTempHumiSHT31.h"
+#include <applibs/gpio.h>
+#include <applibs/log.h>
+#include <errno.h>
+#include <signal.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <errno.h>
-
-#include <applibs/log.h>
-#include <applibs/gpio.h>
-
-// Grove Temperature and Humidity Sensor
-#include "../MT3620_Grove_Shield/MT3620_Grove_Shield_Library/Grove.h"
-#include "../MT3620_Grove_Shield/MT3620_Grove_Shield_Library/Sensors/GroveTempHumiSHT31.h"
 
 static volatile sig_atomic_t terminationRequested = false;
 

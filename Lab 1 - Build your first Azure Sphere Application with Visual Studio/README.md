@@ -28,6 +28,35 @@ Each module assumes you have completed the previous module.
 
 ---
 
+## Open Lab 1 Project
+
+### Step 1: Ensure you have cloned the lab source code
+
+	```bash
+	git clone https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git
+	```
+
+### Step 2: Start Visual Studio, select **Open a local folder**
+
+![](resources/visual-studio-open-local-folder.png)
+
+### Step 3: Open the lab project
+
+1. Navigate to cloned **Azure Sphere Learning Path** folder
+2. Open **Lab 1 - Build your first Azure Sphere folder**
+3. Select folder  **Azure_Sphere_plus_Grove_Shield_Sensor_Kit**
+4. Click **Select Folder** button.
+
+![](resources/visual-studio-open-project.png)
+
+### Step 4: Verify Project Opened Correctly
+
+From the **Solution Explorer**, open the **main.c** file.
+
+![](resources/visual-studio-open-main.png)
+
+---
+<!-- 
 ## Create a new Visual Studio Azure Sphere Project
 
 Start Visual Studio and create a new project in the same directory you cloned this tutorial into which includes the MT3620 Grove Shield Library.
@@ -52,54 +81,51 @@ Type **sphere** in the search box and select the Azure Sphere Blink template.
 
 Name the project and set the save location.
 
-![](resources/vs-configure-new-project.png)
+![](resources/vs-configure-new-project.png) -->
 
 ### Open the CMakeLists.txt file
 
-CMakelists.txt defines the build process, the files and locations of libraries and more.
+**CMakelists.txt** defines the build process, the code files,  library locations, and more.
 
-![](resources/vs-open-cmakelists.png)
+Note the references to **MT3620_Grove_Shield_Library**.
 
-### Add a Reference to MT3620_Grove_Shield_Library
-
-Two items need to be added:
-
-1. The source location on the MT3620 Grove Shield library. Note, this is the relative path to the Grove Shield library.
-2. Add MT3620_Grove_Shield_Library to the target_link_libraries definition. This is equivalent to adding a reference.
+1. **add subdirectory** is the location of the MT3620_Grove_Shield_Library source code.
+2. **target_link_libraries** includes the MT3620_Grove_Shield_Library into the linking process.
 
 ![](resources/vs-configure-cmakelists.png)
 
-## Set the Application Capabilities
+---
 
-The application manifest defines what resources will be available to the application. Define the minimum set of privileges required by the application. This is core to Azure Sphere security and is also known as the [Principle of least privilege](https://en.wikipedia.org/wiki/Principle_of_least_privilege).
+## Understanding the High-Level Core Security
+
+Applications on Azure Sphere are locked down by default and you must grant capabilities to the application. This is core to Azure Sphere security and is also known as the [Principle of least privilege](https://en.wikipedia.org/wiki/Principle_of_least_privilege).
+
+High-Level Application capabilities include what hardware can be accessed, what internet services can be called (including Azure IoT Central and the Azure Device Provisioning Service), and what inter-core communications are allowed.
+
 
 1. Review the [Grove Shield Sensor Capabilities Quick Reference](#grove-shield-sensor-capabilities-quick-reference) to understand what capabilities are required for each sensor in the library.
-2. Open **app_manifest.json**
-3. Add Uart **ISU0**
-   - Note, access to the I2C SHT31 temperature/humidity sensor via the Grove Shield was built before Azure Sphere supported I2C. Hence calls to the sensor are proxied via the Uart.
-4. Note, GPIO 9 is used to control an onboard LED.
+2. From Visual Studio open the **app_manifest.json** file.
+
+![](resources/visual-studio-application-capabilities.png)
+
+Review the defined capabilities:
 
 ```json
-{
-  "SchemaVersion": 1,
-  "Name": "AzureSphereBlink1",
-  "ComponentId": "a3ca0929-5f46-42b0-91ba-d5de1222da86",
-  "EntryPoint": "/bin/app",
-  "CmdArgs": [],
-  "Capabilities": {
+"Capabilities": {
     "Gpio": [ 9 ],
     "Uart": [ "ISU0" ],
     "AllowedApplicationConnections": []
   },
-  "ApplicationType": "Default"
-}
 ```
 
-### Update the Code
+1. **"Gpio": [ 9 ]**: GPIO 9 is used to control an onboard LED
+2. **"Uart": [ "ISU0" ]**: Access to the I2C SHT31 temperature/humidity sensor via the Grove Shield was built before Azure Sphere supported I2C. Hence calls to the sensor are proxied via the Uart.
+
+---
+
+## Review the Code
 
 The following code includes the Grove Sensor headers, opens the Grove Sensor, and the loops reading the temperature and humidity and writes this information to the debugger logger.
-
-Replace all the existing code in the **main.c** file with the following:
 
 ```c
 #include <signal.h>
@@ -166,6 +192,8 @@ int main(int argc, char* argv[])
 }
 ```
 
+---
+
 ## Deploy the Application to the Azure Sphere
 
 1. Connect the Azure Sphere to your computer via USB
@@ -175,7 +203,9 @@ int main(int argc, char* argv[])
 	![](resources/vs-start-application.png)
 4. From Visual Studio, press **F5** to build, deploy, start, and attached the remote debugger to the Azure Sphere.
 
-### View the Debugger Output
+---
+
+## View the Debugger Output
 
 Open the _Output_ window to view the output from **Log_Debug** statements in _main.c_.
 
@@ -183,7 +213,9 @@ You can do this by using the Visual Studio **Ctrl+Alt+O** keyboard shortcut or c
 
 ![Visual Studio View Output](resources/vs-view-output.png)
 
-### Set a Debug Breakpoint
+---
+
+## Set a Visual Studio Debugger Breakpoint
 
 Set a debugger breakpoint by clicking in the margin to the left of the line of code you want the debugger to stop at.
 
@@ -191,11 +223,15 @@ In the **main.c** file set a breakpoint in the margin of the line that reads the
 
  ![](resources/vs-set-breakpoint.png)
 
-### Stop the Debugger
+---
+
+## Stop the Debugger
 
 **Stop** the debugger by using the Visual Studio **Shift+F5** keyboard shortcut or click the **Stop Debugging** icon.
 
 ![](resources/vs-stop-debugger.png)
+
+---
 
 ## Azure Sphere Application Cloud Deployment
 
