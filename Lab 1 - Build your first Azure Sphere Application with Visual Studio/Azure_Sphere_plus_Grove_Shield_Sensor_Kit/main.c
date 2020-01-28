@@ -20,6 +20,8 @@ static void TerminationHandler(int signalNumber)
 
 int main(int argc, char* argv[])
 {
+	const struct timespec sleepTime = { 1, 0 };
+
 	Log_Debug("Application starting\n");
 
 	// Register a SIGTERM handler for termination requests
@@ -42,7 +44,7 @@ int main(int argc, char* argv[])
 	GroveShield_Initialize(&i2cFd, 115200);
 	void* sht31 = GroveTempHumiSHT31_Open(i2cFd);
 
-	const struct timespec sleepTime = { 1, 0 };
+
 	while (!terminationRequested) {
 
 		GroveTempHumiSHT31_Read(sht31);
