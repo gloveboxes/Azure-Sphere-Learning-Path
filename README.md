@@ -36,6 +36,10 @@ Each module assumes you have completed the previous module.
 
 ---
 
+## What you will learn
+
+---
+
 ## What is Azure Sphere
 
 Azure Sphere is a solution for securing MCU Power Devices. It comprises a secured, connected, crossover microcontroller unit (MCU), a custom high-level Linux-based operating system (OS), and a cloud-based security service that provides continuous, renewable security.

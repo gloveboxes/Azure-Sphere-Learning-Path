@@ -26,6 +26,17 @@ Each module assumes you have completed the previous module.
 
 ---
 
+## What you will learn
+
+
+
+---
+
+## Tutorial Overview
+
+
+---
+
 ## Open Lab 1 Project
 
 ### Step 1: Ensure you have cloned the lab source code

@@ -32,10 +32,6 @@ You will learn how to control an [Azure Sphere](https://azure.microsoft.com/serv
 
 ---
 
-
-
----
-
 ## Tutorial Overview
 
 ---

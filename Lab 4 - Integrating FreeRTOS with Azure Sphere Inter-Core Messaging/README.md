@@ -26,6 +26,14 @@ Each module assumes you have completed the previous module.
 
 ---
 
+## What you will learn
+
+---
+
+## Tutorial Overview
+
+---
+
 ## Problems Addressed in this Tutorial
 
 1. Internet enabling an existing FreeRTOS application
