@@ -2,20 +2,18 @@
 
 <!-- ![](resources/azure-sphere-iot-central-banner.png) -->
 
+---
+
 Follow me on Twitter [@dglover](https://twitter.com/dglover)
 
 |Author|[Dave Glover](https://developer.microsoft.com/en-us/advocates/dave-glover?WT.mc_id=github-blog-dglover), Microsoft Cloud Developer Advocate |
 |:----|:---|
-|Target Platform | [Azure Sphere](https://azure.microsoft.com/services/azure-sphere/)  |
-|Target Service | [Azure IoT Central](https://azure.microsoft.com/services/iot-central/?WT.mc_id=github-blog-dglover) |
-|Developer Platform | Windows 10 or Ubuntu 18.04 |
-|Azure SDK | Azure Sphere SDK 19.11 or better |
-|Developer Tools| [Visual Studio (The free Community Edition or better)](https://visualstudio.microsoft.com/vs/?WT.mc_id=github-blog-dglover) or [Visual Studio Code (Free OSS)](https://code.visualstudio.com?WT.mc_id=github-blog-dglover)|
-|Hardware | This tutorial is based on the [Azure Sphere MT3620 Development Kit](https://www.seeedstudio.com/Azure-Sphere-MT3620-Development-Kit-US-Version-p-3052.html), with the [Seeed Studio Grove Shield](https://www.seeedstudio.com/MT3620-Grove-Shield.html), the [Grove Temperature and Humidity Sensor (SHT31)](https://www.seeedstudio.com/Grove-Temperature-Humidity-Sensor-SHT31.html), and the [Grove Relay](https://www.seeedstudio.com/Grove-Relay.html) (alternatively a [Grove LED](https://www.seeedstudio.com/Grove-Red-LED.html) instead of the relay) |
-|Source Code | https://github.com/gloveboxes/Create-a-Secure-IoT-Solution-with-Azphere-Sphere-and-and-Azure-IoT-Central|
+|Cloud Services | Azure IoT Central |
+|Hardware | [Seeed Studio Azure Sphere MT3620](https://www.seeedstudio.com/Azure-Sphere-MT3620-Development-Kit-US-Version-p-3052.html), [Seeed Studio Grove Shield](https://www.seeedstudio.com/MT3620-Grove-Shield.html), and the [Grove Temperature and Humidity Sensor (SHT31)](https://www.seeedstudio.com/Grove-Temperature-Humidity-Sensor-SHT31.html) |
+|Source Code | https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git |
 |Language| C|
-|Date|January 2020|
-|Acknowledgements| [xiongyu0523/azure-sphere-rtcore-freertos](https://github.com/xiongyu0523/azure-sphere-rtcore-freertos)
+|Date| January  2020|
+
 ---
 
 ## Azure Sphere Learning Path
