@@ -1,6 +1,6 @@
 # Lab 1 - Build your first Azure Sphere Application with Visual Studio
 
-![Azure Sphere with shield](resources/azure-sphere-shield.png)
+<!-- ![Azure Sphere with shield](resources/azure-sphere-shield.png) -->
 
 ---
 
