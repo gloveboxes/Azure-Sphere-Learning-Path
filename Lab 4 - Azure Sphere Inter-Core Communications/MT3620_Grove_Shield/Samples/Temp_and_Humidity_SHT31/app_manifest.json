@@ -1,0 +1,13 @@
+{
+  "SchemaVersion": 1,
+  "Name": "Temp_and_Humidity_SHT31",
+  "ComponentId": "16cf357f-d34e-4e47-ac3b-37eeaef09c1a",
+  "EntryPoint": "/bin/app",
+  "CmdArgs": [],
+  "Capabilities": {
+    "Gpio": [ 9 ],
+    "Uart": [ "ISU0" ],
+    "AllowedApplicationConnections": []
+  },
+  "ApplicationType": "Default"
+}

@@ -1,0 +1,13 @@
+﻿{
+  "SchemaVersion": 1,
+  "Name": "azure-sphere-winhec",
+  "ComponentId": "eaf921cc-5eb2-47a2-acf7-558d206f72df",
+  "EntryPoint": "/bin/app",
+  "CmdArgs": [],
+  "Capabilities": {
+    "Gpio": [ 9 ],
+    "Uart": [ "ISU0" ],
+    "AllowedApplicationConnections": []
+  },
+  "ApplicationType": "Default"
+}

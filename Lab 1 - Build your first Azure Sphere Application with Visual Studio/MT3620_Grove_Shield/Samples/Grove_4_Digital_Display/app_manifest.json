@@ -1,0 +1,13 @@
+{
+  "SchemaVersion": 1,
+  "Name": "Grove_4_Digital_Display",
+  "ComponentId": "559650e1-b386-4891-9eb3-a31522bd7489",
+  "EntryPoint": "/bin/app",
+  "CmdArgs": [],
+  "Capabilities": {
+    "Gpio": [ 8, 9, 10, 15, 16, 17, 18, 19, 20, 12, 13, 0, 1, 4, 5, 57, 58, 11, 14, 48 ],
+    "Uart": [ "ISU0", "ISU3" ],
+    "AllowedApplicationConnections": []
+  },
+  "ApplicationType": "Default"
+}

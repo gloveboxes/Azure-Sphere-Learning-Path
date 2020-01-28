@@ -1,0 +1,13 @@
+{
+  "SchemaVersion": 1,
+  "Name": "GroveOledDisplay",
+  "ComponentId": "cee8898f-372c-4444-942b-56a5378e985d",
+  "EntryPoint": "/bin/app",
+  "CmdArgs": [],
+  "Capabilities": {
+    "Gpio": [ ],
+    "Uart": [ "ISU0"],
+    "AllowedApplicationConnections": []
+  },
+  "ApplicationType": "Default"
+}
