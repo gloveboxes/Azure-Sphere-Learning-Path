@@ -1,4 +1,11 @@
-## Azure Sphere Learning Path
+# Lab 5: Automating Azure Sphere Registration with Azure IoT Central
+
+|Author|[Dave Glover](https://developer.microsoft.com/en-us/advocates/dave-glover?WT.mc_id=github-blog-dglover), Microsoft Cloud Developer Advocate, [@dglover](https://twitter.com/dglover) |
+|:----|:---|
+|Source Code | https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git |
+|Date| January  2020|
+
+---
 
 Each module assumes you have completed the previous module.
 

@@ -1,17 +1,12 @@
-# Send Telemetry from an Azure Sphere to Azure IoT Central
+# Lab 2: Send Telemetry from an Azure Sphere to Azure IoT Central
 
-![](resources/azure-sphere-iot-central-banner.png)
+<!-- ![](resources/azure-sphere-iot-central-banner.png) -->
 
 ---
 
-Follow me on Twitter [@dglover](https://twitter.com/dglover)
-
-|Author|[Dave Glover](https://developer.microsoft.com/en-us/advocates/dave-glover?WT.mc_id=github-blog-dglover), Microsoft Cloud Developer Advocate |
+|Author|[Dave Glover](https://developer.microsoft.com/en-us/advocates/dave-glover?WT.mc_id=github-blog-dglover), Microsoft Cloud Developer Advocate, [@dglover](https://twitter.com/dglover) |
 |:----|:---|
-|Cloud Services | Azure IoT Central |
-|Hardware | [Seeed Studio Azure Sphere MT3620](https://www.seeedstudio.com/Azure-Sphere-MT3620-Development-Kit-US-Version-p-3052.html), [Seeed Studio Grove Shield](https://www.seeedstudio.com/MT3620-Grove-Shield.html), and the [Grove Temperature and Humidity Sensor (SHT31)](https://www.seeedstudio.com/Grove-Temperature-Humidity-Sensor-SHT31.html) |
 |Source Code | https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git |
-|Language| C|
 |Date| January  2020|
 
 ---

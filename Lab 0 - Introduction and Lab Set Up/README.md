@@ -1,4 +1,4 @@
-# Azure Sphere Part 1 - Getting Started with Azure Sphere and the Grove Shield Sensor Kit
+# Lab 0: Introduction to Azure Sphere and Lab set up
 
 ![Azure Sphere with shield](resources/azure-sphere-shield.png)
 

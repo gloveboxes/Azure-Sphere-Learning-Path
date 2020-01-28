@@ -1,16 +1,12 @@
-# Lab 1 - Build your first Azure Sphere Application with Visual Studio
+# Lab 1: Secure, Build, Deploy and Debug your first Azure Sphere Application with Visual Studio
 
 <!-- ![Azure Sphere with shield](resources/azure-sphere-shield.png) -->
 
 ---
 
-Follow me on Twitter [@dglover](https://twitter.com/dglover)
-
-|Author|[Dave Glover](https://developer.microsoft.com/en-us/advocates/dave-glover?WT.mc_id=github-blog-dglover), Microsoft Cloud Developer Advocate |
+|Author|[Dave Glover](https://developer.microsoft.com/en-us/advocates/dave-glover?WT.mc_id=github-blog-dglover), Microsoft Cloud Developer Advocate, [@dglover](https://twitter.com/dglover) |
 |:----|:---|
-|Hardware | [Seeed Studio Azure Sphere MT3620](https://www.seeedstudio.com/Azure-Sphere-MT3620-Development-Kit-US-Version-p-3052.html), [Seeed Studio Grove Shield](https://www.seeedstudio.com/MT3620-Grove-Shield.html), and the [Grove Temperature and Humidity Sensor (SHT31)](https://www.seeedstudio.com/Grove-Temperature-Humidity-Sensor-SHT31.html) |
 |Source Code | https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git |
-|Language| C|
 |Date| January  2020|
 
 ---
