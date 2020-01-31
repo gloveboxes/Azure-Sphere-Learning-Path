@@ -28,12 +28,17 @@ Each module assumes you have completed the previous module.
 
 ## What you will learn
 
+In this lab you will learn how to secure, build, deploy, and debug your first High-Level (HL) Azure Sphere application onto the Azure Sphere A7 Core.
 
+The Azure Sphere [MT3620](https://www.mediatek.com/products/azureSphere/mt3620) MCU consists of three application cores. One ARM Cortex A7 High-Level Application core running Embedded Linux (built with [Yokto](https://www.yoctoproject.org/), and two ARM Cortex M4F Real-Time cores for running FreeRTOS, Azure RTOS, or bare metal applications. The MT3620 MCU is also know as a Crossover MCU as it bridges the application world of ARM Cortex A7 with the Real time world of ARM Cortex M4.  
 
 ---
 
 ## Tutorial Overview
 
+1. Open the lab project with Visual Studio
+2. Define the High-Level (A7) Core application security requirements.
+3. Application deployment and debugging
 
 ---
 
@@ -45,13 +50,14 @@ Each module assumes you have completed the previous module.
 	git clone https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git
 	```
 
-### Step 2: Start Visual Studio, select **Open a local folder**
+### Step 2: Start Visual Studio 2019
 
 ![](resources/visual-studio-open-local-folder.png)
 
 ### Step 3: Open the lab project
 
-1. Navigate to cloned **Azure Sphere Learning Path** folder
+1. Click **Open a local folder**
+1. Navigate to the folder you cloned **Azure Sphere Learning Path** into.
 2. Open **Lab 1 - Build your first Azure Sphere folder**
 3. Select folder  **Azure_Sphere_plus_Grove_Shield_Sensor_Kit**
 4. Click **Select Folder** button.
@@ -107,12 +113,11 @@ Note the references to **MT3620_Grove_Shield_Library**.
 
 ## Understanding the High-Level Core Security
 
-Applications on Azure Sphere are locked down by default and you must grant capabilities to the application. This is core to Azure Sphere security and is also known as the [Principle of least privilege](https://en.wikipedia.org/wiki/Principle_of_least_privilege).
+Applications on Azure Sphere are locked down by default and you must grant capabilities to the application. This is key to Azure Sphere security and is also known as the [Principle of least privilege](https://en.wikipedia.org/wiki/Principle_of_least_privilege).
 
 High-Level Application capabilities include what hardware can be accessed, what internet services can be called (including Azure IoT Central and the Azure Device Provisioning Service), and what inter-core communications are allowed.
 
-
-1. Review the [Grove Shield Sensor Capabilities Quick Reference](#grove-shield-sensor-capabilities-quick-reference) to understand what capabilities are required for each sensor in the library.
+1. Review the [Grove Shield Sensor Capabilities Quick Reference](#grove-shield-sensor-capabilities-quick-reference) to understand what capabilities are required for each sensor in the Seeed Studio Grove Shield library.
 2. From Visual Studio open the **app_manifest.json** file.
 
 ![](resources/visual-studio-application-capabilities.png)
@@ -134,9 +139,9 @@ Review the defined capabilities:
 
 ## Review the Code
 
-The following code is found in the **main.c** file. 
+The following code is found in the **main.c** file.
 
-1. The LED connected to GPIO 9 is opened, 
+1. The LED connected to **GPIO 9** is opened
 2. The Grove Shield UART port is opened, then the Grove SHT31 Sensor
 3. The application then loops, reading the temperature and humidity and writing this information to the debugger logger.
 
@@ -223,7 +228,7 @@ int main(int argc, char* argv[])
 
 Open the _Output_ window to view the output from **Log_Debug** statements in _main.c_.
 
-You can do this by using the Visual Studio **Ctrl+Alt+O** keyboard shortcut or click the **Output** tab found along the bottom/right of Visual Studio.
+You can open the output window by using the Visual Studio **Ctrl+Alt+O** shortcut or click the **Output** tab found along the bottom/right of Visual Studio.
 
 ![Visual Studio View Output](resources/vs-view-output.png)
 
@@ -249,11 +254,11 @@ In the **main.c** file set a breakpoint in the margin of the line that reads the
 
 ## Azure Sphere Application Cloud Deployment
 
-Now you have learnt how to "Side Load" an application onto Azure Sphere it is time to learn about the [Deployment Basics]() to _Cloud Deploy_ an application.
+Now you have learnt how to "Side Load" an application onto Azure Sphere it is time to learn how to [Connect and Send Telemetry from an Azure Sphere to Azure IoT Central](https://github.com/gloveboxes/Azure-Sphere-Learning-Path/tree/master/Lab%202%20-%20Send%20Telemetry%20from%20an%20Azure%20Sphere%20to%20Azure%20IoT%20Central).
 
 ## Finished 完了 fertig finito ख़त्म होना terminado
 
-Congratulations, you created a secure Internet of Things Azure Sphere application.
+Congratulations, you secured, built, deployed and debugged your first Azure Sphere application.
 
 ![](resources/finished.jpg)
 
