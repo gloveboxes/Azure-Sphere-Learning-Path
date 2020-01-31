@@ -54,7 +54,13 @@ static DeviceTwinPeripheral light = {
 };
 
 static DirectMethodPeripheral fan = {
-	.peripheral = {.fd = -1, .pin = FAN_PIN, .initialState = GPIO_Value_Low, .invertPin = false, .initialise = InitFanPWM, .name = "fan1" },
+	.peripheral = {
+		.fd = -1, 
+		.pin = FAN_PIN, 
+		.initialState = GPIO_Value_Low, 
+		.invertPin = false, 
+		.initialise = InitFanPWM, 
+		.name = "fan1" },
 	.methodName = "fan1",
 	.handler = SetFanSpeedDirectMethod
 };
