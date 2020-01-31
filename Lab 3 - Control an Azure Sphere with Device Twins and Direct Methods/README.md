@@ -63,7 +63,7 @@ There are two ways to control or set the state on the Azure Sphere device from I
 
 ---
 
-## Adding Azure IoT Central Settings and Commands
+## Adding Azure IoT Central Device Settings and Commands
 
 To work with settings you will need to update the Device Template and add settings for **Light** and **Relay**.
 
@@ -104,7 +104,7 @@ add settings and commands
 
 ---
 
-## Connecting IoT Central Settings and Commands
+## Implementing Azure IoT Central Settings and Commands
 
 Now that Azure IoT Central **Settings** and **Commands** have been configured we need to connect those actions with code in the application.
 
