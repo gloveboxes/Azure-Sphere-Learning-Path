@@ -28,23 +28,27 @@ Each module assumes you have completed the previous module.
 
 ## What you will learn
 
-You will learn how to build an [Azure Sphere](https://azure.microsoft.com/services/azure-sphere/?WT.mc_id=github-blog-dglover) application that sends telemetry to [Azure IoT Central](https://azure.microsoft.com/services/iot-central/?WT.mc_id=github-blog-dglover).
+You will learn how to build a High Level [Azure Sphere](https://azure.microsoft.com/services/azure-sphere/?WT.mc_id=github-blog-dglover) application that connects and sends telemetry to [Azure IoT Central](https://azure.microsoft.com/services/iot-central/?WT.mc_id=github-blog-dglover).
 
 ---
+
+## Prerequisites
+
+The lab assumes you understand the content from [Lab 1: Secure, Build, Deploy and Debug your first Azure Sphere High-Level Application with Visual Studio](https://github.com/gloveboxes/Azure-Sphere-Learning-Path/tree/master/Lab%201%20-%20Build%20your%20first%20Azure%20Sphere%20Application%20with%20Visual%20Studio)
 
 ## Tutorial Overview
 
 1. Create an Azure IoT Central Application (Free trial)
-2. Connect Azure IoT Central with your Azure Sphere Tenant
-3. Deploy an Azure IoT Central application to Azure Sphere
+2. Connect Azure IoT Central to your Azure Sphere Tenant
+3. Deploy an Azure IoT Central enabled application to Azure Sphere
 
 ---
 
 ## Azure IoT
 
-Your Azure Sphere devices can communicate with the Azure IoT with Azure IoT Hub or Azure IoT Central. This tutorial focuses on Azure IoT Central.
+Your Azure Sphere devices can securely connect and communicate with cloud services. Azure Sphere includes built-in library support for both Azure IoT Hub and Azure IoT Central. This tutorial focuses on Azure IoT Central.
 
-This project also uses the Azure Device Provisioning Service (DPS) included with Azure IoT Central. If you are using Azure IoT Hub then you need to create an instance of [Azure Device Provisioning Service](https://docs.microsoft.com/en-us/azure-sphere/app-development/use-azure-iot).
+This project leverages the [Azure IoT Hub Device Provisioning Service (PDS)](https://docs.microsoft.com/en-us/azure-sphere/app-development/use-azure-iot) which is part of Azure IoT Central. The Device Provisioning Service (DPS) enables zero-touch, just-in-time, large scale device provisioning.
 
 ### What is Azure IoT Central
 
@@ -54,31 +58,23 @@ This project also uses the Azure Device Provisioning Service (DPS) included with
 
 ---
 
-## Clone the following GitHub Repositories
+## Ensure you have cloned the Azure Sphere Learning Path source code
 
-1. The Azure Sphere Samples
-
-   ```bash
-   git clone https://github.com/Azure/azure-sphere-samples.git
-   ```
-
-2. This tutorial
-
-    ```bash
-    git clone https://github.com/gloveboxes/Create-a-Secure-IoT-Solution-with-Azphere-Sphere-and-and-Azure-IoT-Central.git
-    ```
+```bash
+git clone https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git
+```
 
 ---
 
 ## Getting Started with Azure IoT Central
 
-We are going to create an Azure IoT Central application, connect Azure IoT Central to an Azure Sphere Tenant, and finally create a device.
+We are going to create an Azure IoT Central application, connect Azure IoT Central to your Azure Sphere Tenant, and finally create a device.
 
 ### Step 1: Create an Azure IoT Central Application
 
 Follow instructions to **[Create an Azure IoT Central Application](resources/azure-iot-central/azure-iot-central.md)**
 
-### Step 2: Connect Azure IoT Central and your Azure Sphere Tenant
+### Step 2: Connect Azure IoT Central to your Azure Sphere Tenant
 
 Any device that is claimed by your Azure Sphere tenant will be automatically enrolled when it first connects to your Azure IoT Central application.
 
@@ -111,7 +107,7 @@ powershell -Command ((azsphere device show-attached)[0] -split ': ')[1].ToLower(
 
 ---
 
-## Deploy the High-Level Azure Sphere Application
+## Preparing the High-Level Azure Sphere Application
 
 ### Understanding the High-Level Core Security
 
@@ -119,7 +115,7 @@ Applications on Azure Sphere are locked down by default and you must grant capab
 
 High-Level Application capabilities include what hardware can be accessed, what internet services can be called (including Azure IoT Central and the Azure Device Provisioning Service), and what inter-core communications are allowed.
 
-From Visual Studio open the **app_manifest.json** file.
+The following is an example of an **app_manifest.json** capabilities definition.
 
 ```json
 {
@@ -132,22 +128,21 @@ From Visual Studio open the **app_manifest.json** file.
     "Gpio": [ 0, 19, 21 ]
     "Uart": [ "ISU0" ],
     "AllowedConnections": [ "global.azure-devices-provisioning.net", "saas-iothub-99999999-f33a-4002-a44a-9999991b00b6.azure-devices.net" ],
-    "DeviceAuthentication": "99999999-e021-43ce-9f2b-999999997494",
-    "AllowedApplicationConnections": [ "6583cf17-d321-4d72-8283-0b7c5b56442b" ]
+    "DeviceAuthentication": "99999999-e021-43ce-9f2b-999999997494"
   },
   "ApplicationType": "Default"
 }
 ```
 
-**Observe**:
+**Review the Capabilities section**:
 
-1. **ComponentId**: A [GUID](https://en.wikipedia.org/wiki/Universally_unique_identifier#Format) to identify the application. This Component ID is referenced in the Real-Time application app_manifest to enable inter-core communications with this High-Level application.
+
 2. **Gpio**: This application uses three GPIO pins. Pins 0 (a relay switch), 19 (blink send status), and 21 (device twin test LED).
 3. **Uart**: The Uart is used to communicate with the Seeed Studio Grove Shield.
 4. **AllowedConnections**: What internet URLs can be called.
 5. **DeviceAuthentication**: Your Azure Sphere Tenant ID.
 6. **AllowedApplicationConnections**: This is the Component ID of the Real-Time application this application will be partnered with. It is required for inter-core communications.
-7. **CmdArgs**: The first argument is the Azure IoT Central Scope ID. The second argument is the Component ID of the Real-Time application, passed to the application at startup as a convenience to keep all configuration information in one file.
+7. **CmdArgs**: The command line argument passed to the application at startup is the Azure IoT Central Scope ID.
 
 ---
 
@@ -155,29 +150,47 @@ From Visual Studio open the **app_manifest.json** file.
 
 To connect a device to Azure IoT Hub or IoT Central a Device Connection string is required. For **security** and **manageability** do **NOT** hard code the Azure IoT connection string in your High-Level application.
 
-When you created the device in Azure IoT Central you used the **immutable (unforgeable)** Azure Sphere device ID.
+When you created the device in Azure IoT Central you used the **immutable (unforgeable)** Azure Sphere Device ID that was burnt into the device when it was manufactured.
 
-This device ID along with the following information:
+This Device ID along with the following information:
 
 1. The Azure IoT Central Scope ID,
-2. The Global URL for the Azure Device Provision Service,
-3. The URL of your Azure IoT Central Application.
+2. The Global URL for the Azure Device Provisioning Service,
+3. The URL of your Azure IoT Central Application,
+4. Your Azure Sphere Tenant ID
 
-are passed to the Azure Device Provisioning Service (part of Azure IoT Central) from your Azure High-Level application to obtain the Azure IoT Connection string.
+are passed to the Azure Device Provisioning Service from your Azure High-Level application to obtain the Azure IoT Connection string.
 
-### Step 1: Open the High-Level Application with Visual Studio 2019
+### Step 1: Start Visual Studio 2019
 
-1. Start Visual Studio 2019, select **Open a local folder**, navigate to the Azure Sphere tutorial project folder you cloned from GitHub, then open the **azure-sphere-hlcore-iot-central** project.
-2. Open the **app_manifest.json** file
+![](resources/visual-studio-open-local-folder.png)
 
-### Step 2: Azure IoT Central Connection Information
+### Step 2: Open the lab project
+
+1. Click **Open a local folder**
+2. Navigate to the folder you cloned **Azure Sphere Learning Path** into.
+3. Open **Lab 2 - Send Telemetry from an Azure Sphere to Azure IoT Central**
+4. Select folder  **azure-sphere-hlcore-telemetry-iot-central**
+5. Click **Select Folder** button.
+
+    ![](resources/visual-studio-open-lab2.png)
+
+### Step 3: Azure IoT Central Connection Information
+
+1. Open the **app_manifest.json** file
+    ![](resources/visual-studio-open-app-manifest.png)
 
 1. Set the **default Azure Sphere Tenant**
 
     You may need to select the default Azure Sphere Tenant.
 
-    From the **Azure Sphere Developer Command Prompt**, run the ```azsphere tenant list``` command to list available tenants, use the ```azsphere tenant select -i <guid>``` to select the default tenant.
-
+    Press <kbd>Windows Key</kbd>, type **Azure Sphere**. Select and start the **Azure Sphere Developer Command Prompt**.
+    <br/>
+    
+    Run the following commands:
+    * List available tenants ```azsphere tenant list``` 
+    * Set the default tenant ```azsphere tenant select -i <guid>```
+    <br/>
 2. Get the **Tenant ID**.
 
     From the **Azure Sphere Developer Command Prompt**, run the following command.
@@ -187,10 +200,10 @@ are passed to the Azure Device Provisioning Service (part of Azure IoT Central) 
     ```
 
     Copy the returned value and paste it into the **DeviceAuthentication** field of the **app_manifest.json**.
-
+    <br/>
 3. Get the **Device Provisioning Service URLs**
 
-    From the **Azure Sphere Developer Command Prompt**, change to the *azure-sphere-samples\Samples\AzureIoT\Tools* folder you previously cloned, and run *ShowIoTCentralConfig.exe*.
+    From the **Azure Sphere Developer Command Prompt**, navigate to the folder you cloned Azure Sphere Learning Path. Change to the *tools* folder and run the *ShowIoTCentralConfig.exe* command.
 
     ```bash
     ShowIoTCentralConfig
@@ -211,12 +224,10 @@ are passed to the Azure Device Provisioning Service (part of Azure IoT Central) 
     "AllowedConnections": [ "global.azure-devices-provisioning.net", "saas-iothub-9999999-f33a-4002-4444-7ca8989898989.azure-devices.net" ],
     "DeviceAuthentication": "--- YOUR AZURE SPHERE TENANT ID--- ",
     ```
+    <br/>
+ 4.   Find and modify the **CmdArgs**, **AllowedConnections**, and the **DeviceAuthentication** properties in the app_manifest.json with the information returned from the ```ShowIoTCentralConfig``` command.
 
- 4.   Find and modify the following lines in your app_manifest.json with the information returned from the ```ShowIoTCentralConfig``` command:
-
-        * "CmdArgs": [ "0ne9992KK6D" ],
-        * "AllowedConnections": [ global.azure-devices-provisioning.net", "saas-iothub-9999999-f33a-4002-4444-7ca8989898989.azure-devices.net" ]
-
+ Your **manifest_app.json** file will look similar to the following when you are done.
 
 ```json
 {
@@ -224,13 +235,12 @@ are passed to the Azure Device Provisioning Service (part of Azure IoT Central) 
     "Name": "AzureSphereIoTCentral",
     "ComponentId": "25025d2c-66da-4448-bae1-ac26fcdd3627",
     "EntryPoint": "/bin/app",
-    "CmdArgs": [ "<YOUR AZURE IOT CENTRAL SCOPE ID>", "6583cf17-d321-4d72-8283-0b7c5b56442b" ],
+    "CmdArgs": [ "0ne0099999D" ],
     "Capabilities": {
         "Gpio": [ 0, 19, 21 ]
         "Uart": [ "ISU0" ],
-        "AllowedConnections": [ "global.azure-devices-provisioning.net", "<YOUR AZURE IOT CENTRAL URL>" ],
-        "DeviceAuthentication": "<YOUR AZURE SPHERE TENANT ID>",
-        "AllowedApplicationConnections": [ "6583cf17-d321-4d72-8283-0b7c5b56442b" ]
+        "AllowedConnections": [ "global.azure-devices-provisioning.net", "saas-iothub-99999999-f33a-9999-a44a-7c99999900b6.azure-devices.net" ],
+        "DeviceAuthentication": "9d7e79eb-9999-43ce-9999-fa8888888894"
     },
     "ApplicationType": "Default"
 }

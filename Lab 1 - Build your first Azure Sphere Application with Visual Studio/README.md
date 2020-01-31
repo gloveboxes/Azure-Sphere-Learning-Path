@@ -1,4 +1,4 @@
-# Lab 1: Secure, Build, Deploy and Debug your first Azure Sphere Application with Visual Studio
+# Lab 1: Secure, Build, Deploy and Debug your first High-Level Azure Sphere Application with Visual Studio
 
 <!-- ![Azure Sphere with shield](resources/azure-sphere-shield.png) -->
 
