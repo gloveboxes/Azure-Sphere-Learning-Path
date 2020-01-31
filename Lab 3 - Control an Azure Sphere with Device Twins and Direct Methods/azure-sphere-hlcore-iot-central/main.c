@@ -34,7 +34,13 @@ static void SetFanSpeedDirectMethod(JSON_Object* json, Peripheral* peripheral);
 static int InitFanPWM(struct _peripheral* peripheral);
 
 static DeviceTwinPeripheral relay = {
-	.peripheral = {.fd = -1, .pin = RELAY_PIN, .initialState = GPIO_Value_Low, .invertPin = false, .initialise = OpenPeripheral, .name = "relay1" },
+	.peripheral = {
+		.fd = -1, 
+		.pin = RELAY_PIN, 
+		.initialState = GPIO_Value_Low, 
+		.invertPin = false, 
+		.initialise = OpenPeripheral, 
+		.name = "relay1" },
 	.twinState = false,
 	.twinProperty = "relay1",
 	.handler = DeviceTwinHandler
