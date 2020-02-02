@@ -45,7 +45,7 @@ typedef struct _deviceTwinPeripheral DeviceTwinPeripheral;
 typedef struct {
 	Peripheral peripheral;
 	const char* methodName;
-	void (*handler)(JSON_Object* json, Peripheral* peripheral);
+	bool (*handler)(JSON_Object* json, Peripheral* peripheral);
 } DirectMethodPeripheral;
 
 typedef struct {

@@ -30,16 +30,16 @@ static void SendTelemetryEventHandler(EventData* eventData);
 static int OpenPeripheral(Peripheral* peripheral);
 static int StartTimer(Timer* timer);
 static void DeviceTwinHandler(JSON_Object* json, DeviceTwinPeripheral* deviceTwinPeripheral);
-static void SetFanSpeedDirectMethod(JSON_Object* json, Peripheral* peripheral);
+static bool SetFanSpeedDirectMethod(JSON_Object* json, DirectMethodPeripheral* peripheral);
 static int InitFanPWM(struct _peripheral* peripheral);
 
 static DeviceTwinPeripheral relay = {
 	.peripheral = {
-		.fd = -1, 
-		.pin = RELAY_PIN, 
-		.initialState = GPIO_Value_Low, 
-		.invertPin = false, 
-		.initialise = OpenPeripheral, 
+		.fd = -1,
+		.pin = RELAY_PIN,
+		.initialState = GPIO_Value_Low,
+		.invertPin = false,
+		.initialise = OpenPeripheral,
 		.name = "relay1" },
 	.twinState = false,
 	.twinProperty = "relay1",
@@ -55,11 +55,11 @@ static DeviceTwinPeripheral light = {
 
 static DirectMethodPeripheral fan = {
 	.peripheral = {
-		.fd = -1, 
-		.pin = FAN_PIN, 
-		.initialState = GPIO_Value_Low, 
-		.invertPin = false, 
-		.initialise = InitFanPWM, 
+		.fd = -1,
+		.pin = FAN_PIN,
+		.initialState = GPIO_Value_Low,
+		.invertPin = false,
+		.initialise = InitFanPWM,
 		.name = "fan1" },
 	.methodName = "fan1",
 	.handler = SetFanSpeedDirectMethod
@@ -175,6 +175,7 @@ static int InitPeripheralsAndHandlers(void)
 	OPEN_PERIPHERAL_SET(directMethodDevices);
 
 	InitDeviceTwins(deviceTwinDevices, NELEMS(deviceTwinDevices));
+	InitDirectMethods(directMethodDevices, NELEMS(directMethodDevices));
 
 	// Initialize Grove Shield and Grove Temperature and Humidity Sensor
 	GroveShield_Initialize(&i2cFd, 115200);
@@ -252,6 +253,9 @@ static void DeviceTwinHandler(JSON_Object* json, DeviceTwinPeripheral* deviceTwi
 }
 
 
-static void SetFanSpeedDirectMethod(JSON_Object* json, Peripheral* peripheral) {
-	// for you to implement:)
+static bool SetFanSpeedDirectMethod(JSON_Object* json, DirectMethodPeripheral* peripheral) {
+	// for you to fully implement
+	int speed = (int)json_object_get_number(json, "speed");
+	Log_Debug("Set fan speed %d", speed);
+	return true;
 }
