@@ -360,6 +360,7 @@ int AzureDirectMethodHandler(const char* method_name, const unsigned char* paylo
 					result = 500; 
 				}
 			}
+			break;
 		}
 	}
 
