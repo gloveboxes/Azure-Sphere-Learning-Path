@@ -10,8 +10,8 @@
 #include <time.h>
 
 
-// GPIO Pins used in the High Level (HL) Application
-#define STATUS_LED_PIN 19
+
+#define STATUS_LED_PIN 19		// GPIO Pins used in the High Level (HL) Application
 #define JSON_MESSAGE_BYTES 100  // Number of bytes to allocate for the JSON telemetry message for IoT Central
 static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 
