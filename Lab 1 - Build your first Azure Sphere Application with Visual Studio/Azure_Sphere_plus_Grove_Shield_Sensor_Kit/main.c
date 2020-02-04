@@ -1,63 +1,148 @@
-﻿// Grove Temperature and Humidity Sensor
-#include "../MT3620_Grove_Shield/MT3620_Grove_Shield_Library/Grove.h"
+﻿#include "../MT3620_Grove_Shield/MT3620_Grove_Shield_Library/Grove.h"
 #include "../MT3620_Grove_Shield/MT3620_Grove_Shield_Library/Sensors/GroveTempHumiSHT31.h"
+#include "globals.h"
+#include "utilities.h"
 #include <applibs/gpio.h>
 #include <applibs/log.h>
-#include <errno.h>
-#include <signal.h>
 #include <stdbool.h>
-#include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <time.h>
 
-static volatile sig_atomic_t terminationRequested = false;
 
-static void TerminationHandler(int signalNumber)
-{
-	// Don't use Log_Debug here, as it is not guaranteed to be async signal safe
-	terminationRequested = true;
-}
+// GPIO Pins used in the High Level (HL) Application
+#define STATUS_LED_PIN 19
+#define JSON_MESSAGE_BYTES 100  // Number of bytes to allocate for the JSON telemetry message for IoT Central
+static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
+
+static int epollFd = -1;
+static int i2cFd;
+static void* sht31;
+
+bool ledState = false;
+
+// Forward signatures
+static int InitPeripheralsAndHandlers(void);
+static void ClosePeripheralsAndHandlers(void);
+static void MeasureSensorHandler(EventData* eventData);
+
+
+static ActuatorPeripheral statusLed = {			// Describes a simple one pin GPIO Peripheral
+	.peripheral = {
+		.fd = -1,								// The File Descriptor for the GPIO pin
+		.pin = STATUS_LED_PIN,					// The GPIO pin this peripheral will be using. Also defined in app_capabilities.json
+		.initialState = GPIO_Value_High,		// Set the initial state of the GPIO when opened
+		.invertPin = true,						// Cater for some pins where GPIO Low sets a pin state to 3.3V, and GPIO High to ground
+		.initialise = OpenPeripheral,			// The name of the C function to be called to open/initialize the peripheral
+		.name = "StatusLED" }					// Name used when closing this peripheral
+};
+
+
+static Timer readSensor = {						//Describes a general timer
+	.eventData = {
+		.eventHandler = &MeasureSensorHandler },// The name of the C function to call when the timer fires
+	.period = { 1, 0 },							// How often should the timer fire (1 second, 0 nanoseconds)
+	.name = "ReadSensor"						// Name used when closing this timer
+};
+
+
+#pragma region define sets for auto initialisation/open and close
+
+ActuatorPeripheral* actuatorDevices[] = { &statusLed };		// set/collection of actuatorDevices
+Timer* timers[] = { &readSensor };							// set/collection of timers
+
+#pragma endregion
+
 
 int main(int argc, char* argv[])
 {
-	const struct timespec sleepTime = { 1, 0 };
+	RegisterTerminationHandler();
 
-	Log_Debug("Application starting\n");
+	if (InitPeripheralsAndHandlers() != 0) {
+		terminationRequired = true;
+	}
 
-	// Register a SIGTERM handler for termination requests
-	struct sigaction action;
-	memset(&action, 0, sizeof(struct sigaction));
-	action.sa_handler = TerminationHandler;
-	sigaction(SIGTERM, &action, NULL);
+	// Main loop
+	while (!terminationRequired) {
+		if (WaitForEventAndCallHandler(epollFd) != 0) {
+			terminationRequired = true;
+		}
+	}
 
-	// Change this GPIO number and the number in app_manifest.json if required by your hardware.
-	int fd = GPIO_OpenAsOutput(9, GPIO_OutputMode_PushPull, GPIO_Value_High);
-	if (fd < 0) {
-		Log_Debug(
-			"Error opening GPIO: %s (%d). Check that app_manifest.json includes the GPIO used.\n",
-			strerror(errno), errno);
+	ClosePeripheralsAndHandlers();
+
+	Log_Debug("Application exiting.\n");
+
+	return 0;
+}
+
+
+/// <summary>
+///     Reads telemetry and returns the data as a JSON object.
+/// </summary>
+static int ReadTelemetry() {
+	static int msgId = 0;
+	GroveTempHumiSHT31_Read(sht31);
+	float temperature = GroveTempHumiSHT31_GetTemperature(sht31);
+	float humidity = GroveTempHumiSHT31_GetHumidity(sht31);
+
+	static const char* MsgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"MsgId\":%d }";
+	return snprintf(msgBuffer, JSON_MESSAGE_BYTES, MsgTemplate, temperature, humidity, msgId++);
+}
+
+
+/// <summary>
+/// Azure timer event:  Check connection status and send telemetry
+/// </summary>
+static void MeasureSensorHandler(EventData* eventData)
+{
+	if (ConsumeTimerFdEvent(readSensor.fd) != 0) {
+		terminationRequired = true;
+		return;
+	}
+
+	ledState = !ledState;  // toggle LED state
+
+	if (ledState) { GPIO_ON(statusLed.peripheral); }
+	else { GPIO_OFF(statusLed.peripheral); }
+
+	ReadTelemetry();
+	Log_Debug(msgBuffer);
+}
+
+
+/// <summary>
+///     Set up SIGTERM termination handler, initialize peripherals, and set up event handlers.
+/// </summary>
+/// <returns>0 on success, or -1 on failure</returns>
+static int InitPeripheralsAndHandlers(void)
+{
+	// timers are registered against the epoll file descriptor
+	epollFd = CreateEpollFd();
+	if (epollFd < 0) {
 		return -1;
 	}
 
 	// Initialize Grove Shield and Grove Temperature and Humidity Sensor
-	int i2cFd;
 	GroveShield_Initialize(&i2cFd, 115200);
-	void* sht31 = GroveTempHumiSHT31_Open(i2cFd);
+	sht31 = GroveTempHumiSHT31_Open(i2cFd);
 
-	while (!terminationRequested) {
+	OPEN_PERIPHERAL_SET(actuatorDevices);
+	START_TIMER_SET(timers);
 
-		GroveTempHumiSHT31_Read(sht31);
+	return 0;
+}
 
-		float temp = GroveTempHumiSHT31_GetTemperature(sht31);
-		float humi = GroveTempHumiSHT31_GetHumidity(sht31);
 
-		Log_Debug("Temperature: %.1fC\n", temp);
-		Log_Debug("Humidity: %.1f\%c\n", humi, 0x25);
+/// <summary>
+///     Close peripherals and handlers.
+/// </summary>
+static void ClosePeripheralsAndHandlers(void)
+{
+	Log_Debug("Closing file descriptors\n");
 
-		GPIO_SetValue(fd, GPIO_Value_Low);
-		nanosleep(&sleepTime, NULL);
+	STOP_TIMER_SET(timers);
+	CLOSE_PERIPHERAL_SET(actuatorDevices);
 
-		GPIO_SetValue(fd, GPIO_Value_High);
-		nanosleep(&sleepTime, NULL);
-	}
+	CloseFdAndPrintError(epollFd, "Epoll");
 }

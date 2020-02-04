@@ -8,12 +8,11 @@
 #include "parson.h"
 
 #define SCOPEID_LENGTH 20
-#define RT_APP_COMPONENT_LENGTH 36 + 1  // GUID 36 Char + 1 NULL terminate)
 #define NELEMS(x)  (sizeof(x) / sizeof((x)[0]))
 #define OPEN_PERIPHERAL(x) if (x.peripheral.initialise != NULL) {x.peripheral.initialise(&x.peripheral);}
 #define OPEN_PERIPHERAL_SET(x) 	for (int i = 0; i < NELEMS(x); i++) {if (x[i]->peripheral.initialise != NULL) { x[i]->peripheral.initialise(&x[i]->peripheral);}}
 #define CLOSE_PERIPHERAL_SET(x) for (int i = 0; i < NELEMS(x); i++) { CloseFdAndPrintError(x[i]->peripheral.fd, x[i]->peripheral.name); }
-#define START_TIMER_SET(x) for (int i = 0; i < NELEMS(x); i++) { StartTimer(x[i]); }
+#define START_TIMER_SET(x) for (int i = 0; i < NELEMS(x); i++) { StartTimer(x[i], epollFd); }
 #define STOP_TIMER_SET(x) for (int i = 0; i < NELEMS(x); i++) { CloseFdAndPrintError(x[i]->fd, x[i]->name); }
 #define GPIO_ON(x) GPIO_SetValue(x.fd, x.invertPin ? GPIO_Value_Low : GPIO_Value_High)
 #define GPIO_OFF(x) GPIO_SetValue(x.fd, x.invertPin ? GPIO_Value_High : GPIO_Value_Low)

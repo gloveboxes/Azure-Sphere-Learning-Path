@@ -1,8 +1,37 @@
 #include "azure_iot.h"
 
+#pragma region Azure IoT Hub/IoT Central
+
+const char* getAzureSphereProvisioningResultString(AZURE_SPHERE_PROV_RETURN_VALUE provisioningResult);
+const char* GetReasonString(IOTHUB_CLIENT_CONNECTION_STATUS_REASON reason);
+void SendMessageCallback(IOTHUB_CLIENT_CONFIRMATION_RESULT, void*);
+bool SetupAzureClient(void);
+void HubConnectionStatusCallback(IOTHUB_CLIENT_CONNECTION_STATUS, IOTHUB_CLIENT_CONNECTION_STATUS_REASON, void*);
+
+#pragma endregion
+
+#pragma region Device Twins
+
+void TwinCallback(DEVICE_TWIN_UPDATE_STATE updateState, const unsigned char* payload, size_t payloadSize, void* userContextCallback);
+void SetDesiredState(JSON_Object* desiredProperties, DeviceTwinPeripheral* deviceTwinPeripheral);
+void TwinReportState(const char* propertyName, bool propertyValue);
+void ReportStatusCallback(int result, void* context);
+
+#pragma endregion
+
+#pragma region Direct Methods
+
+int AzureDirectMethodHandler(const char* method_name, const unsigned char* payload, size_t payloadSize,
+	unsigned char** responsePayload, size_t* responsePayloadSize, void* userContextCallback);
+
+#pragma endregion
+
+
 IOTHUB_DEVICE_CLIENT_LL_HANDLE iothubClientHandle = NULL;
 DeviceTwinPeripheral** _deviceTwins = NULL;
 size_t _deviceTwinCount = 0;
+DirectMethodPeripheral** _directMethods;
+size_t _directMethodCount;
 bool iothubAuthenticated = false;
 const int keepalivePeriodSeconds = 20;
 
@@ -274,16 +303,23 @@ void ReportStatusCallback(int result, void* context)
 
 #pragma region Direct Methods
 
+void InitDirectMethods(DirectMethodPeripheral* directMethods[], size_t directMethodCount) {
+	_directMethods = directMethods;
+	_directMethodCount = directMethodCount;
+}
+
 int AzureDirectMethodHandler(const char* method_name, const unsigned char* payload, size_t payloadSize,
 	unsigned char** responsePayload, size_t* responsePayloadSize, void* userContextCallback) {
 
 	const char* onSuccess = "\"Successfully invoke device method\"";
 	const char* notFound = "\"No method found\"";
+	const char* methodFailed = "\"Method failed\"";
 
 	const char* responseMessage = onSuccess;
 	int result = 200;
 	JSON_Value* root_value = NULL;
-	JSON_Object* root_object = NULL;
+	JSON_Object* jsonObject = NULL;
+	bool methodFound = false;
 
 	// Prepare the payload for the response. This is a heap allocated null terminated string.
 	// The Azure IoT Hub SDK is responsible of freeing it.
@@ -307,19 +343,28 @@ int AzureDirectMethodHandler(const char* method_name, const unsigned char* paylo
 		goto cleanup;
 	}
 
-	root_object = json_value_get_object(root_value);
-	if (root_object == NULL) {
+	jsonObject = json_value_get_object(root_value);
+	if (jsonObject == NULL) {
 		responseMessage = "Invalid JSON";
 		result = 500;
 		goto cleanup;
 	}
 
-	if (strcmp(method_name, "fanspeed") == 0)
-	{
-		int speed = (int)json_object_get_number(root_object, "speed");
-		Log_Debug("Set fan speed %d", speed);
+	for (int i = 0; i < _directMethodCount; i++) {
+		if (strcmp(method_name, _directMethods[i]->methodName) == 0) {
+			methodFound = true;
+			if (jsonObject != NULL) {
+				bool status = _directMethods[i]->handler(jsonObject, _directMethods[i]);
+				if (!status) { 
+					responseMessage = methodFailed;
+					result = 500; 
+				}
+			}
+			break;
+		}
 	}
-	else
+
+	if (!methodFound)
 	{
 		responseMessage = notFound;
 		result = 404;
