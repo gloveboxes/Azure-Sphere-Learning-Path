@@ -61,7 +61,7 @@ The Azure Sphere [MT3620](https://www.mediatek.com/products/azureSphere/mt3620) 
 3. Select **Lab 1 - Build your first Azure Sphere folder**
 4. Click **Select Folder** button.
 
-![](resources/visual-studio-open-project.png)
+<!-- ![](resources/visual-studio-open-project.png) -->
 
 ### Step 4: Verify Project Opened Correctly
 

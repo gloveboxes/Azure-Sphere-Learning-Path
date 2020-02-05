@@ -89,9 +89,8 @@ add settings and commands
 
 1. Click **Open a local folder**
 2. Navigate to the folder you cloned **Azure Sphere Learning Path** into.
-3. Open **Lab 3 - Control an Azure Sphere with Device Twins and Direct Methods**
-4. Select folder  **azure-sphere-hlcore-iot-central**
-5. Click **Select Folder** button.
+3. Select **Lab 3 - Control an Azure Sphere with Device Twins and Direct Methods**
+4. Click **Select Folder** button.
 
     ![](resources/visual-studio-open-lab3.png)
 

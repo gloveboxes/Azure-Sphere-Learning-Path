@@ -169,9 +169,8 @@ are passed to the Azure Device Provisioning Service from your Azure High-Level a
 
 1. Click **Open a local folder**
 2. Navigate to the folder you cloned **Azure Sphere Learning Path** into.
-3. Open **Lab 2 - Send Telemetry from an Azure Sphere to Azure IoT Central**
-4. Select folder  **azure-sphere-hlcore-telemetry-iot-central**
-5. Click **Select Folder** button.
+3. Select **Lab 2 - Send Telemetry from an Azure Sphere to Azure IoT Central**
+4. Click **Select Folder** button.
 
     ![](resources/visual-studio-open-lab2.png)
 
