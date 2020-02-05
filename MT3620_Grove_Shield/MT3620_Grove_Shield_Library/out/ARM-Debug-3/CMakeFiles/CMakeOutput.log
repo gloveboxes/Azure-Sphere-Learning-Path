@@ -1,18 +1,18 @@
 The target system is: Generic -  - 
 The host system is: Windows - 10.0.19041 - AMD64
 Determining if the C compiler works passed with the following output:
-Change Dir: C:/Data/GitHub/AzureSphere/Azure-Sphere-IoT-Central-HL-and-RT-Core-Integation/MT3620_Grove_Shield/MT3620_Grove_Shield_Library/out/ARM-Debug-3/CMakeFiles/CMakeTmp
+Change Dir: C:/Data/Azure_Sphere_Learning_Path/MT3620_Grove_Shield/MT3620_Grove_Shield_Library/out/ARM-Debug-3/CMakeFiles/CMakeTmp
 
-Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Professional/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_fe4ae && [1/2] Building C object CMakeFiles/cmTC_fe4ae.dir/testCCompiler.c.obj
-[2/2] Linking C static library libcmTC_fe4ae.a
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Professional/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_08a2f && [1/2] Building C object CMakeFiles/cmTC_08a2f.dir/testCCompiler.c.obj
+[2/2] Linking C static library libcmTC_08a2f.a
 
 
 
 Detecting C compiler ABI info compiled with the following output:
-Change Dir: C:/Data/GitHub/AzureSphere/Azure-Sphere-IoT-Central-HL-and-RT-Core-Integation/MT3620_Grove_Shield/MT3620_Grove_Shield_Library/out/ARM-Debug-3/CMakeFiles/CMakeTmp
+Change Dir: C:/Data/Azure_Sphere_Learning_Path/MT3620_Grove_Shield/MT3620_Grove_Shield_Library/out/ARM-Debug-3/CMakeFiles/CMakeTmp
 
-Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Professional/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_e540e && [1/2] Building C object CMakeFiles/cmTC_e540e.dir/CMakeCCompilerABI.c.obj
-[2/2] Linking C static library libcmTC_e540e.a
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Professional/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_19ac2 && [1/2] Building C object CMakeFiles/cmTC_19ac2.dir/CMakeCCompilerABI.c.obj
+[2/2] Linking C static library libcmTC_19ac2.a
 
 
 

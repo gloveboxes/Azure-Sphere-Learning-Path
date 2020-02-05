@@ -1,8 +1,8 @@
-# Install script for directory: C:/Data/GitHub/AzureSphere/Azure-Sphere-IoT-Central-HL-and-RT-Core-Integation/MT3620_Grove_Shield/MT3620_Grove_Shield_Library
+# Install script for directory: C:/Data/Azure_Sphere_Learning_Path/Lab 4 - Integrating FreeRTOS with Azure Sphere Inter-Core Messaging/MT3620_Grove_Shield/MT3620_Grove_Shield_Library
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "C:/Data/GitHub/AzureSphere/Azure-Sphere-IoT-Central-HL-and-RT-Core-Integation/MT3620_Grove_Shield/MT3620_Grove_Shield_Library/install/ARM-Debug-3")
+  set(CMAKE_INSTALL_PREFIX "C:/Data/Azure_Sphere_Learning_Path/Lab 4 - Integrating FreeRTOS with Azure Sphere Inter-Core Messaging/MT3620_Grove_Shield/MT3620_Grove_Shield_Library/install/ARM-Debug-3")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -40,5 +40,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "C:/Data/GitHub/AzureSphere/Azure-Sphere-IoT-Central-HL-and-RT-Core-Integation/MT3620_Grove_Shield/MT3620_Grove_Shield_Library/out/ARM-Debug-3/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "C:/Data/Azure_Sphere_Learning_Path/Lab 4 - Integrating FreeRTOS with Azure Sphere Inter-Core Messaging/MT3620_Grove_Shield/MT3620_Grove_Shield_Library/out/ARM-Debug-3/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

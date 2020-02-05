@@ -1966,8 +1966,8 @@
 	"kind" : "cmakeFiles",
 	"paths" : 
 	{
-		"build" : "C:/Data/GitHub/AzureSphere/Azure-Sphere-IoT-Central-HL-and-RT-Core-Integation/MT3620_Grove_Shield/MT3620_Grove_Shield_Library/out/ARM-Debug-3",
-		"source" : "C:/Data/GitHub/AzureSphere/Azure-Sphere-IoT-Central-HL-and-RT-Core-Integation/MT3620_Grove_Shield/MT3620_Grove_Shield_Library"
+		"build" : "C:/Data/Azure_Sphere_Learning_Path/MT3620_Grove_Shield/MT3620_Grove_Shield_Library/out/ARM-Debug-3",
+		"source" : "C:/Data/Azure_Sphere_Learning_Path/MT3620_Grove_Shield/MT3620_Grove_Shield_Library"
 	},
 	"version" : 
 	{

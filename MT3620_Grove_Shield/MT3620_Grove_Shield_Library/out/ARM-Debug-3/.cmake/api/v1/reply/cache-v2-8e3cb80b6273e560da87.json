@@ -87,7 +87,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "c:/Data/GitHub/AzureSphere/Azure-Sphere-IoT-Central-HL-and-RT-Core-Integation/MT3620_Grove_Shield/MT3620_Grove_Shield_Library/out/ARM-Debug-3"
+			"value" : "c:/Data/Azure_Sphere_Learning_Path/MT3620_Grove_Shield/MT3620_Grove_Shield_Library/out/ARM-Debug-3"
 		},
 		{
 			"name" : "CMAKE_CACHE_MAJOR_VERSION",
@@ -435,7 +435,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "C:/Data/GitHub/AzureSphere/Azure-Sphere-IoT-Central-HL-and-RT-Core-Integation/MT3620_Grove_Shield/MT3620_Grove_Shield_Library"
+			"value" : "C:/Data/Azure_Sphere_Learning_Path/MT3620_Grove_Shield/MT3620_Grove_Shield_Library"
 		},
 		{
 			"name" : "CMAKE_INSTALL_PREFIX",
@@ -447,7 +447,7 @@
 				}
 			],
 			"type" : "PATH",
-			"value" : "C:/Data/GitHub/AzureSphere/Azure-Sphere-IoT-Central-HL-and-RT-Core-Integation/MT3620_Grove_Shield/MT3620_Grove_Shield_Library/install/ARM-Debug-3"
+			"value" : "C:/Data/Azure_Sphere_Learning_Path/MT3620_Grove_Shield/MT3620_Grove_Shield_Library/install/ARM-Debug-3"
 		},
 		{
 			"name" : "CMAKE_LINKER",
@@ -951,7 +951,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Data/GitHub/AzureSphere/Azure-Sphere-IoT-Central-HL-and-RT-Core-Integation/MT3620_Grove_Shield/MT3620_Grove_Shield_Library/out/ARM-Debug-3"
+			"value" : "C:/Data/Azure_Sphere_Learning_Path/MT3620_Grove_Shield/MT3620_Grove_Shield_Library/out/ARM-Debug-3"
 		},
 		{
 			"name" : "MT3620_Grove_Shield_Library_LIB_DEPENDS",
@@ -975,7 +975,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Data/GitHub/AzureSphere/Azure-Sphere-IoT-Central-HL-and-RT-Core-Integation/MT3620_Grove_Shield/MT3620_Grove_Shield_Library"
+			"value" : "C:/Data/Azure_Sphere_Learning_Path/MT3620_Grove_Shield/MT3620_Grove_Shield_Library"
 		}
 	],
 	"kind" : "cache",
