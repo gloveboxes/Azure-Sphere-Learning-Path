@@ -125,13 +125,13 @@ Review the defined capabilities:
 
 ```json
 "Capabilities": {
-    "Gpio": [ 9 ],
+    "Gpio": [ 19 ],
     "Uart": [ "ISU0" ],
     "AllowedApplicationConnections": []
   },
 ```
 
-1. **"Gpio": [ 9 ]**: GPIO 9 is used to control an onboard LED
+1. **"Gpio": [ 19 ]**: GPIO 19 is used to control an onboard LED
 2. **"Uart": [ "ISU0" ]**: Access to the I2C SHT31 temperature/humidity sensor via the Grove Shield was built before Azure Sphere supported I2C. Hence calls to the sensor are proxied via the Uart.
 
 ---
