@@ -172,7 +172,7 @@ are passed to the Azure Device Provisioning Service from your Azure High-Level a
 3. Select **Lab 2 - Send Telemetry from an Azure Sphere to Azure IoT Central**
 4. Click **Select Folder** button.
 
-    ![](resources/visual-studio-open-lab2.png)
+    <!-- ![](resources/visual-studio-open-lab2.png) -->
 
 ### Step 3: Azure IoT Central Connection Information
 

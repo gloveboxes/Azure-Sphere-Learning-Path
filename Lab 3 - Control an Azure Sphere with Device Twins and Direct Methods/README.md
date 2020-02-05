@@ -92,7 +92,7 @@ add settings and commands
 3. Select **Lab 3 - Control an Azure Sphere with Device Twins and Direct Methods**
 4. Click **Select Folder** button.
 
-    ![](resources/visual-studio-open-lab3.png)
+    <!-- ![](resources/visual-studio-open-lab3.png) -->
 
 ### Step 3: Configure the Azure IoT Central Connection Information
 
