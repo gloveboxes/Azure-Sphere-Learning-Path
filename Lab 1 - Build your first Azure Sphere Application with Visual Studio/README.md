@@ -57,9 +57,8 @@ The Azure Sphere [MT3620](https://www.mediatek.com/products/azureSphere/mt3620) 
 ### Step 3: Open the lab project
 
 1. Click **Open a local folder**
-1. Navigate to the folder you cloned **Azure Sphere Learning Path** into.
-2. Open **Lab 1 - Build your first Azure Sphere folder**
-3. Select folder  **Azure_Sphere_plus_Grove_Shield_Sensor_Kit**
+2. Navigate to the folder you cloned **Azure Sphere Learning Path** into.
+3. Select **Lab 1 - Build your first Azure Sphere folder**
 4. Click **Select Folder** button.
 
 ![](resources/visual-studio-open-project.png)
