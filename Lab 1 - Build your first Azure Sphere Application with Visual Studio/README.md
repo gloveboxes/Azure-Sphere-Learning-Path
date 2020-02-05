@@ -30,7 +30,7 @@ Each module assumes you have completed the previous module.
 
 In this lab you will learn how to secure, build, deploy, and debug your first High-Level (HL) Azure Sphere application onto the Azure Sphere A7 Core.
 
-The Azure Sphere [MT3620](https://www.mediatek.com/products/azureSphere/mt3620) MCU consists of three application cores. One ARM Cortex A7 High-Level Application core running Embedded Linux (built with [Yokto](https://www.yoctoproject.org/), and two ARM Cortex M4F Real-Time cores for running FreeRTOS, Azure RTOS, or bare metal applications. The MT3620 MCU is also know as a Crossover MCU as it bridges the application world of ARM Cortex A7 with the Real time world of ARM Cortex M4.  
+The Azure Sphere [MT3620](https://www.mediatek.com/products/azureSphere/mt3620) MCU consists of three application cores. One ARM Cortex A7 High-Level Application core running Embedded Linux (built with [Yokto](https://www.yoctoproject.org/)), and two ARM Cortex M4F Real-Time cores for running FreeRTOS, Azure RTOS, or bare metal applications. The MT3620 MCU is also know as a Crossover MCU as it bridges the application world of ARM Cortex A7 with the Real time world of ARM Cortex M4.  
 
 ---
 
