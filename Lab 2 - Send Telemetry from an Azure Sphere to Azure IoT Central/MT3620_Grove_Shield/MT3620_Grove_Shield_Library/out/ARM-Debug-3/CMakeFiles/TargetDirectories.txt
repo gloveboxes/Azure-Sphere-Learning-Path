@@ -1,3 +1,0 @@
-C:/Data/Azure_Sphere_Learning_Path/Lab 2 - Send Telemetry from an Azure Sphere to Azure IoT Central/MT3620_Grove_Shield/MT3620_Grove_Shield_Library/out/ARM-Debug-3/CMakeFiles/MT3620_Grove_Shield_Library.dir
-C:/Data/Azure_Sphere_Learning_Path/Lab 2 - Send Telemetry from an Azure Sphere to Azure IoT Central/MT3620_Grove_Shield/MT3620_Grove_Shield_Library/out/ARM-Debug-3/CMakeFiles/edit_cache.dir
-C:/Data/Azure_Sphere_Learning_Path/Lab 2 - Send Telemetry from an Azure Sphere to Azure IoT Central/MT3620_Grove_Shield/MT3620_Grove_Shield_Library/out/ARM-Debug-3/CMakeFiles/rebuild_cache.dir
