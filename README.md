@@ -40,6 +40,14 @@ Each module assumes you have completed the previous module.
 
 ---
 
+## Why you should care about IoT Security
+
+![](resources/fish-tank.jpg)
+
+[Criminals Hacked A Fish Tank To Steal Data From A Casino](https://www.forbes.com/sites/leemathews/2017/07/27/criminals-hacked-a-fish-tank-to-steal-data-from-a-casino/#46045c1d32b9)
+
+---
+
 ## What is Azure Sphere
 
 Azure Sphere is a solution for securing MCU Power Devices. It comprises a secured, connected, crossover microcontroller unit (MCU), a custom high-level Linux-based operating system (OS), and a cloud-based security service that provides continuous, renewable security.
@@ -66,7 +74,17 @@ As billions of new devices are connected, organizations need to secure them to h
 
 ## Hardware Required
 
-This tutorial requires the [Seeed Studio Azure Sphere](https://www.seeedstudio.com/Azure-Sphere-MT3620-Development-Kit-US-Version-p-3052.html), the [Seeed Studio Grove Shield](https://www.seeedstudio.com/MT3620-Grove-Shield.html), and the [Grove Temperature and Humidity Sensor (SHT31)](https://www.seeedstudio.com/Grove-Temperature-Humidity-Sensor-SHT31.html). These parts are available from many online stores including [Seeed Studio](https://www.seeedstudio.com).
+This Learning Path requires either a Azure Sphere Developer kit from [Seeed Studio](https://www.seeedstudio.com/Azure-Sphere-MT3620-Development-Kit-US-Version-p-3052.html) or [Avnet](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-sk-g-3074457345636825680/).
+
+### Avnet Azure Sphere MT3620 Starter Kit
+
+There Avnet board includes Temperature and Humidity Sensors.
+
+![](resources/avnet-azure-sphere.jpg)
+
+### Seeed Studio Azure Sphere Developer Kit
+
+[Seeed Studio Azure Sphere](https://www.seeedstudio.com/Azure-Sphere-MT3620-Development-Kit-US-Version-p-3052.html), the [Seeed Studio Grove Shield](https://www.seeedstudio.com/MT3620-Grove-Shield.html), and the [Grove Temperature and Humidity Sensor (SHT31)](https://www.seeedstudio.com/Grove-Temperature-Humidity-Sensor-SHT31.html). These parts are available from many online stores including [Seeed Studio](https://www.seeedstudio.com).
 
 Be sure to plug the Grove Temperature Sensor into one of the I2C connectors on the Grove Shield.
 
