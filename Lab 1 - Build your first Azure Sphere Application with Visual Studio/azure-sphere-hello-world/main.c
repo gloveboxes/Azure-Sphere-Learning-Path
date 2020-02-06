@@ -1,5 +1,5 @@
-﻿#include "../MT3620_Grove_Shield/MT3620_Grove_Shield_Library/Grove.h"
-#include "../MT3620_Grove_Shield/MT3620_Grove_Shield_Library/Sensors/GroveTempHumiSHT31.h"
+﻿#include "../../MT3620_Grove_Shield/MT3620_Grove_Shield_Library/Grove.h"
+#include "../../MT3620_Grove_Shield/MT3620_Grove_Shield_Library/Sensors/GroveTempHumiSHT31.h"
 #include "globals.h"
 #include "utilities.h"
 #include <applibs/gpio.h>

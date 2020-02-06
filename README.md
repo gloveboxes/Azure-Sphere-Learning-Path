@@ -10,7 +10,7 @@
 |Target Platform | Seeed Studio Azure Sphere MT3620 |
 |Target Service | [Azure IoT Central](https://azure.microsoft.com/services/iot-central/?WT.mc_id=github-blog-dglover) |
 |Developer Platform | Windows 10 or Ubuntu 18.04 |
-|Azure SDK | Azure Sphere SDK 19.11 or better |
+|Azure SDK | Azure Sphere SDK 20.01 or better |
 |Developer Tools| [Visual Studio (The free Community Edition or better)](https://visualstudio.microsoft.com/vs/?WT.mc_id=github-blog-dglover) or [Visual Studio Code (Free OSS)](https://code.visualstudio.com?WT.mc_id=github-blog-dglover)|
 |Hardware | [Seeed Studio Grove Shield](https://www.seeedstudio.com/MT3620-Grove-Shield.html), and the [Grove Temperature and Humidity Sensor (SHT31)](https://www.seeedstudio.com/Grove-Temperature-Humidity-Sensor-SHT31.html) |
 |Source Code | https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git |
