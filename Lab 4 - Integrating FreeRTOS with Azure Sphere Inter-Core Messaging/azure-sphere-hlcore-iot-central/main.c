@@ -286,7 +286,7 @@ static void InterCoreHandler(char* msg) {
 static void InterCoreHeartBeat(EventData* eventData)
 {
 	static int heartBeatCount = 0;
-	char* interCoreMsg[30];
+	char interCoreMsg[30];
 
 	if (ConsumeTimerFdEvent(rtCoreHeatBeat.fd) != 0) {
 		terminationRequired = true;
