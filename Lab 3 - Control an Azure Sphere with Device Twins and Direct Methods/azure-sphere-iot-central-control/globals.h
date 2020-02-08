@@ -20,7 +20,7 @@
 #define GPIO_OFF(x) GPIO_SetValue(x.fd, x.invertPin ? GPIO_Value_High : GPIO_Value_Low)
 
 extern char scopeId[SCOPEID_LENGTH]; // ScopeId for the Azure IoT Central application, set in app_manifest.json, CmdArgs
-static char rtAppComponentId[RT_APP_COMPONENT_LENGTH];  //initialized from cmdline argument
+extern char rtAppComponentId[RT_APP_COMPONENT_LENGTH];  //initialized from cmdline argument
 
 extern volatile sig_atomic_t terminationRequired;
 extern bool realTelemetry;		// Generate fake telemetry or use Seeed Studio Grove SHT31 Sensor

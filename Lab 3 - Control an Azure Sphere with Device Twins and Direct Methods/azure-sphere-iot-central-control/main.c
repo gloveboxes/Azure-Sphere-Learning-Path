@@ -43,7 +43,13 @@ static DeviceTwinPeripheral relay = {
 };
 
 static DeviceTwinPeripheral light = {
-	.peripheral = {.fd = -1, .pin = LIGHT_PIN, .initialState = GPIO_Value_High, .invertPin = true, .initialise = OpenPeripheral, .name = "led1" },
+	.peripheral = {
+		.fd = -1, 
+		.pin = LIGHT_PIN, 
+		.initialState = GPIO_Value_High, 
+		.invertPin = true, 
+		.initialise = OpenPeripheral, 
+		.name = "led1" },
 	.twinState = false,
 	.twinProperty = "led1",
 	.handler = DeviceTwinHandler
@@ -70,6 +76,7 @@ static Timer iotClientDoWork = {
 	.period = { 1, 0 },
 	.name = "DoWork"
 };
+
 static Timer sendTelemetry = {
 	.eventData = {.eventHandler = &MeasureSensorHandler },
 	.period = { 10, 0 },

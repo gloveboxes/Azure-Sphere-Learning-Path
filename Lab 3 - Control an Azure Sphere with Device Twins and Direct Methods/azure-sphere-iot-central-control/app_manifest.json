@@ -8,7 +8,8 @@
     "Gpio": [ 0, 19, 21 ],
     "Uart": [ "ISU0" ],
     "AllowedConnections": [ ],
-    "DeviceAuthentication": ""
+    "DeviceAuthentication": "",
+    "AllowedApplicationConnections": [ "" ]
   },
   "ApplicationType": "Default"
 }
