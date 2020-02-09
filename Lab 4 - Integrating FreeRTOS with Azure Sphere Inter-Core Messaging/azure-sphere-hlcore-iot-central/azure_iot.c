@@ -68,6 +68,11 @@ void SendMessageCallback(IOTHUB_CLIENT_CONFIRMATION_RESULT result, void* context
 }
 
 void AzureCloudToDeviceHandler(EventData* eventData) {
+	if (ConsumeTimerFdEvent(cloudToDeviceTimer.fd) != 0) {
+		terminationRequired = true;
+		return;
+	}
+
 	if (iothubClientHandle != NULL) {
 		IoTHubDeviceClient_LL_DoWork(iothubClientHandle);
 	}
