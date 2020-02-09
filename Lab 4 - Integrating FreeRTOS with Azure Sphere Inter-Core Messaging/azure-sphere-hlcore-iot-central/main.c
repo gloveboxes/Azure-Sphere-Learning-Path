@@ -19,7 +19,6 @@
 
 static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 
-static int epollFd = -1;
 static int i2cFd;
 static void* sht31;
 
@@ -48,12 +47,7 @@ static DeviceTwinPeripheral relay = {
 
 static DeviceTwinPeripheral light = {
 	.peripheral = {
-		.fd = -1, 
-		.pin = LIGHT_PIN, 
-		.initialState = GPIO_Value_High, 
-		.invertPin = true, 
-		.initialise = OpenPeripheral, 
-		.name = "led1" },
+		.fd = -1, .pin = LIGHT_PIN, .initialState = GPIO_Value_High, .invertPin = true, .initialise = OpenPeripheral, .name = "led1" },
 	.twinState = false,
 	.twinProperty = "led1",
 	.handler = DeviceTwinHandler
@@ -61,24 +55,14 @@ static DeviceTwinPeripheral light = {
 
 static DirectMethodPeripheral fan = {
 	.peripheral = {
-		.fd = -1, 
-		.pin = FAN_PIN, 
-		.initialState = GPIO_Value_Low, 
-		.invertPin = false, 
-		.initialise = InitFanPWM, 
-		.name = "fan1" },
+		.fd = -1, .pin = FAN_PIN, .initialState = GPIO_Value_Low, .invertPin = false, .initialise = InitFanPWM, .name = "fan1" },
 	.methodName = "fan1",
 	.handler = SetFanSpeedDirectMethod
 };
 
 static ActuatorPeripheral sendStatus = {
-	.peripheral = {.fd = -1, .pin = SEND_STATUS_PIN, .initialState = GPIO_Value_High, .invertPin = true, .initialise = OpenPeripheral, .name = "SendStatus" }
-};
-
-static Timer iotClientDoWork = {
-	.eventData = {.eventHandler = &AzureDoWorkTimerEventHandler },
-	.period = { 1, 0 },
-	.name = "DoWork"
+	.peripheral = {
+		.fd = -1, .pin = SEND_STATUS_PIN, .initialState = GPIO_Value_High, .invertPin = true, .initialise = OpenPeripheral, .name = "SendStatus" }
 };
 
 static Timer sendTelemetry = {
@@ -98,7 +82,7 @@ static Timer rtCoreHeatBeat = {
 DeviceTwinPeripheral* deviceTwinDevices[] = { &relay, &light };
 DirectMethodPeripheral* directMethodDevices[] = { &fan };
 ActuatorPeripheral* actuatorDevices[] = { &sendStatus };
-Timer* timers[] = { &iotClientDoWork, &sendTelemetry, &rtCoreHeatBeat };
+Timer* timers[] = { &sendTelemetry, &rtCoreHeatBeat };
 
 #pragma endregion
 
@@ -122,7 +106,7 @@ int main(int argc, char* argv[])
 
 	// Main loop
 	while (!terminationRequired) {
-		if (WaitForEventAndCallHandler(epollFd) != 0) {
+		if (WaitForEventAndCallHandler(GetEpollFd()) != 0) {
 			terminationRequired = true;
 		}
 	}
@@ -182,26 +166,23 @@ static void MeasureSensorHandler(EventData* eventData)
 /// <returns>0 on success, or -1 on failure</returns>
 static int InitPeripheralsAndHandlers(void)
 {
-	epollFd = CreateEpollFd();
-	if (epollFd < 0) {
-		return -1;
+	if (realTelemetry) { // Initialize Grove Shield and Grove Temperature and Humidity Sensor		
+		GroveShield_Initialize(&i2cFd, 115200);
+		sht31 = GroveTempHumiSHT31_Open(i2cFd);
 	}
 
 	OPEN_PERIPHERAL_SET(actuatorDevices);
 	OPEN_PERIPHERAL_SET(deviceTwinDevices);
 	OPEN_PERIPHERAL_SET(directMethodDevices);
 
-	InitDeviceTwins(deviceTwinDevices, NELEMS(deviceTwinDevices));
-
-	if (realTelemetry) { // Initialize Grove Shield and Grove Temperature and Humidity Sensor		
-		GroveShield_Initialize(&i2cFd, 115200);
-		sht31 = GroveTempHumiSHT31_Open(i2cFd);
-	}
-
-	InitInterCoreComms(epollFd, rtAppComponentId, InterCoreHandler);  // Initialize Inter Core Communications
-	SendMessageToRTCore("HeartBeat"); // Prime RT Core with Component ID Signature
-
 	START_TIMER_SET(timers);
+
+	EnableInterCoreCommunications(rtAppComponentId, InterCoreHandler);  // Initialize Inter Core Communications
+	SendInterCoreMessage("HeartBeat"); // Prime RT Core with Component ID Signature
+
+	EnableDeviceTwins(deviceTwinDevices, NELEMS(deviceTwinDevices));
+	EnableDirectMethods(directMethodDevices, NELEMS(directMethodDevices));
+	EnableCloudToDevice();
 
 	return 0;
 }
@@ -220,7 +201,9 @@ static void ClosePeripheralsAndHandlers(void)
 	CLOSE_PERIPHERAL_SET(deviceTwinDevices);
 	CLOSE_PERIPHERAL_SET(directMethodDevices);
 
-	CloseFdAndPrintError(epollFd, "Epoll");
+	DisableCloudToDevice();
+
+	CloseFdAndPrintError(GetEpollFd(), "Epoll");
 }
 
 #pragma Azure IoT Device Twins Supports
@@ -294,7 +277,7 @@ static void InterCoreHeartBeat(EventData* eventData)
 	}
 
 	if (snprintf(interCoreMsg, sizeof(interCoreMsg), "HeartBeat-%d", heartBeatCount++) > 0) {
-		SendMessageToRTCore(interCoreMsg);
+		SendInterCoreMessage(interCoreMsg);
 	}
 }
 

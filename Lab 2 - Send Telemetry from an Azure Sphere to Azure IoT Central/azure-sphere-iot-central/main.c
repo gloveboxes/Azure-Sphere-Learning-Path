@@ -14,7 +14,6 @@
 #define JSON_MESSAGE_BYTES 100  // Number of bytes to allocate for the JSON telemetry message for IoT Central
 static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 
-static int epollFd = -1;
 static int i2cFd;
 static void* sht31;
 
@@ -34,12 +33,6 @@ static ActuatorPeripheral sendStatus = {
 		.name = "SendStatus" }
 };
 
-static Timer iotClientDoWork = {
-	.eventData = {.eventHandler = &AzureDoWorkTimerEventHandler },
-	.period = { 1, 0 },
-	.name = "DoWork"
-};
-
 static Timer sendTelemetry = {
 	.eventData = {.eventHandler = &MeasureSensorHandler },
 	.period = { 10, 0 },
@@ -50,7 +43,7 @@ static Timer sendTelemetry = {
 #pragma region define sets for auto initialisation and close
 
 ActuatorPeripheral* actuatorDevices[] = { &sendStatus };
-Timer* timers[] = { &iotClientDoWork, &sendTelemetry };
+Timer* timers[] = { &sendTelemetry };
 
 #pragma endregion
 
@@ -74,7 +67,7 @@ int main(int argc, char* argv[])
 
 	// Main loop
 	while (!terminationRequired) {
-		if (WaitForEventAndCallHandler(epollFd) != 0) {
+		if (WaitForEventAndCallHandler(GetEpollFd()) != 0) {
 			terminationRequired = true;
 		}
 	}
@@ -135,11 +128,6 @@ static void MeasureSensorHandler(EventData* eventData)
 /// <returns>0 on success, or -1 on failure</returns>
 static int InitPeripheralsAndHandlers(void)
 {
-	epollFd = CreateEpollFd();
-	if (epollFd < 0) {
-		return -1;
-	}	
-
 	if (realTelemetry) { // Initialize Grove Shield and Grove Temperature and Humidity Sensor		
 		GroveShield_Initialize(&i2cFd, 115200);
 		sht31 = GroveTempHumiSHT31_Open(i2cFd);
@@ -162,5 +150,5 @@ static void ClosePeripheralsAndHandlers(void)
 	STOP_TIMER_SET(timers);
 	CLOSE_PERIPHERAL_SET(actuatorDevices);
 
-	CloseFdAndPrintError(epollFd, "Epoll");
+	CloseFdAndPrintError(GetEpollFd(), "Epoll");
 }

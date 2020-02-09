@@ -1,8 +1,8 @@
 #ifndef iot_hub_h
 #define iot_hub_h
 
-#include "globals.h"
 #include "parson.h"
+#include "utilities.h"
 #include <applibs/log.h>
 #include <applibs/networking.h>
 #include <azure_sphere_provisioning.h>
@@ -13,10 +13,10 @@
 #include <stdlib.h>
 
 bool SendMsg(const char* msg);
-void AzureDoWorkTimerEventHandler(EventData*);
-void InitAzureIoT(int epollFd);
-void CloseAzureIoT(void);
-void InitDeviceTwins(DeviceTwinPeripheral* deviceTwins[], size_t deviceTwinCount);
-void InitDirectMethods(DirectMethodPeripheral* directMethods[], size_t directMethodCount);
+void AzureCloudToDeviceHandler(EventData*);
+void EnableCloudToDevice(void);
+void DisableCloudToDevice(void);
+void EnableDeviceTwins(DeviceTwinPeripheral* deviceTwins[], size_t deviceTwinCount);
+void EnableDirectMethods(DirectMethodPeripheral* directMethods[], size_t directMethodCount);
 
 #endif

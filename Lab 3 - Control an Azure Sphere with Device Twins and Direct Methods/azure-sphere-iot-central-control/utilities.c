@@ -1,5 +1,19 @@
 #include "utilities.h"
 
+int epollFd = -1;
+
+int GetEpollFd(void) {
+	if (epollFd == -1) {  // lazy create epollFd
+		epollFd = CreateEpollFd();
+		if (epollFd < 0) {
+			terminationRequired = true;
+			return -1;
+		}
+	}
+	return epollFd;
+}
+
+
 void RegisterTerminationHandler(void) {
 	struct sigaction action;
 	memset(&action, 0, sizeof(struct sigaction));
@@ -14,8 +28,9 @@ void TerminationHandler(int signalNumber)
 	terminationRequired = true;
 }
 
-int StartTimer(Timer* timer, int epollFd) {
-	timer->fd = CreateTimerFdAndAddToEpoll(epollFd, &timer->period, &timer->eventData, EPOLLIN);
+
+int StartTimer(Timer* timer) {
+	timer->fd = CreateTimerFdAndAddToEpoll(GetEpollFd(), &timer->period, &timer->eventData, EPOLLIN);
 	if (timer->fd < 0) {
 		return -1;
 	}
@@ -33,6 +48,7 @@ int OpenPeripheral(Peripheral* peripheral) {
 	}
 	return 0;
 }
+
 
 void ProcessCmdArgs(int argc, char* argv[]) {
 	do {

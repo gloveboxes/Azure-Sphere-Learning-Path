@@ -35,6 +35,27 @@ size_t _directMethodCount;
 bool iothubAuthenticated = false;
 const int keepalivePeriodSeconds = 20;
 
+static Timer cloudToDeviceTimer = {
+	.eventData = {.eventHandler = &AzureCloudToDeviceHandler },
+	.period = { 1, 0 },
+	.name = "DoWork",
+	.fd = -1
+};
+
+
+void EnableCloudToDevice(void) {
+	if (cloudToDeviceTimer.fd == -1) {
+		StartTimer(&cloudToDeviceTimer);
+	}
+}
+
+
+void DisableCloudToDevice(void) {
+	if (cloudToDeviceTimer.fd != -1) {
+		CloseFdAndPrintError(cloudToDeviceTimer.fd, cloudToDeviceTimer.name);
+	}
+}
+
 
 /// <summary>
 ///     Callback confirming message delivered to IoT Hub.
@@ -46,7 +67,7 @@ void SendMessageCallback(IOTHUB_CLIENT_CONFIRMATION_RESULT result, void* context
 	Log_Debug("INFO: Message received by IoT Hub. Result is: %d\n", result);
 }
 
-void AzureDoWorkTimerEventHandler(EventData* eventData) {
+void AzureCloudToDeviceHandler(EventData* eventData) {
 	if (iothubClientHandle != NULL) {
 		IoTHubDeviceClient_LL_DoWork(iothubClientHandle);
 	}
@@ -200,7 +221,7 @@ const char* GetReasonString(IOTHUB_CLIENT_CONNECTION_STATUS_REASON reason)
 
 #pragma region Device Twins
 
-void InitDeviceTwins(DeviceTwinPeripheral* deviceTwins[], size_t deviceTwinCount) {
+void EnableDeviceTwins(DeviceTwinPeripheral* deviceTwins[], size_t deviceTwinCount) {
 	_deviceTwins = deviceTwins;
 	_deviceTwinCount = deviceTwinCount;
 }
@@ -303,7 +324,7 @@ void ReportStatusCallback(int result, void* context)
 
 #pragma region Direct Methods
 
-void InitDirectMethods(DirectMethodPeripheral* directMethods[], size_t directMethodCount) {
+void EnableDirectMethods(DirectMethodPeripheral* directMethods[], size_t directMethodCount) {
 	_directMethods = directMethods;
 	_directMethodCount = directMethodCount;
 }
