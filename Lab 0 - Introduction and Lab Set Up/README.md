@@ -33,49 +33,23 @@ Each module assumes you have completed the previous module.
 
 ---
 
-## What is Azure Sphere
-
-Azure Sphere is a solution for securing MCU Power Devices. It comprises a secured, connected, crossover microcontroller unit (MCU), a custom high-level Linux-based operating system (OS), and a cloud-based security service that provides continuous, renewable security.
-
-![](resources/azure-sphere-end-to-end.png)
-
-Growing ecosystem of hardware partners.
-
-![](resources/azure-sphere.png)
-
----
-
-## Why Azure Sphere
-
-As billions of new devices are connected, organizations need to secure them to help protect data, privacy, physical safety, and infrastructure. Azure Sphere builds on decades of Microsoft experience in hardware, software, and cloud to provide a turnkey solution for IoT devices. Get defense in depth to embrace IoT innovation with confidence.
-
----
-
-## Hardware Required
-
-This tutorial requires the [Seeed Studio Azure Sphere](https://www.seeedstudio.com/Azure-Sphere-MT3620-Development-Kit-US-Version-p-3052.html), the [Seeed Studio Grove Shield](https://www.seeedstudio.com/MT3620-Grove-Shield.html), and the [Grove Temperature and Humidity Sensor (SHT31)](https://www.seeedstudio.com/Grove-Temperature-Humidity-Sensor-SHT31.html). These parts are available from many online stores including [Seeed Studio](http://www.seeedstudio.com).
-
-Be sure to plug the Grove Temperature Sensor into one of the I2C connectors on the Grove Shield.
-
----
-
 ## Set up your Development Environment
 
-This tutorial assumes Windows 10 and [Visual Studio (The free Community Edition or better)](https://visualstudio.microsoft.com/vs/?WT.mc_id=github-blog-dglover). For now, Azure Sphere templates are only available for Visual Studio. However, you can clone and open this solution on Windows and Ubuntu 18.04 with [Visual Studio Code](https://code.visualstudio.com/?WT.mc_id=github-blog-dglover). 
+### STEP 1: Install Developer Tools
+
+This tutorial assumes Windows 10 and [Visual Studio (The free Community Edition or better)](https://visualstudio.microsoft.com/vs/?WT.mc_id=github-blog-dglover). For now, Azure Sphere templates are only available for Visual Studio. However, you can clone and open this solution on Windows and Ubuntu 18.04 with [Visual Studio Code](https://code.visualstudio.com/?WT.mc_id=github-blog-dglover).
+
+### STEP 2: Clone Azure Sphere Learning Path
 
 ```bash
-git clone https://github.com/gloveboxes/Create-a-Secure-Azure-Sphere-App-using-the-Grove-Shield-Sensor-Kit.git
+git clone https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git
 ```
 
+### STEP 3: Set up Azure Sphere SDK, Claim the Azure Sphere, and Configure Networking
+
+This tutorial targets the [Azure Sphere SDK 20.01](https://docs.microsoft.com/en-us/azure-sphere/resources/release-notes-2001?WT.mc_id=github-blog-dglover) or better which uses the CMake Build System.
+
 Follow the Azure Sphere [Overview of set up procedures](https://docs.microsoft.com/en-au/azure-sphere/install/overview?WT.mc_id=github-blog-dglover) guide.
-
----
-
-## Azure Sphere SDK
-
-This tutorial assumes you are using the [Azure Sphere SDK 19.11](https://docs.microsoft.com/en-us/azure-sphere/resources/release-notes-1911?WT.mc_id=github-blog-dglover) or better which uses the CMake Build System.
-
-This tutorial includes a forked version of the Seeed Studio [Grove Shield Library](https://github.com/Seeed-Studio/MT3620_Grove_Shield) that has been migrated to CMake for Azure Sphere SDK 19.11.
 
 ---
 
