@@ -12,6 +12,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+enum DirectMethodResponseCode
+{
+	METHOD_SUCCEEDED = 200,
+	METHOD_FAILED = 500,
+	METHOD_NOT_FOUND = 404
+};
+
+typedef enum DirectMethodResponseCode MethodResponseCode;
+
 bool SendMsg(const char* msg);
 void AzureCloudToDeviceHandler(EventData*);
 void EnableCloudToDevice(void);

@@ -6,6 +6,7 @@
 #include <signal.h>
 #include <stdbool.h>
 #include "parson.h"
+#include "iothub.h"
 
 #define SCOPEID_LENGTH 20
 #define RT_APP_COMPONENT_LENGTH 36 + 1  // GUID 36 Char + 1 NULL terminate)
@@ -21,9 +22,9 @@
 
 enum DevKit
 {
-	SeeedStudioDK,
-	SeeedStduioMiniDK,
-	AvnetDK
+	SEEED_STUDIO,
+	SEEED_STUDIO_MINI,
+	AVNET
 };
 
 extern char scopeId[SCOPEID_LENGTH]; // ScopeId for the Azure IoT Central application, set in app_manifest.json, CmdArgs
@@ -31,7 +32,7 @@ extern char rtAppComponentId[RT_APP_COMPONENT_LENGTH];  //initialized from cmdli
 
 extern volatile sig_atomic_t terminationRequired;
 extern bool realTelemetry;		// Generate fake telemetry or use Seeed Studio Grove SHT31 Sensor
-extern enum DevKit dk;
+extern enum DevKit deviceKit;
 
 struct _peripheral {
 	int fd;
@@ -56,7 +57,8 @@ typedef struct _deviceTwinPeripheral DeviceTwinPeripheral;
 struct _directMethodPeripheral {
 	Peripheral peripheral;
 	const char* methodName;
-	bool (*handler)(JSON_Object* json, struct _directMethodPeripheral* peripheral);
+	enum DirectMethodResponseCode (*handler)(JSON_Object* json, struct _directMethodPeripheral* peripheral);
+	char* responseMessage;
 };
 
 typedef struct _directMethodPeripheral DirectMethodPeripheral;

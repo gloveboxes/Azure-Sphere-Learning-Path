@@ -27,7 +27,7 @@ static int InitPeripheralsAndHandlers(void);
 static void ClosePeripheralsAndHandlers(void);
 static void MeasureSensorHandler(EventData* eventData);
 static void DeviceTwinHandler(JSON_Object* json, DeviceTwinPeripheral* deviceTwinPeripheral);
-static bool SetFanSpeedDirectMethod(JSON_Object* json, DirectMethodPeripheral* directMethodperipheral);
+static MethodResponseCode SetFanSpeedDirectMethod(JSON_Object* json, DirectMethodPeripheral* directMethodperipheral);
 static int InitFanPWM(struct _peripheral* peripheral);
 static void InterCoreHandler(char* msg);
 static void InterCoreHeartBeat(EventData* eventData);
@@ -233,16 +233,30 @@ static int InitFanPWM(struct _peripheral* peripheral) {
 }
 
 
-static bool SetFanSpeedDirectMethod(JSON_Object* json, DirectMethodPeripheral* directMethodperipheral) {
-	// for you to fully implement
+static MethodResponseCode SetFanSpeedDirectMethod(JSON_Object* json, DirectMethodPeripheral* directMethodperipheral) {
+	// Sample implementation - doesn't do anything other than returning a response message and status
+
+	// Allocate and initialize a response message buffer. The calling function is responsible for the freeing memory
+	const size_t responseLen = 40;
+	directMethodperipheral->responseMessage = (char*)malloc(responseLen);
+	memset(directMethodperipheral->responseMessage, 0, responseLen);
+
 	int speed = (int)json_object_get_number(json, "speed");
-	Log_Debug("Azure IoT Direct Method '%s' called. Peripheral '%s' to speed '%d'", directMethodperipheral->methodName, directMethodperipheral->peripheral.name, speed);
-	return true;
+
+	if (speed >= 0 && speed <= 100) {
+		snprintf(directMethodperipheral->responseMessage, responseLen, "%s succeeded, speed set to %d", directMethodperipheral->methodName, speed);
+		return METHOD_SUCCEEDED;
+	}
+	else
+	{
+		snprintf(directMethodperipheral->responseMessage, responseLen, "%s FAILED, speed out of range %d", directMethodperipheral->methodName, speed);
+		return METHOD_FAILED;
+	}
 }
 
 #pragma endregion
 
-#pragma InterCore COmmunications Support
+#pragma InterCore Communications Support
 
 static void InterCoreHandler(char* msg) {
 	static int buttonPressCount = 0;
