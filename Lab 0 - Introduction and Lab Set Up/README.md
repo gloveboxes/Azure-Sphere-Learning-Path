@@ -9,7 +9,9 @@
 
 ---
 
-## Azure Sphere Learning Path
+## Appendix
+
+### Azure Sphere Learning Path
 
 Each module assumes you have completed the previous module.
 
