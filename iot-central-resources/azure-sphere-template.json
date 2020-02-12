@@ -1,0 +1,138 @@
+{
+  "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_5l2:1",
+  "@type": "CapabilityModel",
+  "implements": [
+    {
+      "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_5l2:stiqh5fe:1",
+      "@type": "InterfaceInstance",
+      "name": "Interface_6s9",
+      "schema": {
+        "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mq:1",
+        "@type": "Interface",
+        "displayName": {
+          "en": "Interface"
+        },
+        "contents": [
+          {
+            "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mq:Temperature:1",
+            "@type": [
+              "Telemetry",
+              "SemanticType/Temperature"
+            ],
+            "displayName": {
+              "en": "Temperature"
+            },
+            "name": "Temperature",
+            "displayUnit": {
+              "en": "C"
+            },
+            "schema": "float",
+            "unit": "Units/Temperature/celsius"
+          },
+          {
+            "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mq:Humidity:1",
+            "@type": [
+              "Telemetry",
+              "SemanticType/Humidity"
+            ],
+            "displayName": {
+              "en": "Humidity"
+            },
+            "name": "Humidity",
+            "displayUnit": {
+              "en": "%"
+            },
+            "schema": "float",
+            "unit": "Units/Humidity/percent"
+          },
+          {
+            "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mq:MsgId:1",
+            "@type": "Telemetry",
+            "displayName": {
+              "en": "Msg Id"
+            },
+            "name": "MsgId",
+            "displayUnit": {
+              "en": "Int"
+            },
+            "schema": "integer"
+          },
+          {
+            "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mq:relay1:1",
+            "@type": "Property",
+            "displayName": {
+              "en": "Relay"
+            },
+            "name": "relay1",
+            "writable": true,
+            "schema": "boolean"
+          },
+          {
+            "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mq:led1:1",
+            "@type": "Property",
+            "displayName": {
+              "en": "Light"
+            },
+            "name": "led1",
+            "writable": true,
+            "schema": "boolean"
+          },
+          {
+            "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mq:ButtonPressed:1",
+            "@type": [
+              "Telemetry",
+              "SemanticType/Event"
+            ],
+            "displayName": {
+              "en": "Button Pressed"
+            },
+            "name": "ButtonPressed",
+            "schema": "integer"
+          },
+          {
+            "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mq:fan1:1",
+            "@type": "Command",
+            "commandType": "synchronous",
+            "request": {
+              "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mq:fan1:SetFanSpeed:1",
+              "@type": "SchemaField",
+              "displayName": {
+                "en": "Set Fan Speed"
+              },
+              "name": "SetFanSpeed",
+              "schema": {
+                "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mq:fan1:SetFanSpeed:xxf4y5vyp:1",
+                "@type": "Object",
+                "displayName": {
+                  "en": "Fan"
+                },
+                "fields": [
+                  {
+                    "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mq:fan1:SetFanSpeed:xxf4y5vyp:speed:1",
+                    "@type": "SchemaField",
+                    "displayName": {
+                      "en": "Speed"
+                    },
+                    "name": "speed",
+                    "schema": "integer"
+                  }
+                ]
+              }
+            },
+            "displayName": {
+              "en": "Fan"
+            },
+            "name": "fan1"
+          }
+        ]
+      }
+    }
+  ],
+  "displayName": {
+    "en": "Azure Sphere"
+  },
+  "contents": [],
+  "@context": [
+    "http://azureiot.com/v1/contexts/IoTModel.json"
+  ]
+}
