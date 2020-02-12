@@ -36,11 +36,17 @@ Each module assumes you have completed the previous module.
 
 ---
 
-## What you will learn
+## Why Azure Sphere
+
+As billions of new devices are connected, organizations need to secure them to help protect data, privacy, physical safety, and infrastructure. Azure Sphere builds on decades of Microsoft experience in hardware, software, and cloud to provide a turnkey solution for IoT devices. Get defense in depth to embrace IoT innovation with confidence.
 
 ---
 
 ## Why you should care about IoT Security
+
+Almost a day doesn't go by without some newsworthy IoT Security attack happening, and those are just the ones that make the news cycle. IoT security is absolutely fundamental and at the same time the absent from many conversations in the rush to get products to market.
+
+The [The Seven Properties of Highly Secure Devices](https://www.microsoft.com/en-us/research/wp-content/uploads/2017/03/SevenPropertiesofHighlySecureDevices.pdf) is recommended to help you understand what is required to mitigate exposure to IoT security issues. This IoT Security whitepaper draws from industry and Microsoft experience.
 
 ![](resources/fish-tank.jpg)
 
@@ -62,11 +68,6 @@ Growing ecosystem of hardware partners.
 
 ![](resources/azure-sphere.png)
 
----
-
-## Why Azure Sphere
-
-As billions of new devices are connected, organizations need to secure them to help protect data, privacy, physical safety, and infrastructure. Azure Sphere builds on decades of Microsoft experience in hardware, software, and cloud to provide a turnkey solution for IoT devices. Get defense in depth to embrace IoT innovation with confidence.
 
 ---
 
