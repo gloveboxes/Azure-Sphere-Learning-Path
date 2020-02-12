@@ -9,9 +9,7 @@
 
 ---
 
-## Appendix
-
-### Azure Sphere Learning Path
+## Azure Sphere Learning Path
 
 Each module assumes you have completed the previous module.
 
@@ -55,7 +53,11 @@ Follow the Azure Sphere [Overview of set up procedures](https://docs.microsoft.c
 
 ---
 
-## Grove Shield Sensor Capabilities Quick Reference
+## Appendix
+
+---
+
+### Grove Shield Sensor Capabilities Quick Reference
 
 | Sensors  | Socket | Capabilities |
 | :------------- | :------------- | :----------- |
@@ -73,12 +75,16 @@ Follow the Azure Sphere [Overview of set up procedures](https://docs.microsoft.c
 
 For more pin definitions see the __mt3620_rdb.h__ in the MT3620_Grove_Shield/MT3620_Grove_Shield_Library folder.
 
+---
+
 ### Azure Sphere Grove Kit
 
 | Azure Sphere   |  Image  |
 | ---- | ---- |
 | [Azure Sphere MT3620 Development Kit](https://www.seeedstudio.com/Azure-Sphere-MT3620-Development-Kit-US-Version-p-3052.html)|
 | [Azure Sphere MT3620 Development Kit Shield](https://www.seeedstudio.com/Grove-Starter-Kit-for-Azure-Sphere-MT3620-Development-Kit.html). <br/> Note, you can also purchase the parts separately. | ![](resources/seeed-studio-grove-shield-and-sensors.jpg) |
+
+---
 
 ### Azure Sphere MT3620 Developer Board Pinmap
 
