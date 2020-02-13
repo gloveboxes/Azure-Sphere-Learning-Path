@@ -58,10 +58,11 @@ The Azure Sphere [MT3620](https://www.mediatek.com/products/azureSphere/mt3620) 
 
 1. Click **Open a local folder**
 2. Navigate to the folder you cloned **Azure Sphere Learning Path** into.
-3. Select **Lab 1 - Build your first Azure Sphere folder**
-4. Click **Select Folder** button.
+3. Double click to open the **Lab 1 - Build your first Azure Sphere** folder
+4. Double click to open the **azure-sphere-hello-world** folder
+5. Click **Select Folder** button to open the project
 
-<!-- ![](resources/visual-studio-open-project.png) -->
+![](resources/visual-studio-open-project.png)
 
 ### Step 4: Verify Project Opened Correctly
 

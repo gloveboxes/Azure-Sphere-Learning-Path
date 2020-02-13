@@ -46,9 +46,6 @@ You will need to **copy** and **paste** the Lab 2 **app_manifest.json** you crea
 
 ## Clone the following GitHub Repositories
 
-1. The Azure Sphere Samples: ```git clone https://github.com/Azure/azure-sphere-samples.git```
-
-2. This tutorial: ```git clone https://github.com/gloveboxes/Azure-Sphere-IoT-Central-HL-and-RT-Core-Integation.git```
 ---
 
 ## Controlling an Azure Sphere from Azure IoT Central
@@ -63,22 +60,6 @@ There are two ways to control or set the state on the Azure Sphere device from I
 
 ---
 
-## Adding Azure IoT Central Device Settings and Commands
-
-To work with settings you will need to update the Device Template and add settings for **Light** and **Relay**.
-
-### Step 1: Open Azure IoT Central
-
-tbc
-
-### Step 2: Open Template
-
-tbc 
-
-add settings and commands
-
----
-
 ## Open Lab 3
 
 ### Step 1: Start Visual Studio 2019
@@ -89,14 +70,16 @@ add settings and commands
 
 1. Click **Open a local folder**
 2. Navigate to the folder you cloned **Azure Sphere Learning Path** into.
-3. Select **Lab 3 - Control an Azure Sphere with Device Twins and Direct Methods**
-4. Click **Select Folder** button.
+3. Double click to open the **Lab 3 - Control an Azure Sphere with Device Twins and Direct Methods** folder
+4. Double click to open the **azure-sphere-iot-central-control** folder
+5. Click **Select Folder** button to open the project
 
     <!-- ![](resources/visual-studio-open-lab3.png) -->
 
 ### Step 3: Configure the Azure IoT Central Connection Information
 
 1. Open the **app_manifest.json** file
+
     ![](resources/visual-studio-open-app-manifest.png)
 
 2. Replace the contents of this **app_manifest.json** file with the **app_manifest.json** you created in **Lab 2**.

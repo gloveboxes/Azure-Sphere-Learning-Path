@@ -11,6 +11,7 @@
 #include <iothub_device_client_ll.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "iothubtransportmqtt.h"
 
 enum DirectMethodResponseCode
 {
@@ -27,5 +28,6 @@ void EnableCloudToDevice(void);
 void DisableCloudToDevice(void);
 void EnableDeviceTwins(DeviceTwinPeripheral* deviceTwins[], size_t deviceTwinCount);
 void EnableDirectMethods(DirectMethodPeripheral* directMethods[], size_t directMethodCount);
+void SetConnectionString(const char* connectionString); // Note, do not use Connection Strings for Production - this is here for lab workaround
 
 #endif

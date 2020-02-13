@@ -72,7 +72,22 @@ We are going to create an Azure IoT Central application, connect Azure IoT Centr
 
 ### Step 1: Create an Azure IoT Central Application
 
-Follow instructions to **[Create an Azure IoT Central Application](resources/azure-iot-central/azure-iot-central.md)**
+For this lab we are going to create an Azure Iot Central Application from a predefined template.
+
+Click [Azure Sphere Learning Path IoT Central Template](https://apps.azureiotcentral.com/build/new/0ecd2a95-6fd7-41bc-bdb5-e95512e14414)
+
+### Configure the Azure IoT Central Template
+
+1. Name your application
+2. Select the **Free** pricing plan
+
+![](resources/iot-central-create-from-template.png)
+
+When you have connected your Azure Sphere to Azure IoT Central you will be able to visualize the device telemetry.
+
+![](resources/iot-central-azure-sphere-dashboad.png)
+
+<!-- Follow instructions to **[Create an Azure IoT Central Application](resources/azure-iot-central/azure-iot-central.md)** -->
 
 ### Step 2: Connect Azure IoT Central to your Azure Sphere Tenant
 
@@ -123,7 +138,7 @@ The following is an example of an **app_manifest.json** capabilities definition.
   "Name": "AzureSphereIoTCentral",
   "ComponentId": "25025d2c-66da-4448-bae1-ac26fcdd3627",
   "EntryPoint": "/bin/app",
-  "CmdArgs": [ "0ne0999999D", "6583cf17-d321-4d72-8283-0b7c5b56442b" ],
+  "CmdArgs": [ "Fake", "0ne0999999D", "6583cf17-d321-4d72-8283-0b7c5b56442b" ],
   "Capabilities": {
     "Gpio": [ 0, 19, 21 ]
     "Uart": [ "ISU0" ],
@@ -169,8 +184,9 @@ are passed to the Azure Device Provisioning Service from your Azure High-Level a
 
 1. Click **Open a local folder**
 2. Navigate to the folder you cloned **Azure Sphere Learning Path** into.
-3. Select **Lab 2 - Send Telemetry from an Azure Sphere to Azure IoT Central**
-4. Click **Select Folder** button.
+3. Double click to open the **Lab 2 - Send Telemetry from an Azure Sphere to Azure IoT Central** folder
+4. Double click to open the **azure-sphere-iot-central** folder
+5. Click **Select Folder** button to open the project
 
     <!-- ![](resources/visual-studio-open-lab2.png) -->
 
@@ -234,7 +250,7 @@ are passed to the Azure Device Provisioning Service from your Azure High-Level a
     "Name": "AzureSphereIoTCentral",
     "ComponentId": "25025d2c-66da-4448-bae1-ac26fcdd3627",
     "EntryPoint": "/bin/app",
-    "CmdArgs": [ "0ne0099999D" ],
+    "CmdArgs": [ "Fake", "0ne0099999D" ],
     "Capabilities": {
         "Gpio": [ 0, 19, 21 ]
         "Uart": [ "ISU0" ],
