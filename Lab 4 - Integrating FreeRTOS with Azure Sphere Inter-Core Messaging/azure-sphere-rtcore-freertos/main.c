@@ -1,57 +1,66 @@
 /* Copyright (c) Microsoft Corporation. All rights reserved.
    Licensed under the MIT License. */
 
-#include <stddef.h>
-#include <stdbool.h>
-#include <stdint.h>
+#include "FreeRTOS.h"
+#include "mt3620-baremetal.h"
+#include "mt3620-gpio.h"
+#include "mt3620-intercore.h" // Support for inter Core Communications
+#include "printf.h"
+#include "semphr.h"
+#include "task.h"
 #include <ctype.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
 #include <string.h>
 
 
-#include "mt3620-baremetal.h"
-#include "mt3620-intercore.h" // Support for inter Core Communications
-#include "mt3620-gpio.h"
+// Select Azure Sphere Dev Kit
+#define SEEED_DK 1
+//#define SEEED_MINI_DK 1
+//#define AVNET_DK = 1
 
-#include "FreeRTOS.h"
-#include "task.h"
-#include "semphr.h"
-
-#include "printf.h"
-
-#define APP_STACK_SIZE_BYTES		(512 / 4)
-
-   /// <summary>Base address of IO CM4 MCU Core clock.</summary>
-static const uintptr_t IO_CM4_RGU = 0x2101000C;
-static const uintptr_t IO_CM4_DEBUGUART = 0x21040000;
-static const uintptr_t IO_CM4_ISU0 = 0x38070500;
-static SemaphoreHandle_t LEDSemphr;
-static QueueHandle_t UARTDataQueue;
-static bool led1RedOn = false;
-
-//static const int led1RedGpio = 10;
-//static const int buttonAGpio = 12;
 
 
 /* block addresses for real time core gpio - opened in sets of four
 
-GPIO Block first pin = 1, base address = 0x38010000
+GPIO Block first pin = 0, base address = 0x38010000
 GPIO Block first pin = 4, base address = 0x38020000
 GPIO Block first pin = 8, base address = 0x38030000
 GPIO Block first pin = 12, base address = 0x38040000
 
 */
 
+#ifdef SEEED_DK
+
 #define LED1_GPIO 10
 #define LED1_GPIO_BLOCK_FIRST_PIN 8
 #define LED1_GPIO_BLOCK_BASE_ADDRESS 0x38030000
+
+#elif SEEED_MINI_DK
+
+#define LED1_GPIO 7
+#define LED1_GPIO_BLOCK_FIRST_PIN 4
+#define LED1_GPIO_BLOCK_BASE_ADDRESS 0x38020000
+
+#elif AVNET_DK
+
+#endif // SEEED_AZURE_SPHERE
 
 #define BUTTON1_GPIO 12
 #define BUTTON1_GPIO_BLOCK_FIRST_PIN 12
 #define BUTTON1_GPIO_BLOCK_BASE_ADDRESS 0x38040000
 
-static const GpioBlock pwm2 = { .baseAddr = 0x38030000,.type = GpioBlock_PWM,.firstPin = 8,.pinCount = 4 };
+#define APP_STACK_SIZE_BYTES		(512 / 4)
 
 
+/// <summary>Base address of IO CM4 MCU Core clock.</summary>
+static const uintptr_t IO_CM4_RGU = 0x2101000C;
+static const uintptr_t IO_CM4_DEBUGUART = 0x21040000;
+static const uintptr_t IO_CM4_ISU0 = 0x38070500;
+static SemaphoreHandle_t LEDSemphr;
+static QueueHandle_t UARTDataQueue;
+static bool led1RedOn = false;
 
 static const int blinkIntervalsMs[] = { 75, 125, 250, 500, 1000, 2000 };
 static int blinkIntervalIndex = 0;
@@ -65,6 +74,11 @@ static const size_t payloadStart = 20;
 static uint8_t buf[256];
 static uint32_t dataSize;
 static bool buttonPressed = false;
+
+#ifdef SEEED_MINI_DK
+static int generatePressEvent = 0;
+#endif // SEEED_MINI_DK
+
 
 static void ISU0_ISR(void);
 static _Noreturn void DefaultExceptionHandler(void);
@@ -174,6 +188,16 @@ static void LedTask(void* pParameters)
 		if (rt == pdPASS) {
 			led1RedOn = !led1RedOn;
 			Mt3620_Gpio_Write(LED1_GPIO, led1RedOn);
+
+#ifdef SEEED_MINI_DK
+			// simulate a button press - useful for the Seeed Studio Azure Sphere Mini which does not have builtin buttons
+			if (generatePressEvent++ > 50) {
+				blinkIntervalIndex = (blinkIntervalIndex + 1) % numBlinkIntervals;
+				buttonPressed = true;
+				generatePressEvent = 0;
+			}
+#endif // SEEED_AZURE_SPHERE_MINI
+
 		}
 	}
 }
