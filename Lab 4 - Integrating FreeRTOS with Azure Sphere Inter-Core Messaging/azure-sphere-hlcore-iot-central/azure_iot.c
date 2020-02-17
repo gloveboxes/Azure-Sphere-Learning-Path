@@ -34,6 +34,7 @@ DirectMethodPeripheral** _directMethods;
 size_t _directMethodCount;
 bool iothubAuthenticated = false;
 const int keepalivePeriodSeconds = 20;
+const char* _connectionString = NULL;
 
 static Timer cloudToDeviceTimer = {
 	.eventData = {.eventHandler = &AzureCloudToDeviceHandler },
@@ -56,6 +57,9 @@ void DisableCloudToDevice(void) {
 	}
 }
 
+void SetConnectionString(const char* connectionString) {
+	_connectionString = connectionString;
+}
 
 /// <summary>
 ///     Callback confirming message delivered to IoT Hub.
@@ -135,12 +139,24 @@ bool SetupAzureClient()
 		IoTHubDeviceClient_LL_Destroy(iothubClientHandle);
 	}
 
-	AZURE_SPHERE_PROV_RETURN_VALUE provResult = IoTHubDeviceClient_LL_CreateWithAzureSphereDeviceAuthProvisioning(scopeId, 10000, &iothubClientHandle);
-	Log_Debug("IoTHubDeviceClient_LL_CreateWithAzureSphereDeviceAuthProvisioning returned '%s'.\n", getAzureSphereProvisioningResultString(provResult));
+	// For lab purposes only where the device tenant and associated x500 certificate may not be available
+	// DO NOT use connection strings in production
+	if (_connectionString != NULL && strlen(_connectionString) != 0) {
+		IOTHUB_CLIENT_TRANSPORT_PROVIDER protocol = MQTT_Protocol;
+		iothubClientHandle = IoTHubDeviceClient_LL_CreateFromConnectionString(_connectionString, protocol);
+		if (iothubClientHandle == NULL)
+		{
+			Log_Debug("Failure to create IoT Hub Client from connection string");
+		}
+	}
+	else {
+		AZURE_SPHERE_PROV_RETURN_VALUE provResult = IoTHubDeviceClient_LL_CreateWithAzureSphereDeviceAuthProvisioning(scopeId, 10000, &iothubClientHandle);
+		Log_Debug("IoTHubDeviceClient_LL_CreateWithAzureSphereDeviceAuthProvisioning returned '%s'.\n", getAzureSphereProvisioningResultString(provResult));
 
-	if (provResult.result != AZURE_SPHERE_PROV_RESULT_OK) {
-		Log_Debug("ERROR: failure to create IoTHub Handle.");
-		return false;
+		if (provResult.result != AZURE_SPHERE_PROV_RESULT_OK) {
+			Log_Debug("ERROR: failure to create IoTHub Handle.");
+			return false;
+		}
 	}
 
 	iothubAuthenticated = true;
@@ -404,7 +420,7 @@ int AzureDirectMethodHandler(const char* method_name, const unsigned char* paylo
 			break;
 		case METHOD_FAILED:		// 500
 			responseMessage = strlen(directMethodPeripheral->responseMessage) == 0 ? methodErrorMsg : directMethodPeripheral->responseMessage;
-			break;	
+			break;
 		case METHOD_NOT_FOUND:
 			break;
 		}
@@ -414,7 +430,7 @@ cleanup:
 
 	// Prepare the payload for the response. This is a heap allocated null terminated string.
 	// The Azure IoT Hub SDK is responsible of freeing it.
-	
+
 	*responsePayloadSize = strlen(responseMessage) + 2; // add two as going to wrap the message with quotes for JSON
 	*responsePayload = (unsigned char*)malloc(*responsePayloadSize);
 

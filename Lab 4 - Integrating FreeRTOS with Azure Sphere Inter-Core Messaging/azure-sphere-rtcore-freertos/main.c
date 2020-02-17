@@ -31,6 +31,12 @@ static bool led1RedOn = false;
 static const int led1RedGpio = 10;
 static const int buttonAGpio = 12;
 
+#define LED1_RED_PIN 10
+#define GPIO_BLOCK_FIRST_PIN_8 8
+#define GPIO_BLOCK_ADDRESS_FOR_FIRST_PIN_8 0x38030000
+
+
+
 static const int blinkIntervalsMs[] = { 75, 125, 250, 500, 1000, 2000 };
 static int blinkIntervalIndex = 0;
 static const int numBlinkIntervals = sizeof(blinkIntervalsMs) / sizeof(blinkIntervalsMs[0]);

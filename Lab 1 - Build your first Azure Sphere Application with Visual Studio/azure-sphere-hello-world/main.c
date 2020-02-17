@@ -7,6 +7,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <time.h>
 
 
@@ -55,8 +56,8 @@ Timer* timers[] = { &readSensor };							// set/collection of timers
 int main(int argc, char* argv[])
 {
 	RegisterTerminationHandler();
-
 	ProcessCmdArgs(argc, argv);
+	srand((unsigned int)time(NULL)); // seed the random number generator for fake telemetry
 
 	if (InitPeripheralsAndHandlers() != 0) {
 		terminationRequired = true;
@@ -91,8 +92,9 @@ static int ReadTelemetry(void) {
 		humidity = GroveTempHumiSHT31_GetHumidity(sht31);
 	}
 	else {
-		temperature = 25.0;
-		humidity = 50.0;
+		int rnd = (rand() % 10) - 5;
+		temperature = (float)(25.0 + rnd);
+		humidity = (float)(50.0 + rnd);
 	}
 
 	static const char* MsgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"MsgId\":%d }";
