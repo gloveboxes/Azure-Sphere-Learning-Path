@@ -8,6 +8,7 @@
 #include <applibs/log.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 
 // GPIO Pins used in the High Level (HL) Application
@@ -90,8 +91,8 @@ Timer* timers[] = { &sendTelemetry, &rtCoreHeatBeat };
 int main(int argc, char* argv[])
 {
 	RegisterTerminationHandler();
-
 	ProcessCmdArgs(argc, argv);
+	srand((unsigned int)time(NULL)); // seed the random number generator for fake telemetry
 
 	if (strlen(scopeId) == 0 || strlen(rtAppComponentId) == 0) {
 		Log_Debug("ScopeId and rtAppComponentId need to be set in the app_manifest CmdArgs\n");
@@ -132,8 +133,9 @@ static int ReadTelemetry(void) {
 		humidity = GroveTempHumiSHT31_GetHumidity(sht31);
 	}
 	else {
-		temperature = 25.0;
-		humidity = 50.0;
+		int rnd = (rand() % 10) - 5;
+		temperature = (float)(25.0 + rnd);
+		humidity = (float)(50.0 + rnd);
 	}
 
 	static const char* MsgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"MsgId\":%d }";

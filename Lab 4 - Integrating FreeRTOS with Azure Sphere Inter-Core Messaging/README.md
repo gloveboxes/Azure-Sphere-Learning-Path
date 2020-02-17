@@ -53,7 +53,7 @@ If unfamiliar with Azure Sphere development then review the [Create a Secure Azu
 
 ## Azure Sphere Solution Architecture
 
-There are **two** applications deployed to the Azure Sphere. 
+There are **two** applications deployed to the Azure Sphere.
 
 1. The first application is a **High-Level** *Linux* application running on the **Cortex A7** core. It is responsible for sending temperature and humidity data to Azure IoT Central, processing Digital Twin and Direct Method messages from Azure IoT Central, and finally, passing on **inter-core** messages from the *FreeRTOS* application running on the Real-Time core to Azure IoT Central.
 1. The second is a **Real-Time** *FreeRTOS* application running in the **Cortex M4**. It runs several FreeRTOS Tasks. The first task is to blink an LED, the second is to monitor for button presses, and the third is to send **inter-core** messages to the **High-Level** application whenever the button is pressed. **Note**, the FreeRTOS application running on the Real-Time core cannot connect directly to the network.
@@ -81,6 +81,16 @@ git clone https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git
 ---
 
 ## Open Lab 4
+
+### Enable Real Time Core Debugging
+
+//TODO
+
+Installing USB drivers to enable real-time core debugging.
+
+```bash
+azsphere.exe device enable-development -r
+```
 
 ### Step 1: Start Visual Studio 2019
 

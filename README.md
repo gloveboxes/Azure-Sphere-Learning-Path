@@ -64,33 +64,64 @@ Azure Sphere is a solution for securing MCU Power Devices. It comprises a secure
 
 ![](resources/azure-sphere-end-to-end.png)
 
-Growing ecosystem of hardware partners.
+---
+
+## Growing ecosystem of hardware partners
+
+Get started with Azure Sphere using the prototyping developer kits from Seeed Studio and Avnet. Go to market with industry standard modules from AI-Link, Avnet, and USI. Internet enable  existing equipment with Guardian modules from Avnet.
+
+Today the Mediatec MT3620 MCU powers Azure Sphere. The family of certified Azure Sphere MCUs will be expanded in the future to include offerings from Qualcomm and NXP.
 
 ![](resources/azure-sphere.png)
-
 
 ---
 
 ## Azure Sphere Architecture
 
+The initial release of Azure Sphere is built on the Mediatec MT3620. This MCU consists of 5 cores. There is a dedicated communications core, a dedicated Security Subsystem core, and **three** user application cores.
+
+The three applications cores:
+
+* One ARM Cortex A7 core running Embedded Linux (built with Yokto), exposing a set of POSIX APIs. Developers can build and deploy a **High Level** application to this core, this core is also responsible for the TrustZone Security Monitor, threat detection reporting, and OS and Application life cycle management.
+* Two ARM Cortex M4Fs. Developers can build and deploy **Real Time** applications to these cores, either to baremetal or building of frameworks such as FreeRTOS and in the future Azure RTOS.
+
+The MT3620 MCU is also know as a Crossover MCU as it bridges the application world of ARM Cortex A7 with the Real time world of ARM Cortex M4.
+
+### Firewalls
+
+Applications on Azure Sphere are locked down by default and you must grant capabilities to the application. This is key to Azure Sphere security and is also known as the [Principle of least privilege](https://en.wikipedia.org/wiki/Principle_of_least_privilege).
+
+Capabilities, such as access to GPIO pins and network endpoint must be granted to both High Level and Real Time applications. This defends against application bugs and malicious code attacks.
+
 ![](resources/azure-sphere-architecture.png)
 
 ---
 
-## Hardware Required
+## Hardware Required for these Labs
 
-This Learning Path requires either a Azure Sphere Developer kit from [Seeed Studio](https://www.seeedstudio.com/Azure-Sphere-MT3620-Development-Kit-US-Version-p-3052.html) or [Avnet](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-sk-g-3074457345636825680/).
+The initial release of these labs targets the [Seeed Studio Azure Sphere](https://www.seeedstudio.com/Azure-Sphere-MT3620-Development-Kit-US-Version-p-3052.html).
 
-### Avnet Azure Sphere MT3620 Starter Kit
+By default the application generates simulated/fake temperature and humidity telemetry.
+
+![](resources/seeed-studio-azure-sphere.png)
+
+The Labs also includes support for the [Seeed Studio Grove Shield](https://www.seeedstudio.com/MT3620-Grove-Shield.html), and the [Grove Temperature and Humidity (SHT31)](https://www.seeedstudio.com/Grove-Temperature-Humidity-Sensor-SHT31.html) sensor. Support for the SHT31 Grove sensor needs to be enabled from the app_manifest.json *cmdargs* property.
+
+![](resources/seeed-studio-grove.png)
+
+<!-- ![](resources/azure-sphere-parts-list.png) -->
+
+---
+
+## Alternate Azure Sphere Developer Kits
+
+The Labs will work on the Seeed Studio Azure Sphere Mini and Avnet Developer Kits but the you will need to modify the target GPIO pins to match your developer kit.
+
+<!-- ### Avnet Azure Sphere MT3620 Starter Kit
 
 There Avnet board includes Temperature and Humidity Sensors.
 
-![](resources/avnet-azure-sphere.jpg)
+![](resources/avnet-azure-sphere.jpg) -->
 
-### Seeed Studio Azure Sphere Developer Kit
 
-[Seeed Studio Azure Sphere](https://www.seeedstudio.com/Azure-Sphere-MT3620-Development-Kit-US-Version-p-3052.html), the [Seeed Studio Grove Shield](https://www.seeedstudio.com/MT3620-Grove-Shield.html), and the [Grove Temperature and Humidity Sensor (SHT31)](https://www.seeedstudio.com/Grove-Temperature-Humidity-Sensor-SHT31.html). These parts are available from many online stores including [Seeed Studio](https://www.seeedstudio.com).
-
-Be sure to plug the Grove Temperature Sensor into one of the I2C connectors on the Grove Shield.
-
-![](resources/azure-sphere-parts-list.png)
+<!-- This Learning Path requires either a Azure Sphere Developer kit from  or [Avnet](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-sk-g-3074457345636825680/). -->
