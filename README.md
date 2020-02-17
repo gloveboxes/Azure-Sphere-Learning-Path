@@ -38,13 +38,13 @@ Each module assumes you have completed the previous module.
 
 ## Why Azure Sphere
 
-As billions of new devices are connected, organizations need to secure them to help protect data, privacy, physical safety, and infrastructure. Azure Sphere builds on decades of Microsoft experience in hardware, software, and cloud to provide a turnkey solution for IoT devices. Get defense in depth to embrace IoT innovation with confidence.
+As billions of new devices are connected, organizations need to secure them to help protect data, privacy, physical safety, and infrastructure. Azure Sphere builds on decades of Microsoft experience in hardware, software, and cloud to provide a turnkey solution for IoT devices. Azure Sphere is secure by design so you can build innovative IoT products that customer can use with confidence.
 
 ---
 
 ## Why you should care about IoT Security
 
-Almost a day doesn't go by without some newsworthy IoT Security attack happening, and those are just the ones that make the news cycle. IoT security is absolutely fundamental and at the same time often absent from many conversations in the rush to get products to market.
+Almost a day doesn't go by without some newsworthy IoT Security attack happening, and those are just the ones that make the news cycle. IoT security is fundamental and at the same time often absent from many conversations in the rush to get products to market.
 
 The [The Seven Properties of Highly Secure Devices](https://www.microsoft.com/en-us/research/wp-content/uploads/2017/03/SevenPropertiesofHighlySecureDevices.pdf) is highly recommended to help you understand what is required to mitigate exposure to IoT security issues. This IoT Security whitepaper draws from industry and Microsoft experience.
 
@@ -70,7 +70,7 @@ Azure Sphere is a solution for securing MCU Power Devices. It comprises a secure
 
 Get started with Azure Sphere using the prototyping developer kits from Seeed Studio and Avnet. Go to market with industry standard modules from AI-Link, Avnet, and USI. Internet enable  existing equipment with Guardian modules from Avnet.
 
-Today the Mediatec MT3620 MCU powers Azure Sphere. The family of certified Azure Sphere MCUs will be expanded in the future to include offerings from Qualcomm and NXP.
+Today the Mediatec MT3620 MCU powers Azure Sphere. The family of certified Azure Sphere MCUs will expand to include offerings from Qualcomm and NXP.
 
 ![](resources/azure-sphere.png)
 
@@ -80,10 +80,10 @@ Today the Mediatec MT3620 MCU powers Azure Sphere. The family of certified Azure
 
 The initial release of Azure Sphere is built on the Mediatec MT3620. This MCU consists of 5 cores. There is a dedicated communications core, a dedicated Security Subsystem core, and **three** user application cores.
 
-The three applications cores:
+The **three applications** cores are as follows:
 
-* One ARM Cortex A7 core running Embedded Linux (built with Yokto), exposing a set of POSIX APIs. Developers can build and deploy a **High Level** application to this core, this core is also responsible for the TrustZone Security Monitor, threat detection reporting, and OS and Application life cycle management.
-* Two ARM Cortex M4Fs. Developers can build and deploy **Real Time** applications to these cores, either to baremetal or building of frameworks such as FreeRTOS and in the future Azure RTOS.
+* One ARM Cortex A7 core running Embedded Linux (built with Yokto), exposing a set of POSIX APIs. Developers can build and deploy a **High Level** application to this core. This core is also responsible for the TrustZone Security Monitor, threat detection reporting, and OS and Application life cycle management.
+* Two ARM Cortex M4Fs. Developers can build and deploy **Real Time** applications to these cores. Real Time applications can be built against the baremetal or built using  real time frameworks such as FreeRTOS, and in the future, Azure RTOS.
 
 The MT3620 MCU is also know as a Crossover MCU as it bridges the application world of ARM Cortex A7 with the Real time world of ARM Cortex M4.
 
