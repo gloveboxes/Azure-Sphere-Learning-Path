@@ -28,12 +28,28 @@ static SemaphoreHandle_t LEDSemphr;
 static QueueHandle_t UARTDataQueue;
 static bool led1RedOn = false;
 
-static const int led1RedGpio = 10;
-static const int buttonAGpio = 12;
+//static const int led1RedGpio = 10;
+//static const int buttonAGpio = 12;
 
-#define LED1_RED_PIN 10
-#define GPIO_BLOCK_FIRST_PIN_8 8
-#define GPIO_BLOCK_ADDRESS_FOR_FIRST_PIN_8 0x38030000
+
+/* block addresses for real time core gpio - opened in sets of four
+
+GPIO Block first pin = 1, base address = 0x38010000
+GPIO Block first pin = 4, base address = 0x38020000
+GPIO Block first pin = 8, base address = 0x38030000
+GPIO Block first pin = 12, base address = 0x38040000
+
+*/
+
+#define LED1_GPIO 10
+#define LED1_GPIO_BLOCK_FIRST_PIN 8
+#define LED1_GPIO_BLOCK_BASE_ADDRESS 0x38030000
+
+#define BUTTON1_GPIO 12
+#define BUTTON1_GPIO_BLOCK_FIRST_PIN 12
+#define BUTTON1_GPIO_BLOCK_BASE_ADDRESS 0x38040000
+
+static const GpioBlock pwm2 = { .baseAddr = 0x38030000,.type = GpioBlock_PWM,.firstPin = 8,.pinCount = 4 };
 
 
 
@@ -157,7 +173,7 @@ static void LedTask(void* pParameters)
 		rt = xSemaphoreTake(LEDSemphr, portMAX_DELAY);
 		if (rt == pdPASS) {
 			led1RedOn = !led1RedOn;
-			Mt3620_Gpio_Write(led1RedGpio, led1RedOn);
+			Mt3620_Gpio_Write(LED1_GPIO, led1RedOn);
 		}
 	}
 }
@@ -170,7 +186,7 @@ static void ButtonTask(void* pParameters)
 	while (1) {
 
 		vTaskDelay(pdMS_TO_TICKS(buttonPressCheckPeriodMs));
-		Mt3620_Gpio_Read(buttonAGpio, &newState);
+		Mt3620_Gpio_Read(BUTTON1_GPIO, &newState);
 
 		if (newState != prevState) {
 			bool pressed = !newState;
@@ -255,14 +271,14 @@ static _Noreturn void RTCoreMain(void)
 	WriteReg32(IO_CM4_RGU, 0, val);
 
 	// LED GPIO config
-	static const GpioBlock pwm2 = { .baseAddr = 0x38030000,.type = GpioBlock_PWM,.firstPin = 8,.pinCount = 4 };
+	static const GpioBlock pwm2 = { .baseAddr = LED1_GPIO_BLOCK_BASE_ADDRESS,.type = GpioBlock_PWM,.firstPin = LED1_GPIO_BLOCK_FIRST_PIN,.pinCount = 4 };
 	Mt3620_Gpio_AddBlock(&pwm2);
-	Mt3620_Gpio_ConfigurePinForOutput(led1RedGpio);
+	Mt3620_Gpio_ConfigurePinForOutput(LED1_GPIO);
 
 	// Button GPIO config
-	static const GpioBlock grp3 = { .baseAddr = 0x38040000,.type = GpioBlock_GRP,.firstPin = 12,.pinCount = 4 };
+	static const GpioBlock grp3 = { .baseAddr = BUTTON1_GPIO_BLOCK_BASE_ADDRESS,.type = GpioBlock_GRP,.firstPin = BUTTON1_GPIO_BLOCK_FIRST_PIN,.pinCount = 4 };
 	Mt3620_Gpio_AddBlock(&grp3);
-	Mt3620_Gpio_ConfigurePinForInput(buttonAGpio);
+	Mt3620_Gpio_ConfigurePinForInput(BUTTON1_GPIO);
 
 	xTaskCreate(TaskInit, "Init Task", APP_STACK_SIZE_BYTES, NULL, 7, NULL);
 	vTaskStartScheduler();
