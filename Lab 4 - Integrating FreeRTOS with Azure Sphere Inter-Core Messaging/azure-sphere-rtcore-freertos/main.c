@@ -33,17 +33,21 @@ GPIO Block first pin = 12, base address = 0x38040000
 
 #ifdef SEEED_DK
 
-#define LED1_GPIO 10
-#define LED1_GPIO_BLOCK_FIRST_PIN 8
-#define LED1_GPIO_BLOCK_BASE_ADDRESS 0x38030000
+#define BUILTIN_LED 10
+#define BUILTIN_LED_GPIO_BLOCK_FIRST_PIN 8
+#define BUILTIN_LED_GPIO_BLOCK_BASE_ADDRESS 0x38030000
 
 #elif SEEED_MINI_DK
 
-#define LED1_GPIO 7
-#define LED1_GPIO_BLOCK_FIRST_PIN 4
-#define LED1_GPIO_BLOCK_BASE_ADDRESS 0x38020000
+#define BUILTIN_LED 7
+#define BUILTIN_LED_GPIO_BLOCK_FIRST_PIN 4
+#define BUILTIN_LED_GPIO_BLOCK_BASE_ADDRESS 0x38020000
 
 #elif AVNET_DK
+// not tested yet
+#define BUILTIN_LED 8
+#define BUILTIN_LED_GPIO_BLOCK_FIRST_PIN 8
+#define BUILTIN_LED_GPIO_BLOCK_BASE_ADDRESS 0x38030000
 
 #endif // SEEED_AZURE_SPHERE
 
@@ -187,7 +191,7 @@ static void LedTask(void* pParameters)
 		rt = xSemaphoreTake(LEDSemphr, portMAX_DELAY);
 		if (rt == pdPASS) {
 			led1RedOn = !led1RedOn;
-			Mt3620_Gpio_Write(LED1_GPIO, led1RedOn);
+			Mt3620_Gpio_Write(BUILTIN_LED, led1RedOn);
 
 #ifdef SEEED_MINI_DK
 			// simulate a button press - useful for the Seeed Studio Azure Sphere Mini which does not have builtin buttons
@@ -295,9 +299,9 @@ static _Noreturn void RTCoreMain(void)
 	WriteReg32(IO_CM4_RGU, 0, val);
 
 	// LED GPIO config
-	static const GpioBlock pwm2 = { .baseAddr = LED1_GPIO_BLOCK_BASE_ADDRESS,.type = GpioBlock_PWM,.firstPin = LED1_GPIO_BLOCK_FIRST_PIN,.pinCount = 4 };
+	static const GpioBlock pwm2 = { .baseAddr = BUILTIN_LED_GPIO_BLOCK_BASE_ADDRESS,.type = GpioBlock_PWM,.firstPin = BUILTIN_LED_GPIO_BLOCK_FIRST_PIN,.pinCount = 4 };
 	Mt3620_Gpio_AddBlock(&pwm2);
-	Mt3620_Gpio_ConfigurePinForOutput(LED1_GPIO);
+	Mt3620_Gpio_ConfigurePinForOutput(BUILTIN_LED);
 
 	// Button GPIO config
 	static const GpioBlock grp3 = { .baseAddr = BUTTON1_GPIO_BLOCK_BASE_ADDRESS,.type = GpioBlock_GRP,.firstPin = BUTTON1_GPIO_BLOCK_FIRST_PIN,.pinCount = 4 };
