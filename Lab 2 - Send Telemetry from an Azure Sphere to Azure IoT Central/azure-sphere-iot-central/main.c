@@ -138,6 +138,8 @@ static int InitPeripheralsAndHandlers(void)
 	OPEN_PERIPHERAL_SET(actuatorDevices);
 	START_TIMER_SET(timers);
 
+	EnableCloudToDevice();	// required for message delivered callbacks from Azure IoT
+
 	return 0;
 }
 
@@ -151,6 +153,8 @@ static void ClosePeripheralsAndHandlers(void)
 
 	STOP_TIMER_SET(timers);
 	CLOSE_PERIPHERAL_SET(actuatorDevices);
+
+	DisableCloudToDevice();
 
 	CloseFdAndPrintError(GetEpollFd(), "Epoll");
 }
