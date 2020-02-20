@@ -8,7 +8,7 @@
     "Gpio": [ 0, 19, 21 ],
     "Uart": [ "ISU0" ],
     "AllowedConnections": [ "global.azure-devices-provisioning.net" ],
-    "DeviceAuthentication": "9d7e79eb-e021-43ce-9f2b-fa944b447494"
+    "DeviceAuthentication": ""
   },
   "ApplicationType": "Default"
 }
