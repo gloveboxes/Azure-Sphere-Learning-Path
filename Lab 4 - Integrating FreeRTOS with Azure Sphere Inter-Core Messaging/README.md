@@ -161,7 +161,9 @@ In the **launch.js.json** file, you need to declare the ID of the High-Level App
 
 ---
 
-## Step 1: Open the High-Level Application with Visual Studio 2019
+## Deploy the High Level Application
+
+### Step 1: Open the High-Level Application with Visual Studio 2019
 
 1. Start Visual Studio 2019, select **Open a local folder**, navigate to the Azure Sphere tutorial project folder you cloned from GitHub, then open the **azure-sphere-hlcore-iot-central** project.
 2. Open the **app_manifest.json** file
