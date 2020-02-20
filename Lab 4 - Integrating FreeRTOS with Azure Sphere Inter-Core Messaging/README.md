@@ -249,7 +249,7 @@ Now the application is running on the Azure Sphere switch across to Azure IoT Ce
 
 ## Finished 完了 fertig finito ख़त्म होना terminado
 
-Congratulations you have finished the tutorial.
+Congratulations you have finished lab 4.
 
 ![](resources/finished.jpg)
 
