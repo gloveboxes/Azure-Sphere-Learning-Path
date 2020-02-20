@@ -41,3 +41,5 @@ The connection string is hard coded in to the application and is there not suita
     ![](resources/iot-central-generate-connection-string.png)
 
 7. Mark and copy the connection string as you will need to paste into the Visual Studio Azure Sphere project.
+
+**[Next Step: Configure Visual Studio App Deployment Settings](README.md#configure-visual-studio-app-deployment-settings)**

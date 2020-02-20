@@ -160,3 +160,5 @@ are passed to the Azure Device Provisioning Service from your Azure High-Level a
     "ApplicationType": "Default"
 }
 ```
+
+**[Next Step: Configure Visual Studio App Deployment Settings](README.md#configure-visual-studio-app-deployment-settings)**
