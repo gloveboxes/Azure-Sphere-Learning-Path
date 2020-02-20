@@ -161,41 +161,6 @@ In the **launch.js.json** file, you need to declare the ID of the High-Level App
 
 ---
 
-## Deploy your first High-Level Azure Sphere Application
-
-### Understanding the High-Level Core Security
-
-Applications on Azure Sphere are locked down by default and you must grant capabilities to the application.
-
-High-Level Application capabilities include what hardware can be accessed, what internet services can be called (including Azure IoT Central and the Azure Device Provisioning Service), and what inter-core communications are allowed.
-
-From Visual Studio open the **app_manifest.json** file.
-
-```json
-{
-  "SchemaVersion": 1,
-  "Name": "AzureSphereIoTCentral",
-  "ComponentId": "25025d2c-66da-4448-bae1-ac26fcdd3627",
-  "EntryPoint": "/bin/app",
-  "CmdArgs": [ "Fake", "0ne0999999D", "6583cf17-d321-4d72-8283-0b7c5b56442b" ],
-  "Capabilities": {
-    "Gpio": [ 0, 19, 21 ]
-    "Uart": [ "ISU0" ],
-    "AllowedConnections": [ "global.azure-devices-provisioning.net", "saas-iothub-99999999-f33a-4002-a44a-9999991b00b6.azure-devices.net" ],
-    "DeviceAuthentication": "99999999-e021-43ce-9f2b-999999997494",
-    "AllowedApplicationConnections": [ "6583cf17-d321-4d72-8283-0b7c5b56442b" ]
-  },
-  "ApplicationType": "Default"
-}
-```
-
-**Observe**:
-
-1. **AllowedApplicationConnections**: This is the Component ID of the Real-Time application this application will be partnered with. It is required for inter-core communications.
-2. **CmdArgs**: The third argument is the Component ID of the Real-Time application, passed to the application at startup as a convenience to keep all configuration information in one file.
-
----
-
 ## Step 1: Open the High-Level Application with Visual Studio 2019
 
 1. Start Visual Studio 2019, select **Open a local folder**, navigate to the Azure Sphere tutorial project folder you cloned from GitHub, then open the **azure-sphere-hlcore-iot-central** project.
