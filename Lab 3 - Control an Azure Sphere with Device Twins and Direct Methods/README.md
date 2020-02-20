@@ -78,6 +78,14 @@ There are two ways to control or set the state on the Azure Sphere device from I
 
 ### Step 3: Configure the Azure IoT Central Connection Information
 
+#### Lab Azure Sphere
+
+If you are using an Azure Sphere in a lab environment and did not claim the Azure Sphere into your own Azure Sphere tenant then set the connection string as per the instructions in Lab 2.
+
+#### Own Azure Sphere
+
+If you claimed your Azure Sphere device into your own Azure Sphere tenant then set the **app_manifest.json** configuration as per Lab 2.
+
 1. Open the **app_manifest.json** file
 
     ![](resources/visual-studio-open-app-manifest.png)
@@ -152,7 +160,7 @@ These are:
 4. In the main.c **InitPeripheralsAndHandlers** these sets (or collections) of device twins and direct methods are initialized. 
 5. The goal of the peripherals framework is to make it easy to connect code running on the Azure Sphere with Azure IoT Central **Settings** and **Commands**.
 
----
+<!-- ---
 
 ## Extension Exercise
 
@@ -163,7 +171,7 @@ You will need to do the following steps:
 1. Update the Azure IoT Central Device Template and add a new settings control.
 2. Define a new **DeviceTwinPeripherals** data structure for the LED.
 3. Add the new LED data structure to the **deviceTwinDevices** array. This will ensure the GPIO pin is initialized and associated with a Azure IoT Central Device Setting.
-4. Update the **app_manifest.json** with the GPIO pin you want to use from your Azure Sphere application.
+4. Update the **app_manifest.json** with the GPIO pin you want to use from your Azure Sphere application. -->
 
 ---
 
@@ -187,7 +195,7 @@ To start the build, deploy and debug process either click the Visual Studio **St
 
 Now the application is running on the Azure Sphere switch across to Azure IoT Central, select the **Devices** tab, the device template you created, then the actual device.
 
-Select to the **Settings** tab and change the **Relay** toggle state and click **Update** and observe an LED on the Azure Sphere will toggle between on and off.
+Select to the **Properties** tab and change the **Light** toggle state to **On**, then click **Update**. Observe that a **Red** LED lights up on the Azure Sphere developer kit.
 
 ![iot central device settings](resources/iot-central-display-settings.png)
 
@@ -195,7 +203,7 @@ Select to the **Settings** tab and change the **Relay** toggle state and click *
 
 ## Finished 完了 fertig finito ख़त्म होना terminado
 
-Congratulations you have finished the tutorial.
+Congratulations you have finished lab 3.
 
 ![](resources/finished.jpg)
 

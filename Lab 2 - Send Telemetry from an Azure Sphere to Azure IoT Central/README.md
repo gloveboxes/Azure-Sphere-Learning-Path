@@ -120,7 +120,9 @@ To start the build, deploy, debug process either click the Visual Studio **Start
 
 ## Azure IoT Central Integration
 
-Now the application is running on the Azure Sphere switch across to Azure IoT Central, select the **Devices** tab, the device template you created, then the actual device. You may have to wait a moment before the telemetry is displayed in the **Measurements** panel.
+Now the application is running on the Azure Sphere switch across to Azure IoT Central, select the **Devices** tab, then the **Azure Sphere** template, then the actual device.
+
+You need to wait a minute or two before the telemetry is displayed on the **Overview** tab.
 
 ![](resources/iot-central-display-measurements.png)
 
@@ -128,7 +130,7 @@ Now the application is running on the Azure Sphere switch across to Azure IoT Ce
 
 ## Finished 完了 fertig finito ख़त्म होना terminado
 
-Congratulations you have finished the tutorial.
+Congratulations you have finished Lab 2.
 
 ![](resources/finished.jpg)
 
