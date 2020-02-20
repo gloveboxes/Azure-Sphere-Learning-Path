@@ -84,9 +84,9 @@ git clone https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git
 
 ### Enable Real Time Core Debugging
 
-//TODO
+Run the **Azure Sphere Developer Command Prompt** as **Administrator**.
 
-Installing USB drivers to enable real-time core debugging.
+Run the following command to install the required USB drivers to support real-time core debugging.
 
 ```bash
 azsphere.exe device enable-development -r
@@ -203,7 +203,9 @@ From Visual Studio open the **app_manifest.json** file.
 
 ### Step 2: Azure IoT Central Connection Information
 
-Copy the contents of the **app_manifest.json** you created in *Lab 2* to this labs (*Lab 4*) **app_manifest.json** file. 
+If a lab Azure Sphere that you did not claim in to your tenant then **set the connection string** as per Lab 2.
+
+If the Azure Sphere is a device you claimed into your own Azure Tenant the copy the contents of the **app_manifest.json** you created in *Lab 2* to this labs (*Lab 4*) **app_manifest.json** file.
 
 ### Step 3: Configure Inter-Core Communications
 
@@ -239,17 +241,9 @@ Now you have both the FreeRTOS and the High-Level applications running there are
 
 ## Azure IoT Central Integration
 
-Now the application is running on the Azure Sphere switch across to Azure IoT Central, select the **Devices** tab, the device template you created, then the actual device. You may have to wait a moment before the telemetry is displayed in the **Measurements** panel.
+Now the application is running on the Azure Sphere switch across to Azure IoT Central, select the **Devices** tab, the **Azure Sphere** template, then the device you created. You may have to wait a miniute or two before the telemetry is displayed in the **Overview** tab.
 
-![](resources/iot-central-display-measurements.png)
-
-### Azure IoT Central Settings
-
-To work with settings you will need to update the Device Template and add settings for **Light** and **Relay**. See the Appendix.
-
-Switch to the settings tab on Azure IoT Central and change the toggle state and click update and observe an LED on the Azure Sphere will toggle between on and off.
-
-![iot central device settings](resources/iot-central-display-settings.png)
+![](resources/iot-central-display-events.png)
 
 ---
 
@@ -272,136 +266,3 @@ Congratulations you have finished the tutorial.
 4. [Tech Communities Blog](https://techcommunity.microsoft.com/t5/internet-of-things/bg-p/IoTBlog)
 5. The [Azure IoT Central Sample](https://github.com/Azure/azure-sphere-samples/blob/master/Samples/AzureIoT/IoTCentral.md)
 
-#### TwinCallback
-
-Handles [Azure IoT Hub Device Twins](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins?WT.mc_id=github-blog-dglover).
-
-In Azure IoT Central, Azure IoT Hub Device Twins are exposed in the user interface as *Settings*.
-
-![](resources/iot-central-device-settings.png)
-
-```c
-static void TwinCallback(DEVICE_TWIN_UPDATE_STATE updateState, const unsigned char* payload,
-    size_t payloadSize, void* userContextCallback)
-{
-    JSON_Value* root_value = NULL;
-    JSON_Object* root_object = NULL;
-
-    char* payLoadString = (char*)malloc(payloadSize + 1);
-    if (payLoadString == NULL) {
-        goto cleanup;
-    }
-
-    memcpy(payLoadString, payload, payloadSize);
-    payLoadString[payloadSize] = 0; //null terminate string
-
-    root_value = json_parse_string(payLoadString);
-    if (root_value == NULL) {
-        goto cleanup;
-    }
-
-    root_object = json_value_get_object(root_value);
-    if (root_object == NULL) {
-        goto cleanup;
-    }
-
-
-    JSON_Object* desiredProperties = json_object_dotget_object(root_object, "desired");
-    if (desiredProperties == NULL) {
-        desiredProperties = root_object;
-    }
-
-    SetDesiredState(desiredProperties, &relay);
-    SetDesiredState(desiredProperties, &light);
-
-cleanup:
-    // Release the allocated memory.
-    if (root_value != NULL) {
-        json_value_free(root_value);
-    }
-    free(payLoadString);
-}
-```
-
-#### AzureDirectMethodHandler
-
-Handles [Azure IoT Hub Direct Methods](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods?WT.mc_id=github-blog-dglover)
-
-In Azure IoT Central, Azure IoT Hub Direct Methods are exposed in the user interface as *Commands*.
-
-![](resources/iot-central-device-commands.png)
-
-```c
-static int AzureDirectMethodHandler(const char* method_name, const unsigned char* payload, size_t payloadSize,
-    unsigned char** responsePayload, size_t* responsePayloadSize, void* userContextCallback) {
-
-    const char* onSuccess = "\"Successfully invoke device method\"";
-    const char* notFound = "\"No method found\"";
-
-    const char* responseMessage = onSuccess;
-    int result = 200;
-    JSON_Value* root_value = NULL;
-    JSON_Object* root_object = NULL;
-
-    // Prepare the payload for the response. This is a heap allocated null terminated string.
-    // The Azure IoT Hub SDK is responsible of freeing it.
-    *responsePayload = NULL;  // Response payload content.
-    *responsePayloadSize = 0; // Response payload content size.
-
-    char* payLoadString = (char*)malloc(payloadSize + 1);
-    if (payLoadString == NULL) {
-        responseMessage = "payload memory failed";
-        result = 500;
-        goto cleanup;
-    }
-
-    memcpy(payLoadString, payload, payloadSize);
-    payLoadString[payloadSize] = 0; //null terminate string
-
-    root_value = json_parse_string(payLoadString);
-    if (root_value == NULL) {
-        responseMessage = "Invalid JSON";
-        result = 500;
-        goto cleanup;
-    }
-
-    root_object = json_value_get_object(root_value);
-    if (root_object == NULL) {
-        responseMessage = "Invalid JSON";
-        result = 500;
-        goto cleanup;
-    }
-
-    if (strcmp(method_name, "fanspeed") == 0)
-    {
-        int speed = (int)json_object_get_number(root_object, "speed");
-        Log_Debug("Set fan speed %d", speed);
-    }
-    else
-    {
-        responseMessage = notFound;
-        result = 404;
-    }
-
-cleanup:
-
-    // Prepare the payload for the response. This is a heap allocated null terminated string.
-    // The Azure IoT Hub SDK is responsible of freeing it.
-    *responsePayloadSize = strlen(responseMessage);
-    *responsePayload = (unsigned char*)malloc(*responsePayloadSize);
-    strncpy((char*)(*responsePayload), responseMessage, *responsePayloadSize);
-
-    if (root_value != NULL) {
-        json_value_free(root_value);
-    }
-    free(payLoadString);
-
-    return result;
-}
-```
-
-### Azure IoT Central Template Settings for Device Twins
-
-![](resources/iot-central-template-settings-relay.png)
-
-![](resources/iot-central-template-settings-light.png)
