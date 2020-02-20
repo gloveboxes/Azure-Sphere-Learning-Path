@@ -89,21 +89,18 @@ When you have connected your Azure Sphere to Azure IoT Central you will be able 
 
 <!-- Follow instructions to **[Create an Azure IoT Central Application](resources/azure-iot-central/azure-iot-central.md)** -->
 
-### Step 2: Connect Azure IoT Central to your Azure Sphere Tenant
-
-Any device that is claimed by your Azure Sphere tenant will be automatically enrolled when it first connects to your Azure IoT Central application.
-
-Follow instructions to **[Set up Azure IoT Central to work with Azure Sphere](https://docs.microsoft.com/en-au/azure-sphere/app-development/setup-iot-central)**.
-
-### Step 3: Create an Azure IoT Central Device
-
-#### Instructions for shared Lab Azure Sphere Device
+### Step 2: Create an Azure IoT Central Device
 
 If you are using an Azure Sphere in a lab environment and did not claim the Azure Sphere into your own Azure Sphere tenant then follow these [instructions](iot-central-lab-device.md).
 
-#### Instruction for own claimed the Azure Sphere Device
+Otherwise skip to **Step 3**.
 
-Did you claim your Azure Sphere into your own Azure Sphere Tenant? If so, follow these [instructions](iot-central-own-device.md).
+### Step 3: Connect Azure IoT Central to your Azure Sphere Tenant
+
+If you claimed your Azure Sphere device into your own Azure Sphere tenant then your device will be automatically enrolled when it first connects to your Azure IoT Central application.
+
+1. [Set up Azure IoT Central to work with Azure Sphere](https://docs.microsoft.com/en-au/azure-sphere/app-development/setup-iot-central).
+2. Configure the Azure Sphere application for the [IoT Central Device provisioning Service](iot-central-own-device.md).
 
 ---
 
