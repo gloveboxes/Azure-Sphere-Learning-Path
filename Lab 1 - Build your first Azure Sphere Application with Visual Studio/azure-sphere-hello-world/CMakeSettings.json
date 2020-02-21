@@ -2,8 +2,7 @@
   "environments": [
     {
       "environment": "AzureSphere",
-
-      "AzureSphereTargetApiSet": "3"
+      "AzureSphereTargetApiSet": "4"
     }
   ],
   "configurations": [
