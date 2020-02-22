@@ -1,5 +1,5 @@
-﻿#include "../MT3620_Grove_Shield/MT3620_Grove_Shield_Library/Grove.h"
-#include "../MT3620_Grove_Shield/MT3620_Grove_Shield_Library/Sensors/GroveTempHumiSHT31.h"
+﻿#include "../libs/MT3620_Grove_Shield/MT3620_Grove_Shield_Library/Grove.h"
+#include "../libs/MT3620_Grove_Shield/MT3620_Grove_Shield_Library/Sensors/GroveTempHumiSHT31.h"
 #include "globals.h"
 #include "peripheral.h"
 #include "utilities.h"
@@ -13,7 +13,7 @@
 
 
 // Select Azure Sphere Dev Kit
-#define AVNET_DK 1
+//#define AVNET_DK 1
 //#define SEEED_DK 1
 //#define SEEED_MINI_DK 1
 

@@ -4,7 +4,7 @@
 cmake_minimum_required (VERSION 3.8)
 project (AzureSphereIoTCentral C)
 
-add_subdirectory("../MT3620_Grove_Shield/MT3620_Grove_Shield_Library" out)
+add_subdirectory("../libs/MT3620_Grove_Shield/MT3620_Grove_Shield_Library" out)
 
 # Create executable
 ADD_EXECUTABLE(${PROJECT_NAME} main.c globals.c inter_core.c azure_iot.c peripheral.c epoll_timerfd_utilities.c parson.c utilities.c)

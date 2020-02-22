@@ -4,7 +4,7 @@
 cmake_minimum_required (VERSION 3.8)
 project (azure-sphere-winhec C)
 
-add_subdirectory("../MT3620_Grove_Shield/MT3620_Grove_Shield_Library" out)
+add_subdirectory("../libs/MT3620_Grove_Shield/MT3620_Grove_Shield_Library" out)
 
 # Create executable
 add_executable (${PROJECT_NAME} main.c globals.c parson.c peripheral.c epoll_timerfd_utilities.c utilities.c)
