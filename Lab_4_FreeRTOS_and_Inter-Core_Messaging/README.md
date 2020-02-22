@@ -1,4 +1,9 @@
-﻿# Azure Sphere RTcore FreeRTOS demo
+﻿# Azure Sphere Learning Path
+
+Lab 4: [Integrating FreeRTOS with Azure Sphere Inter-Core Messaging](/docs/Lab_4_FreeRTOS_and_Inter-Core_Messaging/README.md)
+
+
+## Azure Sphere RTcore FreeRTOS demo
 
 This sample demonstrates the latest freertos 10.2.1 port on Azure Sphere Realtime core (Cortex-M4F). It performs the same function as the official [GPIO_RTApp_MT3620_BareMetal]([../GPIO_HighLevelApp/README.md](https://github.com/Azure/azure-sphere-samples/tree/master/Samples/GPIO/GPIO_RTApp_MT3620_BareMetal)) example.
 
