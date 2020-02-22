@@ -3,6 +3,7 @@
 #include "azure_iot.h"
 #include "globals.h"
 #include "inter_core.h"
+#include "peripheral.h"
 #include "utilities.h"
 #include <applibs/gpio.h>
 #include <applibs/log.h>
@@ -11,11 +12,28 @@
 #include <stdlib.h>
 #include <time.h>
 
+// Select Azure Sphere Dev Kit
+//#define SEEED_DK 1
+//#define SEEED_MINI_DK 1
+#define AVNET_DK = 1
+
+#if defined SEEED_DK
+
 // GPIO Pins used in the High Level (HL) Application
-#define SEND_STATUS_PIN 19
+#define BUILTIN_LED 19
 #define LIGHT_PIN 21
 #define RELAY_PIN 0
 #define FAN_PIN 4
+
+#elif defined AVNET_DK
+
+#define BUILTIN_LED 4
+#define LIGHT_PIN 5
+#define RELAY_PIN 16
+#define FAN_PIN 34
+
+#endif
+
 #define JSON_MESSAGE_BYTES 100  // Number of bytes to allocate for the JSON telemetry message for IoT Central
 
 static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
@@ -63,7 +81,7 @@ static DirectMethodPeripheral fan = {
 
 static ActuatorPeripheral sendStatus = {
 	.peripheral = {
-		.fd = -1, .pin = SEND_STATUS_PIN, .initialState = GPIO_Value_High, .invertPin = true, .initialise = OpenPeripheral, .name = "SendStatus" }
+		.fd = -1, .pin = BUILTIN_LED, .initialState = GPIO_Value_High, .invertPin = true, .initialise = OpenPeripheral, .name = "SendStatus" }
 };
 
 static Timer sendTelemetry = {

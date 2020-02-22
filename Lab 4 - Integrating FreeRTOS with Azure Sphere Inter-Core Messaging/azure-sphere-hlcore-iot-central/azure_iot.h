@@ -1,7 +1,9 @@
 #ifndef iot_hub_h
 #define iot_hub_h
 
+#include "iothubtransportmqtt.h"
 #include "parson.h"
+#include "peripheral.h"
 #include "utilities.h"
 #include <applibs/log.h>
 #include <applibs/networking.h>
@@ -11,7 +13,6 @@
 #include <iothub_device_client_ll.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "iothubtransportmqtt.h"
 
 enum DirectMethodResponseCode
 {
