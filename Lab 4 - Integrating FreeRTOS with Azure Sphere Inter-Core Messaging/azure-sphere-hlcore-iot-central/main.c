@@ -15,7 +15,7 @@
 // Select Azure Sphere Dev Kit
 //#define SEEED_DK 1
 //#define SEEED_MINI_DK 1
-#define AVNET_DK = 1
+//#define AVNET_DK = 1
 
 #if defined SEEED_DK
 
