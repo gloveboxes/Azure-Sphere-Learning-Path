@@ -1,0 +1,15 @@
+﻿{
+  "SchemaVersion": 1,
+  "Name": "AzureSphereIoTCentral",
+  "ComponentId": "25025d2c-66da-4448-bae1-ac26fcdd3627",
+  "EntryPoint": "/bin/app",
+  "CmdArgs": [ "Fake", "0ne000BDC00", "6583cf17-d321-4d72-8283-0b7c5b56442b" ],
+  "Capabilities": {
+    "Gpio": [ 0, 4, 5, 16, 17, 19, 21, 34 ],
+    "Uart": [ "ISU0" ],
+    "AllowedConnections": [ "global.azure-devices-provisioning.net", "iotc-088280bc-3305-4cba-885e-6573fc4cf701.azure-devices.net" ],
+    "DeviceAuthentication": "9d7e79eb-e021-43ce-9f2b-fa944b447494",
+    "AllowedApplicationConnections": [ "6583cf17-d321-4d72-8283-0b7c5b56442b" ]
+  },
+  "ApplicationType": "Default"
+}
