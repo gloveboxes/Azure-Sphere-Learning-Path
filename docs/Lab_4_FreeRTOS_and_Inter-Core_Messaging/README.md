@@ -38,7 +38,6 @@ You will need to **copy** and **paste** the Lab 2 **app_manifest.json** you crea
 
 1. Internet enabling an existing FreeRTOS application
 2. End to end security for telemetry and device control
-3. Streamlining device provisioning
 
 ## What you will learn
 
@@ -80,9 +79,9 @@ git clone https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git
 
 ---
 
-## Open Lab 4
+## Enable Real Time Core Debugging
 
-### Enable Real Time Core Debugging
+TODO:// Include section on CMake requirements
 
 Run the **Azure Sphere Developer Command Prompt** as **Administrator**.
 
@@ -92,16 +91,20 @@ Run the following command to install the required USB drivers to support real-ti
 azsphere.exe device enable-development -r
 ```
 
-### Step 1: Start Visual Studio 2019
+---
+
+## Step 1: Start Visual Studio 2019
 
 ![](resources/visual-studio-open-local-folder.png)
 
-### Step 2: Open the lab project
+---
+
+## Step 2: Open the lab project
 
 1. Click **Open a local folder**
 2. Navigate to the folder you cloned **Azure Sphere Learning Path** into.
 3. Double click to open the **Lab_4_FreeRTOS_and_Inter-Core_Messaging** folder
-5. Click **Select Folder** button to open the project
+4. Click **Select Folder** button to open the project
 
 ---
 

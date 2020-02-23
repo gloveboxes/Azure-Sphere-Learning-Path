@@ -42,10 +42,8 @@ You will need to **copy** and **paste** the Lab 2 **app_manifest.json** you crea
 
 ## What you will learn
 
-1. How to run a **FreeRTOS** Real-Time application on Azure Sphere and integrate with Azure IoT.
-2. How to create an Azure IoT Central Application.
-3. How to integrate an [Azure Sphere](https://azure.microsoft.com/services/azure-sphere/?WT.mc_id=github-blog-dglover) application with [Azure IoT Central](https://azure.microsoft.com/services/iot-central/?WT.mc_id=github-blog-dglover).
-4. How to securely control an Azure Sphere with Azure IoT Central Device **[Settings](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins?WT.mc_id=github-blog-dglover)** and **[Commands](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods?WT.mc_id=github-blog-dglover)**.
+1. How to integrate an [Azure Sphere](https://azure.microsoft.com/services/azure-sphere/?WT.mc_id=github-blog-dglover) application with [Azure IoT Central](https://azure.microsoft.com/services/iot-central/?WT.mc_id=github-blog-dglover).
+2. How to securely control an Azure Sphere with Azure IoT Central Device **[Settings](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins?WT.mc_id=github-blog-dglover)** and **[Commands](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods?WT.mc_id=github-blog-dglover)**.
 
 If unfamiliar with Azure Sphere development then review the [Create a Secure Azure Sphere App using the Grove Shield Sensor Kit](https://github.com/gloveboxes/Create-a-Secure-Azure-Sphere-App-using-the-Grove-Shield-Sensor-Kit) tutorial before starting this tutorial.
 
@@ -80,23 +78,11 @@ git clone https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git
 
 ---
 
-## Open Lab 4
-
-### Enable Real Time Core Debugging
-
-Run the **Azure Sphere Developer Command Prompt** as **Administrator**.
-
-Run the following command to install the required USB drivers to support real-time core debugging.
-
-```bash
-azsphere.exe device enable-development -r
-```
-
-### Step 1: Start Visual Studio 2019
+## Step 1: Start Visual Studio 2019
 
 ![](resources/visual-studio-open-local-folder.png)
 
-### Step 2: Open the lab project
+## Step 2: Open the lab project
 
 1. Click **Open a local folder**
 2. Navigate to the folder you cloned **Azure Sphere Learning Path** into.
@@ -105,8 +91,16 @@ azsphere.exe device enable-development -r
 
 ---
 
-## Deploy your first FreeRTOS Application to Azure Sphere
+## Integrate FreeRTOS Real Time Core app with Azure IoT Central
 
+//TODO: Docs to be expanded
+
+1. Configure Azure IoT Central
+2. Set Debug Option
+3. Deploy the app
+4. Set a break point in Inter-Core Handler
+
+<!-- 
 1. Set the startup configuration. Select the **ARM-Debug** configuration and the **GDB Debugger (RTCore)** startup item.
 
     ![](resources/azure-sphere-rtcore-startup-config.png)
@@ -137,4 +131,4 @@ From Visual Studio open the **app_manifest.json** file.
   "CmdArgs": [],
   "Capabilities": {
     "Gpio": [ 10, 12 ],
-    "AllowedApplicationConnections": [ "25025d2c-66da-4
+    "AllowedApplicationConnections": [ "25025d2c-66da-4 -->
