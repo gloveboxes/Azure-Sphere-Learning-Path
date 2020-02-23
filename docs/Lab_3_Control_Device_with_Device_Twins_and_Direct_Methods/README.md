@@ -73,9 +73,8 @@ There are two ways to control or set the state on the Azure Sphere device from I
 
 1. Click **Open a local folder**
 2. Navigate to the folder you cloned **Azure Sphere Learning Path** into.
-3. Double click to open the **Lab 3 - Control an Azure Sphere with Device Twins and Direct Methods** folder
-4. Double click to open the **azure-sphere-iot-central-control** folder
-5. Click **Select Folder** button to open the project
+3. Double click to open the **Lab_3_Control_Device_with_Device_Twins_and_Direct_Methods** folder
+4. Click **Select Folder** button to open the project
 
     <!-- ![](resources/visual-studio-open-lab3.png) -->
 

@@ -100,9 +100,8 @@ azsphere.exe device enable-development -r
 
 1. Click **Open a local folder**
 2. Navigate to the folder you cloned **Azure Sphere Learning Path** into.
-3. Double click to open the **Lab 4 - Integrating FreeRTOS with Azure Sphere Inter-Core Messaging** folder
-4. Double click to open the **azure-sphere-rtcore-freertos** folder
-5. Click **Select Folder** button to open the project
+3. Double click to open the **Lab_5_FreeRTOS_and_Azure_IoT_Central** folder
+4. Click **Select Folder** button to open the project
 
 ---
 
