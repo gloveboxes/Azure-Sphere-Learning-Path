@@ -7,7 +7,7 @@ project (azure-sphere-winhec C)
 add_subdirectory("../libs/MT3620_Grove_Shield/MT3620_Grove_Shield_Library" out)
 
 # Create executable
-add_executable (${PROJECT_NAME} main.c globals.c parson.c peripheral.c epoll_timerfd_utilities.c utilities.c)
+add_executable (${PROJECT_NAME} main.c ../shared/globals.c ../shared/parson.c ../shared/peripheral.c ../shared/epoll_timerfd_utilities.c ../shared/utilities.c)
 target_link_libraries (${PROJECT_NAME}  applibs pthread gcc_s c MT3620_Grove_Shield_Library azureiot)
 
 # Add MakeImage post-build command

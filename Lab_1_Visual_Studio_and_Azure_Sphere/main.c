@@ -1,8 +1,8 @@
 ﻿#include "../libs/MT3620_Grove_Shield/MT3620_Grove_Shield_Library/Grove.h"
 #include "../libs/MT3620_Grove_Shield/MT3620_Grove_Shield_Library/Sensors/GroveTempHumiSHT31.h"
-#include "globals.h"
-#include "peripheral.h"
-#include "utilities.h"
+#include "../shared/globals.h"
+#include "../shared/peripheral.h"
+#include "../shared/utilities.h"
 #include <applibs/gpio.h>
 #include <applibs/log.h>
 #include <stdbool.h>

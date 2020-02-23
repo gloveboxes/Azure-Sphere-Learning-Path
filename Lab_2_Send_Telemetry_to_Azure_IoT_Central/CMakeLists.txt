@@ -7,7 +7,7 @@ project (AzureSphereIoTCentral C)
 add_subdirectory("../libs/MT3620_Grove_Shield/MT3620_Grove_Shield_Library" out)
 
 # Create executable
-ADD_EXECUTABLE(${PROJECT_NAME} main.c globals.c azure_iot.c peripheral.c epoll_timerfd_utilities.c parson.c utilities.c)
+ADD_EXECUTABLE(${PROJECT_NAME} main.c ../shared/globals.c ../shared/azure_iot.c ../shared/peripheral.c ../shared/epoll_timerfd_utilities.c ../shared/parson.c ../shared/utilities.c)
 TARGET_INCLUDE_DIRECTORIES(${PROJECT_NAME} PUBLIC ${AZURE_SPHERE_API_SET_DIR}/usr/include/azureiot)
 TARGET_COMPILE_DEFINITIONS(${PROJECT_NAME} PUBLIC AZURE_IOT_HUB_CONFIGURED)
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} applibs pthread gcc_s c MT3620_Grove_Shield_Library azureiot)

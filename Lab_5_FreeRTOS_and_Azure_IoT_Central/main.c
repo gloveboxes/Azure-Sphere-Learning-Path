@@ -1,10 +1,10 @@
 ﻿#include "../libs/MT3620_Grove_Shield/MT3620_Grove_Shield_Library/Grove.h"
 #include "../libs/MT3620_Grove_Shield/MT3620_Grove_Shield_Library/Sensors/GroveTempHumiSHT31.h"
-#include "azure_iot.h"
-#include "globals.h"
-#include "inter_core.h"
-#include "peripheral.h"
-#include "utilities.h"
+#include "../shared/azure_iot.h"
+#include "../shared/globals.h"
+#include "../shared/inter_core.h"
+#include "../shared/peripheral.h"
+#include "../shared/utilities.h"
 #include <applibs/gpio.h>
 #include <applibs/log.h>
 #include <stdbool.h>
@@ -13,7 +13,7 @@
 #include <time.h>
 
 // Select Azure Sphere Dev Kit
-//#define AVNET_DK 1
+#define AVNET_DK 1
 //#define SEEED_DK 1
 //#define SEEED_MINI_DK 1
 
