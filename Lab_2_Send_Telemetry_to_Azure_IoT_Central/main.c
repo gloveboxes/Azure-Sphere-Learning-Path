@@ -67,7 +67,6 @@ Timer* timers[] = { &sendTelemetry };
 
 int main(int argc, char* argv[])
 {
-	//SetConnectionString("");		// Lab only, do NOT use connection strings in production.
 	RegisterTerminationHandler();
 	ProcessCmdArgs(argc, argv);
 	srand((unsigned int)time(NULL)); // seed the random number generator for fake telemetry
