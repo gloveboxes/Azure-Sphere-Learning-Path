@@ -13,7 +13,7 @@
 #include <time.h>
 
 // Select Azure Sphere Dev Kit
-#define AVNET_DK 1
+//#define AVNET_DK 1
 //#define SEEED_DK 1
 //#define SEEED_MINI_DK 1
 
