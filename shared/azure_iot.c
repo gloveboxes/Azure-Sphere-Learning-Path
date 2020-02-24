@@ -14,7 +14,8 @@ void HubConnectionStatusCallback(IOTHUB_CLIENT_CONNECTION_STATUS, IOTHUB_CLIENT_
 
 void TwinCallback(DEVICE_TWIN_UPDATE_STATE updateState, const unsigned char* payload, size_t payloadSize, void* userContextCallback);
 void SetDesiredState(JSON_Object* desiredProperties, DeviceTwinPeripheral* deviceTwinPeripheral);
-void TwinReportState(const char* propertyName, bool propertyValue);
+//void TwinReportState(const char* propertyName, bool propertyValue);
+void TwinReportState(DeviceTwinPeripheral* deviceTwinPeripheral);
 void ReportStatusCallback(int result, void* context);
 
 #pragma endregion
@@ -278,14 +279,17 @@ void TwinCallback(DEVICE_TWIN_UPDATE_STATE updateState, const unsigned char* pay
 		goto cleanup;
 	}
 
-
 	JSON_Object* desiredProperties = json_object_dotget_object(root_object, "desired");
 	if (desiredProperties == NULL) {
 		desiredProperties = root_object;
 	}
 
+
 	for (int i = 0; i < _deviceTwinCount; i++) {
-		SetDesiredState(desiredProperties, _deviceTwins[i]);
+		JSON_Object* currentJSONProperties = json_object_dotget_object(desiredProperties, _deviceTwins[i]->twinProperty);
+		if (currentJSONProperties != NULL) {
+			SetDesiredState(currentJSONProperties, _deviceTwins[i]);
+		}
 	}
 
 cleanup:
@@ -299,34 +303,112 @@ cleanup:
 /// <summary>
 ///     Checks to see if the device twin twinProperty(name) is found in the json object. If yes, then act upon the request
 /// </summary>
-void SetDesiredState(JSON_Object* desiredProperties, DeviceTwinPeripheral* deviceTwinPeripheral) {
-	JSON_Object* jsonObject = json_object_dotget_object(desiredProperties, deviceTwinPeripheral->twinProperty);
-	if (jsonObject != NULL) {
-		deviceTwinPeripheral->handler(jsonObject, deviceTwinPeripheral);
-		TwinReportState(deviceTwinPeripheral->twinProperty, deviceTwinPeripheral->twinState);
+void SetDesiredState(JSON_Object* jsonObject, DeviceTwinPeripheral* deviceTwinPeripheral) {
+	//JSON_Object* jsonObject = NULL;
+	size_t len = 0;
+
+	switch (deviceTwinPeripheral->twinType)
+	{
+	case TYPE_JSON:
+		//jsonObject = json_object_dotget_object(jsonObject, deviceTwinPeripheral->twinProperty);
+		//if (jsonObject != NULL) {
+
+		//	//TODO:
+		//	//malloc out memory and copy json string to twinState
+
+		//	//deviceTwinPeripheral->handler(jsonObject, deviceTwinPeripheral);
+		//	//TwinReportState(deviceTwinPeripheral->twinProperty, deviceTwinPeripheral->twinState);
+		//}
+		break;
+	case TYPE_INT:
+		*(int*)deviceTwinPeripheral->twinState = (int)json_object_get_number(jsonObject, "value");
+		if (deviceTwinPeripheral->handler != NULL) { 
+			deviceTwinPeripheral->handler(deviceTwinPeripheral); 
+		}
+		TwinReportState(deviceTwinPeripheral);
+		break;
+	case TYPE_FLOAT:
+		*(float*)deviceTwinPeripheral->twinState = (float)json_object_get_number(jsonObject, "value");
+		if (deviceTwinPeripheral->handler != NULL) {
+			deviceTwinPeripheral->handler(deviceTwinPeripheral);
+		}
+		TwinReportState(deviceTwinPeripheral);
+		break;
+	case TYPE_BOOL:
+		*(bool*)deviceTwinPeripheral->twinState = (bool)json_object_get_boolean(jsonObject, "value");
+		if (deviceTwinPeripheral->handler != NULL) {
+			deviceTwinPeripheral->handler(deviceTwinPeripheral);
+		}
+		TwinReportState(deviceTwinPeripheral);
+		break;
+	case TYPE_STRING:
+		len = strlen(json_object_get_string(jsonObject, "value")) + 1; // +1 for null termination
+		if (len > 255) { return; } // limits string to 256 chars
+		if (deviceTwinPeripheral->twinState == NULL) {
+			deviceTwinPeripheral->twinState = malloc(len);
+			memset(deviceTwinPeripheral->twinState, 0, len);
+			strcpy(deviceTwinPeripheral->twinState, json_object_get_string(jsonObject, "value"));
+		}
+		else {
+			if (len != (strlen(deviceTwinPeripheral->twinState) + 1)) {
+				realloc(deviceTwinPeripheral->twinState, len);
+			}
+			memset(deviceTwinPeripheral->twinState, 0, len);
+			strcpy(deviceTwinPeripheral->twinState, json_object_get_string(jsonObject, "value"));
+		}
+
+		if (deviceTwinPeripheral->handler != NULL) {
+			deviceTwinPeripheral->handler(deviceTwinPeripheral);
+		}
+		TwinReportState(deviceTwinPeripheral);
+		break;
+	default:
+		break;
 	}
 }
 
-void TwinReportState(const char* propertyName, bool propertyValue)
+
+void TwinReportState(DeviceTwinPeripheral* deviceTwinPeripheral)
 {
+	int len = 0;
+
 	if (iothubClientHandle == NULL) {
 		Log_Debug("ERROR: client not initialized\n");
 	}
 	else {
-		static char reportedPropertiesString[30] = { 0 };
-		int len = snprintf(reportedPropertiesString, 30, "{\"%s\":%s}", propertyName,
-			(propertyValue == true ? "true" : "false"));
-		if (len < 0)
-			return;
+		static char reportedPropertiesString[DEVICE_TWIN_REPORT_LEN] = { 0 };
+
+		switch (deviceTwinPeripheral->twinType)
+		{
+		case TYPE_INT:
+			len = snprintf(reportedPropertiesString, DEVICE_TWIN_REPORT_LEN, "{\"%s\":%d}", deviceTwinPeripheral->twinProperty,
+				(*(int*)deviceTwinPeripheral->twinState));
+			break;
+		case TYPE_FLOAT:
+			len = snprintf(reportedPropertiesString, DEVICE_TWIN_REPORT_LEN, "{\"%s\":%f}", deviceTwinPeripheral->twinProperty,
+				(*(float*)deviceTwinPeripheral->twinState));
+			break;
+		case TYPE_BOOL:
+			len = snprintf(reportedPropertiesString, DEVICE_TWIN_REPORT_LEN, "{\"%s\":%s}", deviceTwinPeripheral->twinProperty,
+				(*(bool*)deviceTwinPeripheral->twinState ? "true" : "false"));
+			break;
+		case TYPE_STRING:
+			len = snprintf(reportedPropertiesString, DEVICE_TWIN_REPORT_LEN, "{\"%s\":\"%s\"}", deviceTwinPeripheral->twinProperty,
+				(deviceTwinPeripheral->twinState));
+			break;
+		default:
+			break;
+		}
+
+		if (len == 0) { return; }
 
 		if (IoTHubDeviceClient_LL_SendReportedState(
 			iothubClientHandle, (unsigned char*)reportedPropertiesString,
 			strlen(reportedPropertiesString), ReportStatusCallback, 0) != IOTHUB_CLIENT_OK) {
-			Log_Debug("ERROR: failed to set reported state for '%s'.\n", propertyName);
+			Log_Debug("ERROR: failed to set reported state for '%s'.\n", deviceTwinPeripheral->twinProperty);
 		}
 		else {
-			Log_Debug("INFO: Reported state for '%s' to value '%s'.\n", propertyName,
-				(propertyValue == true ? "true" : "false"));
+			Log_Debug("INFO: Reported state for '%s' to value '%s'.\n", deviceTwinPeripheral->twinProperty, reportedPropertiesString);
 		}
 	}
 }

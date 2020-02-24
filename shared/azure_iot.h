@@ -14,6 +14,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define DEVICE_TWIN_REPORT_LEN 50
+
 enum DirectMethodResponseCode
 {
 	METHOD_SUCCEEDED = 200,

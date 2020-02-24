@@ -44,23 +44,41 @@ static void* sht31;
 static int InitPeripheralsAndHandlers(void);
 static void ClosePeripheralsAndHandlers(void);
 static void MeasureSensorHandler(EventData* eventData);
-static void DeviceTwinHandler(JSON_Object* json, DeviceTwinPeripheral* deviceTwinPeripheral);
+static void DeviceTwinHandler(DeviceTwinPeripheral* deviceTwinPeripheral);
 static MethodResponseCode SetFanSpeedDirectMethod(JSON_Object* json, DirectMethodPeripheral* directMethodperipheral);
 static int InitFanPWM(struct _peripheral* peripheral);
+
+static bool twinState = false;
 
 static DeviceTwinPeripheral relay = {
 	.peripheral = {
 		.fd = -1, .pin = RELAY_PIN, .initialState = GPIO_Value_Low, .invertPin = false, .initialise = OpenPeripheral, .name = "relay1" },
-	.twinState = false,
 	.twinProperty = "relay1",
+	.twinType = TYPE_BOOL,
 	.handler = DeviceTwinHandler
 };
 
 static DeviceTwinPeripheral light = {
 	.peripheral = {
 		.fd = -1, .pin = LIGHT_PIN, .initialState = GPIO_Value_High, .invertPin = true, .initialise = OpenPeripheral, .name = "led1" },
-	.twinState = false,
 	.twinProperty = "led1",
+	.twinType = TYPE_BOOL,
+	.handler = DeviceTwinHandler
+};
+
+static DeviceTwinPeripheral intTest = {
+	.peripheral = {
+		.fd = -1, .pin = -1, .initialState = GPIO_Value_High, .invertPin = true, .initialise = OpenPeripheral, .name = "led1" },
+	.twinProperty = "int1",
+	.twinType = TYPE_INT,
+	.handler = DeviceTwinHandler
+};
+
+static DeviceTwinPeripheral stringTest = {
+	.peripheral = {
+		.fd = -1, .pin = -1, .initialState = GPIO_Value_High, .invertPin = true, .initialise = OpenPeripheral, .name = "led1" },
+	.twinProperty = "string1",
+	.twinType = TYPE_STRING,
 	.handler = DeviceTwinHandler
 };
 
@@ -84,7 +102,7 @@ static Timer sendTelemetry = {
 
 #pragma region define sets for auto initialisation and close
 
-DeviceTwinPeripheral* deviceTwinDevices[] = { &relay, &light };
+DeviceTwinPeripheral* deviceTwinDevices[] = { &relay, &light, &intTest, &stringTest };
 DirectMethodPeripheral* directMethodDevices[] = { &fan };
 ActuatorPeripheral* actuatorDevices[] = { &sendStatus };
 Timer* timers[] = { &sendTelemetry };
@@ -178,7 +196,7 @@ static int InitPeripheralsAndHandlers(void)
 	}
 
 	OPEN_PERIPHERAL_SET(actuatorDevices);
-	OPEN_PERIPHERAL_SET(deviceTwinDevices);
+	OPEN_DEVICE_TWIN_SET(deviceTwinDevices);
 	OPEN_PERIPHERAL_SET(directMethodDevices);
 
 	START_TIMER_SET(timers);
@@ -200,7 +218,7 @@ static void ClosePeripheralsAndHandlers(void)
 	STOP_TIMER_SET(timers);
 
 	CLOSE_PERIPHERAL_SET(actuatorDevices);
-	CLOSE_PERIPHERAL_SET(deviceTwinDevices);
+	CLOSE_DEVICE_TWIN_SET(deviceTwinDevices);
 	CLOSE_PERIPHERAL_SET(directMethodDevices);
 
 	DisableCloudToDevice();
@@ -215,19 +233,40 @@ static int InitFanPWM(struct _peripheral* peripheral) {
 }
 
 
-/// <summary>
-///		This Device Twin Handler assumes the value field is a boolean from a IoT Central Toggle control.
-///		To handle other value types just create another handler for the type required - eg float and associate the new handler 
-///		with the Digital Twin definition.
-/// </summary>
-static void DeviceTwinHandler(JSON_Object* json, DeviceTwinPeripheral* deviceTwinPeripheral) {
-	deviceTwinPeripheral->twinState = (bool)json_object_get_boolean(json, "value");
-	if (deviceTwinPeripheral->twinState) {
-		GPIO_ON(deviceTwinPeripheral->peripheral);
+static void DeviceTwinHandler(DeviceTwinPeripheral* deviceTwinPeripheral) {
+	char msg[50];
+
+	switch (deviceTwinPeripheral->twinType)
+	{
+	case TYPE_BOOL:
+		*(bool*)deviceTwinPeripheral->twinState ? GPIO_ON(deviceTwinPeripheral->peripheral) : GPIO_OFF(deviceTwinPeripheral->peripheral);
+		break;
+	case TYPE_INT:
+		snprintf(msg, 50, "\nInteger %d\n", *(int*)deviceTwinPeripheral->twinState);
+		Log_Debug(msg);
+		// Your implementation goes here
+		break;
+	case TYPE_FLOAT:		
+		snprintf(msg, 50, "\Float %f\n", *(float*)deviceTwinPeripheral->twinState);
+		Log_Debug(msg);
+		// Your implementation goes here
+		break;
+	case TYPE_STRING:
+		snprintf(msg, 50, "\nString %s\n", deviceTwinPeripheral->twinState);
+		Log_Debug(msg);
+		// Your implementation goes here
+		break;
+	default:
+		break;
 	}
-	else {
-		GPIO_OFF(deviceTwinPeripheral->peripheral);
-	}
+
+	//deviceTwinPeripheral->twinState = (bool)json_object_get_boolean(json, "value");
+	//if (deviceTwinPeripheral->twinState) {
+	//	GPIO_ON(deviceTwinPeripheral->peripheral);
+	//}
+	//else {
+	//	GPIO_OFF(deviceTwinPeripheral->peripheral);
+	//}
 }
 
 
