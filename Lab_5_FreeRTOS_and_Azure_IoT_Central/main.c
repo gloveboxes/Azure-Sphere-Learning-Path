@@ -4,7 +4,7 @@
 #include "../shared/globals.h"
 #include "../shared/inter_core.h"
 #include "../shared/peripheral.h"
-#include "../shared/utilities.h"
+#include "../shared/terminate.h"
 #include <applibs/gpio.h>
 #include <applibs/log.h>
 #include <stdbool.h>
@@ -13,7 +13,7 @@
 #include <time.h>
 
 // Select Azure Sphere Dev Kit
-//#define AVNET_DK 1
+#define AVNET_DK 1
 //#define SEEED_DK 1
 //#define SEEED_MINI_DK 1
 
@@ -44,7 +44,7 @@ static void* sht31;
 static int InitPeripheralsAndHandlers(void);
 static void ClosePeripheralsAndHandlers(void);
 static void MeasureSensorHandler(EventData* eventData);
-static void DeviceTwinHandler(JSON_Object* json, DeviceTwinPeripheral* deviceTwinPeripheral);
+static void DeviceTwinHandler(DeviceTwinPeripheral* deviceTwinPeripheral);
 static MethodResponseCode SetFanSpeedDirectMethod(JSON_Object* json, DirectMethodPeripheral* directMethodperipheral);
 static int InitFanPWM(struct _peripheral* peripheral);
 static void InterCoreHandler(char* msg);
@@ -119,13 +119,13 @@ int main(int argc, char* argv[])
 	Log_Debug("IoT Hub/Central Application starting.\n");
 
 	if (InitPeripheralsAndHandlers() != 0) {
-		terminationRequired = true;
+		Terminate();
 	}
 
 	// Main loop
-	while (!terminationRequired) {
+	while (!IsTerminationRequired()) {
 		if (WaitForEventAndCallHandler(GetEpollFd()) != 0) {
-			terminationRequired = true;
+			Terminate();
 		}
 	}
 
@@ -165,7 +165,7 @@ static int ReadTelemetry(void) {
 static void MeasureSensorHandler(EventData* eventData)
 {
 	if (ConsumeTimerFdEvent(sendTelemetry.fd) != 0) {
-		terminationRequired = true;
+		Terminate();
 		return;
 	}
 
@@ -227,18 +227,31 @@ static void ClosePeripheralsAndHandlers(void)
 
 #pragma Azure IoT Device Twins Supports
 
-/// <summary>
-///		This Device Twin Handler assumes the value field is a boolean from a IoT Central Toggle control.
-///		To handle other value types just create another handler for the type required - eg float and associate the new handler 
-///		with the Digital Twin definition.
-/// </summary>
-static void DeviceTwinHandler(JSON_Object* json, DeviceTwinPeripheral* deviceTwinPeripheral) {
-	deviceTwinPeripheral->twinState = (bool)json_object_get_boolean(json, "value");
-	if (deviceTwinPeripheral->twinState) {
-		GPIO_ON(deviceTwinPeripheral->peripheral);
-	}
-	else {
-		GPIO_OFF(deviceTwinPeripheral->peripheral);
+static void DeviceTwinHandler(DeviceTwinPeripheral* deviceTwinPeripheral) {
+	switch (deviceTwinPeripheral->twinType)
+	{
+	case TYPE_BOOL:
+		if (*(bool*)deviceTwinPeripheral->twinState) {
+			GPIO_ON(deviceTwinPeripheral->peripheral);
+		}
+		else {
+			GPIO_OFF(deviceTwinPeripheral->peripheral);
+		}
+		break;
+	case TYPE_INT:
+		Log_Debug("\nInteger Value '%d'\n", *(int*)deviceTwinPeripheral->twinState);
+		// Your implementation goes here - for example change the sensor measure rate
+		break;
+	case TYPE_FLOAT:
+		Log_Debug("\nFloat Value '%f'\n", *(float*)deviceTwinPeripheral->twinState);
+		// Your implementation goes here - for example set a threshold
+		break;
+	case TYPE_STRING:
+		Log_Debug("\nString Value '%s'\n", (char*)deviceTwinPeripheral->twinState);
+		// Your implementation goes here - for example update display
+		break;
+	default:
+		break;
 	}
 }
 
@@ -305,7 +318,7 @@ static void InterCoreHeartBeat(EventData* eventData)
 	char interCoreMsg[30];
 
 	if (ConsumeTimerFdEvent(rtCoreHeatBeat.fd) != 0) {
-		terminationRequired = true;
+		Terminate();
 		return;
 	}
 

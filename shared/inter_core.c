@@ -54,7 +54,7 @@ int EnableInterCoreCommunications(const char * rtAppComponentId, void (*interCor
 void SocketEventHandler(EventData* eventData)
 {
 	if (!ProcessMsg()) {
-		terminationRequired = true;
+		Terminate();
 	}
 }
 

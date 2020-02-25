@@ -3,7 +3,7 @@
 
 #include "epoll_timerfd_utilities.h"
 #include "globals.h"
-#include "utilities.h"
+#include "terminate.h"
 #include <applibs/application.h>
 #include <applibs/log.h>
 #include <ctype.h>
@@ -13,6 +13,7 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/time.h>
+#include "timer.h"
 
 bool ProcessMsg(void);
 bool SendInterCoreMessage(const char* msg);
