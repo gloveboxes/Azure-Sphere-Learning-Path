@@ -14,7 +14,7 @@
 
 
 // Select Azure Sphere Dev Kit
-//#define AVNET_DK 1
+#define AVNET_DK 1
 //#define SEEED_DK 1
 //#define SEEED_MINI_DK 1
 
@@ -81,7 +81,7 @@ int main(int argc, char* argv[])
 	}
 
 	// Main loop
-	while (!GetTerminate()) {
+	while (!IsTerminationRequired()) {
 		if (WaitForEventAndCallHandler(GetEpollFd()) != 0) {
 			Terminate();
 		}

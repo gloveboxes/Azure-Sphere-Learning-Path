@@ -42,12 +42,7 @@ static void MeasureSensorHandler(EventData* eventData);
 
 static ActuatorPeripheral sendStatus = {
 	.peripheral = {
-		.fd = -1, 
-		.pin = BUILTIN_LED, 
-		.initialState = GPIO_Value_High, 
-		.invertPin = true, 
-		.initialise = OpenPeripheral, 
-		.name = "SendStatus" }
+		.fd = -1, .pin = BUILTIN_LED, .initialState = GPIO_Value_High, .invertPin = true, .initialise = OpenPeripheral, .name = "SendStatus" }
 };
 
 static Timer sendTelemetry = {
@@ -83,7 +78,7 @@ int main(int argc, char* argv[])
 	}
 
 	// Main loop
-	while (!GetTerminate()) {
+	while (!IsTerminationRequired()) {
 		if (WaitForEventAndCallHandler(GetEpollFd()) != 0) {
 			Terminate();
 		}

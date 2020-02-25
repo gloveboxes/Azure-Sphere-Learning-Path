@@ -137,7 +137,7 @@ int main(int argc, char* argv[])
 	}
 
 	// Main loop
-	while (!GetTerminate()) {
+	while (!IsTerminationRequired()) {
 		if (WaitForEventAndCallHandler(GetEpollFd()) != 0) {
 			Terminate();
 		}

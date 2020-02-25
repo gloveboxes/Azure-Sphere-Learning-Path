@@ -20,7 +20,7 @@ void Terminate(void) {
 	terminationRequired = true;
 }
 
-bool GetTerminate(void) {
+bool IsTerminationRequired(void) {
 	return terminationRequired;
 }
 
