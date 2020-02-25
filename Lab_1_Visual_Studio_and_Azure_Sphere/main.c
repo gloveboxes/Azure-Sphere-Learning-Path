@@ -2,7 +2,8 @@
 #include "../libs/MT3620_Grove_Shield/MT3620_Grove_Shield_Library/Sensors/GroveTempHumiSHT31.h"
 #include "../shared/globals.h"
 #include "../shared/peripheral.h"
-#include "../shared/utilities.h"
+#include "../shared/terminate.h"
+#include "../shared/timer.h"
 #include <applibs/gpio.h>
 #include <applibs/log.h>
 #include <stdbool.h>
@@ -76,13 +77,13 @@ int main(int argc, char* argv[])
 	srand((unsigned int)time(NULL)); // seed the random number generator for fake telemetry
 
 	if (InitPeripheralsAndHandlers() != 0) {
-		terminationRequired = true;
+		Terminate();
 	}
 
 	// Main loop
-	while (!terminationRequired) {
+	while (!GetTerminate()) {
 		if (WaitForEventAndCallHandler(GetEpollFd()) != 0) {
-			terminationRequired = true;
+			Terminate();
 		}
 	}
 
@@ -124,7 +125,7 @@ static int ReadTelemetry(void) {
 static void MeasureSensorHandler(EventData* eventData)
 {
 	if (ConsumeTimerFdEvent(readSensor.fd) != 0) {
-		terminationRequired = true;
+		Terminate();
 		return;
 	}
 

@@ -3,7 +3,7 @@
 #include "../shared/azure_iot.h"
 #include "../shared/globals.h"
 #include "../shared/peripheral.h"
-#include "../shared/utilities.h"
+#include "../shared/terminate.h"
 #include <applibs/gpio.h>
 #include <applibs/log.h>
 #include <stdbool.h>
@@ -13,7 +13,7 @@
 
 
 // Select Azure Sphere Dev Kit
-//#define AVNET_DK 1
+#define AVNET_DK 1
 //#define SEEED_DK 1
 //#define SEEED_MINI_DK 1
 
@@ -79,13 +79,13 @@ int main(int argc, char* argv[])
 	Log_Debug("IoT Hub/Central Application starting.\n");
 
 	if (InitPeripheralsAndHandlers() != 0) {
-		terminationRequired = true;
+		Terminate();
 	}
 
 	// Main loop
-	while (!terminationRequired) {
+	while (!GetTerminate()) {
 		if (WaitForEventAndCallHandler(GetEpollFd()) != 0) {
-			terminationRequired = true;
+			Terminate();
 		}
 	}
 
@@ -126,7 +126,7 @@ static int ReadTelemetry(void) {
 static void MeasureSensorHandler(EventData* eventData)
 {
 	if (ConsumeTimerFdEvent(sendTelemetry.fd) != 0) {
-		terminationRequired = true;
+		Terminate();
 		return;
 	}
 	
