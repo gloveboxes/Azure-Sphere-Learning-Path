@@ -52,12 +52,7 @@ static void InterCoreHeartBeat(EventData* eventData);
 
 static DeviceTwinPeripheral relay = {
 	.peripheral = {
-		.fd = -1, 
-		.pin = RELAY_PIN, 
-		.initialState = GPIO_Value_Low, 
-		.invertPin = false, 
-		.initialise = OpenPeripheral, 
-		.name = "relay1" },
+		.fd = -1, .pin = RELAY_PIN, .initialState = GPIO_Value_Low, .invertPin = false, .initialise = OpenPeripheral, .name = "relay1" },
 	.twinState = false,
 	.twinProperty = "relay1",
 	.handler = DeviceTwinHandler
@@ -191,7 +186,7 @@ static int InitPeripheralsAndHandlers(void)
 	}
 
 	OPEN_PERIPHERAL_SET(actuatorDevices);
-	OPEN_PERIPHERAL_SET(deviceTwinDevices);
+	OPEN_DEVICE_TWIN_SET(deviceTwinDevices);
 	OPEN_PERIPHERAL_SET(directMethodDevices);
 
 	START_TIMER_SET(timers);
@@ -217,7 +212,7 @@ static void ClosePeripheralsAndHandlers(void)
 	STOP_TIMER_SET(timers);
 
 	CLOSE_PERIPHERAL_SET(actuatorDevices);
-	CLOSE_PERIPHERAL_SET(deviceTwinDevices);
+	CLOSE_DEVICE_TWIN_SET(deviceTwinDevices);
 	CLOSE_PERIPHERAL_SET(directMethodDevices);
 
 	DisableCloudToDevice();

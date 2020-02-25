@@ -9,7 +9,6 @@ int sockFd = -1;
 
 bool SendInterCoreMessage(const char * msg)
 {
-
 	if (sockFd == -1) {
 		Log_Debug("Socket not initialized");
 		return false;
