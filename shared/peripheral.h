@@ -14,8 +14,7 @@ typedef enum {
 	TYPE_INT = 0,
 	TYPE_FLOAT = 1,
 	TYPE_BOOL = 2,
-	TYPE_STRING = 3,
-	TYPE_JSON = 4
+	TYPE_STRING = 3
 } valueType;
 
 struct _peripheral {

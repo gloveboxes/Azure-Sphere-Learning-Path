@@ -2,8 +2,9 @@
   "environments": [
     {
       "environment": "AzureSphere",
-
-      "AzureSphereTargetApiSet": "4"
+      "AzureSphereTargetApiSet": "4",
+      "AzureSphereTargetHardwareDefinitionDirectory": "..\\shared\\avnet\\Hardware\\avnet_mt3620_sk",
+      "AzureSphereTargetHardwareDefinition": "avnet_mt3620_sk.json"
     }
   ],
   "configurations": [
@@ -27,6 +28,14 @@
         {
           "name": "AZURE_SPHERE_TARGET_API_SET",
           "value": "${env.AzureSphereTargetApiSet}"
+        },
+        {
+          "name": "AZURE_SPHERE_TARGET_HARDWARE_DEFINITION_DIRECTORY",
+          "value": "${env.AzureSphereTargetHardwareDefinitionDirectory}"
+        },
+        {
+          "name": "AZURE_SPHERE_TARGET_HARDWARE_DEFINITION",
+          "value": "${env.AzureSphereTargetHardwareDefinition}"
         }
       ]
     },
@@ -50,6 +59,14 @@
         {
           "name": "AZURE_SPHERE_TARGET_API_SET",
           "value": "${env.AzureSphereTargetApiSet}"
+        },
+        {
+          "name": "AZURE_SPHERE_TARGET_HARDWARE_DEFINITION_DIRECTORY",
+          "value": "${env.AzureSphereTargetHardwareDefinitionDirectory}"
+        },
+        {
+          "name": "AZURE_SPHERE_TARGET_HARDWARE_DEFINITION",
+          "value": "${env.AzureSphereTargetHardwareDefinition}"
         }
       ]
     }

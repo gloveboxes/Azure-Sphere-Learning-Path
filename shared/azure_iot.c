@@ -1,38 +1,13 @@
 #include "azure_iot.h"
 
-#pragma region Azure IoT Hub/IoT Central
-
 const char* getAzureSphereProvisioningResultString(AZURE_SPHERE_PROV_RETURN_VALUE provisioningResult);
 const char* GetReasonString(IOTHUB_CLIENT_CONNECTION_STATUS_REASON reason);
 void SendMessageCallback(IOTHUB_CLIENT_CONFIRMATION_RESULT, void*);
 bool SetupAzureClient(void);
 void HubConnectionStatusCallback(IOTHUB_CLIENT_CONNECTION_STATUS, IOTHUB_CLIENT_CONNECTION_STATUS_REASON, void*);
 
-#pragma endregion
-
-#pragma region Device Twins
-
-void TwinCallback(DEVICE_TWIN_UPDATE_STATE updateState, const unsigned char* payload, size_t payloadSize, void* userContextCallback);
-void SetDesiredState(JSON_Object* desiredProperties, DeviceTwinPeripheral* deviceTwinPeripheral);
-//void TwinReportState(const char* propertyName, bool propertyValue);
-void TwinReportState(DeviceTwinPeripheral* deviceTwinPeripheral);
-void ReportStatusCallback(int result, void* context);
-
-#pragma endregion
-
-#pragma region Direct Methods
-
-int AzureDirectMethodHandler(const char* method_name, const unsigned char* payload, size_t payloadSize,
-	unsigned char** responsePayload, size_t* responsePayloadSize, void* userContextCallback);
-
-#pragma endregion
-
 
 IOTHUB_DEVICE_CLIENT_LL_HANDLE iothubClientHandle = NULL;
-DeviceTwinPeripheral** _deviceTwins = NULL;
-size_t _deviceTwinCount = 0;
-DirectMethodPeripheral** _directMethods;
-size_t _directMethodCount;
 bool iothubAuthenticated = false;
 const int keepalivePeriodSeconds = 20;
 const char* _connectionString = NULL;
@@ -74,7 +49,7 @@ void SendMessageCallback(IOTHUB_CLIENT_CONFIRMATION_RESULT result, void* context
 
 void AzureCloudToDeviceHandler(EventData* eventData) {
 	if (ConsumeTimerFdEvent(cloudToDeviceTimer.fd) != 0) {
-		terminationRequired = true;
+		Terminate();
 		return;
 	}
 
@@ -153,9 +128,8 @@ bool SetupAzureClient()
 	else {
 		AZURE_SPHERE_PROV_RETURN_VALUE provResult = IoTHubDeviceClient_LL_CreateWithAzureSphereDeviceAuthProvisioning(scopeId, 10000, &iothubClientHandle);
 		Log_Debug("IoTHubDeviceClient_LL_CreateWithAzureSphereDeviceAuthProvisioning returned '%s'.\n", getAzureSphereProvisioningResultString(provResult));
-
 		if (provResult.result != AZURE_SPHERE_PROV_RESULT_OK) {
-			Log_Debug("ERROR: failure to create IoTHub Handle.");
+			Log_Debug("ERROR: failure to create IoTHub Handle.\n");
 			return false;
 		}
 	}
@@ -166,6 +140,8 @@ bool SetupAzureClient()
 		Log_Debug("ERROR: failure setting option \"%s\"\n", OPTION_KEEP_ALIVE);
 		return false;
 	}
+
+	IoTHubDeviceClient_LL_DoWork(iothubClientHandle);
 
 	IoTHubDeviceClient_LL_SetDeviceTwinCallback(iothubClientHandle, TwinCallback, NULL);
 	IoTHubDeviceClient_LL_SetDeviceMethodCallback(iothubClientHandle, AzureDirectMethodHandler, NULL);
@@ -240,302 +216,14 @@ const char* GetReasonString(IOTHUB_CLIENT_CONNECTION_STATUS_REASON reason)
 	return reasonString;
 }
 
+//void DeviceTwinUpdateReportedState(char* reportedPropertiesString) {
+//	if (IoTHubDeviceClient_LL_SendReportedState(
+//		iothubClientHandle, (unsigned char*)reportedPropertiesString,
+//		strlen(reportedPropertiesString), DeviceTwinsReportStatusCallback, 0) != IOTHUB_CLIENT_OK) {
+//		Log_Debug("ERROR: failed to set reported state for '%s'.\n", reportedPropertiesString);
+//	}
+//	else {
+//		Log_Debug("INFO: Reported state updated '%s'.\n", reportedPropertiesString);
+//	}
+//}
 
-#pragma region Device Twins
-
-void EnableDeviceTwins(DeviceTwinPeripheral* deviceTwins[], size_t deviceTwinCount) {
-	_deviceTwins = deviceTwins;
-	_deviceTwinCount = deviceTwinCount;
-}
-
-
-/// <summary>
-///     Callback invoked when a Device Twin update is received from IoT Hub.
-///     Updates local state for 'showEvents' (bool).
-/// </summary>
-/// <param name="payload">contains the Device Twin JSON document (desired and reported)</param>
-/// <param name="payloadSize">size of the Device Twin JSON document</param>
-void TwinCallback(DEVICE_TWIN_UPDATE_STATE updateState, const unsigned char* payload,
-	size_t payloadSize, void* userContextCallback)
-{
-	JSON_Value* root_value = NULL;
-	JSON_Object* root_object = NULL;
-
-	char* payLoadString = (char*)malloc(payloadSize + 1);
-	if (payLoadString == NULL) {
-		goto cleanup;
-	}
-
-	memcpy(payLoadString, payload, payloadSize);
-	payLoadString[payloadSize] = 0; //null terminate string
-
-	root_value = json_parse_string(payLoadString);
-	if (root_value == NULL) {
-		goto cleanup;
-	}
-
-	root_object = json_value_get_object(root_value);
-	if (root_object == NULL) {
-		goto cleanup;
-	}
-
-	JSON_Object* desiredProperties = json_object_dotget_object(root_object, "desired");
-	if (desiredProperties == NULL) {
-		desiredProperties = root_object;
-	}
-
-
-	for (int i = 0; i < _deviceTwinCount; i++) {
-		JSON_Object* currentJSONProperties = json_object_dotget_object(desiredProperties, _deviceTwins[i]->twinProperty);
-		if (currentJSONProperties != NULL) {
-			SetDesiredState(currentJSONProperties, _deviceTwins[i]);
-		}
-	}
-
-cleanup:
-	// Release the allocated memory.
-	if (root_value != NULL) {
-		json_value_free(root_value);
-	}
-	free(payLoadString);
-}
-
-/// <summary>
-///     Checks to see if the device twin twinProperty(name) is found in the json object. If yes, then act upon the request
-/// </summary>
-void SetDesiredState(JSON_Object* jsonObject, DeviceTwinPeripheral* deviceTwinPeripheral) {
-	//JSON_Object* jsonObject = NULL;
-	size_t len = 0;
-
-	switch (deviceTwinPeripheral->twinType)
-	{
-	case TYPE_JSON:
-		//jsonObject = json_object_dotget_object(jsonObject, deviceTwinPeripheral->twinProperty);
-		//if (jsonObject != NULL) {
-
-		//	//TODO:
-		//	//malloc out memory and copy json string to twinState
-
-		//	//deviceTwinPeripheral->handler(jsonObject, deviceTwinPeripheral);
-		//	//TwinReportState(deviceTwinPeripheral->twinProperty, deviceTwinPeripheral->twinState);
-		//}
-		break;
-	case TYPE_INT:
-		*(int*)deviceTwinPeripheral->twinState = (int)json_object_get_number(jsonObject, "value");
-		if (deviceTwinPeripheral->handler != NULL) { 
-			deviceTwinPeripheral->handler(deviceTwinPeripheral); 
-		}
-		TwinReportState(deviceTwinPeripheral);
-		break;
-	case TYPE_FLOAT:
-		*(float*)deviceTwinPeripheral->twinState = (float)json_object_get_number(jsonObject, "value");
-		if (deviceTwinPeripheral->handler != NULL) {
-			deviceTwinPeripheral->handler(deviceTwinPeripheral);
-		}
-		TwinReportState(deviceTwinPeripheral);
-		break;
-	case TYPE_BOOL:
-		*(bool*)deviceTwinPeripheral->twinState = (bool)json_object_get_boolean(jsonObject, "value");
-		if (deviceTwinPeripheral->handler != NULL) {
-			deviceTwinPeripheral->handler(deviceTwinPeripheral);
-		}
-		TwinReportState(deviceTwinPeripheral);
-		break;
-	case TYPE_STRING:
-		len = strlen(json_object_get_string(jsonObject, "value")) + 1; // +1 for null termination
-		if (len > 255) { return; } // limits string to 256 chars
-		if (deviceTwinPeripheral->twinState == NULL) {
-			deviceTwinPeripheral->twinState = malloc(len);
-			memset(deviceTwinPeripheral->twinState, 0, len);
-			strcpy(deviceTwinPeripheral->twinState, json_object_get_string(jsonObject, "value"));
-		}
-		else {
-			if (len != (strlen(deviceTwinPeripheral->twinState) + 1)) {
-				realloc(deviceTwinPeripheral->twinState, len);
-			}
-			memset(deviceTwinPeripheral->twinState, 0, len);
-			strcpy(deviceTwinPeripheral->twinState, json_object_get_string(jsonObject, "value"));
-		}
-
-		if (deviceTwinPeripheral->handler != NULL) {
-			deviceTwinPeripheral->handler(deviceTwinPeripheral);
-		}
-		TwinReportState(deviceTwinPeripheral);
-		break;
-	default:
-		break;
-	}
-}
-
-
-void TwinReportState(DeviceTwinPeripheral* deviceTwinPeripheral)
-{
-	int len = 0;
-
-	if (iothubClientHandle == NULL) {
-		Log_Debug("ERROR: client not initialized\n");
-	}
-	else {
-		static char reportedPropertiesString[DEVICE_TWIN_REPORT_LEN] = { 0 };
-
-		switch (deviceTwinPeripheral->twinType)
-		{
-		case TYPE_INT:
-			len = snprintf(reportedPropertiesString, DEVICE_TWIN_REPORT_LEN, "{\"%s\":%d}", deviceTwinPeripheral->twinProperty,
-				(*(int*)deviceTwinPeripheral->twinState));
-			break;
-		case TYPE_FLOAT:
-			len = snprintf(reportedPropertiesString, DEVICE_TWIN_REPORT_LEN, "{\"%s\":%f}", deviceTwinPeripheral->twinProperty,
-				(*(float*)deviceTwinPeripheral->twinState));
-			break;
-		case TYPE_BOOL:
-			len = snprintf(reportedPropertiesString, DEVICE_TWIN_REPORT_LEN, "{\"%s\":%s}", deviceTwinPeripheral->twinProperty,
-				(*(bool*)deviceTwinPeripheral->twinState ? "true" : "false"));
-			break;
-		case TYPE_STRING:
-			len = snprintf(reportedPropertiesString, DEVICE_TWIN_REPORT_LEN, "{\"%s\":\"%s\"}", deviceTwinPeripheral->twinProperty,
-				(deviceTwinPeripheral->twinState));
-			break;
-		default:
-			break;
-		}
-
-		if (len == 0) { return; }
-
-		if (IoTHubDeviceClient_LL_SendReportedState(
-			iothubClientHandle, (unsigned char*)reportedPropertiesString,
-			strlen(reportedPropertiesString), ReportStatusCallback, 0) != IOTHUB_CLIENT_OK) {
-			Log_Debug("ERROR: failed to set reported state for '%s'.\n", deviceTwinPeripheral->twinProperty);
-		}
-		else {
-			Log_Debug("INFO: Reported state for '%s' to value '%s'.\n", deviceTwinPeripheral->twinProperty, reportedPropertiesString);
-		}
-	}
-}
-
-
-/// <summary>
-///     Callback invoked when the Device Twin reported properties are accepted by IoT Hub.
-/// </summary>
-void ReportStatusCallback(int result, void* context)
-{
-	Log_Debug("INFO: Device Twin reported properties update result: HTTP status code %d\n", result);
-}
-
-#pragma endregion
-
-
-#pragma region Direct Methods
-
-void EnableDirectMethods(DirectMethodPeripheral* directMethods[], size_t directMethodCount) {
-	_directMethods = directMethods;
-	_directMethodCount = directMethodCount;
-}
-
-
-/*
-This implementation of Direct Methods expects a JSON Payload Object
-*/
-int AzureDirectMethodHandler(const char* method_name, const unsigned char* payload, size_t payloadSize,
-	unsigned char** responsePayload, size_t* responsePayloadSize, void* userContextCallback) {
-
-	const char* methodSucceededMsg = "Method Succeeded";
-	const char* methodNotFoundMsg = "Method not found";
-	const char* methodErrorMsg = "Method Error";
-	const char* mallocFailedMsg = "Memory Allocation failed";
-	const char* invalidJsonMsg = "Invalid JSON";
-
-	DirectMethodPeripheral* directMethodPeripheral = NULL;
-
-	const char* responseMessage = methodNotFoundMsg;
-	int result = METHOD_NOT_FOUND;
-
-	JSON_Value* root_value = NULL;
-	JSON_Object* jsonObject = NULL;
-
-	// Prepare the payload for the response. This is a heap allocated null terminated string.
-	// The Azure IoT Hub SDK is responsible of freeing it.
-	*responsePayload = NULL;  // Response payload content.
-	*responsePayloadSize = 0; // Response payload content size.
-
-	char* payLoadString = (char*)malloc(payloadSize + 1);
-	if (payLoadString == NULL) {
-		responseMessage = mallocFailedMsg;
-		result = METHOD_FAILED;
-		goto cleanup;
-	}
-
-	memcpy(payLoadString, payload, payloadSize);
-	payLoadString[payloadSize] = 0; //null terminate string
-
-	root_value = json_parse_string(payLoadString);
-	if (root_value == NULL) {
-		responseMessage = invalidJsonMsg;
-		result = METHOD_FAILED;
-		goto cleanup;
-	}
-
-	jsonObject = json_value_get_object(root_value);
-	if (jsonObject == NULL) {
-		responseMessage = invalidJsonMsg;
-		result = METHOD_FAILED;
-		goto cleanup;
-	}
-
-	// loop through array of DirectMethodPeripherals looking for a matching method name
-	for (int i = 0; i < _directMethodCount; i++) {
-		if (strcmp(method_name, _directMethods[i]->methodName) == 0) {
-			directMethodPeripheral = _directMethods[i];
-			break;
-		}
-	}
-
-	if (directMethodPeripheral != NULL) {	// was a DirectMethodPeripheral found
-		MethodResponseCode responseCode = directMethodPeripheral->handler(jsonObject, directMethodPeripheral);
-
-		result = (int)responseCode;
-
-		switch (responseCode)
-		{
-		case METHOD_SUCCEEDED:	// 200
-			responseMessage = strlen(directMethodPeripheral->responseMessage) == 0 ? methodSucceededMsg : directMethodPeripheral->responseMessage;
-			break;
-		case METHOD_FAILED:		// 500
-			responseMessage = strlen(directMethodPeripheral->responseMessage) == 0 ? methodErrorMsg : directMethodPeripheral->responseMessage;
-			break;
-		case METHOD_NOT_FOUND:
-			break;
-		}
-	}
-
-cleanup:
-
-	// Prepare the payload for the response. This is a heap allocated null terminated string.
-	// The Azure IoT Hub SDK is responsible of freeing it.
-
-	*responsePayloadSize = strlen(responseMessage) + 2; // add two as going to wrap the message with quotes for JSON
-	*responsePayload = (unsigned char*)malloc(*responsePayloadSize);
-
-	// response message needs to be wrapped in quotes as part of a JSON object
-	strcpy((char*)(*responsePayload), "\"");
-	strncpy((char*)(*responsePayload + 1), responseMessage, *responsePayloadSize - 2);
-	strcpy((char*)(*responsePayload + *responsePayloadSize - 1), "\"");
-
-	if (root_value != NULL) {
-		json_value_free(root_value);
-	}
-
-	free(payLoadString);
-	payLoadString = NULL;
-
-	if (directMethodPeripheral != NULL) {
-		if (directMethodPeripheral->responseMessage != NULL) { // there was memory allocated for a response message so free it now
-			free(directMethodPeripheral->responseMessage);
-			directMethodPeripheral->responseMessage = NULL;
-		}
-	}
-
-	return result;
-}
-
-#pragma endregion

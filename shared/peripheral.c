@@ -2,7 +2,7 @@
 
 
 int OpenPeripheral(Peripheral* peripheral) {
-	if (peripheral->pin < 0) { return 0; }
+	if (peripheral == NULL || peripheral->pin < 0) { return 0; }
 
 	peripheral->fd = GPIO_OpenAsOutput(peripheral->pin, GPIO_OutputMode_PushPull, peripheral->initialState);
 	if (peripheral->fd < 0) {
