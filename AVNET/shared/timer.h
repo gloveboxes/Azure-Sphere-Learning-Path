@@ -1,6 +1,5 @@
 #pragma once
 
-//#include "epoll_timerfd_utilities.h"
 #include "eventloop_timer_utilities.h"
 #include "stdbool.h"
 #include <applibs/eventloop.h>
@@ -13,8 +12,8 @@ typedef struct {
 } Timer;
 
 void StartTimerSet(Timer* timers[], size_t timerCount);
-void CloseTimerSet(void);
+void StopTimerSet(void);
 bool StartTimer(Timer* timer);
 void StopTimer(Timer* timer);
 EventLoop* GetTimerEventLoop(void);
-void CloseTimerEventLoop(void);
+void StopTimerEventLoop(void);
