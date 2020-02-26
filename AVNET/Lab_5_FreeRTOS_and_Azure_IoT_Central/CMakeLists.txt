@@ -1,6 +1,16 @@
 ﻿#  Copyright (c) Microsoft Corporation. All rights reserved.
 #  Licensed under the MIT License.
 
+if(CMAKE_HOST_UNIX)
+  execute_process( COMMAND getconf PATH_MAX / 
+    OUTPUT_VARIABLE OBJECT_PATH_MAX OUTPUT_STRIP_TRAILING_WHITESPACE)
+  execute_process( COMMAND getconf NAME_MAX / 
+    OUTPUT_VARIABLE OBJECT_NAME_MAX OUTPUT_STRIP_TRAILING_WHITESPACE)
+else()
+  set(OBJECT_PATH_MAX 260)
+  set(OBJECT_NAME_MAX 255)
+endif()
+
 cmake_minimum_required (VERSION 3.8)
 project (AzureSphereIoTCentral C)
 
