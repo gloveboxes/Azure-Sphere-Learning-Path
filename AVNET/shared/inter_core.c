@@ -1,14 +1,15 @@
 #include "inter_core.h"
 
-void SocketEventHandler(EventData* eventData);
-
-EventData socketEventData = { .eventHandler = &SocketEventHandler };
+void SocketEventHandler(EventLoop* el, int fd, EventLoop_IoEvents events, void* context);
+bool ProcessMsg(void);
 void (*_interCoreCallback)(char*);
 int sockFd = -1;
 
+static EventRegistration* socketEventReg = NULL;
 
-bool SendInterCoreMessage(const char * msg)
-{
+
+bool SendInterCoreMessage(const char* msg) {
+
 	if (sockFd == -1) {
 		Log_Debug("Socket not initialized");
 		return false;
@@ -23,7 +24,7 @@ bool SendInterCoreMessage(const char * msg)
 	return true;
 }
 
-int EnableInterCoreCommunications(const char * rtAppComponentId, void (*interCoreCallback)(char*)) {
+int EnableInterCoreCommunications(const char* rtAppComponentId, void (*interCoreCallback)(char*)) {
 	_interCoreCallback = interCoreCallback;
 	// Open connection to real-time capable application.
 	sockFd = Application_Socket(rtAppComponentId);
@@ -41,17 +42,21 @@ int EnableInterCoreCommunications(const char * rtAppComponentId, void (*interCor
 	}
 
 	// Register handler for incoming messages from real-time capable application.
-	if (RegisterEventHandlerToEpoll(GetEpollFd(), sockFd, &socketEventData, EPOLLIN) != 0) {
+	socketEventReg = EventLoop_RegisterIo(GetTimerEventLoop(), sockFd, EventLoop_Input, SocketEventHandler,
+		/* context */ NULL);
+	if (socketEventReg == NULL) {
+		Log_Debug("ERROR: Unable to register socket event: %d (%s)\n", errno, strerror(errno));
 		return -1;
 	}
+
 	return 0;
 }
+
 
 /// <summary>
 ///     Handle socket event by reading incoming data from real-time capable application.
 /// </summary>
-void SocketEventHandler(EventData* eventData)
-{
+void SocketEventHandler(EventLoop* el, int fd, EventLoop_IoEvents events, void* context) {
 	if (!ProcessMsg()) {
 		Terminate();
 	}
@@ -60,8 +65,7 @@ void SocketEventHandler(EventData* eventData)
 /// <summary>
 ///     Handle socket event by reading incoming data from real-time capable application.
 /// </summary>
-bool ProcessMsg()
-{
+bool ProcessMsg() {
 	char rxBuf[32];
 	char msg[32];
 	memset(msg, 0, sizeof msg);
@@ -77,8 +81,8 @@ bool ProcessMsg()
 	for (int i = 0; i < bytesReceived; ++i) {
 		msg[i] = isprint(rxBuf[i]) ? rxBuf[i] : '.';
 	}
-	Log_Debug(msg);
-	
+	Log_Debug("\n%s\n\n",msg);
+
 	_interCoreCallback(msg);
 
 	return true;

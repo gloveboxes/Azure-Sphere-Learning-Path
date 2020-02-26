@@ -1,6 +1,6 @@
 ﻿#include "../shared/azure_iot.h"
 #include "../shared/globals.h"
-#include "../shared/intercore.h"
+#include "../shared/inter_core.h"
 #include "../shared/peripheral.h"
 #include "../shared/terminate.h"
 #include "../shared/timer.h"

@@ -17,7 +17,7 @@ set(Source
     "../shared/terminate.c"
     "../shared/eventloop_timer_utilities.c"
     "../shared/parson.c"
-    "../shared/intercore.c"
+    "../shared/inter_core.c"
 )
 source_group("Source" FILES ${Source})
 
