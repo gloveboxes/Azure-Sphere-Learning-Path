@@ -145,16 +145,26 @@ static void MeasureSensorHandler(EventData* eventData)
 /// <returns>0 on success, or -1 on failure</returns>
 static int InitPeripheralsAndHandlers(void)
 {
-	if (realTelemetry) { // Initialize Grove Shield and Grove Temperature and Humidity Sensor		
+#if defined AVENET_DK
+	if (initI2c() == -1) {
+		return -1;
+	}
+#endif
+
+#if defined SEEED_DK
+	if (realTelemetry) { // Initialize Grove Shield and Grove Temperature and Humidity Sensor	
 		GroveShield_Initialize(&i2cFd, 115200);
 		sht31 = GroveTempHumiSHT31_Open(i2cFd);
 	}
+#endif
 
-	OPEN_PERIPHERAL_SET(actuatorDevices);
-	START_TIMER_SET(timers);
+	RegisterPeripheralSet(actuatorDevices, NELEMS(actuatorDevices));
+	RegisterTimerSet(timers, NELEMS(timers));
 
 	return 0;
 }
+
+
 
 
 /// <summary>
@@ -164,8 +174,7 @@ static void ClosePeripheralsAndHandlers(void)
 {
 	Log_Debug("Closing file descriptors\n");
 
-	STOP_TIMER_SET(timers);
-	CLOSE_PERIPHERAL_SET(actuatorDevices);
-
+	CloseTimerSet();
+	ClosePeripheralSet();
 	CloseFdAndPrintError(GetEpollFd(), "Epoll");
 }

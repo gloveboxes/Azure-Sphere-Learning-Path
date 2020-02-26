@@ -3,11 +3,22 @@
 DirectMethodPeripheral** _directMethods;
 size_t _directMethodCount;
 
-void EnableDirectMethods(DirectMethodPeripheral* directMethods[], size_t directMethodCount) {
+void RegisterDirectMethodSet(DirectMethodPeripheral* directMethods[], size_t directMethodCount) {
 	_directMethods = directMethods;
 	_directMethodCount = directMethodCount;
+
+	for (int i = 0; i < _directMethodCount; i++) {
+		if (_directMethods[i]->peripheral.initialise != NULL) {
+			_directMethods[i]->peripheral.initialise(&_directMethods[i]->peripheral);
+		}
+	}
 }
 
+void CloseDirectMethodSet(void) {
+	for (int i = 0; i < _directMethodCount; i++) { 
+		CloseFdAndPrintError(_directMethods[i]->peripheral.fd, _directMethods[i]->peripheral.name); 
+	}
+}
 
 /*
 This implementation of Direct Methods expects a JSON Payload Object

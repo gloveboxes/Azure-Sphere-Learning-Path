@@ -1,21 +1,20 @@
-#ifndef timer_h
-#define timer_h
+#pragma once
 
-#include "epoll_timerfd_utilities.h"
+//#include "epoll_timerfd_utilities.h"
+#include "../shared/eventloop_timer_utilities.h"
 #include "stdbool.h"
-
-#define START_TIMER_SET(x) for (int i = 0; i < NELEMS(x); i++) { if (!StartTimer(x[i])) { break; }; }
-#define STOP_TIMER_SET(x) for (int i = 0; i < NELEMS(x); i++) { StopTimer(x[i]); }
+#include <applibs/eventloop.h>
 
 typedef struct {
-	EventData eventData;
+	void (*timerEventHandler)(EventLoopTimer* timer);
 	struct timespec period;
-	int fd;
+	EventLoopTimer* eventLoopTimer;
 	const char* name;
 } Timer;
 
+void RegisterTimerSet(Timer* timers[], size_t timerCount);
+void CloseTimerSet(void);
 bool StartTimer(Timer* timer);
 void StopTimer(Timer* timer);
-int GetEpollFd(void);
-
-#endif
+EventLoop* GetTimerEventLoop(void);
+void CloseTimerEventLoop(void);

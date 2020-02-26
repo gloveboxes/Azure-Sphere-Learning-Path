@@ -1,6 +1,5 @@
 #include "device_twins.h"
 
-//void TwinCallback(DEVICE_TWIN_UPDATE_STATE updateState, const unsigned char* payload, size_t payloadSize, void* userContextCallback);
 void SetDesiredState(JSON_Object* desiredProperties, DeviceTwinPeripheral* deviceTwinPeripheral);
 void TwinReportState(DeviceTwinPeripheral* deviceTwinPeripheral);
 void DeviceTwinsReportStatusCallback(int result, void* context);
@@ -10,11 +9,50 @@ DeviceTwinPeripheral** _deviceTwins = NULL;
 size_t _deviceTwinCount = 0;
 
 
-void EnableDeviceTwins(DeviceTwinPeripheral* deviceTwins[], size_t deviceTwinCount) {
+void RegisterDeviceTwinSet(DeviceTwinPeripheral* deviceTwins[], size_t deviceTwinCount) {
 	_deviceTwins = deviceTwins;
 	_deviceTwinCount = deviceTwinCount;
+
+	for (int i = 0; i < _deviceTwinCount; i++) { 
+		OpenDeviceTwin(_deviceTwins[i]); 
+	}
 }
 
+void CloseDeviceTwinSet(void) {
+	for (int i = 0; i < _deviceTwinCount; i++) { CloseDeviceTwin(_deviceTwins[i]); }
+}
+
+void OpenDeviceTwin(DeviceTwinPeripheral* deviceTwinPeripheral) {
+
+	// types JSON and String allocated dynamically when called in azure_iot.c
+	switch (deviceTwinPeripheral->twinType)
+	{
+	case TYPE_INT:
+		deviceTwinPeripheral->twinState = malloc(sizeof(int));
+		break;
+	case TYPE_FLOAT:
+		deviceTwinPeripheral->twinState = malloc(sizeof(float));
+		break;
+	case TYPE_BOOL:
+		deviceTwinPeripheral->twinState = malloc(sizeof(bool));
+		break;
+	default:
+		break;
+	}
+
+	if (deviceTwinPeripheral->peripheral.initialise != NULL) {
+		deviceTwinPeripheral->peripheral.initialise(&deviceTwinPeripheral->peripheral);
+	}
+}
+
+void CloseDeviceTwin(DeviceTwinPeripheral* deviceTwinPeripheral) {
+	if (deviceTwinPeripheral->twinState != NULL) {
+		free(deviceTwinPeripheral->twinState);
+		deviceTwinPeripheral->twinState = NULL;
+	}
+
+	CloseFdAndPrintError(deviceTwinPeripheral->peripheral.fd, deviceTwinPeripheral->peripheral.name);
+}
 
 /// <summary>
 ///     Callback invoked when a Device Twin update is received from IoT Hub.

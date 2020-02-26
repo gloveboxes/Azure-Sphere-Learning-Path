@@ -30,27 +30,10 @@
  *
  */
 
-#include <errno.h>
-#include <signal.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <math.h>
-#include <stdlib.h>
 
-// applibs_versions.h defines the API struct versions to use for applibs APIs.
-#include "applibs_versions.h"
 
-#include <applibs/log.h>
-#include <applibs/i2c.h>
+#include "imu_temp_pressure.h"
 
-#include "hw/avnet_mt3620_sk.h"
-
-#include "deviceTwin.h"
-#include "azure_iot_utilities.h"
-#include "build_options.h"
-#include "i2c.h"
-#include "lsm6dso_reg.h"
-#include "lps22hh_reg.h"
 
 /* Private variables ---------------------------------------------------------*/
 static axis3bit16_t data_raw_acceleration;
@@ -58,9 +41,9 @@ static axis3bit16_t data_raw_angular_rate;
 static axis3bit16_t raw_angular_rate_calibration;
 static axis1bit32_t data_raw_pressure;
 static axis1bit16_t data_raw_temperature;
-static float acceleration_mg[3];
-static float angular_rate_dps[3];
-static float lsm6dsoTemperature_degC;
+//static float acceleration_mg[3];
+//static float angular_rate_dps[3];
+//static float lsm6dsoTemperature_degC;
 static float pressure_hPa;
 static float lps22hhTemperature_degC;
 
@@ -69,13 +52,15 @@ int accelTimerFd;
 const uint8_t lsm6dsOAddress = LSM6DSO_ADDRESS;     // Addr = 0x6A
 lsm6dso_ctx_t dev_ctx;
 lps22hh_ctx_t pressure_ctx;
-//bool lps22hhDetected;
+bool lps22hhDetected;
 
 
 //Extern variables
 int i2cFd = -1;
-extern int epollFd;
-extern volatile sig_atomic_t terminationRequired;
+
+AngularRateDegreesPerSecond angularRateDps;
+AccelerationMilligForce accelerationMilligForce;
+
 
 //Private functions
 
@@ -100,20 +85,11 @@ void HAL_Delay(int delayTime) {
 /// <summary>
 ///     Print latest data from on-board sensors.
 /// </summary>
-void AccelTimerEventHandler(EventData *eventData)
+bool AvnetSkSensorUpdate(void)
 {
+
 	uint8_t reg;
 	lps22hh_reg_t lps22hhReg;
-
-#if (defined(IOT_CENTRAL_APPLICATION) || defined(IOT_HUB_APPLICATION))
-	static bool firstPass = true;
-#endif
-	// Consume the event.  If we don't do this we'll come right back 
-	// to process the same event again
-	if (ConsumeTimerFdEvent(accelTimerFd) != 0) {
-		terminationRequired = true;
-		return;
-	}
 
 	// Read the sensors on the lsm6dso device
 
@@ -124,13 +100,13 @@ void AccelTimerEventHandler(EventData *eventData)
 		// Read acceleration field data
 		memset(data_raw_acceleration.u8bit, 0x00, 3 * sizeof(int16_t));
 		lsm6dso_acceleration_raw_get(&dev_ctx, data_raw_acceleration.u8bit);
+		
+		accelerationMilligForce.x = lsm6dso_from_fs4_to_mg(data_raw_acceleration.i16bit[0]);
+		accelerationMilligForce.y = lsm6dso_from_fs4_to_mg(data_raw_acceleration.i16bit[1]);
+		accelerationMilligForce.z = lsm6dso_from_fs4_to_mg(data_raw_acceleration.i16bit[2]);
 
-		acceleration_mg[0] = lsm6dso_from_fs4_to_mg(data_raw_acceleration.i16bit[0]);
-		acceleration_mg[1] = lsm6dso_from_fs4_to_mg(data_raw_acceleration.i16bit[1]);
-		acceleration_mg[2] = lsm6dso_from_fs4_to_mg(data_raw_acceleration.i16bit[2]);
-
-		Log_Debug("\nLSM6DSO: Acceleration [mg]  : %.4lf, %.4lf, %.4lf\n",
-			acceleration_mg[0], acceleration_mg[1], acceleration_mg[2]);
+		//Log_Debug("\nLSM6DSO: Acceleration [mg]  : %.4lf, %.4lf, %.4lf\n",
+		//	accelerationMilligForce.x, accelerationMilligForce.y, accelerationMilligForce.z);
 	}
 
 	lsm6dso_gy_flag_data_ready_get(&dev_ctx, &reg);
@@ -141,25 +117,26 @@ void AccelTimerEventHandler(EventData *eventData)
 		lsm6dso_angular_rate_raw_get(&dev_ctx, data_raw_angular_rate.u8bit);
 
 		// Before we store the mdps values subtract the calibration data we captured at startup.
-		angular_rate_dps[0] = (lsm6dso_from_fs2000_to_mdps(data_raw_angular_rate.i16bit[0] - raw_angular_rate_calibration.i16bit[0])) / 1000.0;
-		angular_rate_dps[1] = (lsm6dso_from_fs2000_to_mdps(data_raw_angular_rate.i16bit[1] - raw_angular_rate_calibration.i16bit[1])) / 1000.0;
-		angular_rate_dps[2] = (lsm6dso_from_fs2000_to_mdps(data_raw_angular_rate.i16bit[2] - raw_angular_rate_calibration.i16bit[2])) / 1000.0;
+		angularRateDps.x = (lsm6dso_from_fs2000_to_mdps(data_raw_angular_rate.i16bit[0] - raw_angular_rate_calibration.i16bit[0])) / 1000.0;
+		angularRateDps.y = (lsm6dso_from_fs2000_to_mdps(data_raw_angular_rate.i16bit[1] - raw_angular_rate_calibration.i16bit[1])) / 1000.0;
+		angularRateDps.z = (lsm6dso_from_fs2000_to_mdps(data_raw_angular_rate.i16bit[2] - raw_angular_rate_calibration.i16bit[2])) / 1000.0;
 
-		Log_Debug("LSM6DSO: Angular rate [dps] : %4.2f, %4.2f, %4.2f\r\n",
-			angular_rate_dps[0], angular_rate_dps[1], angular_rate_dps[2]);
+		//Log_Debug("LSM6DSO: Angular rate [dps] : %4.2f, %4.2f, %4.2f\r\n",
+		//	angularRateDps.x, angularRateDps.y, angularRateDps.z);
+
 
 	}
 
-	lsm6dso_temp_flag_data_ready_get(&dev_ctx, &reg);
-	if (reg)
-	{
-		// Read temperature data
-		memset(data_raw_temperature.u8bit, 0x00, sizeof(int16_t));
-		lsm6dso_temperature_raw_get(&dev_ctx, data_raw_temperature.u8bit);
-		lsm6dsoTemperature_degC = lsm6dso_from_lsb_to_celsius(data_raw_temperature.i16bit);
+	//lsm6dso_temp_flag_data_ready_get(&dev_ctx, &reg);
+	//if (reg)
+	//{
+	//	// Read temperature data
+	//	memset(data_raw_temperature.u8bit, 0x00, sizeof(int16_t));
+	//	lsm6dso_temperature_raw_get(&dev_ctx, data_raw_temperature.u8bit);
+	//	lsm6dsoTemperature_degC = lsm6dso_from_lsb_to_celsius(data_raw_temperature.i16bit);
 
-		Log_Debug("LSM6DSO: Temperature  [degC]: %.2f\r\n", lsm6dsoTemperature_degC);
-	}
+	//	Log_Debug("LSM6DSO: Temperature  [degC]: %.2f\r\n", lsm6dsoTemperature_degC);
+	//}
 
 	// Read the lps22hh sensor on the lsm6dso device
 
@@ -181,45 +158,35 @@ void AccelTimerEventHandler(EventData *eventData)
 			lps22hh_temperature_raw_get(&pressure_ctx, data_raw_temperature.u8bit);
 			lps22hhTemperature_degC = lps22hh_from_lsb_to_celsius(data_raw_temperature.i16bit);
 
-			Log_Debug("LPS22HH: Pressure     [hPa] : %.2f\r\n", pressure_hPa);
-			Log_Debug("LPS22HH: Temperature  [degC]: %.2f\r\n", lps22hhTemperature_degC);
+			//Log_Debug("LPS22HH: Pressure     [hPa] : %.2f\r\n", pressure_hPa);
+			//Log_Debug("LPS22HH: Temperature  [degC]: %.2f\r\n", lps22hhTemperature_degC);
+
+			return true;
 		}
 	}
 	// LPS22HH was not detected
 	else {
-
 		Log_Debug("LPS22HH: Pressure     [hPa] : Not read!\r\n");
 		Log_Debug("LPS22HH: Temperature  [degC]: Not read!\r\n");
+		return false;
 	}
+	return false;
+}
 
+float GetPressure(void) {
+	return pressure_hPa;
+}
 
-#if (defined(IOT_CENTRAL_APPLICATION) || defined(IOT_HUB_APPLICATION))
+float GetTemperature(void) {
+	return lps22hhTemperature_degC;
+}
 
-		// We've seen that the first read of the Accelerometer data is garbage.  If this is the first pass
-		// reading data, don't report it to Azure.  Since we're graphing data in Azure, this data point
-		// will skew the data.
-		if (!firstPass) {
+AngularRateDegreesPerSecond GetAngularRate(void) {
+	return angularRateDps;
+}
 
-			// Allocate memory for a telemetry message to Azure
-			char *pjsonBuffer = (char *)malloc(JSON_BUFFER_SIZE);
-			if (pjsonBuffer == NULL) {
-				Log_Debug("ERROR: not enough memory to send telemetry");
-			}
-
-			// construct the telemetry message
-			snprintf(pjsonBuffer, JSON_BUFFER_SIZE, "{\"gX\":\"%.4lf\", \"gY\":\"%.4lf\", \"gZ\":\"%.4lf\", \"pressure\": \"%.2f\", \"aX\": \"%4.2f\", \"aY\": \"%4.2f\", \"aZ\": \"%4.2f\"}",
-				acceleration_mg[0], acceleration_mg[1], acceleration_mg[2], pressure_hPa, angular_rate_dps[0], angular_rate_dps[1], angular_rate_dps[2]);
-
-			Log_Debug("\n[Info] Sending telemetry: %s\n", pjsonBuffer);
-			AzureIoT_SendMessage(pjsonBuffer);
-			free(pjsonBuffer);
-
-		}
-
-		firstPass = false;
-
-#endif 
-
+AccelerationMilligForce GetAcceleration(void) {
+	return accelerationMilligForce;
 }
 
 /// <summary>
@@ -227,8 +194,6 @@ void AccelTimerEventHandler(EventData *eventData)
 /// </summary>
 /// <returns>0 on success, or -1 on failure</returns>
 int initI2c(void) {
-
-	// Begin MT3620 I2C init 
 
 	i2cFd = I2CMaster_Open(AVNET_MT3620_SK_ISU2_I2C);
 	if (i2cFd < 0) {
@@ -336,7 +301,7 @@ int initI2c(void) {
 		}
 
 		if (failCount-- == 0) {
-			bool lps22hhDetected = false;
+			lps22hhDetected = false;
 			Log_Debug("Failed to read LPS22HH device ID, disabling all access to LPS22HH device!\n");
 			Log_Debug("Usually a power cycle will correct this issue\n");
 			break;
@@ -383,39 +348,52 @@ int initI2c(void) {
 			lsm6dso_angular_rate_raw_get(&dev_ctx, data_raw_angular_rate.u8bit);
 
 			// Before we store the mdps values subtract the calibration data we captured at startup.
-			angular_rate_dps[0] = lsm6dso_from_fs2000_to_mdps(data_raw_angular_rate.i16bit[0] - raw_angular_rate_calibration.i16bit[0]);
-			angular_rate_dps[1] = lsm6dso_from_fs2000_to_mdps(data_raw_angular_rate.i16bit[1] - raw_angular_rate_calibration.i16bit[1]);
-			angular_rate_dps[2] = lsm6dso_from_fs2000_to_mdps(data_raw_angular_rate.i16bit[2] - raw_angular_rate_calibration.i16bit[2]);
+			angularRateDps.x = lsm6dso_from_fs2000_to_mdps(data_raw_angular_rate.i16bit[0] - raw_angular_rate_calibration.i16bit[0]);
+			angularRateDps.y = lsm6dso_from_fs2000_to_mdps(data_raw_angular_rate.i16bit[1] - raw_angular_rate_calibration.i16bit[1]);
+			angularRateDps.z = lsm6dso_from_fs2000_to_mdps(data_raw_angular_rate.i16bit[2] - raw_angular_rate_calibration.i16bit[2]);
 
 		}
 
 	// If the angular values after applying the offset are not all 0.0s, then do it again!
-	} while ((angular_rate_dps[0] != 0.0) || (angular_rate_dps[1] != 0.0) || (angular_rate_dps[2] != 0.0));
+	} while ((angularRateDps.x != 0.0) || (angularRateDps.y != 0.0) || (angularRateDps.z != 0.0));
 
 	Log_Debug("LSM6DSO: Calibrating angular rate complete!\n");
 
 	// Init the epoll interface to periodically run the AccelTimerEventHandler routine where we read the sensors
 
-	// Define the period in the build_options.h file
-	struct timespec accelReadPeriod = { .tv_sec = ACCEL_READ_PERIOD_SECONDS,.tv_nsec = ACCEL_READ_PERIOD_NANO_SECONDS };
-	// event handler data structures. Only the event handler field needs to be populated.
-	static EventData accelEventData = { .eventHandler = &AccelTimerEventHandler };
-	accelTimerFd = -1;
-	accelTimerFd = CreateTimerFdAndAddToEpoll(epollFd, &accelReadPeriod, &accelEventData, EPOLLIN);
-	if (accelTimerFd < 0) {
-		return -1;
-	}
+	//// Define the period in the build_options.h file
+	//struct timespec accelReadPeriod = { .tv_sec = ACCEL_READ_PERIOD_SECONDS,.tv_nsec = ACCEL_READ_PERIOD_NANO_SECONDS };
+	//// event handler data structures. Only the event handler field needs to be populated.
+	//static EventData accelEventData = { .eventHandler = &AccelTimerEventHandler };
+	//accelTimerFd = -1;
+	//accelTimerFd = CreateTimerFdAndAddToEpoll(epollFd, &accelReadPeriod, &accelEventData, EPOLLIN);
+	//if (accelTimerFd < 0) {
+	//	return -1;
+	//}
 	
 	return 0;
+}
+
+/// <summary>
+///     Closes a file descriptor and prints an error on failure.
+/// </summary>
+/// <param name="fd">File descriptor to close</param>
+/// <param name="fdName">File descriptor name to use in error message</param>
+void CloseFdPrintError(int fd, const char* fdName)
+{
+	if (fd >= 0) {
+		int result = close(fd);
+		if (result != 0) {
+			Log_Debug("ERROR: Could not close fd %s: %s (%d).\n", fdName, strerror(errno), errno);
+		}
+	}
 }
 
 /// <summary>
 ///     Closes the I2C interface File Descriptors.
 /// </summary>
 void closeI2c(void) {
-
-	CloseFdAndPrintError(i2cFd, "i2c");
-	CloseFdAndPrintError(accelTimerFd, "accelTimer");
+	CloseFdPrintError(i2cFd, "i2c");
 }
 
 /// <summary>

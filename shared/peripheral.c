@@ -1,5 +1,7 @@
 #include "peripheral.h"
 
+Peripheral** _peripherals = NULL;
+size_t _peripheralCount = 0;
 
 int OpenPeripheral(Peripheral* peripheral) {
 	if (peripheral == NULL || peripheral->pin < 0) { return 0; }
@@ -14,35 +16,37 @@ int OpenPeripheral(Peripheral* peripheral) {
 	return 0;
 }
 
-void OpenDeviceTwin(DeviceTwinPeripheral* deviceTwinPeripheral) {
+void RegisterPeripheralSet(Peripheral** peripherals, size_t peripheralCount) {
+	_peripherals = peripherals;
+	_peripheralCount = peripheralCount;
 
-	// types JSON and String allocated dynamically when called in azure_iot.c
-	switch (deviceTwinPeripheral->twinType)
-	{
-	case TYPE_INT:
-		deviceTwinPeripheral->twinState = malloc(sizeof(int));
-		break;
-	case TYPE_FLOAT:
-		deviceTwinPeripheral->twinState = malloc(sizeof(float));
-		break;
-	case TYPE_BOOL:
-		deviceTwinPeripheral->twinState = malloc(sizeof(bool));
-		break;
-	default:
-		break;
-	}
-
-	if (deviceTwinPeripheral->peripheral.initialise != NULL) {
-		deviceTwinPeripheral->peripheral.initialise(&deviceTwinPeripheral->peripheral);
+	for (int i = 0; i < _peripheralCount; i++) {
+		if (_peripherals[i]->initialise != NULL) {
+			_peripherals[i]->initialise(_peripherals[i]);
+		} 
 	}
 }
 
-void CloseDeviceTwin(DeviceTwinPeripheral* deviceTwinPeripheral) {
-	if (deviceTwinPeripheral->twinState != NULL) {
-		free(deviceTwinPeripheral->twinState);
-		deviceTwinPeripheral->twinState = NULL;
+/// <summary>
+///     Closes a file descriptor and prints an error on failure.
+/// </summary>
+/// <param name="fd">File descriptor to close</param>
+/// <param name="fdName">File descriptor name to use in error message</param>
+void CloseFdAndPrintError(int fd, const char* fdName)
+{
+	if (fd >= 0) {
+		int result = close(fd);
+		if (result != 0) {
+			Log_Debug("ERROR: Could not close fd %s: %s (%d).\n", fdName, strerror(errno), errno);
+		}
 	}
-
-	CloseFdAndPrintError(deviceTwinPeripheral->peripheral.fd, deviceTwinPeripheral->peripheral.name);
 }
+
+void ClosePeripheralSet(void) {
+	for (int i = 0; i < _peripheralCount; i++) {
+		CloseFdAndPrintError(_peripherals[i]->fd, _peripherals[i]->name);
+	}
+}
+
+
 

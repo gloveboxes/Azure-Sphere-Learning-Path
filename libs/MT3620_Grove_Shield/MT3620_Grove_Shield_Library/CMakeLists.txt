@@ -71,31 +71,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 target_link_libraries (${PROJECT_NAME} applibs pthread gcc_s c)
 
-################################################################################
-# Compile definitions
-################################################################################
+set_source_files_properties(Sensors/GroveOledDisplay96x96.c PROPERTIES COMPILE_FLAGS -Wno-conversion)
 
-################################################################################
-# Compile and link options
-################################################################################
-#if(MSVC)
-#    target_compile_options(${PROJECT_NAME} PRIVATE
-#        $<$<CONFIG:Debug>:
-#            /showIncludes;
-#            ${DEFAULT_CXX_DEBUG_RUNTIME_LIBRARY}
-#        >
-#        $<$<CONFIG:Release>:
-#            ${DEFAULT_CXX_RUNTIME_LIBRARY}
-#        >
-#        ${DEFAULT_CXX_DEBUG_INFORMATION_FORMAT};
-#        ${DEFAULT_CXX_EXCEPTION_HANDLING}
-#    )
-#endif()
 
-################################################################################
-# Dependencies
-################################################################################
-#target_link_directories(${PROJECT_NAME} PUBLIC
-#    "${CMAKE_CURRENT_SOURCE_DIR}/./azureiot/lib"
-#)
 

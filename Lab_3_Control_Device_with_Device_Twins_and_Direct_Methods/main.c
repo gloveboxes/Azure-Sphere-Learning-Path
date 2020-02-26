@@ -1,59 +1,33 @@
-﻿
-#include "../shared/azure_iot.h"
-#include "../shared/device_twins.h"
-#include "../shared/direct_methods.h"
+﻿#include "../shared/azure_iot.h"
 #include "../shared/globals.h"
 #include "../shared/peripheral.h"
-#include "../shared/timer.h"
 #include "../shared/terminate.h"
+#include "../shared/timer.h"
+#include "applibs_versions.h"
 #include <applibs/gpio.h>
 #include <applibs/log.h>
 #include <stdbool.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <time.h>
 
+#define AVNET 1
+//#define SEEED 1
+//#define SEEED_MINI 1
 
-// Select Azure Sphere Dev Kit
-#define AVNET_DK 1
-//#define SEEED_DK 1
-//#define SEEED_MINI_DK 1
+#if defined AVNET
+#include "../shared/avnet_sk/avnet_sk.h"
+#endif // AVNET
 
-#if defined AVNET_DK
-
-#include "../shared/i2c.h"
-#include "../shared/avnet/Hardware/avnet_mt3620_sk/inc/hw/avnet_mt3620_sk.h"
-
-#define BUILTIN_LED AVNET_MT3620_SK_APP_STATUS_LED_YELLOW
-#define LIGHT_PIN AVNET_MT3620_SK_WLAN_STATUS_LED_YELLOW
-#define RELAY_PIN AVNET_MT3620_SK_GPIO17
-
-#elif defined SEEED_DK
-
-#include "../libs/MT3620_Grove_Shield/MT3620_Grove_Shield_Library/Grove.h"
-#include "../libs/MT3620_Grove_Shield/MT3620_Grove_Shield_Library/Sensors/GroveTempHumiSHT31.h"
-
-// GPIO Pins used in the High Level (HL) Application
-#define BUILTIN_LED 19
-#define LIGHT_PIN 21
-#define RELAY_PIN 0
-
-static int i2cFd;
-static void* sht31;
-
-#endif
-
-#define JSON_MESSAGE_BYTES 100  // Number of bytes to allocate for the JSON telemetry message for IoT Central
+#define JSON_MESSAGE_BYTES 128  // Number of bytes to allocate for the JSON telemetry message for IoT Central
 static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
-
 
 // Forward signatures
 static int InitPeripheralsAndHandlers(void);
 static void ClosePeripheralsAndHandlers(void);
-static void MeasureSensorHandler(EventData* eventData);
+static void MeasureSensorHandler(EventLoopTimer* eventData);
 static void DeviceTwinHandler(DeviceTwinPeripheral* deviceTwinPeripheral);
 static MethodResponseCode SetFanSpeedDirectMethod(JSON_Object* json, DirectMethodPeripheral* directMethodperipheral);
-static int InitFanPWM(struct _peripheral* peripheral);
+
 
 static DeviceTwinPeripheral relay = {
 	.peripheral = {
@@ -71,52 +45,30 @@ static DeviceTwinPeripheral light = {
 	.handler = DeviceTwinHandler
 };
 
-static DeviceTwinPeripheral intTest = {
-	.peripheral = {
-		.fd = -1, .pin = -1, .initialState = GPIO_Value_High, .invertPin = true, .initialise = OpenPeripheral, .name = "led1" },
-	.twinProperty = "int1",
-	.twinType = TYPE_INT,
-	.handler = DeviceTwinHandler
-};
-
-static DeviceTwinPeripheral stringTest = {
-	.peripheral = {
-		.fd = -1, .pin = -1, .initialState = GPIO_Value_High, .invertPin = true, .initialise = OpenPeripheral, .name = "led1" },
-	.twinProperty = "string1",
-	.twinType = TYPE_STRING,
-	.handler = DeviceTwinHandler
-};
-
-static DeviceTwinPeripheral objectTest = {
-	.twinProperty = "object1",
-	.twinType = TYPE_STRING,
-	.handler = DeviceTwinHandler
-};
-
 static DirectMethodPeripheral fan = {
 	.methodName = "fan1",
 	.handler = SetFanSpeedDirectMethod
 };
 
-static ActuatorPeripheral sendStatus = {
-	.peripheral = {.fd = -1, .pin = BUILTIN_LED, .initialState = GPIO_Value_High, .invertPin = true, .initialise = OpenPeripheral, .name = "SendStatus" }
+static Peripheral sendStatusLed = {
+	.fd = -1, .pin = BUILTIN_LED, .initialState = GPIO_Value_High, .invertPin = true, .initialise = OpenPeripheral, .name = "SendStatus"
 };
-
 
 static Timer sendTelemetry = {
-	.eventData = {.eventHandler = &MeasureSensorHandler },
 	.period = { 10, 0 },
-	.name = "MeasureSensor"
+	.name = "MeasureSensor",
+	.timerEventHandler = &MeasureSensorHandler
 };
 
-#pragma region define sets for auto initialisation and close
+#pragma region define sets for auto initialization and close
 
-DeviceTwinPeripheral* deviceTwinDevices[] = { &relay, &light, &intTest, &stringTest, &objectTest };
+DeviceTwinPeripheral* deviceTwinDevices[] = { &relay, &light };
 DirectMethodPeripheral* directMethodDevices[] = { &fan };
-ActuatorPeripheral* actuatorDevices[] = { &sendStatus };
+Peripheral* peripherals[] = { &sendStatusLed };
 Timer* timers[] = { &sendTelemetry };
 
 #pragma endregion
+// end define sets for auto initialization and close
 
 
 int main(int argc, char* argv[])
@@ -138,67 +90,37 @@ int main(int argc, char* argv[])
 
 	// Main loop
 	while (!IsTerminationRequired()) {
-		if (WaitForEventAndCallHandler(GetEpollFd()) != 0) {
+		int result = EventLoop_Run(GetTimerEventLoop(), -1, true);
+		// Continue if interrupted by signal, e.g. due to breakpoint being set.
+		if (result == -1 && errno != EINTR) {
 			Terminate();
 		}
 	}
 
 	ClosePeripheralsAndHandlers();
-
 	Log_Debug("Application exiting.\n");
-
 	return 0;
 }
 
-/// <summary>
-///     Reads telemetry and returns the length of JSON data.
-/// </summary>
-static int ReadTelemetry(void) {
-	static int msgId = 0;
-	float temperature;
-	float humidity;
-
-#if defined AVNET_DK
-	int rnd = (rand() % 10) - 5;
-	temperature = (float)(25.0 + rnd);
-	humidity = (float)(50.0 + rnd);
-#elif
-
-	if (realTelemetry) {
-#if defined SEEED_DK
-		GroveTempHumiSHT31_Read(sht31);
-		temperature = GroveTempHumiSHT31_GetTemperature(sht31);
-		humidity = GroveTempHumiSHT31_GetHumidity(sht31);
-#endif
-	}
-	else {
-		int rnd = (rand() % 10) - 5;
-		temperature = (float)(25.0 + rnd);
-		humidity = (float)(50.0 + rnd);
-	}
-#endif
-
-	static const char* MsgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"MsgId\":%d }";
-	return snprintf(msgBuffer, JSON_MESSAGE_BYTES, MsgTemplate, temperature, humidity, msgId++);
-}
 
 /// <summary>
 /// Azure timer event:  Check connection status and send telemetry
 /// </summary>
-static void MeasureSensorHandler(EventData* eventData)
+static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 {
-	if (ConsumeTimerFdEvent(sendTelemetry.fd) != 0) {
+	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
 		Terminate();
 		return;
 	}
 
-	GPIO_ON(sendStatus.peripheral); // blink send status LED
+	GPIO_ON(sendStatusLed); // blink send status LED
 
-	if (ReadTelemetry() > 0) {
+	if (ReadTelemetry(msgBuffer, JSON_MESSAGE_BYTES) > 0) {
+		Log_Debug("%s\n", msgBuffer);
 		SendMsg(msgBuffer);
 	}
 
-	GPIO_OFF(sendStatus.peripheral);
+	GPIO_OFF(sendStatusLed);
 }
 
 
@@ -208,27 +130,14 @@ static void MeasureSensorHandler(EventData* eventData)
 /// <returns>0 on success, or -1 on failure</returns>
 static int InitPeripheralsAndHandlers(void)
 {
-#if defined AVENET_DK
-	if (initI2c() == -1) {
-		return -1;
-	}
-#endif
+	RegisterBoard();  // Avnet & Seeed dev kits
 
-#if defined SEEED_DK
-	if (realTelemetry) { // Initialize Grove Shield and Grove Temperature and Humidity Sensor	
-		GroveShield_Initialize(&i2cFd, 115200);
-		sht31 = GroveTempHumiSHT31_Open(i2cFd);
-	}
-#endif
+	RegisterPeripheralSet(peripherals, NELEMS(peripherals));
+	RegisterDeviceTwinSet(deviceTwinDevices, NELEMS(deviceTwinDevices));
+	RegisterDirectMethodSet(directMethodDevices, NELEMS(directMethodDevices));
 
-	OPEN_PERIPHERAL_SET(actuatorDevices);
-	OPEN_DEVICE_TWIN_SET(deviceTwinDevices);
-	OPEN_PERIPHERAL_SET(directMethodDevices);
+	RegisterTimerSet(timers, NELEMS(timers));
 
-	START_TIMER_SET(timers);
-
-	EnableDeviceTwins(deviceTwinDevices, NELEMS(deviceTwinDevices));
-	EnableDirectMethods(directMethodDevices, NELEMS(directMethodDevices));
 	EnableCloudToDevice();
 
 	return 0;
@@ -241,21 +150,16 @@ static void ClosePeripheralsAndHandlers(void)
 {
 	Log_Debug("Closing file descriptors\n");
 
-	STOP_TIMER_SET(timers);
-
-	CLOSE_PERIPHERAL_SET(actuatorDevices);
-	CLOSE_DEVICE_TWIN_SET(deviceTwinDevices);
-	CLOSE_PERIPHERAL_SET(directMethodDevices);
-
+	CloseTimerSet();
 	DisableCloudToDevice();
 
-	CloseFdAndPrintError(GetEpollFd(), "Epoll");
-}
+	ClosePeripheralSet();
+	CloseDeviceTwinSet();
+	CloseDirectMethodSet();	
 
+	CloseBoard();	// Avnet & Seeed dev kits
 
-static int InitFanPWM(struct _peripheral* peripheral) {
-	// for you to implement:)
-	return 0;
+	CloseTimerEventLoop();
 }
 
 

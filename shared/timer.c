@@ -1,33 +1,58 @@
 #include "timer.h"
 
-int epollFd = -1;
+Timer** _timers = NULL;
+size_t _timerCount = 0;
+EventLoop* eventLoop = NULL;
 
-int GetEpollFd(void) {
-	if (epollFd == -1) {  // lazy create epollFd
-		epollFd = CreateEpollFd();
-		if (epollFd < 0) {
-			return -1;
-		}
+
+EventLoop* GetTimerEventLoop(void) {
+	if (eventLoop == NULL) {
+		eventLoop = EventLoop_Create();
 	}
-	return epollFd;
+	return eventLoop;
 }
 
 bool StartTimer(Timer* timer) {
-	int epollId = GetEpollFd();
-
-	if (epollFd < 0) { 
-		return false; 
-	}
-
-	timer->fd = CreateTimerFdAndAddToEpoll(epollId, &timer->period, &timer->eventData, EPOLLIN);
-	if (timer->fd < 0) {
+	EventLoop* eventLoop = GetTimerEventLoop();
+	if (eventLoop == NULL) {
 		return false;
 	}
+	else {
+		timer->eventLoopTimer = CreateEventLoopPeriodicTimer(eventLoop, timer->timerEventHandler, &timer->period);
+		if (timer->eventLoopTimer == NULL) {
+			return false;
+		}
+	}	
+
 	return true;
 }
 
 void StopTimer(Timer* timer) {
-	if (timer->fd > 0) {
-		CloseFdAndPrintError(timer->fd, timer->name);
+	if (timer->eventLoopTimer != NULL) {
+		DisposeEventLoopTimer(timer->eventLoopTimer);
+	}
+}
+
+void RegisterTimerSet(Timer* timers[], size_t timerCount) {
+	_timers = timers;
+	_timerCount = timerCount;
+
+	for (int i = 0; i < _timerCount; i++) {
+		if (!StartTimer(_timers[i])) {
+			break;
+		};
+	}
+}
+
+void CloseTimerSet(void) {
+	for (int i = 0; i < _timerCount; i++) {
+		StopTimer(_timers[i]);
+	}
+}
+
+void CloseTimerEventLoop(void) {
+	EventLoop* eventLoop = GetTimerEventLoop();
+	if (eventLoop != NULL) {
+		EventLoop_Close(eventLoop);
 	}
 }

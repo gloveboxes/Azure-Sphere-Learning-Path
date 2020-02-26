@@ -55,7 +55,8 @@ static DeviceTwinPeripheral relay = {
 		.fd = -1, .pin = RELAY_PIN, .initialState = GPIO_Value_Low, .invertPin = false, .initialise = OpenPeripheral, .name = "relay1" },
 	.twinState = false,
 	.twinProperty = "relay1",
-	.handler = DeviceTwinHandler
+	.handler = DeviceTwinHandler,
+	.twinType = TYPE_BOOL
 };
 
 static DeviceTwinPeripheral light = {
@@ -63,7 +64,8 @@ static DeviceTwinPeripheral light = {
 		.fd = -1, .pin = LIGHT_PIN, .initialState = GPIO_Value_High, .invertPin = true, .initialise = OpenPeripheral, .name = "led1" },
 	.twinState = false,
 	.twinProperty = "led1",
-	.handler = DeviceTwinHandler
+	.handler = DeviceTwinHandler,
+	.twinType = TYPE_BOOL
 };
 
 static DirectMethodPeripheral fan = {
@@ -185,17 +187,15 @@ static int InitPeripheralsAndHandlers(void)
 		sht31 = GroveTempHumiSHT31_Open(i2cFd);
 	}
 
-	OPEN_PERIPHERAL_SET(actuatorDevices);
-	OPEN_DEVICE_TWIN_SET(deviceTwinDevices);
-	OPEN_PERIPHERAL_SET(directMethodDevices);
+	RegisterPeripheralSet(actuatorDevices, NELEMS(actuatorDevices));
+	RegisterDeviceTwinSet(deviceTwinDevices, NELEMS(deviceTwinDevices));
+	RegisterDirectMethodSet(directMethodDevices, NELEMS(directMethodDevices));
 
-	START_TIMER_SET(timers);
+	RegisterTimerSet(timers, NELEMS(timers));
 
 	EnableInterCoreCommunications(rtAppComponentId, InterCoreHandler);  // Initialize Inter Core Communications
 	SendInterCoreMessage("HeartBeat"); // Prime RT Core with Component ID Signature
 
-	EnableDeviceTwins(deviceTwinDevices, NELEMS(deviceTwinDevices));
-	EnableDirectMethods(directMethodDevices, NELEMS(directMethodDevices));
 	EnableCloudToDevice();
 
 	return 0;
@@ -209,11 +209,11 @@ static void ClosePeripheralsAndHandlers(void)
 {
 	Log_Debug("Closing file descriptors\n");
 
-	STOP_TIMER_SET(timers);
+	CloseTimerSet();
 
-	CLOSE_PERIPHERAL_SET(actuatorDevices);
-	CLOSE_DEVICE_TWIN_SET(deviceTwinDevices);
-	CLOSE_PERIPHERAL_SET(directMethodDevices);
+	ClosePeripheralSet();
+	CloseDeviceTwinSet();
+	CloseDirectMethodSet();
 
 	DisableCloudToDevice();
 
@@ -289,14 +289,15 @@ static void InterCoreHandler(char* msg) {
 	static int buttonPressCount = 0;
 	const struct timespec sleepTime = { 0, 100000000L };
 
+
 	// Toggle LED
-	if (relay.twinState) { GPIO_OFF(relay.peripheral); }
+	if (*(bool*)relay.twinState) { GPIO_OFF(relay.peripheral); }
 	else { GPIO_ON(relay.peripheral); }
 
 	nanosleep(&sleepTime, NULL);
 
 	// Return LED to twinState
-	if (relay.twinState) { GPIO_ON(relay.peripheral); }
+	if (*(bool*)relay.twinState) { GPIO_ON(relay.peripheral); }
 	else { GPIO_OFF(relay.peripheral); }
 
 	if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, "{ \"ButtonPressed\": %d }", ++buttonPressCount) > 0) {

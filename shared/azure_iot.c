@@ -13,23 +13,22 @@ const int keepalivePeriodSeconds = 20;
 const char* _connectionString = NULL;
 
 static Timer cloudToDeviceTimer = {
-	.eventData = {.eventHandler = &AzureCloudToDeviceHandler },
-	.period = { 1, 0 },			// 500 milliseconds
+	.period = { 1, 0 },			// 1 second
 	.name = "DoWork",
-	.fd = -1
+	.timerEventHandler = &AzureCloudToDeviceHandler
 };
 
 
 void EnableCloudToDevice(void) {
-	if (cloudToDeviceTimer.fd == -1) {
+	if (cloudToDeviceTimer.eventLoopTimer == NULL) {
 		StartTimer(&cloudToDeviceTimer);
 	}
 }
 
 
 void DisableCloudToDevice(void) {
-	if (cloudToDeviceTimer.fd != -1) {
-		CloseFdAndPrintError(cloudToDeviceTimer.fd, cloudToDeviceTimer.name);
+	if (cloudToDeviceTimer.eventLoopTimer != NULL) {
+		StopTimer(&cloudToDeviceTimer);
 	}
 }
 
@@ -47,8 +46,9 @@ void SendMessageCallback(IOTHUB_CLIENT_CONFIRMATION_RESULT result, void* context
 	Log_Debug("INFO: Message received by IoT Hub. Result is: %d\n", result);
 }
 
-void AzureCloudToDeviceHandler(EventData* eventData) {
-	if (ConsumeTimerFdEvent(cloudToDeviceTimer.fd) != 0) {
+void AzureCloudToDeviceHandler(EventLoopTimer* eventLoopTimer) {
+
+	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
 		Terminate();
 		return;
 	}
