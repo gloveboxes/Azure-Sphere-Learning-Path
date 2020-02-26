@@ -17,6 +17,7 @@ set(Source
     "../shared/terminate.c"
     "../shared/eventloop_timer_utilities.c"
     "../shared/parson.c"
+    "../shared/inter_core.c"
 )
 source_group("Source" FILES ${Source})
 
@@ -43,6 +44,10 @@ target_link_libraries(${PROJECT_NAME} applibs pthread gcc_s c azureiot)
 target_compile_options(${PROJECT_NAME} PRIVATE -Wno-unknown-pragmas)
 set_source_files_properties(../shared/avnet_sk/lsm6dso_reg.c PROPERTIES COMPILE_FLAGS -Wno-conversion)
 set_source_files_properties(../shared/avnet_sk/lps22hh_reg.c PROPERTIES COMPILE_FLAGS -Wno-conversion)
+
+set_source_files_properties(../shared/avnet_sk/imu_temp_pressure.c PROPERTIES COMPILE_FLAGS -Wno-float-conversion)
+set_source_files_properties(../shared/avnet_sk/imu_temp_pressure.c PROPERTIES COMPILE_FLAGS -Wno-incompatible-pointer-types)
+set_source_files_properties(../shared/avnet_sk/imu_temp_pressure.c PROPERTIES COMPILE_FLAGS -Wno-conversion)
 
 # Add MakeImage post-build command
 include ("${AZURE_SPHERE_MAKE_IMAGE_FILE}")
