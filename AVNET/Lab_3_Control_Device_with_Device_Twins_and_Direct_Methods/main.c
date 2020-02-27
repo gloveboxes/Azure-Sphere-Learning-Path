@@ -1,5 +1,6 @@
 ﻿#include "../shared/azure_iot.h"
 #include "../shared/globals.h"
+#include "../shared/oem/board.h"
 #include "../shared/peripheral.h"
 #include "../shared/terminate.h"
 #include "../shared/timer.h"
@@ -10,7 +11,6 @@
 #include <stdio.h>
 #include <time.h>
 
-#include "../shared/avnet_sk/avnet_sk.h"
 
 #define JSON_MESSAGE_BYTES 128  // Number of bytes to allocate for the JSON telemetry message for IoT Central
 static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };

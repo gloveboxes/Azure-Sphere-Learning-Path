@@ -18,15 +18,15 @@ set(Source
     "../shared/eventloop_timer_utilities.c"
     "../shared/parson.c"
     "../shared/inter_core.c"
+    "../shared/oem/board.c"
 )
 source_group("Source" FILES ${Source})
 
 set(Avnet
-    "../shared/avnet_sk/avnet_sk.c"
-    "../shared/avnet_sk/lps22hh_reg.c"
-    "../shared/avnet_sk/lsm6dso_reg.c"
-    "../shared/avnet_sk/imu_temp_pressure.c"
-    "../shared/avnet_sk/light_sensor.c"
+    "../shared/oem/lps22hh_reg.c"
+    "../shared/oem/lsm6dso_reg.c"
+    "../shared/oem/imu_temp_pressure.c"
+    "../shared/oem/light_sensor.c"
 )
 source_group("Avnet" FILES ${Avnet})
 
@@ -42,12 +42,12 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC AZURE_IOT_HUB_CONFIGURED)
 target_link_libraries(${PROJECT_NAME} applibs pthread gcc_s c azureiot)
 
 target_compile_options(${PROJECT_NAME} PRIVATE -Wno-unknown-pragmas)
-set_source_files_properties(../shared/avnet_sk/lsm6dso_reg.c PROPERTIES COMPILE_FLAGS -Wno-conversion)
-set_source_files_properties(../shared/avnet_sk/lps22hh_reg.c PROPERTIES COMPILE_FLAGS -Wno-conversion)
+set_source_files_properties(../shared/oem/lsm6dso_reg.c PROPERTIES COMPILE_FLAGS -Wno-conversion)
+set_source_files_properties(../shared/oem/lps22hh_reg.c PROPERTIES COMPILE_FLAGS -Wno-conversion)
 
-set_source_files_properties(../shared/avnet_sk/imu_temp_pressure.c PROPERTIES COMPILE_FLAGS -Wno-float-conversion)
-set_source_files_properties(../shared/avnet_sk/imu_temp_pressure.c PROPERTIES COMPILE_FLAGS -Wno-incompatible-pointer-types)
-set_source_files_properties(../shared/avnet_sk/imu_temp_pressure.c PROPERTIES COMPILE_FLAGS -Wno-conversion)
+set_source_files_properties(../shared/oem/imu_temp_pressure.c PROPERTIES COMPILE_FLAGS -Wno-float-conversion)
+set_source_files_properties(../shared/oem/imu_temp_pressure.c PROPERTIES COMPILE_FLAGS -Wno-incompatible-pointer-types)
+set_source_files_properties(../shared/oem/imu_temp_pressure.c PROPERTIES COMPILE_FLAGS -Wno-conversion)
 
 # Add MakeImage post-build command
 include ("${AZURE_SPHERE_MAKE_IMAGE_FILE}")

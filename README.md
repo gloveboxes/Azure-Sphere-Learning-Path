@@ -1,5 +1,5 @@
 
-![](resources/azure-sphere-learning-path.png)
+![](zdocs/resources/azure-sphere-learning-path.png)
 
 ---
 
@@ -12,7 +12,7 @@
 |Developer Platform | Windows 10 or Ubuntu 18.04 |
 |Azure SDK | Azure Sphere SDK 20.01 or better |
 |Developer Tools| [Visual Studio (The free Community Edition or better)](https://visualstudio.microsoft.com/vs/?WT.mc_id=github-blog-dglover) or [Visual Studio Code (Free OSS)](https://code.visualstudio.com?WT.mc_id=github-blog-dglover)|
-|Hardware | [Seeed Studio Grove Shield](https://www.seeedstudio.com/MT3620-Grove-Shield.html), and the [Grove Temperature and Humidity Sensor (SHT31)](https://www.seeedstudio.com/Grove-Temperature-Humidity-Sensor-SHT31.html) |
+|Supported Hardware | [Avnet Azure Sphere MT3620 Starter Kit](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-sk-g-3074457345636825680) [Seeed Studio Azure Sphere MT3620 Development Kit](https://www.seeedstudio.com/Azure-Sphere-MT3620-Development-Kit-US-Version-p-3052.html), and the [Seeed Studio MT3620 Mini Dev Board](https://www.seeedstudio.com/MT3620-Mini-Dev-Board-p-2919.html) |
 |Source Code | https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git |
 |Language| C|
 |Date| February  2020|
@@ -53,7 +53,7 @@ Almost a day doesn't go by without some newsworthy IoT Security attack happening
 
 The [The Seven Properties of Highly Secure Devices](https://www.microsoft.com/en-us/research/wp-content/uploads/2017/03/SevenPropertiesofHighlySecureDevices.pdf) is highly recommended to help you understand what is required to mitigate exposure to IoT security issues. This IoT Security whitepaper draws from industry and Microsoft experience.
 
-![](resources/fish-tank.jpg)
+![](zdocs/resources/fish-tank.jpg)
 
 Here's one of the most unconventional: a fish tank. Not just an ordinary fish tank, mind you, but a fairly high-tech one that featured Internet connectivity. That connection allowed the tank to be remotely monitored, automatically adjust temperature and salinity, and automate feedings.
 
@@ -67,7 +67,7 @@ It also allowed hackers to swipe 10 gigabytes of data from the North American ca
 
 Azure Sphere is a solution for securing MCU Power Devices. It comprises a secured, connected, crossover microcontroller unit (MCU), a custom high-level Linux-based operating system (OS), and a cloud-based security service that provides continuous, renewable security.
 
-![](resources/azure-sphere-end-to-end.png)
+![](zdocs/resources/azure-sphere-end-to-end.png)
 
 ---
 
@@ -77,7 +77,7 @@ Get started with Azure Sphere using the prototyping developer kits from Seeed St
 
 Today the Mediatec MT3620 MCU powers Azure Sphere. The family of certified Azure Sphere MCUs will expand to include offerings from Qualcomm and NXP.
 
-![](resources/azure-sphere.png)
+![](zdocs/resources/azure-sphere.png)
 
 ---
 
@@ -98,35 +98,34 @@ Applications on Azure Sphere are locked down by default and you must grant capab
 
 Capabilities, such as access to GPIO pins and network endpoint must be granted to both High Level and Real Time applications. This defends against application bugs and malicious code attacks.
 
-![](resources/azure-sphere-architecture.png)
+![](zdocs/resources/azure-sphere-architecture.png)
 
 ---
 
-## Hardware Required for these Labs
+## Supported Hardware
 
-The initial release of these labs targets the [Seeed Studio Azure Sphere](https://www.seeedstudio.com/Azure-Sphere-MT3620-Development-Kit-US-Version-p-3052.html).
+These labs support the following Azure Sphere Kits.
 
-By default the application generates simulated/fake temperature and humidity telemetry.
+| Manufacturer | Image |
+|---|---|
+| [Avnet Azure Sphere MT3620 Starter Kit](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-sk-g-3074457345636825680/) | ![](zdocs/resources/avnet-azure-sphere.jpg)|
+| [Seeed Studio Azure Sphere MT3620 Development Kit](http://wiki.seeedstudio.com/Azure_Sphere_MT3620_Development_Kit/) | ![](zdocs/resources/seeed-studio-azure-sphere.png) |
+| [Seeed Studio Azure Sphere MT3620 Mini Dev Board]() | ![](zdocs/resources/seeed-studio-azure-sphere-mini.png) |
 
-![](resources/seeed-studio-azure-sphere.png)
+
+<!-- ![](zdocs/resources/seeed-studio-azure-sphere.png)
 
 The Labs also includes support for the [Seeed Studio Grove Shield](https://www.seeedstudio.com/MT3620-Grove-Shield.html), and the [Grove Temperature and Humidity (SHT31)](https://www.seeedstudio.com/Grove-Temperature-Humidity-Sensor-SHT31.html) sensor. Support for the SHT31 Grove sensor needs to be enabled from the app_manifest.json *cmdargs* property.
 
-![](resources/seeed-studio-grove.png)
+![](zdocs/resources/seeed-studio-grove.png) -->
 
-<!-- ![](resources/azure-sphere-parts-list.png) -->
-
----
-
-## Alternate Azure Sphere Developer Kits
-
-The Labs will work on the Seeed Studio Azure Sphere Mini and Avnet Developer Kits but the you will need to modify the target GPIO pins to match your developer kit.
+<!-- ![](zdocs/resources/azure-sphere-parts-list.png) -->
 
 <!-- ### Avnet Azure Sphere MT3620 Starter Kit
 
 There Avnet board includes Temperature and Humidity Sensors.
 
-![](resources/avnet-azure-sphere.jpg) -->
+![](zdocs/resources/avnet-azure-sphere.jpg) -->
 
 
 <!-- This Learning Path requires either a Azure Sphere Developer kit from  or [Avnet](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-sk-g-3074457345636825680/). -->
