@@ -10,7 +10,7 @@
 
 #define BUILTIN_LED		AVNET_MT3620_SK_APP_STATUS_LED_YELLOW
 #define LIGHT_PIN		AVNET_MT3620_SK_WLAN_STATUS_LED_YELLOW
-#define RELAY_PIN		AVNET_MT3620_SK_GPIO17
+#define RELAY_PIN		AVNET_MT3620_SK_GPIO0
 
 int ReadTelemetry(char* msgBuffer, size_t bufferLen);
 bool InitializeDevKit(void);
