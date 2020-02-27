@@ -13,7 +13,7 @@
 
 Each module assumes you have completed the previous module.
 
-[Home](/README.md)
+[Home](https://gloveboxes.github.io/Azure-Sphere-Learning-Path/#azure-sphere-learning-path)
 
 * Lab 0: [Introduction Azure Sphere and Lab Set Up](/zdocs/Lab_0_Introduction_and_Lab_Set_Up/README.md)
 * Lab 1: [Build your first Azure Sphere Application with Visual Studio](/zdocs/Lab_1_Visual_Studio_and_Azure_Sphere/README.md)
