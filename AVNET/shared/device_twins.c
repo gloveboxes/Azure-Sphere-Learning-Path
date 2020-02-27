@@ -23,6 +23,10 @@ void CloseDeviceTwinSet(void) {
 }
 
 void OpenDeviceTwin(DeviceTwinPeripheral* deviceTwinPeripheral) {
+	if (deviceTwinPeripheral->twinType == TYPE_UNKNOWN) {
+		Log_Debug("\n\nDevice Twin missing type information.\nInclude .twinType option in DeviceTwinPeripheral definition.\nExample .twinType=TYPE_BOOL. Valid types include TYPE_BOOL, TYPE_INT, TYPE_FLOAT, TYPE_STRING.\n\n");
+		Terminate();	
+	}
 
 	// types JSON and String allocated dynamically when called in azure_iot.c
 	switch (deviceTwinPeripheral->twinType)

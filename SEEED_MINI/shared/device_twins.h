@@ -7,10 +7,11 @@
 #include <iothub_device_client_ll.h>
 
 typedef enum {
-	TYPE_BOOL = 0,
-	TYPE_FLOAT = 1,
-	TYPE_INT = 2,
-	TYPE_STRING = 3
+	TYPE_UNKNOWN = 0,
+	TYPE_BOOL = 1,
+	TYPE_FLOAT = 2,
+	TYPE_INT = 3,
+	TYPE_STRING = 4
 } valueType;
 
 struct _deviceTwinPeripheral {
