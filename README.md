@@ -22,11 +22,13 @@
 
 ## Azure Sphere Learning Path
 
-This Azure Sphere learning path is designed to gently ease you into the world of Azure Sphere Development.
+This Azure Sphere learning path is designed to ease you into the world of Azure Sphere Development.
 
 Your journey starts with the equivalent of hello world, the next step is sending telemetry to Azure IoT, then you will learn how to securely control a device from Azure IoT, and finally connect and send Azure IoT Events from a FreeRTOS application.
 
 Each module assumes you have completed the previous module.
+
+You are also free to use and modify the code provided in the learning experience for you own projects, commercial or otherwise, no liability accepted.
 
 [Home](https://gloveboxes.github.io/Azure-Sphere-Learning-Path/)
 
@@ -103,13 +105,13 @@ Capabilities, such as access to GPIO pins and network endpoint must be granted t
 
 ---
 
-## Supported Hardware
+## Supported Starter/Developer Kits
 
 These labs support the following Azure Sphere Kits.
 
 | Manufacturer | Image |
 |---|---|
-| [Avnet Azure Sphere MT3620 Starter Kit](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-sk-g-3074457345636825680/) | ![](zdocs/resources/avnet-azure-sphere.jpg)|
+| [Avnet Azure Sphere MT3620 Starter Kit](https://www.avnet.com/shop/us/products/avnet-engineering-services/.aes-ms-mt3620-sk-g-3074457345636825680/) <br/>This starter kit includes temperature, pressure and light sensors. | ![](zdocs/resources/avnet-azure-sphere.jpg)|
 | [Seeed Studio Azure Sphere MT3620 Development Kit](http://wiki.seeedstudio.com/Azure_Sphere_MT3620_Development_Kit/) | ![](zdocs/resources/seeed-studio-azure-sphere.png) |
 | [Seeed Studio Azure Sphere MT3620 Mini Dev Board]() | ![](zdocs/resources/seeed-studio-azure-sphere-mini.png) |
 

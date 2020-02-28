@@ -45,6 +45,64 @@ The Azure Sphere [MT3620](https://www.mediatek.com/products/azureSphere/mt3620) 
 
 ---
 
+## Understanding how the code works
+
+Lab 1 introduces two C data structures used to greatly simplify and effectively describe how the code will work with GPIO and Timers.
+
+### Perpherals
+
+The following C code describes a generalized GPIO output peripheral. It maintains the GPIO pin OS file descriptor, the GPIO pin number, the initial state when the pin is opened, whether the pin logic needs to be reserved for turning a pin on and off, and the C function to be called to open and initialize the GPIO output pin.
+
+```c
+static Peripheral builtinLed = {
+	.fd = -1, // The OS reference to the GPIO pin
+	.pin = BUILTIN_LED, // The GPIO pin number
+	.initialState = GPIO_Value_High,  // Set the initial state on the pin when opened
+	.invertPin = true,  // Should the switching logic be reverse for on/off, high/low
+	.initialise = OpenPeripheral,  // The name of C function to be called to open the Pin. The OpenPeripheral implementation is provided in peripheral.c.
+	.name = "SendStatus"  // An arbitrary name for the senor.
+};
+
+```
+
+### Timers
+
+```c
+static Timer measureSensorTimer = {
+	.period = { 5, 0 },
+	.name = "MeasureSensor",
+	.timerEventHandler = &MeasureSensorHandler
+};
+```
+
+### Automatic Initialization of Peripherals and Timers
+
+```c
+Peripheral* peripherals[] = { &builtinLed };
+Timer* timers[] = { &measureSensorTimer };
+```
+
+### Easy to Extend
+
+The following is an example of added an additional GPIO output peripheral.
+
+```c
+static Peripheral fanControl = {
+	.fd = -1, // The OS reference to the GPIO pin
+	.pin = 43, // The GPIO pin number
+	.initialState = GPIO_Value_High,  // Set the initial state on the pin when opened
+	.invertPin = true,  // Should the switching logic be reverse for on/off, high/low
+	.initialise = OpenPeripheral,  // The name of C function to be called to open the Pin. The OpenPeripheral implementation is provided in peripheral.c.
+	.name = "FanControl"  // An arbitrary name for the senor.
+};
+
+```
+
+```c
+Peripheral* peripherals[] = { &builtinLed, &fanControl };
+```
+
+
 ## Open Lab 1 Project
 
 ### Step 1: Ensure you have cloned the lab source code
