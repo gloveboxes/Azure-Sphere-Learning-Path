@@ -51,7 +51,7 @@ Lab 1 introduces two C data structures used to greatly simplify and effectively 
 
 ### Perpherals
 
-The following C code describes a generalized GPIO output peripheral. It maintains the GPIO pin OS file descriptor, the GPIO pin number, the initial state when the pin is opened, whether the pin logic needs to be reserved for turning a pin on and off, and the C function to be called to open and initialize the GPIO output pin.
+The following C variable named **builtinLed** of type Peripheral declares a generalized GPIO output peripheral. It maintains the GPIO pin OS file descriptor, the GPIO pin number, the initial state when the pin is opened, whether the pin logic needs to be reserved for turning a pin on and off, and the C function to be called to open and initialize the GPIO output pin.
 
 ```c
 static Peripheral builtinLed = {
@@ -67,30 +67,36 @@ static Peripheral builtinLed = {
 
 ### Timers
 
-The following C code describes a generalized Timer. A Timer is a regular occurring event, for example you may want to blink an LED every second, or perhaps read data from a sensor every 5 seconds.
-
-In the following example, the C function named **MeasureSensorHandler** is called every 5 seconds. There are two values passed to the **.period**, the first is the number of seconds, followed by the number of nanoseconds.
+The following C variable named **measureSensorTimer** of type Timer declares a generalized Timer object. A Timer is a regular occurring event. For example you may want to blink an LED every second, or perhaps read data from a sensor every 5 seconds.
 
 ```c
 static Timer measureSensorTimer = {
 	.period = { 5, 0 },  // Fire the timer event every 5 seconds + zero nanoseconds.
 	.name = "MeasureSensor",  // An arbitrary name for the timer, used for error handling
-	.timerEventHandler = &MeasureSensorHandler // The address of the C function to be called when the timer fires.
+	.timerEventHandler = MeasureSensorHandler // The address of the C function to be called when the timer fires.
 };
 ```
 
+In this example, the function named **MeasureSensorHandler** is called every 5 seconds. There are two values used to initialize the **.period** variable, the first is the number of seconds, followed by the number of nanoseconds.
+
+If you wanted to timer to fire every half a second (500 milliseconds), you would set the .period to be { 0, 500000000 }
+
 ### Automatic Initialization of Peripherals and Timers
 
-The peripherals and timers that defined above are added to the sets of peripherals and timers. Note the **&**, we adding the address of the C variables.
+The peripherals and timers array variables are initialized with the addresses of the peripheral and timer objects that are declared above. Note the **&**, we adding the address of the peripheral and timer variables to their arrays.
 
 ```c
 Peripheral* peripherals[] = { &builtinLed };
 Timer* timers[] = { &measureSensorTimer };
 ```
 
+Peripherals and timers that are added to their respective arrays are referred to as **sets**. Any peripheral or timer referenced in a set will be automatically opened and initialized.
+
+These sets are referenced when calling **OpenPeripheralSet**, and **StartTimerSet** from the **InitPeripheralsAndHandlers** function found in main.c. 
+
 ### Easy to Extend
 
-The following is an example of added an additional GPIO output peripheral.
+Using this model it is very easy to declare another peripheral or timer and add them to the **peripherals** or **timers** arrays. The following is an example of added an additional GPIO output peripheral.
 
 ```c
 static Peripheral fanControl = {
