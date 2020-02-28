@@ -67,15 +67,21 @@ static Peripheral builtinLed = {
 
 ### Timers
 
+The following C code describes a generalized Timer. A Timer is a regular occurring event, for example you may want to blink an LED every second, or perhaps read data from a sensor every 5 seconds.
+
+In the following example, the C function named **MeasureSensorHandler** is called every 5 seconds. There are two values passed to the **.period**, the first is the number of seconds, followed by the number of nanoseconds.
+
 ```c
 static Timer measureSensorTimer = {
-	.period = { 5, 0 },
-	.name = "MeasureSensor",
-	.timerEventHandler = &MeasureSensorHandler
+	.period = { 5, 0 },  // Fire the timer event every 5 seconds + zero nanoseconds.
+	.name = "MeasureSensor",  // An arbitrary name for the timer, used for error handling
+	.timerEventHandler = &MeasureSensorHandler // The address of the C function to be called when the timer fires.
 };
 ```
 
 ### Automatic Initialization of Peripherals and Timers
+
+The peripherals and timers that defined above are added to the sets of peripherals and timers. Note the **&**, we adding the address of the C variables.
 
 ```c
 Peripheral* peripherals[] = { &builtinLed };

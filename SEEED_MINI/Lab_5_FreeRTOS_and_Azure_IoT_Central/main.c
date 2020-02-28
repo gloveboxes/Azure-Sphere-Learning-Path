@@ -54,13 +54,13 @@ static Peripheral builtinLed = {
 static Timer measureSensorTimer = {
 	.period = { 10, 0 },
 	.name = "MeasureSensor",
-	.timerEventHandler = &MeasureSensorHandler
+	.timerEventHandler = MeasureSensorHandler
 };
 
 static Timer rtCoreHeatBeat = {
 	.period = { 30, 0 },
 	.name = "rtCoreSend",
-	.timerEventHandler = &InterCoreHeartBeat
+	.timerEventHandler = InterCoreHeartBeat
 };
 
 #pragma region define sets for auto initialization and close

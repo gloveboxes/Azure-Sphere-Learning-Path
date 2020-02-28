@@ -28,7 +28,7 @@ static Peripheral builtinLed = {
 static Timer measureSensorTimer = {
 	.period = { 10, 0 },
 	.name = "MeasureSensor",
-	.timerEventHandler = &MeasureSensorHandler
+	.timerEventHandler = MeasureSensorHandler
 };
 
 #pragma region define sets for auto initialization and close

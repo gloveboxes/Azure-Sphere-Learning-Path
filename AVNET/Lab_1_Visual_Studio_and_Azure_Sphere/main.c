@@ -22,13 +22,17 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer);
 
 
 static Peripheral builtinLed = {
-	.fd = -1, .pin = BUILTIN_LED, .initialState = GPIO_Value_High, .invertPin = true, .initialise = OpenPeripheral, .name = "SendStatus"
+	.fd = -1, .pin = BUILTIN_LED, 
+	.initialState = GPIO_Value_High, 
+	.invertPin = true, 
+	.initialise = OpenPeripheral, 
+	.name = "SendStatus"
 };
 
 static Timer measureSensorTimer = {
 	.period = { 5, 0 },
 	.name = "MeasureSensor",
-	.timerEventHandler = &MeasureSensorHandler
+	.timerEventHandler = MeasureSensorHandler
 };
 
 #pragma region define sets for auto initialization and close
