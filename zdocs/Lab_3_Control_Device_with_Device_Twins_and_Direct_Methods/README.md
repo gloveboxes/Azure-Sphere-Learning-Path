@@ -125,8 +125,10 @@ static DirectMethodPeripheral sensorSampleRate = {
 
 ```
 
+Like Peripherals, Timers, Device Twin Peripherals, Direct Method Peripherals can be automatically opened, initialized, and closed if they are added to the directMethodDevices array, also referred to as a set of direct method peripherals.
+
 ```c
-DirectMethodPeripheral* directMethodDevices[] = { &fan };
+DirectMethodPeripheral* directMethodDevices[] = { &feedFish, &sensorSampleRate };
 ```
 
 ---
