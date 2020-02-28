@@ -190,6 +190,36 @@ If you claimed your Azure Sphere device into your own Azure Sphere tenant then s
         .handler = DeviceTwinHandler
     };
     ```
+4. Scroll down a towards the end of main.c and review the implementation of the C Function **DeviceTwinHandler**.
+    ```c
+    static void DeviceTwinHandler(DeviceTwinPeripheral* deviceTwinPeripheral) {
+        switch (deviceTwinPeripheral->twinType)
+        {
+        case TYPE_BOOL:
+            if (*(bool*)deviceTwinPeripheral->twinState) {
+                GPIO_ON(deviceTwinPeripheral->peripheral);
+            }
+            else {
+                GPIO_OFF(deviceTwinPeripheral->peripheral);
+            }
+            break;
+        case TYPE_INT:
+            Log_Debug("\nInteger Value '%d'\n", *(int*)deviceTwinPeripheral->twinState);
+            // Your implementation goes here - for example change the sensor measure rate
+            break;
+        case TYPE_FLOAT:
+            Log_Debug("\nFloat Value '%f'\n", *(float*)deviceTwinPeripheral->twinState);
+            // Your implementation goes here - for example set a threshold
+            break;
+        case TYPE_STRING:
+            Log_Debug("\nString Value '%s'\n", (char*)deviceTwinPeripheral->twinState);
+            // Your implementation goes here - for example update display
+            break;
+        default:
+            break;
+        }
+    }
+    ```
 
 ### Setting up support for Azure IoT Central Commands
 
@@ -214,6 +244,7 @@ If you claimed your Azure Sphere device into your own Azure Sphere tenant then s
     DirectMethodPeripheral* directMethodDevices[] = { &fan };
     ```
 4. In the main.c **InitPeripheralsAndHandlers** these sets of device twins and direct methods are opened and initialized.
+
 
 <!-- ---
 
