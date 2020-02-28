@@ -45,13 +45,13 @@ The Azure Sphere [MT3620](https://www.mediatek.com/products/azureSphere/mt3620) 
 
 ---
 
-## Understanding how the code works
+## Core Concepts
 
 Lab 1 introduces two C data structures used to greatly simplify and effectively describe how the code will work with GPIO and Timers.
 
 ### Perpherals
 
-The following C variable named **builtinLed** of type Peripheral declares a generalized GPIO output peripheral. It maintains the GPIO pin OS file descriptor, the GPIO pin number, the initial state when the pin is opened, whether the pin logic needs to be reserved for turning a pin on and off, and the C function to be called to open and initialize the GPIO output pin.
+In **main.c** there is a variable named **builtinLed** of type **Peripheral**. Variables of type **Peripheral** declare a generalized GPIO output peripheral. This variable holds the GPIO pin OS file descriptor, the GPIO pin number, the initial state when the pin is opened, whether the pin logic needs to be reserved for turning a pin on and off, and the C function to be called to open and initialize the GPIO output pin.
 
 ```c
 static Peripheral builtinLed = {
@@ -67,7 +67,7 @@ static Peripheral builtinLed = {
 
 ### Timers
 
-The following C variable named **measureSensorTimer** of type Timer declares a generalized Timer object. A Timer is a regular occurring event. For example you may want to blink an LED every second, or perhaps read data from a sensor every 5 seconds.
+In **main.c** there is another variable named **measureSensorTimer** of type **Timer**. Variables of type **Timer** declare a generalized Timer object. A Timer is a regular occurring event. For example you may want to blink an LED every second, or perhaps read data from a sensor every 5 seconds.
 
 ```c
 static Timer measureSensorTimer = {
@@ -83,16 +83,16 @@ If you wanted to timer to fire every half a second (500 milliseconds), you would
 
 ### Automatic Initialization of Peripherals and Timers
 
-The peripherals and timers array variables are initialized with the addresses of the peripheral and timer objects that are declared above. Note the **&**, we adding the address of the peripheral and timer variables to their arrays.
+The peripherals and timers array variables are initialized with the addresses of the peripheral and timer objects that are declared above. Note the **&**, we adding the address of the peripheral and timer variables.
 
 ```c
 Peripheral* peripherals[] = { &builtinLed };
 Timer* timers[] = { &measureSensorTimer };
 ```
 
-Peripherals and timers that are added to their respective arrays are referred to as **sets**. Any peripheral or timer referenced in a set will be automatically opened and initialized.
+Peripherals and timers that are added to their respective arrays are referred to as **sets**. Any peripheral or timer referenced in a set will be automatically opened, initialized, and closed.
 
-These sets are referenced when calling **OpenPeripheralSet**, and **StartTimerSet** from the **InitPeripheralsAndHandlers** function found in main.c. 
+These sets are referenced when calling **OpenPeripheralSet**, and **StartTimerSet** from the **InitPeripheralsAndHandlers** function. The sets are also references with closing the peripheral and timer sets in the **ClosePeripheralsAndHandlers** function.
 
 ### Easy to Extend
 
@@ -109,6 +109,8 @@ static Peripheral fanControl = {
 };
 
 ```
+
+Remember to add this new peripheral to the **peripherals** set so it will be automatically opened, initialised, and closed.
 
 ```c
 Peripheral* peripherals[] = { &builtinLed, &fanControl };
