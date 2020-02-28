@@ -31,7 +31,7 @@ Each module assumes you have completed the previous module.
 
 ## What you will learn
 
-You will learn how to control an [Azure Sphere](https://azure.microsoft.com/services/azure-sphere/?WT.mc_id=github-blog-dglover) application using [Azure IoT Central](https://azure.microsoft.com/services/iot-central/?WT.mc_id=github-blog-dglover) **Settings** ([Hub Device Twins](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins?WT.mc_id=github-blog-dglover)) and **Commands** ([Direct Methods](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods?WT.mc_id=github-blog-dglover)).
+You will learn how to control an [Azure Sphere](https://azure.microsoft.com/services/azure-sphere/?WT.mc_id=github-blog-dglover) application using [Azure IoT Central](https://azure.microsoft.com/services/iot-central/?WT.mc_id=github-blog-dglover) **Properties** ([Hub Device Twins](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins?WT.mc_id=github-blog-dglover)) and **Commands** ([Direct Methods](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods?WT.mc_id=github-blog-dglover)).
 
 ---
 
@@ -134,13 +134,11 @@ DirectMethodPeripheral* directMethodDevices[] = { &feedFish, &sensorSampleRate }
 
 ## Controlling an Azure Sphere from Azure IoT Central
 
-Now that we have created the Azure IoT Central application we are going to add support for controlling the Azure Sphere device from Azure IoT Central, along with adding *event* support.
+There are two ways to control or set the state on the Azure Sphere device from Azure IoT Central.
 
-There are two ways to control or set the state on the Azure Sphere device from IoT Central.
+1. The first way to control a device is with Azure IoT Central **Properties**. Under the covers, these are implemented as [Azure IoT Device Twins](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins). 
 
-1. The first way to control a device is with Azure IoT Central **Settings**. Under the covers, these are implemented as [Azure IoT Device Twins](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins). A message is sent to the device, the corresponding action is undertaken, and then the Azure Sphere sends a message to update the Azure IoT Device Twin. The Device Twin is a JSON document that mirrors the state of the device. The JSON document can be used for cloud side queries and processing.
-
-2. The second way to control a device is with Azure IoT Central **Commands**. Under the covers, these are implemented as [Azure IoT Direct Methods](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods). A message is sent to the device, the action carried out, and then the device acknowledges to Azure IoT the command has completed.
+2. The second way to control a device is with Azure IoT Central **Commands**. Under the covers, these are implemented as [Azure IoT Direct Methods](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods).
 
 ---
 
@@ -177,20 +175,7 @@ If you claimed your Azure Sphere device into your own Azure Sphere tenant then s
 
 ---
 
-## Implementing Azure IoT Central Settings and Commands
-
-Now that Azure IoT Central **Settings** and **Commands** have been configured we need to connect those actions with code in the application.
-
-To simplify what can easily become repetitive code there is a mini **Peripherals Framework** for connecting code running on the Azure Sphere with Azure IoT Central **Settings (Azure IoT Device Twins)**, and **Commands (Azure IoT Direct Methods)**.
-
-There are two data structures that simplify the implementation of Device Twins and Direct Methods.
-
-These are:
-
-1. DeviceTwinPeripheral, and
-2. DirectMethodPeripheral
-
-### Setting up support for Azure IoT Central Settings
+## Adding support for Azure IoT Central Properties
 
 1. Open the **main.c** file
 2. Scroll down to the the line that reads **static DeviceTwinPeripheral relay**
@@ -219,13 +204,6 @@ These are:
 
     ```c
     static DirectMethodPeripheral fan = {
-        .peripheral = {
-            .fd = -1, 
-            .pin = FAN_PIN, 
-            .initialState = GPIO_Value_Low, 
-            .invertPin = false, 
-            .initialise = InitFanPWM, 
-            .name = "fan1" },
         .methodName = "fan1",
         .handler = SetFanSpeedDirectMethod
     };
@@ -240,8 +218,7 @@ These are:
     DeviceTwinPeripheral* deviceTwinDevices[] = { &relay, &light };
     DirectMethodPeripheral* directMethodDevices[] = { &fan };
     ```
-4. In the main.c **InitPeripheralsAndHandlers** these sets (or collections) of device twins and direct methods are initialized. 
-5. The goal of the peripherals framework is to make it easy to connect code running on the Azure Sphere with Azure IoT Central **Settings** and **Commands**.
+4. In the main.c **InitPeripheralsAndHandlers** these sets of device twins and direct methods are opened and initialized.
 
 <!-- ---
 
