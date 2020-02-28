@@ -233,6 +233,32 @@ If you claimed your Azure Sphere device into your own Azure Sphere tenant then s
         .handler = SetFanSpeedDirectMethod
     };
     ```
+4. Scroll down to the end of main.c and review the C Function **SetFanSpeedDirectMethod**.
+
+    ```c
+    static MethodResponseCode SetFanSpeedDirectMethod(JSON_Object* json, DirectMethodPeripheral* directMethodperipheral) {
+        // Sample implementation - doesn't do anything other than returning a response message and status
+
+        // Allocate and initialize a response message buffer. The calling function is responsible for the freeing memory
+        const size_t responseLen = 40;
+        directMethodperipheral->responseMessage = (char*)malloc(responseLen);
+        memset(directMethodperipheral->responseMessage, 0, responseLen);
+
+        int speed = (int)json_object_get_number(json, "speed");
+
+        if (speed >= 0 && speed <= 100) {
+            snprintf(directMethodperipheral->responseMessage, responseLen, "%s succeeded, speed set to %d", directMethodperipheral->methodName, speed);
+            Log_Debug("\nDirect Method Response '%s'\n", directMethodperipheral->responseMessage);
+            return METHOD_SUCCEEDED;
+        }
+        else
+        {
+            snprintf(directMethodperipheral->responseMessage, responseLen, "%s FAILED, speed out of range %d", directMethodperipheral->methodName, speed);
+            Log_Debug("\nDirect Method Response '%s'\n", directMethodperipheral->responseMessage);
+            return METHOD_FAILED;
+        }
+    }
+    ```
 
 ### Initializing the support for IoT Central Settings and Commands
 
