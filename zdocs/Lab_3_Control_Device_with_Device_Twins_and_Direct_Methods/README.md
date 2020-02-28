@@ -183,13 +183,7 @@ If you claimed your Azure Sphere device into your own Azure Sphere tenant then s
 
     ```c
     static DeviceTwinPeripheral relay = {
-        .peripheral = {
-            .fd = -1, 
-            .pin = RELAY_PIN, 
-            .initialState = GPIO_Value_Low, 
-            .invertPin = false, 
-            .initialise = OpenPeripheral, 
-            .name = "relay1" },
+        .peripheral = { .fd = -1, .pin = RELAY_PIN, .initialState = GPIO_Value_Low, .invertPin = false, .initialise = OpenPeripheral, .name = "relay1" },
         .twinState = false,
         .twinProperty = "relay1",
         .handler = DeviceTwinHandler
