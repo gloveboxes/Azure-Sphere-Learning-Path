@@ -79,8 +79,7 @@ The following example associates an Azure IoT Device Twin named **led1**, of typ
 
 ```c
 static DeviceTwinPeripheral light = {
-	.peripheral = {
-		.fd = -1, .pin = LIGHT_PIN, .initialState = GPIO_Value_High, .invertPin = true, .initialise = OpenPeripheral, .name = "led1" },
+	.peripheral = { .fd = -1, .pin = LIGHT_PIN, .initialState = GPIO_Value_High, .invertPin = true, .initialise = OpenPeripheral, .name = "led1" },
 	.twinProperty = "led1",
 	.twinType = TYPE_BOOL,
 	.handler = DeviceTwinHandler
