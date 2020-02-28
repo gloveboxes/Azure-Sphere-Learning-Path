@@ -53,7 +53,7 @@ In Lab 1, **Peripherals** and **Timers** were introduced to simplify and effecti
 
 In this lab, **DeviceTwinPeripheral**, and **DirectMethodPeripheral** are introduced to simplify the implementation of Azure IoT [Device Twins](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins) and Azure IoT [Direct Methods](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods) on the device.
 
-Both Device Twins and Direct Methods provide a mechanism to invoke some functionality on a device from a custom application via Azure IoT Hub or from an Azure IoT Central Application. For example, you may want to turn on a light, start a fan, or change the rate a sensor is sampled.
+Both Device Twins and Direct Methods provide a mechanism to invoke some functionality on a device from a custom Azure IoT Hub application or from an Azure IoT Central Application. For example, you may want to turn on a light, start a fan, or change the rate a sensor is sampled.
 
 ### Azure IoT Device Twins
 
