@@ -269,7 +269,26 @@ If you claimed your Azure Sphere device into your own Azure Sphere tenant then s
     DeviceTwinPeripheral* deviceTwinDevices[] = { &relay, &light };
     DirectMethodPeripheral* directMethodDevices[] = { &fan };
     ```
-4. In the main.c **InitPeripheralsAndHandlers** these sets of device twins and direct methods are opened and initialized.
+4. In the main.c **InitPeripheralsAndHandlers** Function these sets of device twins and direct methods are opened and initialized.
+    ```c
+    static int InitPeripheralsAndHandlers(void)
+    {
+        InitializeDevKit();  // Avnet Starter Kit
+
+        OpenPeripheralSet(peripherals, NELEMS(peripherals));
+        OpenDeviceTwinSet(deviceTwinDevices, NELEMS(deviceTwinDevices));
+        OpenDirectMethodSet(directMethodDevices, NELEMS(directMethodDevices));
+
+        StartTimerSet(timers, NELEMS(timers));
+
+        StartCloudToDevice();
+
+        EnableInterCoreCommunications(rtAppComponentId, InterCoreHandler);  // Initialize Inter Core Communications
+        SendInterCoreMessage("HeartBeat"); // Prime RT Core with Component ID Signature
+
+        return 0;
+    }
+    ```
 
 
 <!-- ---
