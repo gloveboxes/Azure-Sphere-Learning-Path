@@ -283,9 +283,6 @@ If you claimed your Azure Sphere device into your own Azure Sphere tenant then s
 
         StartCloudToDevice();
 
-        EnableInterCoreCommunications(rtAppComponentId, InterCoreHandler);  // Initialize Inter Core Communications
-        SendInterCoreMessage("HeartBeat"); // Prime RT Core with Component ID Signature
-
         return 0;
     }
     ```
