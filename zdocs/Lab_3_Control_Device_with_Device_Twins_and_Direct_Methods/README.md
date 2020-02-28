@@ -47,7 +47,87 @@ You will need to **copy** and **paste** the Lab 2 **app_manifest.json** you crea
 
 ---
 
-## Clone the following GitHub Repositories
+## Core Concepts
+
+In Lab 1, **Peripherals** and **Timers** were introduced to simplify and effectively describe GPIO pins and Timers and their interactions.
+
+In this lab, **DeviceTwinPeripheral**, and **DirectMethodPeripheral** are introduced to simplify the implementation of Azure IoT [Device Twins](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins) and Azure IoT [Direct Methods](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods) on the device.
+
+Both Device Twins and Direct Methods provide a mechanism to invoke some functionality on a device from a custom application via Azure IoT Hub or from an Azure IoT Central Application. For example, you may want to turn on a light, start a fan, or change the rate a sensor is sampled.
+
+### Azure IoT Device Twins
+
+When you set a Device Twin property in Azure IoT you are setting the *desired* state of a property on the device. Azure IoT will send a desired state message to the device, the device will action the request, for example, turn on a LED, and the device will then send a *reported* state msg back to Azure IoT. Azure IoT then stores the *reported* state in the Azure IoT.
+
+With the *reported* state stored in Azure IoT it is then possible to query this cloud-side *report* state data. For example, list all devices that have a *reported* firmware version of 2.
+
+For more information refer to the [Understand and use device twins in IoT Hub](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins) article.
+
+### Azure IoT Direct Methods
+
+Azure IoT Direct Method are simpler. When you invoke a *Direct Method* from Azure, a message is sent to the device. This message includes the name of the direct method, and a data payload. The device will action the request and then respond with an HTTP Status code to indicate success or failure along with an optional message.
+
+For more information refer to the [Understand and invoke direct methods from IoT Hub](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods) article.
+
+---
+
+## Device Twin Peripherals
+
+In **main.c** there is a variable declared named **light** of type **DeviceTwinPeripheral**. Variables of type **DeviceTwinPeripheral** declare a generalized model to define the relationship between an Azure IoT Device Twin and optionally a Peripheral.
+
+The following example associates an Azure IoT Device Twin named **led1**, of type **TYPE_BOOL**, with a GPIO peripheral, that will invoke a handler function named **DeviceTwinHandler**. The implementation of the handler is in **main.c**, and the implementation for TYPE_BOOL will toggle a LED on and off.
+
+```c
+static DeviceTwinPeripheral light = {
+	.peripheral = {
+		.fd = -1, .pin = LIGHT_PIN, .initialState = GPIO_Value_High, .invertPin = true, .initialise = OpenPeripheral, .name = "led1" },
+	.twinProperty = "led1",
+	.twinType = TYPE_BOOL,
+	.handler = DeviceTwinHandler
+};
+```
+---
+
+You can also define a DeviceTwinPeripheral without a Peripheral. The example below associates an Azure IoT Device Twin with a handler. This handler might do something like change the sampling rate for a sensor, or set a threshold on the device.
+
+```c
+static DeviceTwinPeripheral sensorSampleRate = {
+	.twinProperty = "sensorsamplerate",
+	.twinType = TYPE_INT,
+	.handler = SensorSampleRateTwinHandler
+};
+```
+
+Like Peripherals and Timers, Device Twin Peripherals can be automatically opened, initialized, and closed if they are added to the deviceTwinDevices array, also referred to as a **set** of device twin peripherals.
+
+```c
+DeviceTwinPeripheral* deviceTwinDevices[] = { &light, &sensorSampleRate };
+```
+
+---
+
+## Direct Method Peripherals
+
+```c
+static DirectMethodPeripheral feedFish = {
+    	.peripheral = { .fd = -1, .pin = FEED_FISH_PIN, .initialState = GPIO_Value_High, .invertPin = true, .initialise = OpenPeripheral, .name = "feedfish" },
+	.methodName = "feedfish",
+	.handler = FeedFishDirectMethod
+};
+
+```
+
+```c
+static DirectMethodPeripheral sensorSampleRate = {
+	.methodName = "sensorsamplerate",
+	.handler = SetSensorSampleRate
+};
+
+```
+
+```c
+DirectMethodPeripheral* directMethodDevices[] = { &fan };
+```
 
 ---
 
