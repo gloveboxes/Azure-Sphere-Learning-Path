@@ -115,21 +115,15 @@ These labs support the following Azure Sphere Kits.
 | [Seeed Studio Azure Sphere MT3620 Development Kit](http://wiki.seeedstudio.com/Azure_Sphere_MT3620_Development_Kit/) | ![](zdocs/resources/seeed-studio-azure-sphere.png) |
 | [Seeed Studio Azure Sphere MT3620 Mini Dev Board]() | ![](zdocs/resources/seeed-studio-azure-sphere-mini.png) |
 
+---
 
-<!-- ![](zdocs/resources/seeed-studio-azure-sphere.png)
+## Appendix
 
-The Labs also includes support for the [Seeed Studio Grove Shield](https://www.seeedstudio.com/MT3620-Grove-Shield.html), and the [Grove Temperature and Humidity (SHT31)](https://www.seeedstudio.com/Grove-Temperature-Humidity-Sensor-SHT31.html) sensor. Support for the SHT31 Grove sensor needs to be enabled from the app_manifest.json *cmdargs* property.
+### Learn about Azure Sphere
 
-![](zdocs/resources/seeed-studio-grove.png) -->
-
-<!-- ![](zdocs/resources/azure-sphere-parts-list.png) -->
-
-<!-- ### Avnet Azure Sphere MT3620 Starter Kit
-
-There Avnet board includes Temperature and Humidity Sensors.
-
-![](zdocs/resources/avnet-azure-sphere.jpg) -->
-
-
-<!-- This Learning Path requires either a Azure Sphere Developer kit from  or [Avnet](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-sk-g-3074457345636825680/). -->
-
+1. [Azure Sphere Documentation](https://docs.microsoft.com/en-au/azure-sphere/)
+1. Using Yocto to Build an IoT OS Targeting a Crossover SoC. [Video](https://www.youtube.com/watch?v=-T7Et5qfqQQ), and [Slides](https://static.sched.com/hosted_files/ossna19/91/Crossover_ELC2019.pdf)
+2. [Anatomy of a secured MCU](https://azure.microsoft.com/en-au/blog/anatomy-of-a-secured-mcu/)
+3. [Azure Sphere’s customized Linux-based OS](https://azure.microsoft.com/en-au/blog/azure-sphere-s-customized-linux-based-os/)
+4. [Tech Communities Blog](https://techcommunity.microsoft.com/t5/internet-of-things/bg-p/IoTBlog)
+5. The [Azure IoT Central Sample](https://github.com/Azure/azure-sphere-samples/blob/master/Samples/AzureIoT/IoTCentral.md)
