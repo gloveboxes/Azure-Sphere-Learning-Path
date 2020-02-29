@@ -28,7 +28,7 @@ Your journey starts with the equivalent of hello world, the next step is sending
 
 Each module assumes you have completed the previous module.
 
-You are also free to use and modify the code provided in the learning experience for your own projects, commercial or otherwise, no liability accepted.
+You are also free to use and modify the code provided in the learning experience for your projects, commercial or otherwise, no liability accepted.
 
 [Home](https://gloveboxes.github.io/Azure-Sphere-Learning-Path/)
 
@@ -82,7 +82,7 @@ Azure Sphere is a solution for securing MCU Power Devices. It comprises a secure
 
 ## The Growing ecosystem of hardware partners
 
-Get started with Azure Sphere using the prototyping developer kits from Seeed Studio and Avnet. Go to market with industry standard modules from AI-Link, Avnet, and USI. Internet enable  existing equipment with Guardian modules from Avnet.
+Get started with Azure Sphere using the prototyping developer kits from Avnet and Seeed Studio. Build solutions with industry standard modules from [AI-Link](https://www.mouser.com/new/seeed-studio/seeed-studio-mt3620-iot-module/?utm_source=RSS&utm_medium=RSS+Feed&utm_campaign=180935404), [Avnet](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-m-g-tr-3074457345641969195/), and [USI](https://www.usiglobal.com/en/new?new_id=06af2dfc-9cb3-4cb8-97cd-23db4b0a665d). Internet enable existing equipment with the [Avnet Guardian module](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-guard-100-3074457345641694219).
 
 Today the Mediatec MT3620 MCU powers Azure Sphere. The family of certified Azure Sphere MCUs will expand to include offerings from Qualcomm and NXP.
 
