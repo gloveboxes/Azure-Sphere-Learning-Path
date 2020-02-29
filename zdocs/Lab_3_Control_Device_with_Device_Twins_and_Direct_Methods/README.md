@@ -39,7 +39,7 @@ You will learn how to control an [Azure Sphere](https://azure.microsoft.com/serv
 
 This lab assumes you have completed [Lab 2: Send Telemetry from an Azure Sphere to Azure IoT Central](https://github.com/gloveboxes/Azure-Sphere-Learning-Path/tree/master/Lab%202%20-%20Send%20Telemetry%20from%20an%20Azure%20Sphere%20to%20Azure%20IoT%20Central). You will have created an Azure IoT Central application, connected Azure IoT Central to your Azure Sphere Tenant and you have configured the **app_manifest.json** for the Azure Device Provisioning Service.
 
-You will need to **copy** and **paste** the Lab 2 **app_manifest.json** you created to this labs **app_manifest.json** file.
+You will need to **copy** and **paste** the Lab 2 **app_manifest.json** you created to this lab's **app_manifest.json** file.
 
 ---
 
@@ -59,13 +59,13 @@ Both Device Twins and Direct Methods provide a mechanism to invoke some function
 
 When you set a Device Twin property in Azure IoT you are setting the *desired* state of a property on the device. Azure IoT will send a desired state message to the device, the device will action the request, for example, turn on a LED, and the device will then send a *reported* state msg back to Azure IoT. Azure IoT then stores the *reported* state in the Azure IoT.
 
-With the *reported* state stored in Azure IoT it is then possible to query this cloud-side *report* state data. For example, list all devices that have a *reported* firmware version of 2.
+With the *reported* state stored in Azure IoT it is then possible to query this cloud-side *reported* state data. For example, list all devices that have a *reported* firmware version of 2.
 
 For more information refer to the [Understand and use device twins in IoT Hub](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins) article.
 
 ### Azure IoT Direct Methods
 
-Azure IoT Direct Method are simpler. When you invoke a *Direct Method* from Azure, a message is sent to the device. This message includes the name of the direct method, and a data payload. The device will action the request and then respond with an HTTP Status code to indicate success or failure along with an optional message.
+Azure IoT Direct Methods are simpler. When you invoke a *Direct Method* from Azure, a message is sent to the device. This message includes the name of the direct method and a data payload. The device will action the request and then respond with an HTTP status code to indicate success or failure along with an optional message.
 
 For more information refer to the [Understand and invoke direct methods from IoT Hub](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods) article.
 
@@ -75,7 +75,7 @@ For more information refer to the [Understand and invoke direct methods from IoT
 
 In **main.c** there is a variable declared named **light** of type **DeviceTwinBinding**. Variables of type **DeviceTwinBinding** declare a generalized model to define the relationship between an Azure IoT Device Twin and optionally a Peripheral.
 
-The following example associates an Azure IoT Device Twin named **led1**, of type **TYPE_BOOL**, with a GPIO peripheral, that will invoke a handler function named **DeviceTwinHandler**. The implementation of the handler is in **main.c**, and the implementation for TYPE_BOOL will toggle a LED on and off.
+The following example associates an Azure IoT Device Twin named **led1**, of type **TYPE_BOOL**, with a GPIO peripheral, that will invoke a handler function named **DeviceTwinHandler**. The implementation of the handler is in **main.c**, and the implementation for TYPE_BOOL will toggle an LED on and off.
 
 ```c
 static DeviceTwinBinding light = {
@@ -171,7 +171,7 @@ There are two ways to control or set the state on the Azure Sphere device from A
 ## Adding support for Azure IoT Central Properties
 
 1. Open the **main.c** file
-2. Scroll down to the the line that reads **static DeviceTwinBinding relay**
+2. Scroll down to the line that reads **static DeviceTwinBinding relay**
 3. This data structure describes a generalized peripheral and what Azure IoT Central Device **Setting** this peripheral is associated with.  Azure IoT Central device settings are implemented as Azure IoT Device Twins.
 
     ```c
@@ -256,8 +256,8 @@ There are two ways to control or set the state on the Azure Sphere device from A
 ### Initializing the support for IoT Central Settings and Commands
 
 1. Again in **main.c**.
-2. Scroll down to the line that reads **#pragma region define sets for auto initialisation and close**
-3. In this region there are a number of C arrays that point to the **DeviceTwinBindings** and **DirectMethodPeripherals** defined above.
+2. Scroll down to the line that reads **#pragma region define sets for auto initialization and close**
+3. In this region, there are a number of C arrays that point to the **DeviceTwinBindings** and **DirectMethodPeripherals** defined above.
     ```c
     DeviceTwinBinding* deviceTwinBindings[] = { &relay, &light };
     DirectMethodBinding* directMethodBindings[] = { &fan };
