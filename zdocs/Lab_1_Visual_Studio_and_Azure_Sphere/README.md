@@ -162,9 +162,9 @@ Follow the [lab set-up guide](../Lab_0_Introduction_and_Lab_Set_Up/#step-2-clone
 
 1. Click **Open a local folder**
 2. Open the Azure-Sphere lab folder
-3. Open the folder that corresponds to the Dev/Starter kit you are using
+3. Open the **folder name** that corresponds to the **Azure Sphere board** you are using
 4. Open the **Lab_1_Visual_Studio_and_Azure_Sphere** folder
-4. Click **Select Folder** button to open the project
+5. Click **Select Folder** button to open the project
 
 ![](resources/visual-studio-open-project.png)
 
@@ -175,35 +175,10 @@ From the **Solution Explorer**, open the **main.c** file.
 ![](resources/visual-studio-open-main.png)
 
 ---
-<!-- 
-## Create a new Visual Studio Azure Sphere Project
 
-Start Visual Studio and create a new project in the same directory you cloned this tutorial into which includes the MT3620 Grove Shield Library.
+### Check CMake Cache Built Correctly
 
-It is important to create the Visual Studio Project in the same folder you cloned the MT3620 Grove Shield as there are relative links to this library in the application you will create.
-
-```text
-azure-sphere
-	|- MT3620_Grove_Shield
-	|- YourAzureSphereApplication
-```
-
-![](resources/vs-create-new-project.png)
-
-### Select Azure Sphere Project Template
-
-Type **sphere** in the search box and select the Azure Sphere Blink template.
-
-![](resources/vs-select-azure-sphere-blink.png)
-
-### Configure new Azure Sphere Project
-
-Name the project and set the save location.
-
-![](resources/vs-configure-new-project.png) -->
-### Check CMake Cache Built
-
-The generation of the CMake cache should run automatically, but it is a good idea to check that it ran correctly.
+The generation of the CMake cache should run automatically but it is a good idea to rerun the CMake Cache Generator to check that it runs correctly.
 
 1. Right mouse click the **CMakeLists.txt** file and select **Generate Cache for AzureSphereIoTCentral**.
 
