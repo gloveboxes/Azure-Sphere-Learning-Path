@@ -27,7 +27,9 @@ Each module assumes you have completed the previous module.
 
 ---
 
-## What you will learn
+## Troubleshooting
+
+1. If you have trouble connecting to the Azure Sphere over USB be sure to disable any VPNs you might have enabled.
 
 ---
 
