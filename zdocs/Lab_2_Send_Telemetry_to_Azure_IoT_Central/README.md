@@ -252,10 +252,10 @@ To start the build, deploy, debug process either click the Visual Studio **Start
 ## Migrate your device to an Azure IoT Central Template
 
 1. Open the Azure IoT Central Application your created.
-2. Open the **Devices** tab. There should be a new device listed with a numeric name.
+2. Open the **Devices** tab. There should be a new device listed with a numeric name. This numeric name is the ID of your Azure Sphere Device. You can check this by running the  ```azsphere device show``` command from the *Azure Sphere Command Prompt*.
 3. Select this new device and click **Migrate**
     ![](resources/iot-central-migrate-device.png)
-3. Migrate to the **Azure Sphere** Template
+3. Migrate the Azure Sphere device to the **Azure Sphere** Template
     ![](resources/iot-central-migrate-select-template.png)
 
 ---
