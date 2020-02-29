@@ -74,6 +74,12 @@ Azure Sphere is a solution for securing MCU Power Devices. It comprises a secure
 
 ---
 
+## Recent Azure Sphere Articles
+
+1. [Why Azure Sphere From Microsoft Is A Big Deal For The IoT Ecosystem](https://www.forbes.com/sites/janakirammsv/2020/02/25/why-azure-sphere-from-microsoft-is-a-big-deal-for-the-iot-ecosystem/#6063a8c15f1b)
+
+---
+
 ## The Growing ecosystem of hardware partners
 
 Get started with Azure Sphere using the prototyping developer kits from Seeed Studio and Avnet. Go to market with industry standard modules from AI-Link, Avnet, and USI. Internet enable  existing equipment with Guardian modules from Avnet.
@@ -81,6 +87,18 @@ Get started with Azure Sphere using the prototyping developer kits from Seeed St
 Today the Mediatec MT3620 MCU powers Azure Sphere. The family of certified Azure Sphere MCUs will expand to include offerings from Qualcomm and NXP.
 
 ![](zdocs/resources/azure-sphere.png)
+
+---
+
+## Building Real Solutions
+
+Building solutions with pre-certified modules is a fastest way to market.
+
+[Divvy Parking](https://www.divvyparking.com/), based in Australia, are building a multipurpose PCB based on the [Avnet Azure Sphere](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-m-g-tr-3074457345641969195/) module. This solution will initially support their parking solution.
+
+![](zdocs/resources/divvy-parking.png)
+
+*Prototype PCB design included here with permission of Divvy Parking*
 
 ---
 
