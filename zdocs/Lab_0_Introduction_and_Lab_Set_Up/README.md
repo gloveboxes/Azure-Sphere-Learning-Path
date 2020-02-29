@@ -49,7 +49,7 @@ If you are using a shared lab device, then the lab instructor will tell you the 
 
 ---
 
-## STEP 1: Install Developer Tools
+## STEP 1: Install the Developer Tools
 
 These labs are supported on Windows 10, Ubuntu 18.04, and on macOS running the Azure Development experience in a Virtual Box Ubuntu 18.04 Virtual Machine.
 
