@@ -1,4 +1,4 @@
-# Lab 1: Secure, Build, Deploy and Debug your first High-Level Azure Sphere Application with Visual Studio
+# Lab 1: Build your first Azure Sphere Application with Visual Studio
 
 <!-- ![Azure Sphere with shield](resources/azure-sphere-shield.png) -->
 
@@ -51,9 +51,9 @@ Lab 1 introduces two data structures used to greatly simplify and effectively de
 
 ### Peripherals
 
-In **main.c** there is a variable named **builtinLed** of type **Peripheral**. Variables of type **Peripheral** declare a generalized GPIO **output** peripheral. 
+In **main.c** there is a variable named **builtinLed** of type **Peripheral**. Variables of type **Peripheral** declare a generalized GPIO **output** peripheral.
 
-This variable holds the Operating System file descriptor, the GPIO pin number, the initial state of the pin when it is opened, whether the pin logic needs to be reserved for turning a pin on and off, and the C Function to be called to open and initialize the GPIO output pin.
+This variable holds the Operating System file descriptor, the GPIO pin number, the initial state of the pin when it is opened, whether the pin logic needs to be inverted for turning a pin on and off, and the C Function to be called to open and initialize the GPIO output pin.
 
 ```c
 static Peripheral builtinLed = {
@@ -62,7 +62,7 @@ static Peripheral builtinLed = {
 	.initialState = GPIO_Value_High,  // Set the initial state on the pin when opened
 	.invertPin = true,  // Should the switching logic be reverse for on/off, high/low
 	.initialise = OpenPeripheral,  // The name of C function to be called to open the Pin. The OpenPeripheral implementation is provided in peripheral.c.
-	.name = "SendStatus"  // An arbitrary name for the senor.
+	.name = "SendStatus"  // An arbitrary name for the sensor.
 };
 
 ```
@@ -85,14 +85,14 @@ If you wanted the timer to fire every half a second (500 milliseconds), you woul
 
 ### Automatic Initialization of Peripherals and Timers
 
-The peripherals and timers array variables are initialized with the addresses of the peripheral and timer objects that are declared above. Note the **&**, we adding the address of the peripheral and timer variables.
+The peripherals and timers array variables are initialized with the addresses of the peripheral and timer objects that are declared above.
 
 ```c
 Peripheral* peripherals[] = { &builtinLed };
 Timer* timers[] = { &measureSensorTimer };
 ```
 
-Peripherals and timers that are added to their respective arrays are referred to as **sets**. Any peripheral or timer referenced in a set will be automatically opened, initialized, and closed.
+Peripherals and timers are added to their respective arrays are referred to as **sets**. Any peripheral or timer referenced in a set will be automatically opened, initialized, and closed.
 
 These sets are referenced when calling **OpenPeripheralSet**, and **StartTimerSet** from the **InitPeripheralsAndHandlers** function. The sets are also references with closing the peripheral and timer sets in the **ClosePeripheralsAndHandlers** function.
 
@@ -107,8 +107,6 @@ static int InitPeripheralsAndHandlers(void)
 	return 0;
 }
 ```
-
-### MeasureSensorHandler Event Handler
 
 The **measureSensorTimer** timer is called every 5 seconds.
 
@@ -132,7 +130,7 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 
 ### Easy to Extend
 
-Using this model it is very easy to declare another peripheral or timer and add them to the **peripherals** or **timers** arrays. The following is an example of added an additional GPIO output peripheral.
+This model makes it easy to declare another peripheral or timer and add them to the **peripherals** or **timers** arrays. The following is an example of added an additional GPIO output peripheral.
 
 ```c
 static Peripheral fanControl = {
@@ -154,7 +152,7 @@ Peripheral* peripherals[] = { &builtinLed, &fanControl };
 
 ---
 
-## Enable Azure Sphere Device Development Debugging
+## Enable Azure Sphere Device Development
 
 You will need the credentials for the Azure Sphere Tenant your device was claimed into.
 
@@ -162,8 +160,8 @@ If you are using a lab device then lab mentor will provide you with the credenti
 
 ### Login to your Azure Sphere Tenant
 
-1. Start the **default Azure Sphere Tenant**
-	1. Press <kbd>Windows Key</kbd>, type **Azure Sphere**.
+1. Start the **Azure Sphere Developer Command Prompt**
+	1. Press the <kbd>Windows Key</kbd>
 	2. Start typing **Azure Sphere Developer Command Prompt**
 	3. Select and start the **Azure Sphere Developer Command Prompt**.
 2. **Login to the Azure Sphere Tenant**
@@ -171,11 +169,11 @@ If you are using a lab device then lab mentor will provide you with the credenti
 	From the **Azure Sphere Developer Command Prompt**, run ```azsphere login```. You will be prompted for the tenant credentials.
 3. **List Azure Sphere Tenants**
 
-	From the **Azure Sphere Developer Command Prompt**, run the ```azsphere tenant list```.
+	From the **Azure Sphere Developer Command Prompt**, run ```azsphere tenant list```.
 4. Select the **default Azure Sphere Tenant**
 	If there is more than one tenant listed then you need to set the default tenant.
 	
-	From the Azure Sphere Developer Command Prompt, run ```azsphere tenant select -i <Tenant ID>```.
+	From the **Azure Sphere Developer Command Prompt**, run ```azsphere tenant select -i <Tenant ID>```.
 
 ---
 
@@ -213,9 +211,9 @@ From the **Solution Explorer**, open the **main.c** file.
 
 ---
 
-### Check CMake Cache Built Correctly
+### Check CMake Cache Builds Correctly
 
-The generation of the CMake cache should run automatically but it is a good idea to rerun the CMake Cache Generator to check that it runs correctly.
+The generation of the CMake cache run automatically when you open a CMake project. But given this is the first lab to be opened, then it is a good idea to rerun the **CMake Cache Generator** to check that it is building correctly.
 
 1. Right mouse click the **CMakeLists.txt** file and select **Generate Cache for AzureSphereIoTCentral**.
 
@@ -256,7 +254,7 @@ This application can only access the resources listed in the **Capabilities** se
 
 Each Azure Sphere manufacturer maps pins differently.  To understand how the pins are mapped for your developer board then follow these steps.
 
-1. Place the cursor on the line that reads **#include "../shared/oem/board.h"**, then press <kbd>F12</kbd>. This will open the **board.h** header file.
+1. Ensure you have the **main.c** file open. Place the cursor on the line that reads **#include "../shared/oem/board.h"**, then press <kbd>F12</kbd>. This will open the **board.h** header file.
 
 	![](resources/visual-studio-open-board.png)
 
@@ -280,16 +278,16 @@ Each Azure Sphere manufacturer maps pins differently.  To understand how the pin
 
 1. Connect the Azure Sphere to your computer via USB
 2. Ensure you have [claimed](https://docs.microsoft.com/en-au/azure-sphere/install/claim-device?WT.mc_id=github-blog-dglover), [connected](https://docs.microsoft.com/en-au/azure-sphere/install/configure-wifi?WT.mc_id=github-blog-dglover), and [developer enabled](https://docs.microsoft.com/en-au/azure-sphere/install/qs-blink-application?WT.mc_id=github-blog-dglover) your Azure Sphere.
-
-3. Select **GDB Debugger (HLCore)** from the **Select Startup** dropdown.
+3. Ensure you have enabled developer mode on the Azure Sphere
+4. Select **GDB Debugger (HLCore)** from the **Select Startup** dropdown.
 	![](resources/vs-start-application.png)
-4. From Visual Studio, press <kbd>F5</kbd> to build, deploy, start, and attached the remote debugger to the Azure Sphere.
+5. From Visual Studio, press <kbd>F5</kbd> to build, deploy, start, and attached the remote debugger to the Azure Sphere.
 
 ---
 
 ## View the Debugger Output
 
-Open the _Output_ window to view the output from **Log_Debug** statements in _main.c_.
+Open the **Output** window to view the output from **Log_Debug** statements in the code.
 
 You can open the output window by using the Visual Studio <kbd>Ctrl+Alt+O</kbd> shortcut or click the **Output** tab found along the bottom/right of Visual Studio.
 
@@ -297,7 +295,7 @@ You can open the output window by using the Visual Studio <kbd>Ctrl+Alt+O</kbd> 
 
 ---
 
-## Set a Visual Studio Debugger Breakpoint
+## Set a Debugger Breakpoint
 
 Set a debugger breakpoint by clicking in the margin to the left of the line of code you want the debugger to stop at.
 
@@ -308,6 +306,8 @@ Set a debugger breakpoint by clicking in the margin to the left of the line of c
 	![](resources/vs-set-breakpoint.png)
 
 3. When the next timer event fires, the debugger will stop at the line you set the breakpoint on.
+4. You can inspect variable values, step over code <kbd>F10</kbd>, step into code <kbd>F11</kbd>, and continue code execution <kbd>F5</kbd>. 
+5. For more information on debugging then read [First look at the Visual Studio Debugger](https://docs.microsoft.com/en-us/visualstudio/debugger/debugger-feature-tour?view=vs-2019)
 
 ---
 
@@ -319,13 +319,8 @@ Set a debugger breakpoint by clicking in the margin to the left of the line of c
 
 ---
 
-## Azure Sphere Application Cloud Deployment
-
-Now you have learned how to "Side Load" an application onto Azure Sphere it is time to learn how to [Connect and Send Telemetry from an Azure Sphere to Azure IoT Central](https://github.com/gloveboxes/Azure-Sphere-Learning-Path/tree/master/Lab%202%20-%20Send%20Telemetry%20from%20an%20Azure%20Sphere%20to%20Azure%20IoT%20Central).
-
 ## Finished 完了 fertig finito ख़त्म होना terminado
 
 Congratulations, you secured, built, deployed and debugged your first Azure Sphere application.
 
 ![](resources/finished.jpg)
-
