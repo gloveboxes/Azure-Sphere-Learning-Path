@@ -265,6 +265,8 @@ To start the build, deploy, debug process either click the Visual Studio **Start
 
 You may need to wait a minute or two before the telemetry is displayed on the **Overview** tab.
 
+Note, you can also rename the device but clicking on the **Rename** button.
+
 ![](resources/iot-central-display-measurements.png)
 
 ---
