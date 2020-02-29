@@ -30,13 +30,13 @@ Comprehensive IoT security solution – including hardware, OS and cloud compone
 
 ## Azure Sphere Developer Learning Path
 
-This Azure Sphere learning path is designed to ease you into the world of Azure Sphere Development.
+This Azure Sphere developer learning path is designed to ease you into the world of Azure Sphere development.
 
 Your journey starts with the equivalent of hello world, the next step is sending telemetry to Azure IoT, then you will learn how to securely control a device from Azure IoT, and finally connect and send Azure IoT Events from a FreeRTOS application.
 
 Each module assumes you have completed the previous module.
 
-You are also free to use and modify the code provided in the learning experience for your projects, commercial or otherwise, no liability accepted.
+You are also free to use and modify the code provided in this learning path for your projects, commercial or otherwise, no liability accepted.
 
 [Home](https://gloveboxes.github.io/Azure-Sphere-Learning-Path/)
 
