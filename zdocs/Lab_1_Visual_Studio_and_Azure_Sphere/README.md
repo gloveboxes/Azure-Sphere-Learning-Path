@@ -161,8 +161,9 @@ Follow the [lab set-up guide](../Lab_0_Introduction_and_Lab_Set_Up/#step-2-clone
 ### Step 3: Open the lab project
 
 1. Click **Open a local folder**
-2. Navigate to the folder you cloned **Azure Sphere Learning Path** into.
-3. Double click to open the **Lab_1_Visual_Studio_and_Azure_Sphere** folder
+2. Open the Azure-Sphere lab folder
+3. Open the folder that corresponds to the Dev/Starter kit you are using
+4. Open the **Lab_1_Visual_Studio_and_Azure_Sphere** folder
 4. Click **Select Folder** button to open the project
 
 ![](resources/visual-studio-open-project.png)
