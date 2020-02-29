@@ -33,8 +33,6 @@ Each module assumes you have completed the previous module.
 
 In this lab you will learn how to secure, build, deploy, and debug your first High-Level (HL) Azure Sphere application onto the Azure Sphere A7 Core.
 
-The Azure Sphere [MT3620](https://www.mediatek.com/products/azureSphere/mt3620) MCU consists of three application cores. One ARM Cortex A7 High-Level Application core running Embedded Linux (built with [Yokto](https://www.yoctoproject.org/)), and two ARM Cortex M4F Real-Time cores for running FreeRTOS, Azure RTOS, or bare metal applications. The MT3620 MCU is also know as a Crossover MCU as it bridges the application world of ARM Cortex A7 with the Real time world of ARM Cortex M4.  
-
 ---
 
 ## Tutorial Overview
@@ -94,6 +92,40 @@ Peripherals and timers that are added to their respective arrays are referred to
 
 These sets are referenced when calling **OpenPeripheralSet**, and **StartTimerSet** from the **InitPeripheralsAndHandlers** function. The sets are also references with closing the peripheral and timer sets in the **ClosePeripheralsAndHandlers** function.
 
+```c
+static int InitPeripheralsAndHandlers(void)
+{
+	InitializeDevKit();  // Avnet Starter kit
+
+	OpenPeripheralSet(peripherals, NELEMS(peripherals));
+	StartTimerSet(timers, NELEMS(timers));
+
+	return 0;
+}
+```
+
+### MeasureSensorHandler Event Handler
+
+The **measureSensorTimer** timer is called every 5 seconds.
+
+```c
+static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
+{
+	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
+		Terminate();
+		return;
+	}
+
+	GPIO_ON(builtinLed); // blink built in LED
+
+	if (ReadTelemetry(msgBuffer, JSON_MESSAGE_BYTES) > 0) {
+		Log_Debug("%s\n", msgBuffer);
+	}
+
+	GPIO_OFF(builtinLed);
+}
+```
+
 ### Easy to Extend
 
 Using this model it is very easy to declare another peripheral or timer and add them to the **peripherals** or **timers** arrays. The following is an example of added an additional GPIO output peripheral.
@@ -116,14 +148,11 @@ Remember to add this new peripheral to the **peripherals** set so it will be aut
 Peripheral* peripherals[] = { &builtinLed, &fanControl };
 ```
 
-
 ## Open Lab 1 Project
 
 ### Step 1: Ensure you have cloned the lab source code
 
-	```bash
-	git clone https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git
-	```
+Follow the [Lab set up guide](../Lab_0_Introduction_and_Lab_Set_Up/#step-2-clone-the-azure-sphere-learning-path) if you have not yet cloned the labs to your computer.
 
 ### Step 2: Start Visual Studio 2019
 
