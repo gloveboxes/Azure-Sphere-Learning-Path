@@ -132,24 +132,14 @@ powershell -Command ((azsphere device show-attached)[0] -split ': ')[1].ToLower(
 
 ---
 
-## Azure IoT Central Configuration
-
-The following properties need to be set in the **app_manifest.json** file:
-
-1. **CmdArgs**: The Azure IoT Central Scope ID.
-2. **AllowedConnections**: Your Azure IoT Central Application URI and the Global Device Provisioning URI.
-3. **DeviceAuthentication**: Your Azure Sphere Tenant ID.
-
-This information is passed to the [Azure Device Provisioning Service](https://docs.microsoft.com/en-us/azure/iot-dps/) from your Azure Sphere High-Level application to obtain the necessary Azure IoT Connection string.
-
----
-
 ## Azure IoT Central Connection Information
 
-1. Get your Azure Sphere **Tenant ID**.
+Your Azure Sphere device needs the following information to connect to Azure IoT Central with the [Azure Device Provisioning Service](https://docs.microsoft.com/en-us/azure/iot-dps/).
+
+1. Your Azure Sphere **Tenant ID**.
 
     From the **Azure Sphere Developer Command Prompt**, run **```azsphere tenant show-selected```**. **Copy** the Tenant ID to **notepad** as you well need later.
-2. Get the Azure IoT Central Device Provisioning Service information.
+2. Your Azure IoT Central Device Provisioning Service information.
 
     1. From the **Azure Sphere Developer Command Prompt**, navigate to the folder you cloned the **Azure Sphere** lab into.
 
@@ -188,13 +178,18 @@ This information is passed to the [Azure Device Provisioning Service](https://do
 4. Open the **Lab_2_Send_Telemetry_to_Azure_IoT_Central** folder
 5. Click **Select Folder** button to open the project
 
-    <!-- ![](resources/visual-studio-open-lab2.png) -->
-
-## Configure Visual Studio App Deployment Settings
+### Step 3: Configure Azure Sphere Application
 
 1. Open the **app_manifest.json** file
     ![](resources/visual-studio-open-app-manifest.png)
-2.  Find and modify the **CmdArgs**, **AllowedConnections**, and the **DeviceAuthentication** properties in the app_manifest.json with the information your saved to **notepad**.
+
+
+2.  Update the app_manifest.json** with the information you saved to **notepad**:
+
+    * **CmdArgs**: Update with your Azure IoT Central Scope ID.    
+    * **AllowedConnections**: Update with your Your Azure IoT Central Application URI.
+    * **DeviceAuthentication**: Your Azure Sphere Tenant ID
+
 3. Review your **manifest_app.json** file. It should look similar to the following when you have updated.
 
     ```json
@@ -255,11 +250,20 @@ To start the build, deploy, debug process either click the Visual Studio **Start
 
 ---
 
-## Azure IoT Central Integration
+## Migrate your device to the Azure IoT Central Template
 
-Now the application is running on the Azure Sphere switch across to Azure IoT Central, select the **Devices** tab, then the **Azure Sphere** template, then the actual device.
+1. Open the Azure IoT Central Application your created.
+2. Open the **Devices** tab. There should be a new device listed with a numeric name.
+3. Select this new device and click **Migrate**
+    ![](resources/iot-central-migrate-device.png)
+3. Migrate to the **Azure Sphere** Template
+    ![](resources/iot-central-migrate-select-template.png)
 
-You need to wait a minute or two before the telemetry is displayed on the **Overview** tab.
+---
+
+## Azure IoT Central Dashboard
+
+You may need to wait a minute or two before the telemetry is displayed on the **Overview** tab.
 
 ![](resources/iot-central-display-measurements.png)
 
