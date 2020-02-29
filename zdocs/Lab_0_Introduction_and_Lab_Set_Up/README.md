@@ -5,7 +5,7 @@
 |Author|[Dave Glover](https://developer.microsoft.com/en-us/advocates/dave-glover?WT.mc_id=github-blog-dglover), Microsoft Cloud Developer Advocate, [@dglover](https://twitter.com/dglover) |
 |:----|:---|
 |Source Code | https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git |
-|Date| January  2020|
+|Date| February  2020|
 
 ---
 
@@ -49,9 +49,9 @@ If you are using a shared lab device, then the lab instructor will tell you the 
 
 ---
 
-## STEP 1: Install the Developer Tools
+## Step 1: Install the Developer Tools
 
-These labs are supported on Windows 10, Ubuntu 18.04, and on macOS running the Azure Development experience in a Virtual Box Ubuntu 18.04 Virtual Machine.
+These labs are supported on Windows 10 and Ubuntu 18.04.
 
 On Windows 10, [Visual Studio (The free Community Edition or better)](https://visualstudio.microsoft.com/vs/?WT.mc_id=github-blog-dglover) is recommended
 
@@ -59,7 +59,7 @@ On Ubuntu 18.04, install the latest version of [Visual Studio Code](https://code
 
 ---
 
-## STEP 2: Clone the Azure Sphere Learning Path
+## Step 2: Clone the Azure Sphere Learning Path
 
 **WARNING**: On Windows, do not clone the *Azure Sphere Learning Path* to a directory with a long folder name as CMake can have problems building with long path/folder names.
 
@@ -71,24 +71,34 @@ git clone https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git Azure-Sph
 
 ---
 
-## STEP 3: Under Azure Learning Path Layout
+## Step 3: Azure Learning Path Directory Layout
 
 The labs support the three currently available developer kits from Avnet and Seeed Studio.
 
 **Ensure you use the labs that match your hardware.**
 
-Lab folders by Azure Sphere Developer kit:
+Lab directories are named by Azure Sphere device manufacturer.
 
-**Azure-Sphere
-|- AVNET
-|- SEEED
-|- SEEED-MINI**
+    Azure-Sphere
+    |- AVNET
+    |- SEEED
+    |- SEEED-MINI
 
 ---
 
-## STEP 4: Set up Azure Sphere SDK, Claim the Azure Sphere, and Configure Networking
+## Step 4: Install Azure Sphere SDK and Developer Tools
 
 Follow the Azure Sphere [Overview of set up procedures](https://docs.microsoft.com/en-au/azure-sphere/install/overview?WT.mc_id=github-blog-dglover) guide.
+
+## Step 5: Claim your device
+
+Skip this step if you are using a lab device or you have already claimed.
+
+[Claim your device](https://docs.microsoft.com/en-au/azure-sphere/install/claim-device)
+
+## Step 6: Configure Network
+
+[Configure WiFi Settings](https://docs.microsoft.com/en-au/azure-sphere/install/configure-wifi)
 
 ---
 
