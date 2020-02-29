@@ -11,17 +11,17 @@ enum DirectMethodResponseCode
 	METHOD_NOT_FOUND = 404
 };
 
-struct _directMethodPeripheral {
+struct _directMethodBinding {
 	Peripheral peripheral;
 	const char* methodName;
-	enum DirectMethodResponseCode(*handler)(JSON_Object* json, struct _directMethodPeripheral* peripheral);
+	enum DirectMethodResponseCode(*handler)(JSON_Object* json, struct _directMethodBinding* peripheral);
 	char* responseMessage;
 };
 
-typedef struct _directMethodPeripheral DirectMethodPeripheral;
+typedef struct _directMethodBinding DirectMethodBinding;
 typedef enum DirectMethodResponseCode MethodResponseCode;
 
-void OpenDirectMethodSet(DirectMethodPeripheral* directMethods[], size_t directMethodCount);
+void OpenDirectMethodSet(DirectMethodBinding* directMethods[], size_t directMethodCount);
 void CloseDirectMethodSet(void);
 int AzureDirectMethodHandler(const char* method_name, const unsigned char* payload, size_t payloadSize,
 	unsigned char** responsePayload, size_t* responsePayloadSize, void* userContextCallback);

@@ -31,7 +31,7 @@ Each module assumes you have completed the previous module.
 
 ## What you will learn
 
-You will learn how to control an [Azure Sphere](https://azure.microsoft.com/services/azure-sphere/?WT.mc_id=github-blog-dglover) application using [Azure IoT Central](https://azure.microsoft.com/services/iot-central/?WT.mc_id=github-blog-dglover) **Properties** ([Hub Device Twins](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins?WT.mc_id=github-blog-dglover)) and **Commands** ([Direct Methods](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods?WT.mc_id=github-blog-dglover)).
+You will learn how to control an [Azure Sphere](https://azure.microsoft.com/services/azure-sphere/?WT.mc_id=github-blog-dglover) application using [Azure IoT Central](https://azure.microsoft.com/services/iot-central/?WT.mc_id=github-blog-dglover) Properties ([Azure IoT Hub Device Twins](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins?WT.mc_id=github-blog-dglover)) and Commands ([Azure IoT Hub Direct Methods](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods?WT.mc_id=github-blog-dglover)).
 
 ---
 
@@ -51,7 +51,7 @@ You will need to **copy** and **paste** the Lab 2 **app_manifest.json** you crea
 
 In Lab 1, **Peripherals** and **Timers** were introduced to simplify and effectively describe GPIO pins and Timers and their interactions.
 
-In this lab, **DeviceTwinPeripheral**, and **DirectMethodPeripheral** are introduced to simplify the implementation of Azure IoT [Device Twins](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins) and Azure IoT [Direct Methods](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods) on the device.
+In this lab, **DeviceTwinBindings**, and **DirectMethodBindings** are introduced to simplify the implementation of Azure IoT [Device Twins](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins) and Azure IoT [Direct Methods](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods) on the device.
 
 Both Device Twins and Direct Methods provide a mechanism to invoke some functionality on a device from a custom Azure IoT Hub application or from an Azure IoT Central Application. For example, you may want to turn on a light, start a fan, or change the rate a sensor is sampled.
 
@@ -71,15 +71,16 @@ For more information refer to the [Understand and invoke direct methods from IoT
 
 ---
 
-## Device Twin Peripherals
+## Device Twin Bindings
 
-In **main.c** there is a variable declared named **light** of type **DeviceTwinPeripheral**. Variables of type **DeviceTwinPeripheral** declare a generalized model to define the relationship between an Azure IoT Device Twin and optionally a Peripheral.
+In **main.c** there is a variable declared named **light** of type **DeviceTwinBinding**. Variables of type **DeviceTwinBinding** declare a generalized model to define the relationship between an Azure IoT Device Twin and optionally a Peripheral.
 
 The following example associates an Azure IoT Device Twin named **led1**, of type **TYPE_BOOL**, with a GPIO peripheral, that will invoke a handler function named **DeviceTwinHandler**. The implementation of the handler is in **main.c**, and the implementation for TYPE_BOOL will toggle a LED on and off.
 
 ```c
-static DeviceTwinPeripheral light = {
-	.peripheral = { .fd = -1, .pin = LIGHT_PIN, .initialState = GPIO_Value_High, .invertPin = true, .initialise = OpenPeripheral, .name = "led1" },
+static DeviceTwinBinding light = {
+	.peripheral = {
+		.fd = -1, .pin = LIGHT_PIN, .initialState = GPIO_Value_High, .invertPin = true, .initialise = OpenPeripheral, .name = "led1" },
 	.twinProperty = "led1",
 	.twinType = TYPE_BOOL,
 	.handler = DeviceTwinHandler
@@ -87,28 +88,28 @@ static DeviceTwinPeripheral light = {
 ```
 ---
 
-You can also define a DeviceTwinPeripheral without a Peripheral. The example below associates an Azure IoT Device Twin with a handler. This handler might do something like change the sampling rate for a sensor, or set a threshold on the device.
+You can also define a DeviceTwinBinding without a Peripheral. The example below associates an Azure IoT Device Twin with a handler. This handler might do something like change the sampling rate for a sensor, or set a threshold on the device.
 
 ```c
-static DeviceTwinPeripheral sensorSampleRate = {
+static DeviceTwinBinding sensorSampleRate = {
 	.twinProperty = "sensorsamplerate",
 	.twinType = TYPE_INT,
 	.handler = SensorSampleRateTwinHandler
 };
 ```
 
-Like Peripherals and Timers, Device Twin Peripherals can be automatically opened, initialized, and closed if they are added to the deviceTwinDevices array, also referred to as a **set** of device twin peripherals.
+Like Peripherals and Timers, Device Twin Bindings can be automatically opened, initialized, and closed if they are added to the deviceTwinDevices array, also referred to as a **set** of device twin peripherals.
 
 ```c
-DeviceTwinPeripheral* deviceTwinDevices[] = { &light, &sensorSampleRate };
+DeviceTwinBinding* deviceTwinBindings[] = { &light, &sensorSampleRate };
 ```
 
 ---
 
-## Direct Method Peripherals
+## Direct Method Bindings
 
 ```c
-static DirectMethodPeripheral feedFish = {
+static DirectMethodBinding feedFish = {
     	.peripheral = { .fd = -1, .pin = FEED_FISH_PIN, .initialState = GPIO_Value_High, .invertPin = true, .initialise = OpenPeripheral, .name = "feedfish" },
 	.methodName = "feedfish",
 	.handler = FeedFishDirectMethod
@@ -117,17 +118,17 @@ static DirectMethodPeripheral feedFish = {
 ```
 
 ```c
-static DirectMethodPeripheral sensorSampleRate = {
+static DirectMethodBinding sensorSampleRate = {
 	.methodName = "sensorsamplerate",
 	.handler = SetSensorSampleRate
 };
 
 ```
 
-Like Peripherals, Timers, Device Twin Peripherals, Direct Method Peripherals can be automatically opened, initialized, and closed if they are added to the directMethodDevices array, also referred to as a set of direct method peripherals.
+Like Peripherals, Timers, Device Twin Peripherals, Direct Method Bindings can be automatically opened, initialized, and closed if they are added to the directMethodDevices array, also referred to as a set of direct method peripherals.
 
 ```c
-DirectMethodPeripheral* directMethodDevices[] = { &feedFish, &sensorSampleRate };
+DirectMethodBinding* directMethodBinding[] = { &feedFish, &sensorSampleRate };
 ```
 
 ---
@@ -136,7 +137,7 @@ DirectMethodPeripheral* directMethodDevices[] = { &feedFish, &sensorSampleRate }
 
 There are two ways to control or set the state on the Azure Sphere device from Azure IoT Central.
 
-1. The first way to control a device is with Azure IoT Central **Properties**. Under the covers, these are implemented as [Azure IoT Device Twins](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins). 
+1. The first way to control a device is with Azure IoT Central **Properties**. Under the covers, these are implemented as [Azure IoT Device Twins](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins).
 
 2. The second way to control a device is with Azure IoT Central **Commands**. Under the covers, these are implemented as [Azure IoT Direct Methods](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods).
 
@@ -159,14 +160,6 @@ There are two ways to control or set the state on the Azure Sphere device from A
 
 ### Step 3: Configure the Azure IoT Central Connection Information
 
-#### Lab Azure Sphere
-
-If you are using an Azure Sphere in a lab environment and did not claim the Azure Sphere into your own Azure Sphere tenant then set the connection string as per the instructions in Lab 2.
-
-#### Own Azure Sphere
-
-If you claimed your Azure Sphere device into your own Azure Sphere tenant then set the **app_manifest.json** configuration as per Lab 2.
-
 1. Open the **app_manifest.json** file
 
     ![](resources/visual-studio-open-app-manifest.png)
@@ -178,11 +171,11 @@ If you claimed your Azure Sphere device into your own Azure Sphere tenant then s
 ## Adding support for Azure IoT Central Properties
 
 1. Open the **main.c** file
-2. Scroll down to the the line that reads **static DeviceTwinPeripheral relay**
+2. Scroll down to the the line that reads **static DeviceTwinBinding relay**
 3. This data structure describes a generalized peripheral and what Azure IoT Central Device **Setting** this peripheral is associated with.  Azure IoT Central device settings are implemented as Azure IoT Device Twins.
 
     ```c
-    static DeviceTwinPeripheral relay = {
+    static DeviceTwinBinding relay = {
         .peripheral = {
             .fd = -1, .pin = RELAY_PIN, .initialState = GPIO_Value_Low, .invertPin = false, .initialise = OpenPeripheral, .name = "relay1" },
         .twinProperty = "relay1",
@@ -192,27 +185,27 @@ If you claimed your Azure Sphere device into your own Azure Sphere tenant then s
     ```
 4. Scroll down a towards the end of main.c and review the implementation of the C Function **DeviceTwinHandler**.
     ```c
-    static void DeviceTwinHandler(DeviceTwinPeripheral* deviceTwinPeripheral) {
-        switch (deviceTwinPeripheral->twinType)
+    static void DeviceTwinHandler(DeviceTwinBinding* DeviceTwinBinding) {
+        switch (DeviceTwinBinding->twinType)
         {
         case TYPE_BOOL:
-            if (*(bool*)deviceTwinPeripheral->twinState) {
-                GPIO_ON(deviceTwinPeripheral->peripheral);
+            if (*(bool*)DeviceTwinBinding->twinState) {
+                GPIO_ON(DeviceTwinBinding->peripheral);
             }
             else {
-                GPIO_OFF(deviceTwinPeripheral->peripheral);
+                GPIO_OFF(DeviceTwinBinding->peripheral);
             }
             break;
         case TYPE_INT:
-            Log_Debug("\nInteger Value '%d'\n", *(int*)deviceTwinPeripheral->twinState);
+            Log_Debug("\nInteger Value '%d'\n", *(int*)DeviceTwinBinding->twinState);
             // Your implementation goes here - for example change the sensor measure rate
             break;
         case TYPE_FLOAT:
-            Log_Debug("\nFloat Value '%f'\n", *(float*)deviceTwinPeripheral->twinState);
+            Log_Debug("\nFloat Value '%f'\n", *(float*)DeviceTwinBinding->twinState);
             // Your implementation goes here - for example set a threshold
             break;
         case TYPE_STRING:
-            Log_Debug("\nString Value '%s'\n", (char*)deviceTwinPeripheral->twinState);
+            Log_Debug("\nString Value '%s'\n", (char*)DeviceTwinBinding->twinState);
             // Your implementation goes here - for example update display
             break;
         default:
@@ -228,7 +221,7 @@ If you claimed your Azure Sphere device into your own Azure Sphere tenant then s
 3. This data structure describes a generalized peripheral and what Azure IoT Central Device **Command** this peripheral is associated with.  Azure IoT Central device commands are implemented as Azure IoT Direct Methods.
 
     ```c
-    static DirectMethodPeripheral fan = {
+    static DirectMethodBinding fan = {
         .methodName = "fan1",
         .handler = SetFanSpeedDirectMethod
     };
@@ -236,25 +229,25 @@ If you claimed your Azure Sphere device into your own Azure Sphere tenant then s
 4. Scroll down to the end of main.c and review the C Function **SetFanSpeedDirectMethod**.
 
     ```c
-    static MethodResponseCode SetFanSpeedDirectMethod(JSON_Object* json, DirectMethodPeripheral* directMethodperipheral) {
+    static MethodResponseCode SetFanSpeedDirectMethod(JSON_Object* json, DirectMethodBinding* directMethodBinding) {
         // Sample implementation - doesn't do anything other than returning a response message and status
 
         // Allocate and initialize a response message buffer. The calling function is responsible for the freeing memory
         const size_t responseLen = 40;
-        directMethodperipheral->responseMessage = (char*)malloc(responseLen);
-        memset(directMethodperipheral->responseMessage, 0, responseLen);
+        directMethodBinding->responseMessage = (char*)malloc(responseLen);
+        memset(directMethodBinding->responseMessage, 0, responseLen);
 
         int speed = (int)json_object_get_number(json, "speed");
 
         if (speed >= 0 && speed <= 100) {
-            snprintf(directMethodperipheral->responseMessage, responseLen, "%s succeeded, speed set to %d", directMethodperipheral->methodName, speed);
-            Log_Debug("\nDirect Method Response '%s'\n", directMethodperipheral->responseMessage);
+            snprintf(directMethodBinding->responseMessage, responseLen, "%s succeeded, speed set to %d", directMethodBinding->methodName, speed);
+            Log_Debug("\nDirect Method Response '%s'\n", directMethodBinding->responseMessage);
             return METHOD_SUCCEEDED;
         }
         else
         {
-            snprintf(directMethodperipheral->responseMessage, responseLen, "%s FAILED, speed out of range %d", directMethodperipheral->methodName, speed);
-            Log_Debug("\nDirect Method Response '%s'\n", directMethodperipheral->responseMessage);
+            snprintf(directMethodBinding->responseMessage, responseLen, "%s FAILED, speed out of range %d", directMethodBinding->methodName, speed);
+            Log_Debug("\nDirect Method Response '%s'\n", directMethodBinding->responseMessage);
             return METHOD_FAILED;
         }
     }
@@ -264,10 +257,10 @@ If you claimed your Azure Sphere device into your own Azure Sphere tenant then s
 
 1. Again in **main.c**.
 2. Scroll down to the line that reads **#pragma region define sets for auto initialisation and close**
-3. In this region there are a number of C arrays that point to the **DeviceTwinPeripherals** and **DirectMethodPeripherals** defined above.
+3. In this region there are a number of C arrays that point to the **DeviceTwinBindings** and **DirectMethodPeripherals** defined above.
     ```c
-    DeviceTwinPeripheral* deviceTwinDevices[] = { &relay, &light };
-    DirectMethodPeripheral* directMethodDevices[] = { &fan };
+    DeviceTwinBinding* deviceTwinBindings[] = { &relay, &light };
+    DirectMethodBinding* directMethodBindings[] = { &fan };
     ```
 4. In the main.c **InitPeripheralsAndHandlers** Function these sets of device twins and direct methods are opened and initialized.
     ```c
@@ -276,8 +269,8 @@ If you claimed your Azure Sphere device into your own Azure Sphere tenant then s
         InitializeDevKit();  // Avnet Starter Kit
 
         OpenPeripheralSet(peripherals, NELEMS(peripherals));
-        OpenDeviceTwinSet(deviceTwinDevices, NELEMS(deviceTwinDevices));
-        OpenDirectMethodSet(directMethodDevices, NELEMS(directMethodDevices));
+        OpenDeviceTwinSet(deviceTwinBindings, NELEMS(deviceTwinBindings));
+        OpenDirectMethodSet(directMethodBindings, NELEMS(directMethodBindings));
 
         StartTimerSet(timers, NELEMS(timers));
 
@@ -297,7 +290,7 @@ Try connecting a different LED on the Azure Sphere with an Azure IoT Device Sett
 You will need to do the following steps:
 
 1. Update the Azure IoT Central Device Template and add a new settings control.
-2. Define a new **DeviceTwinPeripherals** data structure for the LED.
+2. Define a new **DeviceTwinBindings** data structure for the LED.
 3. Add the new LED data structure to the **deviceTwinDevices** array. This will ensure the GPIO pin is initialized and associated with a Azure IoT Central Device Setting.
 4. Update the **app_manifest.json** with the GPIO pin you want to use from your Azure Sphere application. -->
 

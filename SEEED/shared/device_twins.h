@@ -14,23 +14,23 @@ typedef enum {
 	TYPE_STRING = 4
 } valueType;
 
-struct _deviceTwinPeripheral {
+struct _deviceTwinBinding {
 	Peripheral peripheral;
 	const char* twinProperty;
 	void* twinState;
 	valueType twinType;
-	void (*handler)(struct _deviceTwinPeripheral* deviceTwinPeripheral);
+	void (*handler)(struct _deviceTwinBinding* deviceTwinBinding);
 };
 
-typedef struct _deviceTwinPeripheral DeviceTwinPeripheral;
+typedef struct _deviceTwinBinding DeviceTwinBinding;
 
 void TwinCallback(DEVICE_TWIN_UPDATE_STATE updateState, const unsigned char* payload, size_t payloadSize, void* userContextCallback);
 void DeviceTwinsReportStatusCallback(int result, void* context);
 
-void OpenDeviceTwinSet(DeviceTwinPeripheral* deviceTwins[], size_t deviceTwinCount);
+void OpenDeviceTwinSet(DeviceTwinBinding* deviceTwins[], size_t deviceTwinCount);
 void CloseDeviceTwinSet(void);
 
-void OpenDeviceTwin(DeviceTwinPeripheral* deviceTwinPeripheral);
-void CloseDeviceTwin(DeviceTwinPeripheral* deviceTwinPeripheral);
+void OpenDeviceTwin(DeviceTwinBinding* deviceTwinBinding);
+void CloseDeviceTwin(DeviceTwinBinding* deviceTwinBinding);
 
 #endif

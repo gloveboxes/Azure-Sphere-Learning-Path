@@ -1,15 +1,15 @@
 #include "device_twins.h"
 
-void SetDesiredState(JSON_Object* desiredProperties, DeviceTwinPeripheral* deviceTwinPeripheral);
-void TwinReportState(DeviceTwinPeripheral* deviceTwinPeripheral);
+void SetDesiredState(JSON_Object* desiredProperties, DeviceTwinBinding* deviceTwinBinding);
+void TwinReportState(DeviceTwinBinding* deviceTwinBinding);
 void DeviceTwinsReportStatusCallback(int result, void* context);
 void DeviceTwinUpdateReportedState(char* reportedPropertiesString);
 
-DeviceTwinPeripheral** _deviceTwins = NULL;
+DeviceTwinBinding** _deviceTwins = NULL;
 size_t _deviceTwinCount = 0;
 
 
-void OpenDeviceTwinSet(DeviceTwinPeripheral* deviceTwins[], size_t deviceTwinCount) {
+void OpenDeviceTwinSet(DeviceTwinBinding* deviceTwins[], size_t deviceTwinCount) {
 	_deviceTwins = deviceTwins;
 	_deviceTwinCount = deviceTwinCount;
 
@@ -22,40 +22,40 @@ void CloseDeviceTwinSet(void) {
 	for (int i = 0; i < _deviceTwinCount; i++) { CloseDeviceTwin(_deviceTwins[i]); }
 }
 
-void OpenDeviceTwin(DeviceTwinPeripheral* deviceTwinPeripheral) {
-	if (deviceTwinPeripheral->twinType == TYPE_UNKNOWN) {
-		Log_Debug("\n\nDevice Twin missing type information.\nInclude .twinType option in DeviceTwinPeripheral definition.\nExample .twinType=TYPE_BOOL. Valid types include TYPE_BOOL, TYPE_INT, TYPE_FLOAT, TYPE_STRING.\n\n");
+void OpenDeviceTwin(DeviceTwinBinding* deviceTwinBinding) {
+	if (deviceTwinBinding->twinType == TYPE_UNKNOWN) {
+		Log_Debug("\n\nDevice Twin '%s' missing type information.\nInclude .twinType option in DeviceTwinBinding definition.\nExample .twinType=TYPE_BOOL. Valid types include TYPE_BOOL, TYPE_INT, TYPE_FLOAT, TYPE_STRING.\n\n", deviceTwinBinding->twinProperty);
 		Terminate();	
 	}
 
 	// types JSON and String allocated dynamically when called in azure_iot.c
-	switch (deviceTwinPeripheral->twinType)
+	switch (deviceTwinBinding->twinType)
 	{
 	case TYPE_INT:
-		deviceTwinPeripheral->twinState = malloc(sizeof(int));
+		deviceTwinBinding->twinState = malloc(sizeof(int));
 		break;
 	case TYPE_FLOAT:
-		deviceTwinPeripheral->twinState = malloc(sizeof(float));
+		deviceTwinBinding->twinState = malloc(sizeof(float));
 		break;
 	case TYPE_BOOL:
-		deviceTwinPeripheral->twinState = malloc(sizeof(bool));
+		deviceTwinBinding->twinState = malloc(sizeof(bool));
 		break;
 	default:
 		break;
 	}
 
-	if (deviceTwinPeripheral->peripheral.initialise != NULL) {
-		deviceTwinPeripheral->peripheral.initialise(&deviceTwinPeripheral->peripheral);
+	if (deviceTwinBinding->peripheral.initialise != NULL) {
+		deviceTwinBinding->peripheral.initialise(&deviceTwinBinding->peripheral);
 	}
 }
 
-void CloseDeviceTwin(DeviceTwinPeripheral* deviceTwinPeripheral) {
-	if (deviceTwinPeripheral->twinState != NULL) {
-		free(deviceTwinPeripheral->twinState);
-		deviceTwinPeripheral->twinState = NULL;
+void CloseDeviceTwin(DeviceTwinBinding* deviceTwinBinding) {
+	if (deviceTwinBinding->twinState != NULL) {
+		free(deviceTwinBinding->twinState);
+		deviceTwinBinding->twinState = NULL;
 	}
 
-	CloseFdAndPrintError(deviceTwinPeripheral->peripheral.fd, deviceTwinPeripheral->peripheral.name);
+	CloseFdAndPrintError(deviceTwinBinding->peripheral.fd, deviceTwinBinding->peripheral.name);
 }
 
 /// <summary>
@@ -113,41 +113,41 @@ cleanup:
 /// <summary>
 ///     Checks to see if the device twin twinProperty(name) is found in the json object. If yes, then act upon the request
 /// </summary>
-void SetDesiredState(JSON_Object* jsonObject, DeviceTwinPeripheral* deviceTwinPeripheral) {
+void SetDesiredState(JSON_Object* jsonObject, DeviceTwinBinding* deviceTwinBinding) {
 	//JSON_Object* jsonObject = NULL;
 
-	switch (deviceTwinPeripheral->twinType)
+	switch (deviceTwinBinding->twinType)
 	{
 	case TYPE_INT:
-		*(int*)deviceTwinPeripheral->twinState = (int)json_object_get_number(jsonObject, "value");
-		if (deviceTwinPeripheral->handler != NULL) {
-			deviceTwinPeripheral->handler(deviceTwinPeripheral);
+		*(int*)deviceTwinBinding->twinState = (int)json_object_get_number(jsonObject, "value");
+		if (deviceTwinBinding->handler != NULL) {
+			deviceTwinBinding->handler(deviceTwinBinding);
 		}
-		TwinReportState(deviceTwinPeripheral);
+		TwinReportState(deviceTwinBinding);
 		break;
 	case TYPE_FLOAT:
-		*(float*)deviceTwinPeripheral->twinState = (float)json_object_get_number(jsonObject, "value");
-		if (deviceTwinPeripheral->handler != NULL) {
-			deviceTwinPeripheral->handler(deviceTwinPeripheral);
+		*(float*)deviceTwinBinding->twinState = (float)json_object_get_number(jsonObject, "value");
+		if (deviceTwinBinding->handler != NULL) {
+			deviceTwinBinding->handler(deviceTwinBinding);
 		}
-		TwinReportState(deviceTwinPeripheral);
+		TwinReportState(deviceTwinBinding);
 		break;
 	case TYPE_BOOL:
-		*(bool*)deviceTwinPeripheral->twinState = (bool)json_object_get_boolean(jsonObject, "value");
-		if (deviceTwinPeripheral->handler != NULL) {
-			deviceTwinPeripheral->handler(deviceTwinPeripheral);
+		*(bool*)deviceTwinBinding->twinState = (bool)json_object_get_boolean(jsonObject, "value");
+		if (deviceTwinBinding->handler != NULL) {
+			deviceTwinBinding->handler(deviceTwinBinding);
 		}
-		TwinReportState(deviceTwinPeripheral);
+		TwinReportState(deviceTwinBinding);
 		break;
 	case TYPE_STRING:
-		deviceTwinPeripheral->twinState = (char*)json_object_get_string(jsonObject, "value");
+		deviceTwinBinding->twinState = (char*)json_object_get_string(jsonObject, "value");
 
-		if (deviceTwinPeripheral->handler != NULL) {
-			deviceTwinPeripheral->handler(deviceTwinPeripheral);
+		if (deviceTwinBinding->handler != NULL) {
+			deviceTwinBinding->handler(deviceTwinBinding);
 		}
 
-		TwinReportState(deviceTwinPeripheral);
-		deviceTwinPeripheral->twinState = NULL;
+		TwinReportState(deviceTwinBinding);
+		deviceTwinBinding->twinState = NULL;
 		break;
 	default:
 		break;
@@ -155,7 +155,7 @@ void SetDesiredState(JSON_Object* jsonObject, DeviceTwinPeripheral* deviceTwinPe
 }
 
 
-void TwinReportState(DeviceTwinPeripheral* deviceTwinPeripheral)
+void TwinReportState(DeviceTwinBinding* deviceTwinBinding)
 {
 	int len = 0;
 
@@ -165,23 +165,23 @@ void TwinReportState(DeviceTwinPeripheral* deviceTwinPeripheral)
 	else {
 		static char reportedPropertiesString[DEVICE_TWIN_REPORT_LEN] = { 0 };
 
-		switch (deviceTwinPeripheral->twinType)
+		switch (deviceTwinBinding->twinType)
 		{
 		case TYPE_INT:
-			len = snprintf(reportedPropertiesString, DEVICE_TWIN_REPORT_LEN, "{\"%s\":%d}", deviceTwinPeripheral->twinProperty,
-				(*(int*)deviceTwinPeripheral->twinState));
+			len = snprintf(reportedPropertiesString, DEVICE_TWIN_REPORT_LEN, "{\"%s\":%d}", deviceTwinBinding->twinProperty,
+				(*(int*)deviceTwinBinding->twinState));
 			break;
 		case TYPE_FLOAT:
-			len = snprintf(reportedPropertiesString, DEVICE_TWIN_REPORT_LEN, "{\"%s\":%f}", deviceTwinPeripheral->twinProperty,
-				(*(float*)deviceTwinPeripheral->twinState));
+			len = snprintf(reportedPropertiesString, DEVICE_TWIN_REPORT_LEN, "{\"%s\":%f}", deviceTwinBinding->twinProperty,
+				(*(float*)deviceTwinBinding->twinState));
 			break;
 		case TYPE_BOOL:
-			len = snprintf(reportedPropertiesString, DEVICE_TWIN_REPORT_LEN, "{\"%s\":%s}", deviceTwinPeripheral->twinProperty,
-				(*(bool*)deviceTwinPeripheral->twinState ? "true" : "false"));
+			len = snprintf(reportedPropertiesString, DEVICE_TWIN_REPORT_LEN, "{\"%s\":%s}", deviceTwinBinding->twinProperty,
+				(*(bool*)deviceTwinBinding->twinState ? "true" : "false"));
 			break;
 		case TYPE_STRING:
-			len = snprintf(reportedPropertiesString, DEVICE_TWIN_REPORT_LEN, "{\"%s\":\"%s\"}", deviceTwinPeripheral->twinProperty,
-				(deviceTwinPeripheral->twinState));
+			len = snprintf(reportedPropertiesString, DEVICE_TWIN_REPORT_LEN, "{\"%s\":\"%s\"}", deviceTwinBinding->twinProperty,
+				(deviceTwinBinding->twinState));
 			break;
 		default:
 			break;

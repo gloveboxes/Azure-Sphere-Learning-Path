@@ -1,6 +1,7 @@
 ﻿#include "../shared/azure_iot.h"
 #include "../shared/globals.h"
 #include "../shared/inter_core.h"
+#include "../shared/oem/board.h"
 #include "../shared/peripheral.h"
 #include "../shared/terminate.h"
 #include "../shared/timer.h"
@@ -10,7 +11,6 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <time.h>
-#include "../shared/oem/board.h"
 
 
 #define JSON_MESSAGE_BYTES 128  // Number of bytes to allocate for the JSON telemetry message for IoT Central
@@ -20,13 +20,13 @@ static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 static int InitPeripheralsAndHandlers(void);
 static void ClosePeripheralsAndHandlers(void);
 static void MeasureSensorHandler(EventLoopTimer* eventData);
-static void DeviceTwinHandler(DeviceTwinPeripheral* deviceTwinPeripheral);
-static MethodResponseCode SetFanSpeedDirectMethod(JSON_Object* json, DirectMethodPeripheral* directMethodperipheral);
+static void DeviceTwinHandler(DeviceTwinBinding* deviceTwinBinding);
+static MethodResponseCode SetFanSpeedDirectMethod(JSON_Object* json, DirectMethodBinding* directMethodBinding);
 static void InterCoreHandler(char* msg);
 static void InterCoreHeartBeat(EventLoopTimer* eventLoopTimer);
 
 
-static DeviceTwinPeripheral relay = {
+static DeviceTwinBinding relay = {
 	.peripheral = {
 		.fd = -1, .pin = RELAY_PIN, .initialState = GPIO_Value_Low, .invertPin = false, .initialise = OpenPeripheral, .name = "relay1" },
 	.twinProperty = "relay1",
@@ -34,7 +34,7 @@ static DeviceTwinPeripheral relay = {
 	.handler = DeviceTwinHandler
 };
 
-static DeviceTwinPeripheral light = {
+static DeviceTwinBinding light = {
 	.peripheral = {
 		.fd = -1, .pin = LIGHT_PIN, .initialState = GPIO_Value_High, .invertPin = true, .initialise = OpenPeripheral, .name = "led1" },
 	.twinProperty = "led1",
@@ -42,7 +42,7 @@ static DeviceTwinPeripheral light = {
 	.handler = DeviceTwinHandler
 };
 
-static DirectMethodPeripheral fan = {
+static DirectMethodBinding fan = {
 	.methodName = "fan1",
 	.handler = SetFanSpeedDirectMethod
 };
@@ -65,8 +65,8 @@ static Timer rtCoreHeatBeat = {
 
 #pragma region define sets for auto initialization and close
 
-DeviceTwinPeripheral* deviceTwinDevices[] = { &relay, &light };
-DirectMethodPeripheral* directMethodDevices[] = { &fan };
+DeviceTwinBinding* deviceTwinBindings[] = { &relay, &light };
+DirectMethodBinding* directMethodBindings[] = { &fan };
 Peripheral* peripherals[] = { &builtinLed };
 Timer* timers[] = { &measureSensorTimer, &rtCoreHeatBeat };
 
@@ -135,8 +135,8 @@ static int InitPeripheralsAndHandlers(void)
 	InitializeDevKit();  // Avnet Starter Kit
 
 	OpenPeripheralSet(peripherals, NELEMS(peripherals));
-	OpenDeviceTwinSet(deviceTwinDevices, NELEMS(deviceTwinDevices));
-	OpenDirectMethodSet(directMethodDevices, NELEMS(directMethodDevices));
+	OpenDeviceTwinSet(deviceTwinBindings, NELEMS(deviceTwinBindings));
+	OpenDirectMethodSet(directMethodBindings, NELEMS(directMethodBindings));
 
 	StartTimerSet(timers, NELEMS(timers));
 
@@ -168,27 +168,27 @@ static void ClosePeripheralsAndHandlers(void)
 }
 
 
-static void DeviceTwinHandler(DeviceTwinPeripheral* deviceTwinPeripheral) {
-	switch (deviceTwinPeripheral->twinType)
+static void DeviceTwinHandler(DeviceTwinBinding* deviceTwinBinding) {
+	switch (deviceTwinBinding->twinType)
 	{
 	case TYPE_BOOL:
-		if (*(bool*)deviceTwinPeripheral->twinState) {
-			GPIO_ON(deviceTwinPeripheral->peripheral);
+		if (*(bool*)deviceTwinBinding->twinState) {
+			GPIO_ON(deviceTwinBinding->peripheral);
 		}
 		else {
-			GPIO_OFF(deviceTwinPeripheral->peripheral);
+			GPIO_OFF(deviceTwinBinding->peripheral);
 		}
 		break;
 	case TYPE_INT:
-		Log_Debug("\nInteger Value '%d'\n", *(int*)deviceTwinPeripheral->twinState);
+		Log_Debug("\nInteger Value '%d'\n", *(int*)deviceTwinBinding->twinState);
 		// Your implementation goes here - for example change the sensor measure rate
 		break;
 	case TYPE_FLOAT:
-		Log_Debug("\nFloat Value '%f'\n", *(float*)deviceTwinPeripheral->twinState);
+		Log_Debug("\nFloat Value '%f'\n", *(float*)deviceTwinBinding->twinState);
 		// Your implementation goes here - for example set a threshold
 		break;
 	case TYPE_STRING:
-		Log_Debug("\nString Value '%s'\n", (char*)deviceTwinPeripheral->twinState);
+		Log_Debug("\nString Value '%s'\n", (char*)deviceTwinBinding->twinState);
 		// Your implementation goes here - for example update display
 		break;
 	default:
@@ -197,25 +197,25 @@ static void DeviceTwinHandler(DeviceTwinPeripheral* deviceTwinPeripheral) {
 }
 
 
-static MethodResponseCode SetFanSpeedDirectMethod(JSON_Object* json, DirectMethodPeripheral* directMethodperipheral) {
+static MethodResponseCode SetFanSpeedDirectMethod(JSON_Object* json, DirectMethodBinding* directMethodBinding) {
 	// Sample implementation - doesn't do anything other than returning a response message and status
 
 	// Allocate and initialize a response message buffer. The calling function is responsible for the freeing memory
 	const size_t responseLen = 40;
-	directMethodperipheral->responseMessage = (char*)malloc(responseLen);
-	memset(directMethodperipheral->responseMessage, 0, responseLen);
+	directMethodBinding->responseMessage = (char*)malloc(responseLen);
+	memset(directMethodBinding->responseMessage, 0, responseLen);
 
 	int speed = (int)json_object_get_number(json, "speed");
 
 	if (speed >= 0 && speed <= 100) {
-		snprintf(directMethodperipheral->responseMessage, responseLen, "%s succeeded, speed set to %d", directMethodperipheral->methodName, speed);
-		Log_Debug("\nDirect Method Response '%s'\n", directMethodperipheral->responseMessage);
+		snprintf(directMethodBinding->responseMessage, responseLen, "%s succeeded, speed set to %d", directMethodBinding->methodName, speed);
+		Log_Debug("\nDirect Method Response '%s'\n", directMethodBinding->responseMessage);
 		return METHOD_SUCCEEDED;
 	}
 	else
 	{
-		snprintf(directMethodperipheral->responseMessage, responseLen, "%s FAILED, speed out of range %d", directMethodperipheral->methodName, speed);
-		Log_Debug("\nDirect Method Response '%s'\n", directMethodperipheral->responseMessage);
+		snprintf(directMethodBinding->responseMessage, responseLen, "%s FAILED, speed out of range %d", directMethodBinding->methodName, speed);
+		Log_Debug("\nDirect Method Response '%s'\n", directMethodBinding->responseMessage);
 		return METHOD_FAILED;
 	}
 }

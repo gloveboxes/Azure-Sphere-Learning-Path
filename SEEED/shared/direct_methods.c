@@ -1,9 +1,9 @@
 #include "direct_methods.h"
 
-DirectMethodPeripheral** _directMethods;
+DirectMethodBinding** _directMethods;
 size_t _directMethodCount;
 
-void OpenDirectMethodSet(DirectMethodPeripheral* directMethods[], size_t directMethodCount) {
+void OpenDirectMethodSet(DirectMethodBinding* directMethods[], size_t directMethodCount) {
 	_directMethods = directMethods;
 	_directMethodCount = directMethodCount;
 
@@ -32,7 +32,7 @@ int AzureDirectMethodHandler(const char* method_name, const unsigned char* paylo
 	const char* mallocFailedMsg = "Memory Allocation failed";
 	const char* invalidJsonMsg = "Invalid JSON";
 
-	DirectMethodPeripheral* directMethodPeripheral = NULL;
+	DirectMethodBinding* directMethodBinding = NULL;
 
 	const char* responseMessage = methodNotFoundMsg;
 	int result = METHOD_NOT_FOUND;
@@ -69,26 +69,26 @@ int AzureDirectMethodHandler(const char* method_name, const unsigned char* paylo
 		goto cleanup;
 	}
 
-	// loop through array of DirectMethodPeripherals looking for a matching method name
+	// loop through array of DirectMethodBindings looking for a matching method name
 	for (int i = 0; i < _directMethodCount; i++) {
 		if (strcmp(method_name, _directMethods[i]->methodName) == 0) {
-			directMethodPeripheral = _directMethods[i];
+			directMethodBinding = _directMethods[i];
 			break;
 		}
 	}
 
-	if (directMethodPeripheral != NULL) {	// was a DirectMethodPeripheral found
-		MethodResponseCode responseCode = directMethodPeripheral->handler(jsonObject, directMethodPeripheral);
+	if (directMethodBinding != NULL) {	// was a DirectMethodBinding found
+		MethodResponseCode responseCode = directMethodBinding->handler(jsonObject, directMethodBinding);
 
 		result = (int)responseCode;
 
 		switch (responseCode)
 		{
 		case METHOD_SUCCEEDED:	// 200
-			responseMessage = strlen(directMethodPeripheral->responseMessage) == 0 ? methodSucceededMsg : directMethodPeripheral->responseMessage;
+			responseMessage = strlen(directMethodBinding->responseMessage) == 0 ? methodSucceededMsg : directMethodBinding->responseMessage;
 			break;
 		case METHOD_FAILED:		// 500
-			responseMessage = strlen(directMethodPeripheral->responseMessage) == 0 ? methodErrorMsg : directMethodPeripheral->responseMessage;
+			responseMessage = strlen(directMethodBinding->responseMessage) == 0 ? methodErrorMsg : directMethodBinding->responseMessage;
 			break;
 		case METHOD_NOT_FOUND:
 			break;
@@ -115,10 +115,10 @@ cleanup:
 	free(payLoadString);
 	payLoadString = NULL;
 
-	if (directMethodPeripheral != NULL) {
-		if (directMethodPeripheral->responseMessage != NULL) { // there was memory allocated for a response message so free it now
-			free(directMethodPeripheral->responseMessage);
-			directMethodPeripheral->responseMessage = NULL;
+	if (directMethodBinding != NULL) {
+		if (directMethodBinding->responseMessage != NULL) { // there was memory allocated for a response message so free it now
+			free(directMethodBinding->responseMessage);
+			directMethodBinding->responseMessage = NULL;
 		}
 	}
 
