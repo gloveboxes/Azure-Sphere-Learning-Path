@@ -33,7 +33,7 @@ static DeviceTwinBinding relay = {
 
 static DeviceTwinBinding light = {
 	.peripheral = {
-		.fd = -1, .pin = LIGHT_PIN, .initialState = GPIO_Value_High, .invertPin = true, .initialise = OpenPeripheral, .name = "led1" },
+		.fd = -1, .pin = BUILTIN_LED, .initialState = GPIO_Value_High, .invertPin = true, .initialise = OpenPeripheral, .name = "led1" },
 	.twinProperty = "led1",
 	.twinType = TYPE_BOOL,
 	.handler = DeviceTwinHandler
