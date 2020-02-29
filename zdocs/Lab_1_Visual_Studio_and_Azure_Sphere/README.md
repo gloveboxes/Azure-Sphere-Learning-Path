@@ -47,7 +47,7 @@ In this lab you will learn how to secure, build, deploy, and debug your first Hi
 
 Lab 1 introduces two C data structures used to greatly simplify and effectively describe how the code will work with GPIO and Timers.
 
-### Perpherals
+### Peripherals
 
 In **main.c** there is a variable named **builtinLed** of type **Peripheral**. Variables of type **Peripheral** declare a generalized GPIO output peripheral. This variable holds the GPIO pin OS file descriptor, the GPIO pin number, the initial state when the pin is opened, whether the pin logic needs to be reserved for turning a pin on and off, and the C function to be called to open and initialize the GPIO output pin.
 
@@ -65,7 +65,7 @@ static Peripheral builtinLed = {
 
 ### Timers
 
-In **main.c** there is another variable named **measureSensorTimer** of type **Timer**. Variables of type **Timer** declare a generalized Timer object. A Timer is a regular occurring event. For example you may want to blink an LED every second, or perhaps read data from a sensor every 5 seconds.
+In **main.c** there is another variable named **measureSensorTimer** of type **Timer**. Variables of type **Timer** declare a generalized Timer object. A Timer is a regularly occurring event. For example, you may want to blink an LED every second, or perhaps read data from a sensor every 5 seconds.
 
 ```c
 static Timer measureSensorTimer = {
@@ -77,7 +77,7 @@ static Timer measureSensorTimer = {
 
 In this example, the function named **MeasureSensorHandler** is called every 5 seconds. There are two values used to initialize the **.period** variable, the first is the number of seconds, followed by the number of nanoseconds.
 
-If you wanted to timer to fire every half a second (500 milliseconds), you would set the .period to be { 0, 500000000 }
+If you wanted the timer to fire every half a second (500 milliseconds), you would set the .period to be { 0, 500000000 }
 
 ### Automatic Initialization of Peripherals and Timers
 
@@ -152,7 +152,7 @@ Peripheral* peripherals[] = { &builtinLed, &fanControl };
 
 ### Step 1: Ensure you have cloned the lab source code
 
-Follow the [lab set up guide](../Lab_0_Introduction_and_Lab_Set_Up/#step-2-clone-the-azure-sphere-learning-path) if you have not yet cloned the labs to your computer.
+Follow the [lab set-up guide](../Lab_0_Introduction_and_Lab_Set_Up/#step-2-clone-the-azure-sphere-learning-path) if you have not yet cloned the labs to your computer.
 
 ### Step 2: Start Visual Studio 2019
 
@@ -212,7 +212,7 @@ The generation of the CMake cache should run automatically, but it is a good ide
 
 	![](resources/visual-studio-cmake-generate-completed.png)
 
-	If the CMake Generation fails there is a good chance the lab has been cloned to directory with a long file path and name. This can be a problem for CMake. Try moving the labs closer to the root directory on your local drive.
+	If the CMake Generation fails then there is a good chance the lab has been cloned to a directory with a long file path and name. This can be a problem for CMake. Try moving the labs closer to the root directory on your local drive.
 
 ---
 
@@ -254,7 +254,7 @@ Each Azure Sphere manufacturer maps pins differently.  To understand how the pin
 	#define RELAY_PIN		AVNET_MT3620_SK_GPIO0
 	```
 
-2. Review the manufactures pin mappings. From the **board.h** file, place the cursor on the line that starts with **#include "../Hardware/**, and press <kbd>F12</kbd>. This will open the manufacturers board definition header file. In this file you can see how the pins are mapped.
+2. Review the manufactures pin mappings. From the **board.h** file, place the cursor on the line that starts with **#include "../Hardware/**, and press <kbd>F12</kbd>. This will open the manufacturer's board definition header file. In this file, you can see how the pins are mapped.
 
 3. Next, click on the **main.c tab** to bring **main.c** to the foreground.
 
@@ -307,7 +307,7 @@ Set a debugger breakpoint by clicking in the margin to the left of the line of c
 
 ## Azure Sphere Application Cloud Deployment
 
-Now you have learnt how to "Side Load" an application onto Azure Sphere it is time to learn how to [Connect and Send Telemetry from an Azure Sphere to Azure IoT Central](https://github.com/gloveboxes/Azure-Sphere-Learning-Path/tree/master/Lab%202%20-%20Send%20Telemetry%20from%20an%20Azure%20Sphere%20to%20Azure%20IoT%20Central).
+Now you have learned how to "Side Load" an application onto Azure Sphere it is time to learn how to [Connect and Send Telemetry from an Azure Sphere to Azure IoT Central](https://github.com/gloveboxes/Azure-Sphere-Learning-Path/tree/master/Lab%202%20-%20Send%20Telemetry%20from%20an%20Azure%20Sphere%20to%20Azure%20IoT%20Central).
 
 ## Finished 完了 fertig finito ख़त्म होना terminado
 
