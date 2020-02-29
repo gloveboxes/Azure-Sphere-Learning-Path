@@ -45,7 +45,7 @@ In this lab you will learn how to secure, build, deploy, and debug your first Hi
 
 ---
 
-## Core Concepts
+## Key Concepts
 
 Lab 1 introduces two data structures used to greatly simplify and effectively describe in  code how [GPIO](https://en.wikipedia.org/wiki/General-purpose_input/output) and Timers will work.
 
@@ -151,6 +151,39 @@ Remember to add this new peripheral to the **peripherals** set so it will be aut
 ```c
 Peripheral* peripherals[] = { &builtinLed, &fanControl };
 ```
+
+---
+
+## Enable Azure Sphere Device Development Debugging
+
+### Login to your Azure Sphere Tenant
+
+You will need the Azure Sphere Tenant credentials.
+
+If this is a lab Azure Sphere then the lab mentor will provide you with the credentials.
+
+1. Start the **default Azure Sphere Tenant**
+	1. Press <kbd>Windows Key</kbd>, type **Azure Sphere**.
+	2. Start typing **Azure Sphere Developer Command Prompt**
+	3. Select and start the **Azure Sphere Developer Command Prompt**.
+2. **Login to the Azure Sphere Tenant**
+
+	From the **Azure Sphere Developer Command Prompt**, run ```azsphere login```. You will be prompted for the tenant credentials.
+3. **List Azure Sphere Tenants**
+
+	From the **Azure Sphere Developer Command Prompt**, run the ```azsphere tenant list```.
+4. Select the **default Azure Sphere Tenant**
+	If there is more than one tenant listed then you need to set the default tenant.
+	
+	From the Azure Sphere Developer Command Prompt, run ```azsphere tenant select -i <Tenant ID>```.
+
+---
+
+## Enable Azure Sphere Debugging
+
+From the **Azure Sphere Developer Command Prompt**, run ```azsphere device enable-development``` to enable local debugging.
+
+---
 
 ## Open Lab 1 Project
 
