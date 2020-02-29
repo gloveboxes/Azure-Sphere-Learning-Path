@@ -37,61 +37,66 @@ Each module assumes you have completed the previous module.
 
 ---
 
-## Set up your Development Environment
+## Azure Sphere Tenant Credentials
 
-### STEP 1: Install Developer Tools
+### Personal Azure Sphere Device
 
-This tutorial assumes Windows 10 and [Visual Studio (The free Community Edition or better)](https://visualstudio.microsoft.com/vs/?WT.mc_id=github-blog-dglover). For now, Azure Sphere templates are only available for Visual Studio. However, you can clone and open this solution on Windows and Ubuntu 18.04 with [Visual Studio Code](https://code.visualstudio.com/?WT.mc_id=github-blog-dglover).
+If you have your own Azure Sphere device you will need the credentials you used when you claimed your device into an Azure Sphere Tenant.
 
-### STEP 2: Clone Azure Sphere Learning Path
+### Shared Lab Azure Sphere Device
+
+If you are using a shared lab device, then the lab instructor will tell you the Azure Sphere Tenant credentials you will need for the lab.
+
+---
+
+## STEP 1: Install Developer Tools
+
+These labs are supported on Windows 10, Ubuntu 18.04, and on macOS running the Azure Development experience in a Virtual Box Ubuntu 18.04 Virtual Machine.
+
+On Windows 10, [Visual Studio (The free Community Edition or better)](https://visualstudio.microsoft.com/vs/?WT.mc_id=github-blog-dglover) is recommended
+
+On Ubuntu 18.04, install the latest version of [Visual Studio Code](https://code.visualstudio.com/) and the [Azure Sphere Extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.azure-sphere-tools).
+
+---
+
+## STEP 2: Clone the Azure Sphere Learning Path
+
+**WARNING**: On Windows, do not clone the *Azure Sphere Learning Path* to a directory with a long folder name as CMake can have problems building with long path/folder names.
+
+Ideally clone to a directory close to the root directory. For example **c:\lab** on Windows, **~/lab** on Linux.
 
 ```bash
-git clone https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git
+git clone https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git Azure-Sphere
 ```
 
-### STEP 3: Set up Azure Sphere SDK, Claim the Azure Sphere, and Configure Networking
+---
 
-This tutorial targets the [Azure Sphere SDK 20.01](https://docs.microsoft.com/en-us/azure-sphere/resources/release-notes-2001?WT.mc_id=github-blog-dglover) or better which uses the CMake Build System.
+## STEP 3: Under Azure Learning Path Layout
+
+The labs support the three currently available developer kits from Avnet and Seeed Studio.
+
+**Ensure you use the labs that match your hardware.**
+
+Lab folders by Azure Sphere Developer kit:
+
+**Azure-Sphere
+|- AVNET
+|- SEEED
+|- SEEED-MINI**
+
+---
+
+## STEP 4: Set up Azure Sphere SDK, Claim the Azure Sphere, and Configure Networking
 
 Follow the Azure Sphere [Overview of set up procedures](https://docs.microsoft.com/en-au/azure-sphere/install/overview?WT.mc_id=github-blog-dglover) guide.
 
 ---
 
-## Appendix
+## Azure Sphere Developer Kit Reference Documentation
 
----
+* [Avnet Azure Sphere Start Kit - See Documents tab](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-sk-g-3074457345636825680/)
+* [Seeed Studio Azure Sphere MT3620 Reference Docs](http://wiki.seeedstudio.com/Azure_Sphere_MT3620_Development_Kit/)
+* [Grove Starter Kit for Azure Sphere MT3620 Development Kit](http://wiki.seeedstudio.com/Grove_Starter_Kit_for_Azure_Sphere_MT3620_Development_Kit/)
+* [Seeed Studio Azure Sphere MT3620 Mini Dev Board](http://wiki.seeedstudio.com/MT3620_Mini_Dev_Board/)
+* [MT3620 Grove Breakout](http://wiki.seeedstudio.com/MT3620_Grove_Breakout/)
 
-### Grove Shield Sensor Capabilities Quick Reference
-
-| Sensors  | Socket | Capabilities |
-| :------------- | :------------- | :----------- |
-| Grove Light Sensor  | Analog | "Gpio": [ 57, 58 ], "Uart": [ "ISU0"] |
-| Grove Rotary Sensor | Analog | "Gpio": [ 57, 58 ], "Uart": [ "ISU0"] |
-| Grove 4 Digit Display | GPIO0 or GPIO4 | "Gpio": [ 0, 1 ] or "Gpio": [ 4, 5 ] |
-| Grove LED Button | GPIO0 or GPIO4 |  "Gpio": [ 0, 1 ] or "Gpio": [ 4, 5 ] |
-| Grove Oled Display 96x96 | I2C | "Uart": [ "ISU0"]  |
-| Grove Temperature Humidity SHT31 | I2C | "Uart": [ "ISU0"] |
-| Grove UART3 | UART3 | "Uart": [ "ISU3"] |
-| LED 1 | Red <br/> Green <br/> Blue | "Gpio": [ 8 ] <br/> "Gpio": [ 9 ] <br/> "Gpio": [ 10 ] |
-| LED 2 | Red <br/> Green <br/> Blue | "Gpio": [ 15 ] <br/> "Gpio": [ 16 ] <br/> "Gpio": [ 17 ] |
-| LED 3 | Red <br/> Green <br/> Blue | "Gpio": [ 18 ] <br/> "Gpio": [ 19 ] <br/> "Gpio": [ 20 ] |
-| LED 4 | Red <br/> Green <br/> Blue | "Gpio": [ 21 ] <br/> "Gpio": [ 22 ] <br/> "Gpio": [ 23 ] |
-
-For more pin definitions see the __mt3620_rdb.h__ in the MT3620_Grove_Shield/MT3620_Grove_Shield_Library folder.
-
----
-
-### Azure Sphere Grove Kit
-
-| Azure Sphere   |  Image  |
-| ---- | ---- |
-| [Azure Sphere MT3620 Development Kit](https://www.seeedstudio.com/Azure-Sphere-MT3620-Development-Kit-US-Version-p-3052.html)|
-| [Azure Sphere MT3620 Development Kit Shield](https://www.seeedstudio.com/Grove-Starter-Kit-for-Azure-Sphere-MT3620-Development-Kit.html). <br/> Note, you can also purchase the parts separately. | ![](resources/seeed-studio-grove-shield-and-sensors.jpg) |
-
----
-
-### Azure Sphere MT3620 Developer Board Pinmap
-
-The full Azure Sphere MT3620 Board Pinmap can be found on the [Azure Sphere MT3620 Development Kit](https://www.seeedstudio.com/Azure-Sphere-MT3620-Development-Kit-US-Version-p-3052.html) page.
-
-![](resources/mt3620-dev-board-pinmap.png)
