@@ -7,7 +7,7 @@
 |Author|[Dave Glover](https://developer.microsoft.com/en-us/advocates/dave-glover?WT.mc_id=github-blog-dglover), Microsoft Cloud Developer Advocate, [@dglover](https://twitter.com/dglover) |
 |:----|:---|
 |Source Code | https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git |
-|Date| January  2020|
+|Date| February  2020|
 
 ---
 
@@ -152,7 +152,7 @@ Peripheral* peripherals[] = { &builtinLed, &fanControl };
 
 ### Step 1: Ensure you have cloned the lab source code
 
-Follow the [Lab set up guide](../Lab_0_Introduction_and_Lab_Set_Up/#step-2-clone-the-azure-sphere-learning-path) if you have not yet cloned the labs to your computer.
+Follow the [lab set up guide](../Lab_0_Introduction_and_Lab_Set_Up/#step-2-clone-the-azure-sphere-learning-path) if you have not yet cloned the labs to your computer.
 
 ### Step 2: Start Visual Studio 2019
 
@@ -167,7 +167,7 @@ Follow the [Lab set up guide](../Lab_0_Introduction_and_Lab_Set_Up/#step-2-clone
 
 ![](resources/visual-studio-open-project.png)
 
-### Step 4: Verify Project Opened Correctly
+### Step 4: Verify the Project Opened Correctly
 
 From the **Solution Explorer**, open the **main.c** file.
 
@@ -200,17 +200,19 @@ Type **sphere** in the search box and select the Azure Sphere Blink template.
 Name the project and set the save location.
 
 ![](resources/vs-configure-new-project.png) -->
+### Check CMake Cache Built
 
-### Open the CMakeLists.txt file
+The generation of the CMake cache should run automatically, but it is a good idea to check that it ran correctly.
 
-**CMakelists.txt** defines the build process, the code files,  library locations, and more.
+1. Right mouse click the **CMakeLists.txt** file and select **Generate Cache for AzureSphereIoTCentral**.
 
-Note the references to **MT3620_Grove_Shield_Library**.
+	![](resources/visual-studio-cmake-generate.png)
 
-1. **add subdirectory** is the location of the MT3620_Grove_Shield_Library source code.
-2. **target_link_libraries** includes the MT3620_Grove_Shield_Library into the linking process.
+2. Check the **Output** window that the CMake generation was successful. There should be a message to say **CMake generation finished**.
 
-![](resources/vs-configure-cmakelists.png)
+	![](resources/visual-studio-cmake-generate-completed.png)
+
+	If the CMake Generation fails there is a good chance the lab has been cloned to directory with a long file path and name. This can be a problem for CMake. Try moving the labs closer to the root directory on your local drive.
 
 ---
 
@@ -228,25 +230,35 @@ High-Level Application capabilities include what hardware can be accessed, what 
 Review the defined capabilities:
 
 ```json
-"Capabilities": {
-    "Gpio": [ 19 ],
-    "Uart": [ "ISU0" ],
-    "AllowedApplicationConnections": []
+  "Capabilities": {
+    "Gpio": [ "$AVNET_MT3620_SK_GPIO0", "$AVNET_MT3620_SK_APP_STATUS_LED_YELLOW", "$AVNET_MT3620_SK_WLAN_STATUS_LED_YELLOW" ],
+    "Uart": [],
+    "I2cMaster": [ "$AVNET_MT3620_SK_ISU2_I2C" ],
+    "Adc": [ "$AVNET_MT3620_SK_ADC_CONTROLLER0" ]
   },
 ```
 
-1. **"Gpio": [ 19 ]**: GPIO 19 is used to control an onboard LED
-2. **"Uart": [ "ISU0" ]**: Access to the I2C SHT31 temperature/humidity sensor via the Grove Shield was built before Azure Sphere supported I2C. Hence calls to the sensor are proxied via the Uart.
+## Understand Pin Mappings
 
----
+Each Azure Sphere manufacturer maps pins differently.  To understand how the pins are mapped for your developer board then follow these steps.
 
-## Review the Code
+1. Place the cursor on the line that reads **#include "../shared/oem/board.h"**, then press <kbd>F12</kbd>. This will open the **board.h** header file.
 
-The following code is found in the **main.c** file.
+	![](resources/visual-studio-open-board.png)
 
-1. The LED connected to **GPIO 9** is opened
-2. The Grove Shield UART port is opened, then the Grove SHT31 Sensor
+	Review the pin mappings that are being used for the lab. These will vary depending on what developer kit you are using.
 
+	```c
+	#define BUILTIN_LED		AVNET_MT3620_SK_APP_STATUS_LED_YELLOW
+	#define LIGHT_PIN		AVNET_MT3620_SK_WLAN_STATUS_LED_YELLOW
+	#define RELAY_PIN		AVNET_MT3620_SK_GPIO0
+	```
+
+2. Review the manufactures pin mappings. From the **board.h** file, place the cursor on the line that starts with **#include "../Hardware/**, and press <kbd>F12</kbd>. This will open the manufacturers board definition header file. In this file you can see how the pins are mapped.
+
+3. Next, click on the **main.c tab** to bring **main.c** to the foreground.
+
+	![](resources/visual-studio-open-main-tab.png)
 
 ---
 
@@ -265,7 +277,7 @@ The following code is found in the **main.c** file.
 
 Open the _Output_ window to view the output from **Log_Debug** statements in _main.c_.
 
-You can open the output window by using the Visual Studio **Ctrl+Alt+O** shortcut or click the **Output** tab found along the bottom/right of Visual Studio.
+You can open the output window by using the Visual Studio <kbd>Ctrl+Alt+O</kbd> shortcut or click the **Output** tab found along the bottom/right of Visual Studio.
 
 ![Visual Studio View Output](resources/vs-view-output.png)
 
@@ -275,9 +287,13 @@ You can open the output window by using the Visual Studio **Ctrl+Alt+O** shortcu
 
 Set a debugger breakpoint by clicking in the margin to the left of the line of code you want the debugger to stop at.
 
-In the **main.c** file set a breakpoint in the margin of the line that reads the Grove temperature and pressure sensor **GroveTempHumiSHT31_Read(sht31);**.
+1. In the **main.c** file, scroll down until you find the C function named **MeasureSensorHandler**. 
 
- ![](resources/vs-set-breakpoint.png)
+2. Set a breakpoint in the margin of the line that reads **ConsumeEventLoopTimerEvent**.
+
+	![](resources/vs-set-breakpoint.png)
+
+3. When the next timer event fires, the debugger will stop at the line you set the breakpoint on.
 
 ---
 
@@ -299,35 +315,3 @@ Congratulations, you secured, built, deployed and debugged your first Azure Sphe
 
 ![](resources/finished.jpg)
 
-## Appendix
-
-### Grove Shield Sensor Capabilities Quick Reference
-
-| Sensors  | Socket | Capabilities |
-| :------------- | :------------- | :----------- |
-| Grove Light Sensor  | Analog | "Gpio": [ 57, 58 ], "Uart": [ "ISU0"] |
-| Grove Rotary Sensor | Analog | "Gpio": [ 57, 58 ], "Uart": [ "ISU0"] |
-| Grove 4 Digit Display | GPIO0 or GPIO4 | "Gpio": [ 0, 1 ] or "Gpio": [ 4, 5 ] |
-| Grove LED Button | GPIO0 or GPIO4 |  "Gpio": [ 0, 1 ] or "Gpio": [ 4, 5 ] |
-| Grove Oled Display 96x96 | I2C | "Uart": [ "ISU0"]  |
-| Grove Temperature Humidity SHT31 | I2C | "Uart": [ "ISU0"] |
-| Grove UART3 | UART3 | "Uart": [ "ISU3"] |
-| LED 1 | Red <br/> Green <br/> Blue | "Gpio": [ 8 ] <br/> "Gpio": [ 9 ] <br/> "Gpio": [ 10 ] |
-| LED 2 | Red <br/> Green <br/> Blue | "Gpio": [ 15 ] <br/> "Gpio": [ 16 ] <br/> "Gpio": [ 17 ] |
-| LED 3 | Red <br/> Green <br/> Blue | "Gpio": [ 18 ] <br/> "Gpio": [ 19 ] <br/> "Gpio": [ 20 ] |
-| LED 4 | Red <br/> Green <br/> Blue | "Gpio": [ 21 ] <br/> "Gpio": [ 22 ] <br/> "Gpio": [ 23 ] |
-
-For more pin definitions see the __mt3620_rdb.h__ in the MT3620_Grove_Shield/MT3620_Grove_Shield_Library folder.
-
-### Azure Sphere Grove Kit
-
-| Azure Sphere   |  Image  |
-| ---- | ---- |
-| [Azure Sphere MT3620 Development Kit](https://www.seeedstudio.com/Azure-Sphere-MT3620-Development-Kit-US-Version-p-3052.html)|
-| [Azure Sphere MT3620 Development Kit Shield](https://www.seeedstudio.com/Grove-Starter-Kit-for-Azure-Sphere-MT3620-Development-Kit.html). <br/> Note, you can also purchase the parts separately. | ![](resources/seeed-studio-grove-shield-and-sensors.jpg) |
-
-### Azure Sphere MT3620 Developer Board Pinmap
-
-The full Azure Sphere MT3620 Board Pinmap can be found on the [Azure Sphere MT3620 Development Kit](https://www.seeedstudio.com/Azure-Sphere-MT3620-Development-Kit-US-Version-p-3052.html) page.
-
-![](resources/mt3620-dev-board-pinmap.png)
