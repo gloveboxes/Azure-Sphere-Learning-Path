@@ -316,9 +316,23 @@ To start the build, deploy and debug process either click the Visual Studio **St
 
 Now the application is running on the Azure Sphere switch across to Azure IoT Central, select the **Devices** tab, the device template you created, then the actual device.
 
-Select to the **Properties** tab and change the **Light** toggle state to **On**, then click **Update**. Observe that a **Red** LED lights up on the Azure Sphere developer kit.
+Select to the **Properties** tab and change the **Light** toggle state to **On**, then click **Update**. 
 
 ![iot central device settings](resources/iot-central-display-settings.png)
+
+### Expected Behaviour
+
+#### Avnet Start Kit
+
+Observe that an **Orange** LED lights up on the Azure Sphere.
+
+#### Seeed Studio Reference Development Board
+
+Observe that a **Red** LED lights up on the Azure Sphere.
+
+### Seeed Studio Mini
+
+Observe that a **Green** LED lights up on the Azure Sphere.
 
 ---
 
