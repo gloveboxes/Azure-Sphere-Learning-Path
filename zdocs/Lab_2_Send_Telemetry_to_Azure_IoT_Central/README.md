@@ -91,17 +91,9 @@ When you have connected your Azure Sphere to Azure IoT Central you will be able 
 
 ---
 
-## Step 2: Ensure you have the Azure Sphere Tenant Credentials
-
-You will need the credentials for the Azure Sphere Tenant your device was claimed into.
-
-If you are using a lab device then lab mentor will provide you with the credentials.
-
----
-
 ## Link Azure IoT Central with your Azure Sphere Tenant
 
-**You must link your Azure IoT Central Application with the Azure Sphere Tenant your Azure Sphere was claimed into.**
+You must **link** your Azure IoT Central Application with the Azure Sphere Tenant your Azure Sphere was claimed into.
 
 **Right mouse click, and open in a new tab the [instructions to set up Azure IoT Central to work with Azure Sphere](https://docs.microsoft.com/en-au/azure-sphere/app-development/setup-iot-central)**.
 
@@ -140,58 +132,49 @@ powershell -Command ((azsphere device show-attached)[0] -split ': ')[1].ToLower(
 
 ---
 
-## Preparing the High-Level Azure Sphere Application
+## Azure IoT Central Configuration
 
-### Understanding the High-Level Core Security
+The following properties need to be set in the **app_manifest.json** file:
 
-Applications on Azure Sphere are locked down by default and you must grant capabilities to the application.
+1. **CmdArgs**: The Azure IoT Central Scope ID.
+2. **AllowedConnections**: Your Azure IoT Central Application URI and the Global Device Provisioning URI.
+3. **DeviceAuthentication**: Your Azure Sphere Tenant ID.
 
-High-Level Application capabilities include what hardware can be accessed, what internet services can be called (including Azure IoT Central and the Azure Device Provisioning Service), and what inter-core communications are allowed.
-
-The following is an example of the **app_manifest.json** file.
-
-```json
-{
-  "SchemaVersion": 1,
-  "Name": "AzureSphereIoTCentral",
-  "ComponentId": "25025d2c-66da-4448-bae1-ac26fcdd3627",
-  "EntryPoint": "/bin/app",
-  "CmdArgs": [ "Real", "<Relplace with your Scope ID>", "6583cf17-d321-4d72-8283-0b7c5b56442b" ],
-  "Capabilities": {
-    "Gpio": [ "$AVNET_MT3620_SK_GPIO0", "$AVNET_MT3620_SK_APP_STATUS_LED_YELLOW", "$AVNET_MT3620_SK_WLAN_STATUS_LED_YELLOW" ],
-    "Uart": [],
-    "I2cMaster": [ "$AVNET_MT3620_SK_ISU2_I2C" ],
-    "Adc": [ "$AVNET_MT3620_SK_ADC_CONTROLLER0" ],
-    "AllowedConnections": [ "global.azure-devices-provisioning.net", "<Replace with your Azure IoT Central URI>" ],
-    "DeviceAuthentication": "00000000-0000-0000-0000-000000000000",
-    "AllowedApplicationConnections": [ "6583cf17-d321-4d72-8283-0b7c5b56442b" ]
-  },
-  "ApplicationType": "Default"
-}
-
-```
-
-**Review the Capabilities section**:
-
-1. **Gpio**: This application uses three GPIO pins. Pins 0 (a relay switch), 19 (blink send status), and 21 (device twin test LED).
-2. **Uart**: The Uart is used to communicate with the Seeed Studio Grove Shield.
-3. **AllowedConnections**: What internet URLs can be called.
-4. **DeviceAuthentication**: Your Azure Sphere Tenant ID.
-5. **AllowedApplicationConnections**: This is the Component ID of the Real-Time application this application will be partnered with. It is required for inter-core communications.
-6. **CmdArgs**: The command line argument passed to the application at startup is the Azure IoT Central Scope ID.
+This information is passed to the [Azure Device Provisioning Service](https://docs.microsoft.com/en-us/azure/iot-dps/) from your Azure Sphere High-Level application to obtain the necessary Azure IoT Connection string.
 
 ---
 
-## Azure IoT Central Configuration
+## Azure IoT Central Connection Information
 
-The following information is required for the Azure Sphere to connect to Azure IoT Central.
+1. Get your Azure Sphere **Tenant ID**.
 
-1. The **Azure IoT Central Scope ID**,
-2. The Azure Device Provisioning Service **Global URI**,
-3. The URI of your **Azure IoT Central Application**,
-4. Your **Azure Sphere Tenant ID**
+    From the **Azure Sphere Developer Command Prompt**, run **```azsphere tenant show-selected```**. **Copy** the Tenant ID to **notepad** as you well need later.
+2. Get the Azure IoT Central Device Provisioning Service information.
 
-This information is passed to the [Azure Device Provisioning Service](https://docs.microsoft.com/en-us/azure/iot-dps/) from your Azure Sphere High-Level application to obtain the necessary Azure IoT Connection string.
+    1. From the **Azure Sphere Developer Command Prompt**, navigate to the folder you cloned the **Azure Sphere** lab into.
+
+    2. Change to the **tools** folder and run **```ShowIoTCentralConfig.exe```**
+
+        When prompted, log in with your **Azure IoT Central credentials**. **Copy** the output of this command to **notepad**.
+
+        ```text
+        Are you using a Work/School account to sign in to your IoT Central Application (Y/N) ?
+
+        Getting your IoT Central applications
+        You have one IoT Central application 'yourappname-iot-central'.
+        Getting the Device Provisioning Service (DPS) information.
+        Getting a list of IoT Central devices.
+
+        Find and modify the following lines in your app_manifest.json:
+        "CmdArgs": [ "0ne9992KK6D" ],
+        "AllowedConnections": [ "global.azure-devices-provisioning.net", "saas-iothub-9999999-f33a-4002-4444-7ca8989898989.azure-devices.net" ],
+        "DeviceAuthentication": "--- YOUR AZURE SPHERE TENANT ID--- ",
+        ```
+
+
+<!-- **[Next Step: Configure Visual Studio App Deployment Settings](README.md#configure-visual-studio-app-deployment-settings)** -->
+
+---
 
 ### Step 1: Start Visual Studio 2019
 
@@ -207,94 +190,66 @@ This information is passed to the [Azure Device Provisioning Service](https://do
 
     <!-- ![](resources/visual-studio-open-lab2.png) -->
 
-### Step 3: Azure IoT Central Connection Information
-
-1. login to the Azure Sphere tenant. You will need the Azure Sphere Tenant credentials.
+## Configure Visual Studio App Deployment Settings
 
 1. Open the **app_manifest.json** file
     ![](resources/visual-studio-open-app-manifest.png)
+2.  Find and modify the **CmdArgs**, **AllowedConnections**, and the **DeviceAuthentication** properties in the app_manifest.json with the information your saved to **notepad**.
+3. Review your **manifest_app.json** file. It should look similar to the following when you have updated.
 
-1. Set the **default Azure Sphere Tenant**
-
-    You may need to select the default Azure Sphere Tenant.
-
-    Press <kbd>Windows Key</kbd>, type **Azure Sphere**. Select and start the **Azure Sphere Developer Command Prompt**.
-    <br/>
-    
-    Run the following commands:
-    * List available tenants ```azsphere tenant list``` 
-    * Set the default tenant ```azsphere tenant select -i <guid>```
-    <br/>
-2. Get the **Tenant ID**.
-
-    From the **Azure Sphere Developer Command Prompt**, run the following command.
-
-    ```bash
-    azsphere tenant show-selected
+    ```json
+    {
+        "SchemaVersion": 1,
+        "Name": "AzureSphereIoTCentral",
+        "ComponentId": "25025d2c-66da-4448-bae1-ac26fcdd3627",
+        "EntryPoint": "/bin/app",
+        "CmdArgs": [ "Fake", "0ne0099999D" ],
+        "Capabilities": {
+            "Gpio": [ "$AVNET_MT3620_SK_GPIO0", "$AVNET_MT3620_SK_APP_STATUS_LED_YELLOW", "$AVNET_MT3620_SK_WLAN_STATUS_LED_YELLOW" ],
+            "Uart": [],
+            "I2cMaster": [ "$AVNET_MT3620_SK_ISU2_I2C" ],
+            "Adc": [ "$AVNET_MT3620_SK_ADC_CONTROLLER0" ],
+            "AllowedConnections": [ "global.azure-devices-provisioning.net", "saas-iothub-99999999-f33a-9999-a44a-7c99999900b6.azure-devices.net" ],
+            "DeviceAuthentication": "9d7e79eb-9999-43ce-9999-fa8888888894"
+        },
+        "ApplicationType": "Default"
+    }
     ```
-
-    Copy the returned value and paste it into the **DeviceAuthentication** field of the **app_manifest.json**.
-    <br/>
-3. Get the **Device Provisioning Service URLs**
-
-    From the **Azure Sphere Developer Command Prompt**, navigate to the folder you cloned Azure Sphere Learning Path. Change to the *tools* folder and run the *ShowIoTCentralConfig.exe* command.
-
-    ```bash
-    ShowIoTCentralConfig
-    ```
-
-    When prompted, log in with the credentials you use for Azure IoT Central. The output of this command will be similar to the following:
-
-    ```text
-    Are you using a Work/School account to sign in to your IoT Central Application (Y/N) ?
-
-    Getting your IoT Central applications
-    You have one IoT Central application 'yourappname-iot-central'.
-    Getting the Device Provisioning Service (DPS) information.
-    Getting a list of IoT Central devices.
-
-    Find and modify the following lines in your app_manifest.json:
-    "CmdArgs": [ "0ne9992KK6D" ],
-    "AllowedConnections": [ "global.azure-devices-provisioning.net", "saas-iothub-9999999-f33a-4002-4444-7ca8989898989.azure-devices.net" ],
-    "DeviceAuthentication": "--- YOUR AZURE SPHERE TENANT ID--- ",
-    ```
-    <br/>
- 4.   Find and modify the **CmdArgs**, **AllowedConnections**, and the **DeviceAuthentication** properties in the app_manifest.json with the information returned from the ```ShowIoTCentralConfig``` command.
-
- Your **manifest_app.json** file will look similar to the following when you are done.
-
-```json
-{
-    "SchemaVersion": 1,
-    "Name": "AzureSphereIoTCentral",
-    "ComponentId": "25025d2c-66da-4448-bae1-ac26fcdd3627",
-    "EntryPoint": "/bin/app",
-    "CmdArgs": [ "Fake", "0ne0099999D" ],
-    "Capabilities": {
-        "Gpio": [ 0, 19, 21 ]
-        "Uart": [ "ISU0" ],
-        "AllowedConnections": [ "global.azure-devices-provisioning.net", "saas-iothub-99999999-f33a-9999-a44a-7c99999900b6.azure-devices.net" ],
-        "DeviceAuthentication": "9d7e79eb-9999-43ce-9999-fa8888888894"
-    },
-    "ApplicationType": "Default"
-}
-```
-
-**[Next Step: Configure Visual Studio App Deployment Settings](README.md#configure-visual-studio-app-deployment-settings)**
-
-
 
 ---
 
-## Configure Visual Studio App Deployment Settings
+## Build, Deploy and Debug the Azure Sphere Application
 
 Before building the application with Visual Studio ensure ARM-Debug and GDB Debugger (HLCore) options are selected.
 
 ![](resources/visual-studio-start-config.png)
 
-### Build, Deploy, and start Debugging
+### Sending Telemetry to Azure IoT Central
 
-To start the build, deploy, debug process either click the Visual Studio **Start Selected Item** icon or press **F5**. To Build and deploy without attaching the debugger, simply press **Ctrl+F5**.
+In **main.c**, scroll down to the **MeasureSensorHandler** C Function. In this function there is a call to **SendMsg(msgBuffer);**. This will send the JSON telemetry to Azure IoT Central.
+
+```c
+static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
+{
+	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
+		Terminate();
+		return;
+	}
+
+	GPIO_ON(builtinLed); // blink send status LED
+
+	if (ReadTelemetry(msgBuffer, JSON_MESSAGE_BYTES) > 0) {
+		Log_Debug("%s\n", msgBuffer);
+		SendMsg(msgBuffer);
+	}
+
+	GPIO_OFF(builtinLed);
+}
+```
+
+### Start the Azure Sphere Application
+
+To start the build, deploy, debug process either click the Visual Studio **Start Selected Item** icon or press **<kbd>F5</kbd>**. To Build and deploy without attaching the debugger, simply press **<kbd>Ctrl+F5</kbd>**.
 
 ![](resources/visual-studio-start-debug.png)
 

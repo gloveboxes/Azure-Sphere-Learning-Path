@@ -156,11 +156,11 @@ Peripheral* peripherals[] = { &builtinLed, &fanControl };
 
 ## Enable Azure Sphere Device Development Debugging
 
+You will need the credentials for the Azure Sphere Tenant your device was claimed into.
+
+If you are using a lab device then lab mentor will provide you with the credentials.
+
 ### Login to your Azure Sphere Tenant
-
-You will need the Azure Sphere Tenant credentials.
-
-If this is a lab Azure Sphere then the lab mentor will provide you with the credentials.
 
 1. Start the **default Azure Sphere Tenant**
 	1. Press <kbd>Windows Key</kbd>, type **Azure Sphere**.
@@ -179,7 +179,7 @@ If this is a lab Azure Sphere then the lab mentor will provide you with the cred
 
 ---
 
-## Enable Azure Sphere Debugging
+## Enable Azure Sphere Device Debugging
 
 From the **Azure Sphere Developer Command Prompt**, run ```azsphere device enable-development``` to enable local debugging.
 
@@ -229,18 +229,19 @@ The generation of the CMake cache should run automatically but it is a good idea
 
 ---
 
-## Understanding the High-Level Core Security
+## Understanding Azure Sphere Security
 
 Applications on Azure Sphere are locked down by default and you must grant capabilities to the application. This is key to Azure Sphere security and is also known as the [Principle of least privilege](https://en.wikipedia.org/wiki/Principle_of_least_privilege).
 
-High-Level Application capabilities include what hardware can be accessed, what internet services can be called (including Azure IoT Central and the Azure Device Provisioning Service), and what inter-core communications are allowed.
+Application capabilities include what hardware can be accessed, what internet services can be called (including Azure IoT Central and the Azure Device Provisioning Service), and what inter-core communications are allowed.
 
-1. Review the [Grove Shield Sensor Capabilities Quick Reference](#grove-shield-sensor-capabilities-quick-reference) to understand what capabilities are required for each sensor in the Seeed Studio Grove Shield library.
-2. From Visual Studio open the **app_manifest.json** file.
+### Open the Application Manifest File
+
+From Visual Studio open the **app_manifest.json** file.
 
 ![](resources/visual-studio-application-capabilities.png)
 
-Review the defined capabilities:
+This application can only access the resources listed in the **Capabilities** section.
 
 ```json
   "Capabilities": {
