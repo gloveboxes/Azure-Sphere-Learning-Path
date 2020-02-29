@@ -37,19 +37,23 @@ In this lab you will learn how to secure, build, deploy, and debug your first Hi
 
 ## Tutorial Overview
 
-1. Open the lab project with Visual Studio
-2. Define the High-Level (A7) Core application security requirements.
-3. Application deployment and debugging
+1. Understand Peripheral and Timer concepts.
+2. Open the lab project with Visual Studio
+3. Review the High-Level (A7) Core application security requirements.
+4. Understand device manufacture pin mappings.
+5. Application deployment and debugging
 
 ---
 
 ## Core Concepts
 
-Lab 1 introduces two C data structures used to greatly simplify and effectively describe how the code will work with GPIO and Timers.
+Lab 1 introduces two data structures used to greatly simplify and effectively describe in  code how [GPIO](https://en.wikipedia.org/wiki/General-purpose_input/output) and Timers will work.
 
 ### Peripherals
 
-In **main.c** there is a variable named **builtinLed** of type **Peripheral**. Variables of type **Peripheral** declare a generalized GPIO output peripheral. This variable holds the GPIO pin OS file descriptor, the GPIO pin number, the initial state when the pin is opened, whether the pin logic needs to be reserved for turning a pin on and off, and the C function to be called to open and initialize the GPIO output pin.
+In **main.c** there is a variable named **builtinLed** of type **Peripheral**. Variables of type **Peripheral** declare a generalized GPIO **output** peripheral. 
+
+This variable holds the Operating System file descriptor, the GPIO pin number, the initial state of the pin when it is opened, whether the pin logic needs to be reserved for turning a pin on and off, and the C Function to be called to open and initialize the GPIO output pin.
 
 ```c
 static Peripheral builtinLed = {
