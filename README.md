@@ -92,7 +92,7 @@ Today the Mediatec MT3620 MCU powers Azure Sphere. The family of certified Azure
 
 ## Divvy Parking and Building Real Solutions
 
-[Divvy Parking](https://www.divvyparking.com/), based in Australia, are building a multipurpose PCB based on the [Avnet Azure Sphere](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-m-g-tr-3074457345641969195/) module. This solution will initially support their parking solution.
+[Divvy Parking](https://www.divvyparking.com/), based in Australia, are building a multipurpose PCB based on the [Avnet Azure Sphere](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-m-g-tr-3074457345641969195/) module. This PCB will initially support their parking solution.
 
 Building solutions with pre-certified Azure Sphere modules is the fastest way to bring a secure IoT product to market.
 
