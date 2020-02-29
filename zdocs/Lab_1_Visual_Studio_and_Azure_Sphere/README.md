@@ -245,7 +245,7 @@ Each Azure Sphere manufacturer maps pins differently.  To understand how the pin
 
 3. Select **GDB Debugger (HLCore)** from the **Select Startup** dropdown.
 	![](resources/vs-start-application.png)
-4. From Visual Studio, press **F5** to build, deploy, start, and attached the remote debugger to the Azure Sphere.
+4. From Visual Studio, press <kbd>F5</kbd> to build, deploy, start, and attached the remote debugger to the Azure Sphere.
 
 ---
 
@@ -275,7 +275,7 @@ Set a debugger breakpoint by clicking in the margin to the left of the line of c
 
 ## Stop the Debugger
 
-**Stop** the debugger by using the Visual Studio **Shift+F5** keyboard shortcut or click the **Stop Debugging** icon.
+**Stop** the debugger by using the Visual Studio <kbd>Shift+F5</kbd> keyboard shortcut or click the **Stop Debugging** icon.
 
 ![](resources/vs-stop-debugger.png)
 
