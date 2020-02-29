@@ -20,6 +20,14 @@
 
 ---
 
+## Learn more about Azure Sphere
+
+[Azure Sphere](https://azure.microsoft.com/en-au/services/azure-sphere/)
+
+Comprehensive IoT security solution – including hardware, OS and cloud components – to actively protect your devices, your business and your customers
+
+---
+
 ## Azure Sphere Learning Path
 
 This Azure Sphere learning path is designed to ease you into the world of Azure Sphere Development.
@@ -90,7 +98,9 @@ Today the Mediatec MT3620 MCU powers Azure Sphere. The family of certified Azure
 
 ---
 
-## Divvy Parking and Building Real Solutions
+## Building Real Solutions
+
+### Divvy Parking
 
 [Divvy Parking](https://www.divvyparking.com/), based in Australia, are building a multipurpose PCB based on the [Avnet Azure Sphere](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-m-g-tr-3074457345641969195/) module. This PCB will initially support their parking solution.
 
@@ -99,6 +109,10 @@ Building solutions with pre-certified Azure Sphere modules is the fastest way to
 ![](zdocs/resources/divvy-parking.png)
 
 *Prototype PCB design included here with permission of Divvy Parking*
+
+### Starbucks and the Avnet Azure Sphere Guardian Module
+
+[Starbucks turns to technology to brew up a more personal connection with its customers](https://news.microsoft.com/transform/starbucks-turns-to-technology-to-brew-up-a-more-personal-connection-with-its-customers/)
 
 ---
 
