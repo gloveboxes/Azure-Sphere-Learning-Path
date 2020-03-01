@@ -13,14 +13,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
-
-
-// Select Azure Sphere Dev Kit
-#define SEEED_DK 1
-//#define SEEED_MINI_DK 1
-//#define AVNET_DK = 1
-
-
+#include "../shared/Hardware/mt3620_rdb/inc/hw/mt3620_rdb.h"
 
 /* block addresses for real time core gpio - opened in sets of four
 
@@ -31,21 +24,11 @@ GPIO Block first pin = 12, base address = 0x38040000
 
 */
 
-#if defined SEEED_DK || defined AVNET_DK
-
-#define BUILTIN_LED 10
+#define BUILTIN_LED MT3620_GPIO10
 #define BUILTIN_LED_GPIO_BLOCK_FIRST_PIN 8
 #define BUILTIN_LED_GPIO_BLOCK_BASE_ADDRESS 0x38030000
 
-#elif defined SEEED_MINI_DK
-
-#define BUILTIN_LED 7
-#define BUILTIN_LED_GPIO_BLOCK_FIRST_PIN 4
-#define BUILTIN_LED_GPIO_BLOCK_BASE_ADDRESS 0x38020000
-
-#endif
-
-#define BUTTON1_GPIO 12
+#define BUTTON1_GPIO MT3620_GPIO12
 #define BUTTON1_GPIO_BLOCK_FIRST_PIN 12
 #define BUTTON1_GPIO_BLOCK_BASE_ADDRESS 0x38040000
 
