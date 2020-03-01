@@ -140,7 +140,7 @@ This maps to the **fan1** _command_ defined in the Azure IoT Central Device temp
 Like Peripherals, Timers, Device Twin Peripherals, Direct Method Bindings can be automatically opened, initialized, and closed if they are added to the directMethodDevices array, also referred to as a set of direct method bindings.
 
 ```c
-DirectMethodBinding* directMethodBinding[] = { &feedFish, &sensorSampleRate };
+DirectMethodBinding* directMethodBinding[] = { &feedFish, &SetFanSpeedDirectMethod };
 ```
 
 ---
@@ -154,19 +154,21 @@ DirectMethodBinding* directMethodBinding[] = { &feedFish, &sensorSampleRate };
 ### Step 2: Open the lab project
 
 1. Click **Open a local folder**
-2. Navigate to the folder you cloned **Azure Sphere Learning Path** into.
-3. Double click to open the **Lab_3_Control_Device_with_Device_Twins_and_Direct_Methods** folder
-4. Click **Select Folder** button to open the project
+2. Open the Azure-Sphere lab folder
+3. Open the **folder name** that corresponds to the **Azure Sphere board** you are using
+4. Open the **Lab_3_Control_Device_with_Device_Twins_and_Direct_Methods** folder
+5. Click **Select Folder** button to open the project
 
     <!-- ![](resources/visual-studio-open-lab3.png) -->
 
 ### Step 3: Configure the Azure IoT Central Connection Information
 
 1. Open the **app_manifest.json** file
+2. You will need to redo the settings for the **app_manifest.json** file. Either copy from notepad if you still have open, or copy from the **app_manifest.json** file you created in lab 2.
 
     ![](resources/visual-studio-open-app-manifest.png)
 
-2. Replace the contents of this **app_manifest.json** file with the **app_manifest.json** you created in **Lab 2**.
+3. Update the contents of this **app_manifest.json**.
 
 ---
 
@@ -258,13 +260,13 @@ DirectMethodBinding* directMethodBinding[] = { &feedFish, &sensorSampleRate };
 ### Initializing the support for IoT Central Settings and Commands
 
 1. Again in **main.c**.
-2. Scroll down to the line that reads **#pragma region define sets for auto initialization and close**
+2. Scroll up to the line that reads **#pragma region define sets for auto initialization and close**
 3. In this region, there are a number of C arrays that point to the **DeviceTwinBindings** and **DirectMethodPeripherals** defined above.
     ```c
     DeviceTwinBinding* deviceTwinBindings[] = { &relay, &light };
     DirectMethodBinding* directMethodBindings[] = { &fan };
     ```
-4. In the main.c **InitPeripheralsAndHandlers** Function these sets of device twins and direct methods are opened and initialized.
+4. In the main.c **InitPeripheralsAndHandlers** function these sets of device twins and direct methods are opened and initialized.
     ```c
     static int InitPeripheralsAndHandlers(void)
     {
@@ -282,23 +284,9 @@ DirectMethodBinding* directMethodBinding[] = { &feedFish, &sensorSampleRate };
     }
     ```
 
-
-<!-- ---
-
-## Extension Exercise
-
-Try connecting a different LED on the Azure Sphere with an Azure IoT Device Setting.
-
-You will need to do the following steps:
-
-1. Update the Azure IoT Central Device Template and add a new settings control.
-2. Define a new **DeviceTwinBindings** data structure for the LED.
-3. Add the new LED data structure to the **deviceTwinDevices** array. This will ensure the GPIO pin is initialized and associated with a Azure IoT Central Device Setting.
-4. Update the **app_manifest.json** with the GPIO pin you want to use from your Azure Sphere application. -->
-
 ---
 
-## Visual Studio App Deployment Settings
+## Visual Studio Deployment Settings
 
 Before building the application with Visual Studio ensure ARM-Debug and GDB Debugger (HLCore) options are selected.
 
@@ -316,13 +304,20 @@ To start the build, deploy and debug process either click the Visual Studio **St
 
 ## Test the Solution
 
-Now the application is running on the Azure Sphere switch across to Azure IoT Central, select the **Devices** tab, the device template you created, then the actual device.
+Now the application is running on the Azure Sphere switch across to Azure IoT Central, select the **Devices** tab, then the **Azure Sphere** template, then the actual device.
 
-Select to the **Properties** tab and change the **Light** toggle state to **On**, then click **Update**. 
+Select to the **Properties** tab and change the **Light** toggle state to **On**, then click **Update**.
 
 ![iot central device settings](resources/iot-central-display-settings.png)
 
 ### Expected Behaviour
+
+The expected behaviour will differ depending on what Azure Sphere device you have.
+
+* **Azure Sphere MT3620 Starter Kit**: Observe that an **Orange** LED lights up on the Azure Sphere.
+* **Seeed Studio Azure Sphere MT3620 Development Kit**: Observe that a **Red** LED lights up on the Azure Sphere.
+* **Seeed Studio Azure Sphere MT3620 Mini Dev Board**: Observe that a **Green** LED lights up on the Azure Sphere.
+
 
 #### Avnet Start Kit
 
