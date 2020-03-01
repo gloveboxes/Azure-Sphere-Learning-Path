@@ -294,7 +294,7 @@ Before building the application with Visual Studio ensure ARM-Debug and GDB Debu
 
 ## Build, Deploy and start Debugging
 
-To start the build, deploy and debug process either click the Visual Studio **Start Selected Item** icon or press <kbd>**F5**</kbd>. To Build and deploy without attaching the debugger, press <kbd>**Ctrl+F5**</kbd>.
+To start the build, deploy and debug process, either click the Visual Studio **Start Selected Item** icon or press <kbd>**F5**</kbd>. To Build and deploy without attaching the debugger, press <kbd>**Ctrl+F5**</kbd>.
 
 ![](resources/visual-studio-start-debug.png)
 
@@ -304,7 +304,7 @@ To start the build, deploy and debug process either click the Visual Studio **St
 
 Now the application is running on the Azure Sphere switch across to Azure IoT Central, select the **Devices** tab, then the **Azure Sphere** template, then the actual device.
 
-Select to the **Properties** tab and change the **Light** toggle state to **On**, then click **Update**.
+Select the **Properties** tab and change the **Light** toggle state to **On**, then click **Update**.
 
 ![iot central device settings](resources/iot-central-display-settings.png)
 

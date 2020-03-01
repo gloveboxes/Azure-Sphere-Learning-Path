@@ -92,7 +92,7 @@ When you have connected your Azure Sphere to Azure IoT Central you will be able 
 
 ## Link Azure IoT Central with your Azure Sphere Tenant
 
-You must **link** your Azure IoT Central Application with the Azure Sphere Tenant your Azure Sphere was claimed into.
+You must **link** your Azure IoT Central Application with the Azure Sphere Tenant that your Azure Sphere was claimed into.
 
 **Right mouse click, and open in a new tab the [instructions to set up Azure IoT Central to work with Azure Sphere](https://docs.microsoft.com/en-au/azure-sphere/app-development/setup-iot-central?WT.mc_id=github-blog-dglover)**.
 
@@ -243,7 +243,7 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 
 ### Start the Azure Sphere Application
 
-To start the build, deploy, debug process either click the Visual Studio **Start Selected Item** icon or press **<kbd>F5</kbd>**. To Build and deploy without attaching the debugger, simply press **<kbd>Ctrl+F5</kbd>**.
+To start the build, deploy, debug process, either click the Visual Studio **Start Selected Item** icon or press **<kbd>F5</kbd>**. To Build and deploy without attaching the debugger, simply press **<kbd>Ctrl+F5</kbd>**.
 
 ![](resources/visual-studio-start-debug.png)
 
