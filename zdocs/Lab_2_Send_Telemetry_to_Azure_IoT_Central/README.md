@@ -25,8 +25,6 @@ Each module assumes you have completed the previous module.
 * Lab 5: [Integrating FreeRTOS with Azure IoT Central](/zdocs/Lab_5_FreeRTOS_and_Azure_IoT_Central/README.md)
 * Lab 6: [Mass Device Deployment with Azure IoT Central](/zdocs/Lab_6_Mass_Device_Deployment/README.md)
 
-[Next](/zdocs/Lab_3_Control_Device_with_Device_Twins_and_Direct_Methods/README.md)
-
 ---
 
 ## What you will learn
