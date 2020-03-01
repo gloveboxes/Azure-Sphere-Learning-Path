@@ -13,13 +13,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
-
-
-// Select Azure Sphere Dev Kit
-//#define SEEED_DK 1
-#define SEEED_MINI_DK 1
-//#define AVNET_DK = 1
-
+#include "../shared/Hardware/avnet_mt3620_sk/inc/hw/avnet_mt3620_sk.h"
 
 
 /* block addresses for real time core gpio - opened in sets of four
@@ -31,26 +25,15 @@ GPIO Block first pin = 12, base address = 0x38040000
 
 */
 
-#if defined SEEED_DK || defined AVNET_DK
-
-#define BUILTIN_LED 10
+#define BUILTIN_LED AVNET_AESMS_PIN13_GPIO10
 #define BUILTIN_LED_GPIO_BLOCK_FIRST_PIN 8
 #define BUILTIN_LED_GPIO_BLOCK_BASE_ADDRESS 0x38030000
 
-#elif defined SEEED_MINI_DK
-
-#define BUILTIN_LED 7
-#define BUILTIN_LED_GPIO_BLOCK_FIRST_PIN 4
-#define BUILTIN_LED_GPIO_BLOCK_BASE_ADDRESS 0x38020000
-
-#endif
-
-#define BUTTON1_GPIO 12
+#define BUTTON1_GPIO AVNET_AESMS_PIN14_GPIO12
 #define BUTTON1_GPIO_BLOCK_FIRST_PIN 12
 #define BUTTON1_GPIO_BLOCK_BASE_ADDRESS 0x38040000
 
 #define APP_STACK_SIZE_BYTES		(512 / 4)
-
 
 /// <summary>Base address of IO CM4 MCU Core clock.</summary>
 static const uintptr_t IO_CM4_RGU = 0x2101000C;
