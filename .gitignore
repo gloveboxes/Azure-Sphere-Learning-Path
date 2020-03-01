@@ -2,4 +2,4 @@
 /out/
 /install/
 /.vs/
-.pdf
+*.pdf
