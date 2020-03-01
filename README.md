@@ -38,7 +38,7 @@ Each module assumes you have completed the previous module.
 
 You are also free to use and modify the code provided in this learning path for your projects, commercial or otherwise, no liability accepted.
 
-[Home](https://gloveboxes.github.io/Azure-Sphere-Learning-Path/)
+Labs:
 
 * Lab 0: [Introduction Azure Sphere and Lab Set Up](zdocs/Lab_0_Introduction_and_Lab_Set_Up/README.md)
 * Lab 1: [Build your first Azure Sphere Application with Visual Studio](zdocs/Lab_1_Visual_Studio_and_Azure_Sphere/README.md)
@@ -47,8 +47,6 @@ You are also free to use and modify the code provided in this learning path for 
 * Lab 4: [Integrating FreeRTOS with Azure Sphere Inter-Core Messaging](zdocs/Lab_4_FreeRTOS_and_Inter-Core_Messaging/README.md)
 * Lab 5: [Integrating FreeRTOS with Azure IoT Central](zdocs/Lab_5_FreeRTOS_and_Azure_IoT_Central/README.md)
 * Lab 6: [Mass Device Deployment with Azure IoT Central](zdocs/Lab_6_Mass_Device_Deployment/README.md)
-
-[Next](docs/Lab_0_Introduction_and_Lab_Set_Up/README.md)
 
 ---
 
@@ -146,6 +144,10 @@ These labs support the following Azure Sphere Kits.
 | [Avnet Azure Sphere MT3620 Starter Kit](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-sk-g-3074457345636825680/) <br/>This starter kit includes temperature, pressure and light sensors. | ![](zdocs/resources/avnet-azure-sphere.jpg)|
 | [Seeed Studio Azure Sphere MT3620 Development Kit](http://wiki.seeedstudio.com/Azure_Sphere_MT3620_Development_Kit/) | ![](zdocs/resources/seeed-studio-azure-sphere.png) |
 | [Seeed Studio Azure Sphere MT3620 Mini Dev Board]() | ![](zdocs/resources/seeed-studio-azure-sphere-mini.png) |
+
+---
+
+[Next](zdocs/Lab_0_Introduction_and_Lab_Set_Up/README.md)
 
 ---
 
