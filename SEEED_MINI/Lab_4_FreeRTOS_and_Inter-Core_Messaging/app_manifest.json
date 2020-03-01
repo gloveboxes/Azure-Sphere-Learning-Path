@@ -5,7 +5,7 @@
   "EntryPoint": "/bin/app",
   "CmdArgs": [],
   "Capabilities": {
-    "Gpio": [ 10, 12 ],
+    "Gpio": [ "$AILINK_WFM620RSC1_PIN4_GPIO7" ],
     "AllowedApplicationConnections": [ "25025d2c-66da-4448-bae1-ac26fcdd3627" ]
   },
   "ApplicationType": "RealTimeCapable"

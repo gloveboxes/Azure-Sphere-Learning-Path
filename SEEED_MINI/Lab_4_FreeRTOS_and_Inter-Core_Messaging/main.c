@@ -1,6 +1,7 @@
 /* Copyright (c) Microsoft Corporation. All rights reserved.
    Licensed under the MIT License. */
 
+#include "../shared/Hardware/seeed_mt3620_mdb/inc/hw/seeed_mt3620_mdb.h"
 #include "FreeRTOS.h"
 #include "mt3620-baremetal.h"
 #include "mt3620-gpio.h"
@@ -14,12 +15,7 @@
 #include <stdint.h>
 #include <string.h>
 
-
-// Select Azure Sphere Dev Kit
-//#define SEEED_DK 1
 #define SEEED_MINI_DK 1
-//#define AVNET_DK = 1
-
 
 
 /* block addresses for real time core gpio - opened in sets of four
@@ -31,23 +27,14 @@ GPIO Block first pin = 12, base address = 0x38040000
 
 */
 
-#if defined SEEED_DK || defined AVNET_DK
-
-#define BUILTIN_LED 10
-#define BUILTIN_LED_GPIO_BLOCK_FIRST_PIN 8
-#define BUILTIN_LED_GPIO_BLOCK_BASE_ADDRESS 0x38030000
-
-#elif defined SEEED_MINI_DK
-
-#define BUILTIN_LED 7
+#define BUILTIN_LED AILINK_WFM620RSC1_PIN4_GPIO7
 #define BUILTIN_LED_GPIO_BLOCK_FIRST_PIN 4
 #define BUILTIN_LED_GPIO_BLOCK_BASE_ADDRESS 0x38020000
 
-#endif
 
-#define BUTTON1_GPIO 12
-#define BUTTON1_GPIO_BLOCK_FIRST_PIN 12
-#define BUTTON1_GPIO_BLOCK_BASE_ADDRESS 0x38040000
+//#define BUTTON1_GPIO 12
+//#define BUTTON1_GPIO_BLOCK_FIRST_PIN 12
+//#define BUTTON1_GPIO_BLOCK_BASE_ADDRESS 0x38040000
 
 #define APP_STACK_SIZE_BYTES		(512 / 4)
 
@@ -200,27 +187,27 @@ static void LedTask(void* pParameters)
 	}
 }
 
-static void ButtonTask(void* pParameters)
-{
-	static bool prevState = true;
-	bool newState;
-
-	while (1) {
-
-		vTaskDelay(pdMS_TO_TICKS(buttonPressCheckPeriodMs));
-		Mt3620_Gpio_Read(BUTTON1_GPIO, &newState);
-
-		if (newState != prevState) {
-			bool pressed = !newState;
-			if (pressed) {
-				blinkIntervalIndex = (blinkIntervalIndex + 1) % numBlinkIntervals;
-				buttonPressed = true;
-			}
-
-			prevState = newState;
-		}
-	}
-}
+//static void ButtonTask(void* pParameters)
+//{
+//	static bool prevState = true;
+//	bool newState;
+//
+//	while (1) {
+//
+//		vTaskDelay(pdMS_TO_TICKS(buttonPressCheckPeriodMs));
+//		Mt3620_Gpio_Read(BUTTON1_GPIO, &newState);
+//
+//		if (newState != prevState) {
+//			bool pressed = !newState;
+//			if (pressed) {
+//				blinkIntervalIndex = (blinkIntervalIndex + 1) % numBlinkIntervals;
+//				buttonPressed = true;
+//			}
+//
+//			prevState = newState;
+//		}
+//	}
+//}
 
 static void UARTTask(void* pParameters)
 {
@@ -262,7 +249,7 @@ static void TaskInit(void* pParameters)
 
 	xTaskCreate(PeriodicTask, "Periodic Task", APP_STACK_SIZE_BYTES, NULL, 6, NULL);
 	xTaskCreate(LedTask, "LED Task", APP_STACK_SIZE_BYTES, NULL, 5, NULL);
-	xTaskCreate(ButtonTask, "Button Task", APP_STACK_SIZE_BYTES, NULL, 4, NULL);
+	//xTaskCreate(ButtonTask, "Button Task", APP_STACK_SIZE_BYTES, NULL, 4, NULL);
 	xTaskCreate(UARTTask, "UART Task", APP_STACK_SIZE_BYTES, NULL, 3, NULL);
 	xTaskCreate(RTCoreMsgTask, "RTCore Msg Task", APP_STACK_SIZE_BYTES, NULL, 2, NULL);
 
@@ -297,10 +284,10 @@ static _Noreturn void RTCoreMain(void)
 	Mt3620_Gpio_AddBlock(&pwm2);
 	Mt3620_Gpio_ConfigurePinForOutput(BUILTIN_LED);
 
-	// Button GPIO config
-	static const GpioBlock grp3 = { .baseAddr = BUTTON1_GPIO_BLOCK_BASE_ADDRESS,.type = GpioBlock_GRP,.firstPin = BUTTON1_GPIO_BLOCK_FIRST_PIN,.pinCount = 4 };
-	Mt3620_Gpio_AddBlock(&grp3);
-	Mt3620_Gpio_ConfigurePinForInput(BUTTON1_GPIO);
+	//// Button GPIO config
+	//static const GpioBlock grp3 = { .baseAddr = BUTTON1_GPIO_BLOCK_BASE_ADDRESS,.type = GpioBlock_GRP,.firstPin = BUTTON1_GPIO_BLOCK_FIRST_PIN,.pinCount = 4 };
+	//Mt3620_Gpio_AddBlock(&grp3);
+	//Mt3620_Gpio_ConfigurePinForInput(BUTTON1_GPIO);
 
 	xTaskCreate(TaskInit, "Init Task", APP_STACK_SIZE_BYTES, NULL, 7, NULL);
 	vTaskStartScheduler();
