@@ -37,7 +37,7 @@ You will learn how to build a High Level [Azure Sphere](https://azure.microsoft.
 
 ## Prerequisites
 
-The lab assumes you understand the content from [Lab 1: Secure, Build, Deploy and Debug your first Azure Sphere High-Level Application with Visual Studio](https://github.com/gloveboxes/Azure-Sphere-Learning-Path/tree/master/Lab%201%20-%20Build%20your%20first%20Azure%20Sphere%20Application%20with%20Visual%20Studio)
+The lab assumes you understand the content from [Lab 1: Secure, Build, Deploy and Debug your first Azure Sphere High-Level Application with Visual Studio](../Lab_1_Visual_Studio_and_Azure_Sphere/README.md)
 
 ## Tutorial Overview
 
@@ -53,7 +53,7 @@ The lab assumes you understand the content from [Lab 1: Secure, Build, Deploy an
 
 Your Azure Sphere device can securely connect and communicate with cloud services. Azure Sphere includes built-in library support for both Azure IoT Hub and Azure IoT Central. This lab focuses on Azure IoT Central.
 
-This project leverages the [Azure IoT Hub Device Provisioning Service (PDS)](https://docs.microsoft.com/en-us/azure-sphere/app-development/use-azure-iot) which is included with Azure IoT Central. The Device Provisioning Service (DPS) enables zero-touch, just-in-time, large scale device provisioning.
+This project leverages the [Azure IoT Hub Device Provisioning Service (PDS)](https://docs.microsoft.com/en-us/azure-sphere/app-development/use-azure-iot?WT.mc_id=github-blog-dglover) which is included with Azure IoT Central. The Device Provisioning Service (DPS) enables zero-touch, just-in-time, large scale device provisioning.
 
 ### Azure IoT Central
 
@@ -65,13 +65,15 @@ This project leverages the [Azure IoT Hub Device Provisioning Service (PDS)](htt
 
 ## Getting Started with Azure IoT Central
 
-We are going to create an Azure IoT Central application from a application template.
+We are going to create an Azure IoT Central application from an application template.
 
 ---
 
+## Open Lab 2
+
 ## Step 1: Create an Azure IoT Central Application
 
-For this lab we are going to create an Azure Iot Central Application from a predefined template.
+For this lab, we are going to create an Azure IoT Central Application from a predefined template.
 
 Right mouse click [Azure Sphere Learning Path Azure IoT Central Template](https://apps.azureiotcentral.com/build/new/0ecd2a95-6fd7-41bc-bdb5-e95512e14414) to open in a new browser tab.
 
@@ -94,7 +96,7 @@ When you have connected your Azure Sphere to Azure IoT Central you will be able 
 
 You must **link** your Azure IoT Central Application with the Azure Sphere Tenant your Azure Sphere was claimed into.
 
-**Right mouse click, and open in a new tab the [instructions to set up Azure IoT Central to work with Azure Sphere](https://docs.microsoft.com/en-au/azure-sphere/app-development/setup-iot-central)**.
+**Right mouse click, and open in a new tab the [instructions to set up Azure IoT Central to work with Azure Sphere](https://docs.microsoft.com/en-au/azure-sphere/app-development/setup-iot-central?WT.mc_id=github-blog-dglover)**.
 
 <!-- ### Step 3: Connect Azure IoT Central to your Azure Sphere Tenant
 
@@ -133,7 +135,7 @@ powershell -Command ((azsphere device show-attached)[0] -split ': ')[1].ToLower(
 
 ## Azure IoT Central Connection Information
 
-Your Azure Sphere device needs the following information to connect to Azure IoT Central with the [Azure Device Provisioning Service](https://docs.microsoft.com/en-us/azure/iot-dps/).
+Your Azure Sphere device needs the following information to connect to Azure IoT Central with the [Azure Device Provisioning Service](https://docs.microsoft.com/en-us/azure/iot-dps/?WT.mc_id=github-blog-dglover).
 
 1. Your Azure Sphere **Tenant ID**.
 
@@ -186,10 +188,10 @@ Your Azure Sphere device needs the following information to connect to Azure IoT
 2.  Update the **app_manifest.json** with the information you saved to **notepad**:
 
     * **CmdArgs**: Update with your Azure IoT Central Scope ID.    
-    * **AllowedConnections**: Update with your Your Azure IoT Central Application URI.
+    * **AllowedConnections**: Update with your Azure IoT Central Application URI.
     * **DeviceAuthentication**: Your Azure Sphere Tenant ID
 
-3. Review your **manifest_app.json** file. It should look similar to the following when you have updated.
+3. Review your **manifest_app.json** file. It should look similar to the following when you have updated it.
 
     ```json
     {
@@ -251,7 +253,7 @@ To start the build, deploy, debug process either click the Visual Studio **Start
 
 ## Migrate your device to an Azure IoT Central Template
 
-1. Open the Azure IoT Central Application your created.
+1. Open the Azure IoT Central Application you created.
 2. Open the **Devices** tab. There should be a new device listed with a numeric name. This numeric name is the ID of your Azure Sphere Device. You can check this by running the  ```azsphere device show``` command from the *Azure Sphere Command Prompt*.
 3. Select this new device and click **Migrate**
     ![](resources/iot-central-migrate-device.png)

@@ -33,7 +33,8 @@ Each module assumes you have completed the previous module.
 
 ## Prerequisites
 
-1. Computer running up to date installation of Windows 10 or Ubuntu 18.04.
+1. Computer running up to date installation of Windows 10 or Ubuntu 18.04
+2. An Azure Sphere device
 
 ---
 
@@ -51,11 +52,9 @@ If you are using a shared lab device, then the lab instructor will tell you the 
 
 ## Step 1: Install the Developer Tools
 
-These labs are supported on Windows 10 and Ubuntu 18.04.
-
 On Windows 10, [Visual Studio (The free Community Edition or better)](https://visualstudio.microsoft.com/vs/?WT.mc_id=github-blog-dglover) is recommended
 
-On Ubuntu 18.04, install the latest version of [Visual Studio Code](https://code.visualstudio.com/) and the [Azure Sphere Extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.azure-sphere-tools).
+On Ubuntu 18.04, install the latest version of [Visual Studio Code](https://code.visualstudio.com/?WT.mc_id=github-blog-dglover) and the [Azure Sphere Extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.azure-sphere-tools&WT.mc_id=github-blog-dglover).
 
 ---
 
@@ -86,7 +85,7 @@ Lab directories are named by Azure Sphere device manufacturer.
 
 ---
 
-## Step 4: Install Azure Sphere SDK and Developer Tools
+## Step 4: Install the Azure Sphere SDK and Developer Tools
 
 Follow the Azure Sphere [Overview of set up procedures](https://docs.microsoft.com/en-au/azure-sphere/install/overview?WT.mc_id=github-blog-dglover) guide.
 
@@ -94,11 +93,11 @@ Follow the Azure Sphere [Overview of set up procedures](https://docs.microsoft.c
 
 Skip this step if you are using a lab device or you have already claimed.
 
-[Claim your device](https://docs.microsoft.com/en-au/azure-sphere/install/claim-device)
+[Claim your device](https://docs.microsoft.com/en-au/azure-sphere/install/claim-device?WT.mc_id=github-blog-dglover)
 
 ## Step 6: Configure Network
 
-[Configure WiFi Settings](https://docs.microsoft.com/en-au/azure-sphere/install/configure-wifi)
+[Configure WiFi Settings](https://docs.microsoft.com/en-au/azure-sphere/install/configure-wifi?WT.mc_id=github-blog-dglover)
 
 ---
 

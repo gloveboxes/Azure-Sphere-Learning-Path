@@ -37,7 +37,7 @@ You will learn how to control an [Azure Sphere](https://azure.microsoft.com/serv
 
 ## Prerequisites
 
-This lab assumes you have completed [Lab 2: Send Telemetry from an Azure Sphere to Azure IoT Central](https://github.com/gloveboxes/Azure-Sphere-Learning-Path/tree/master/Lab%202%20-%20Send%20Telemetry%20from%20an%20Azure%20Sphere%20to%20Azure%20IoT%20Central). You will have created an Azure IoT Central application, connected Azure IoT Central to your Azure Sphere Tenant and you have configured the **app_manifest.json** for the Azure Device Provisioning Service.
+This lab assumes you have completed [Lab 2: Send Telemetry from an Azure Sphere to Azure IoT Central](../Lab_2_Send_Telemetry_to_Azure_IoT_Central/README.md). You will have created an Azure IoT Central application, connected Azure IoT Central to your Azure Sphere Tenant and you have configured the **app_manifest.json** for the Azure Device Provisioning Service.
 
 You will need to **copy** and **paste** the Lab 2 **app_manifest.json** you created to this lab's **app_manifest.json** file.
 
@@ -47,11 +47,11 @@ You will need to **copy** and **paste** the Lab 2 **app_manifest.json** you crea
 
 ---
 
-## Core Concepts
+## Key Concepts
 
 In Lab 1, **Peripherals** and **Timers** were introduced to simplify and effectively describe GPIO pins and Timers and their interactions.
 
-In this lab, **DeviceTwinBindings**, and **DirectMethodBindings** are introduced to simplify the implementation of Azure IoT [Device Twins](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins) and Azure IoT [Direct Methods](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods) on the device.
+In this lab, **DeviceTwinBindings**, and **DirectMethodBindings** are introduced to simplify the implementation of Azure IoT [Device Twins](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins?WT.mc_id=github-blog-dglover) and Azure IoT [Direct Methods](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods?WT.mc_id=github-blog-dglover) on the device.
 
 Both Device Twins and Direct Methods provide a mechanism to invoke functionality on a device from a custom Azure IoT Hub application or from an Azure IoT Central Application. For example, you may want to turn on a light, start a fan, or change the rate a sensor is sampled.
 
@@ -61,13 +61,13 @@ When you set a Device Twin property in Azure IoT you are setting the *desired* s
 
 Azure IoT Central uses this *reported* state to display the last synced state of a property.
 
-For more information refer to the [Understand and use device twins in IoT Hub](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins) article.
+For more information refer to the [Understand and use device twins in IoT Hub](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins?WT.mc_id=github-blog-dglover) article.
 
 ### Azure IoT Direct Methods
 
 Azure IoT Direct Methods are simpler. When you invoke a *Direct Method* from Azure, a message is sent to the device. This message includes the name of the direct method and a data payload. The device will action the request and then respond with an HTTP status code to indicate success or failure along with an optional message.
 
-For more information refer to the [Understand and invoke direct methods from IoT Hub](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods) article.
+For more information refer to the [Understand and invoke direct methods from IoT Hub](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods?WT.mc_id=github-blog-dglover) article.
 
 ---
 
@@ -93,7 +93,7 @@ This maps to the **led1** _property_ defined in the Azure IoT Central Device tem
 
 ---
 
-You can also define a DeviceTwinBinding without a Peripheral. The example below associates an Azure IoT Device Twin with a handler. This handler might do something like change the sampling rate for a sensor, or set a threshold on the device.
+You can also define a DeviceTwinBinding without a Peripheral. The example below associates an Azure IoT Device Twin with a handler. This handler might do something like change the sampling rate for a sensor or set a threshold on the device.
 
 ```c
 static DeviceTwinBinding sensorSampleRate = {
@@ -164,7 +164,7 @@ DirectMethodBinding* directMethodBinding[] = { &feedFish, &SetFanSpeedDirectMeth
 ### Step 3: Configure the Azure IoT Central Connection Information
 
 1. Open the **app_manifest.json** file
-2. You will need to redo the settings for the **app_manifest.json** file. Either copy from notepad if you still have open, or copy from the **app_manifest.json** file you created in lab 2.
+2. You will need to redo the settings for the **app_manifest.json** file. Either copy from notepad if you still have open or copy from the **app_manifest.json** file you created in lab 2.
 
     ![](resources/visual-studio-open-app-manifest.png)
 
@@ -176,7 +176,7 @@ DirectMethodBinding* directMethodBinding[] = { &feedFish, &SetFanSpeedDirectMeth
 
 1. Open the **main.c** file
 2. Scroll down to the line that reads **static DeviceTwinBinding relay**
-3. This data structure describes a generalized peripheral and what Azure IoT Central Device **Setting** this peripheral is associated with.  Azure IoT Central device settings are implemented as Azure IoT Device Twins.
+3. This data structure describes a generalized peripheral and what Azure IoT Central Device **Properties** this peripheral is associated with.  Azure IoT Central device settings are implemented as Azure IoT Device Twins.
 
     ```c
     static DeviceTwinBinding relay = {
@@ -218,10 +218,10 @@ DirectMethodBinding* directMethodBinding[] = { &feedFish, &SetFanSpeedDirectMeth
     }
     ```
 
-### Setting up support for Azure IoT Central Commands
+### Support for Azure IoT Central Commands
 
-1. Again in the **main.c** file
-2. Scroll down to the the line that reads **static DirectMethodPeripheral fan**
+1. Again, in the **main.c** file
+2. Scroll down to the line that reads **static DirectMethodPeripheral fan**
 3. This data structure describes a generalized peripheral and what Azure IoT Central Device **Command** this peripheral is associated with.  Azure IoT Central device commands are implemented as Azure IoT Direct Methods.
 
     ```c
@@ -257,11 +257,11 @@ DirectMethodBinding* directMethodBinding[] = { &feedFish, &SetFanSpeedDirectMeth
     }
     ```
 
-### Initializing the support for IoT Central Settings and Commands
+### Support for IoT Central Properties and Commands
 
-1. Again in **main.c**.
+1. Again, in **main.c**.
 2. Scroll up to the line that reads **#pragma region define sets for auto initialization and close**
-3. In this region, there are a number of C arrays that point to the **DeviceTwinBindings** and **DirectMethodPeripherals** defined above.
+3. In this region, there are several arrays that point to the **DeviceTwinBindings** and **DirectMethodPeripherals** defined above.
     ```c
     DeviceTwinBinding* deviceTwinBindings[] = { &relay, &light };
     DirectMethodBinding* directMethodBindings[] = { &fan };
@@ -314,22 +314,9 @@ Select to the **Properties** tab and change the **Light** toggle state to **On**
 
 The expected behaviour will differ depending on what Azure Sphere device you have.
 
-* **Azure Sphere MT3620 Starter Kit**: Observe that an **Orange** LED lights up on the Azure Sphere.
-* **Seeed Studio Azure Sphere MT3620 Development Kit**: Observe that a **Red** LED lights up on the Azure Sphere.
-* **Seeed Studio Azure Sphere MT3620 Mini Dev Board**: Observe that a **Green** LED lights up on the Azure Sphere.
-
-
-#### Avnet Start Kit
-
-Observe that an **Orange** LED lights up on the Azure Sphere.
-
-#### Seeed Studio Reference Development Board
-
-Observe that a **Red** LED lights up on the Azure Sphere.
-
-### Seeed Studio Mini
-
-Observe that a **Green** LED lights up on the Azure Sphere.
+* **Azure Sphere MT3620 Starter Kit**: See that an **Orange** LED lights up on the Azure Sphere.
+* **Seeed Studio Azure Sphere MT3620 Development Kit**: See that a **Red** LED lights up on the Azure Sphere.
+* **Seeed Studio Azure Sphere MT3620 Mini Dev Board**: See that a **Green** LED lights up on the Azure Sphere.
 
 ---
 

@@ -100,7 +100,7 @@ Timer* timers[] = { &measureSensorTimer };
 
 Peripherals and timers are added to their respective arrays are referred to as **sets**. Any peripheral or timer referenced in a set will be automatically opened, initialized, and closed.
 
-These sets are referenced when calling **OpenPeripheralSet**, and **StartTimerSet** from the **InitPeripheralsAndHandlers** function. The sets are also references with closing the peripheral and timer sets in the **ClosePeripheralsAndHandlers** function.
+These sets are referenced when calling **OpenPeripheralSet**, and **StartTimerSet** from the **InitPeripheralsAndHandlers** function. The sets are also referenced when closing the peripheral and timer sets in the **ClosePeripheralsAndHandlers** function.
 
 ```c
 static int InitPeripheralsAndHandlers(void)
@@ -136,7 +136,7 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 
 ### Easy to Extend
 
-This model makes it easy to declare another peripheral or timer and add them to the **peripherals** or **timers** arrays. The following is an example of added an additional GPIO output peripheral.
+This model makes it easy to declare another peripheral or timer and add them to the **peripherals** or **timers** arrays. The following is an example of adding a GPIO output peripheral.
 
 ```c
 static Peripheral fanControl = {
@@ -150,7 +150,7 @@ static Peripheral fanControl = {
 
 ```
 
-Remember to add this new peripheral to the **peripherals** set so it will be automatically opened, initialised, and closed.
+Remember to add this new peripheral to the **peripherals** set so it will be automatically opened, initialized, and closed.
 
 ```c
 Peripheral* peripherals[] = { &builtinLed, &fanControl };
@@ -162,7 +162,7 @@ Peripheral* peripherals[] = { &builtinLed, &fanControl };
 
 You will need the credentials for the Azure Sphere Tenant your device was claimed into.
 
-If you are using a lab device then lab mentor will provide you with the credentials.
+If you are using a lab device, then the lab instructor will provide you with the credentials.
 
 ### Login to your Azure Sphere Tenant
 
@@ -189,7 +189,7 @@ From the **Azure Sphere Developer Command Prompt**, run ```azsphere device enabl
 
 ---
 
-## Open Lab 1 Project
+## Open Lab 1
 
 ### Step 1: Ensure you have cloned the lab source code
 
@@ -219,7 +219,7 @@ From the **Solution Explorer**, open the **main.c** file.
 
 ### Check CMake Cache Builds Correctly
 
-The generation of the CMake cache run automatically when you open a CMake project. But given this is the first lab to be opened, then it is a good idea to rerun the **CMake Cache Generator** to check that it is building correctly.
+The generation of the CMake cache runs automatically when you open a CMake project. But given this is the first lab to be opened it is a good idea to rerun the **CMake Cache Generator** to check that it is building correctly.
 
 1. Right mouse click the **CMakeLists.txt** file and select **Generate Cache for AzureSphereIoTCentral**.
 
@@ -229,7 +229,7 @@ The generation of the CMake cache run automatically when you open a CMake projec
 
 	![](resources/visual-studio-cmake-generate-completed.png)
 
-	If the CMake Generation fails then there is a good chance the lab has been cloned to a directory with a long file path and name. This can be a problem for CMake. Try moving the labs closer to the root directory on your local drive.
+	If the CMake Generation fails, then there is a good chance the lab has been cloned to a directory with a long file path and name. This can be a problem for CMake. Try moving the labs closer to the root directory on your local drive.
 
 ---
 
@@ -313,7 +313,7 @@ Set a debugger breakpoint by clicking in the margin to the left of the line of c
 
 3. When the next timer event fires, the debugger will stop at the line you set the breakpoint on.
 4. You can inspect variable values, step over code <kbd>F10</kbd>, step into code <kbd>F11</kbd>, and continue code execution <kbd>F5</kbd>. 
-5. For more information on debugging then read [First look at the Visual Studio Debugger](https://docs.microsoft.com/en-us/visualstudio/debugger/debugger-feature-tour?view=vs-2019)
+5. For more information on debugging then read [First look at the Visual Studio Debugger](https://docs.microsoft.com/en-us/visualstudio/debugger/debugger-feature-tour?view=vs-2019&WT.mc_id=github-blog-dglover)
 
 ---
 

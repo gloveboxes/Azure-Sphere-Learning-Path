@@ -22,9 +22,9 @@
 
 ## Learn more about Azure Sphere
 
-Learn more about [Azure Sphere](https://azure.microsoft.com/en-au/services/azure-sphere/).
+Learn more about [Azure Sphere](https://azure.microsoft.com/en-au/services/azure-sphere/?WT.mc_id=github-blog-dglover).
 
-Comprehensive IoT security solution – including hardware, OS and cloud components – to actively protect your devices, your business, and your customers.
+Comprehensive IoT security solution – including hardware, OS, and cloud components – to actively protect your devices, your business, and your customers.
 
 ---
 
@@ -62,11 +62,11 @@ As billions of new devices are connected, organizations need to secure them to h
 
 Almost a day doesn't go by without some newsworthy IoT Security attack happening, and those are just the ones that make the news cycle. IoT security is fundamental and at the same time often absent from many conversations in the rush to get products to market.
 
-[The Seven Properties of Highly Secure Devices](https://www.microsoft.com/en-us/research/wp-content/uploads/2017/03/SevenPropertiesofHighlySecureDevices.pdf) is highly recommended to help you understand what is required to mitigate exposure to IoT security issues. This IoT Security whitepaper draws from industry and Microsoft experience.
+[The Seven Properties of Highly Secure Devices](https://www.microsoft.com/en-us/research/wp-content/uploads/2017/03/SevenPropertiesofHighlySecureDevices.pdf?WT.mc_id=github-blog-dglover) is highly recommended to help you understand what is required to mitigate exposure to IoT security issues. This IoT Security whitepaper draws from industry and Microsoft experience.
 
 ![](zdocs/resources/fish-tank.jpg)
 
-Here's one of the most unconventional: a fish tank. Not just an ordinary fish tank, mind you, but a fairly high-tech one that featured Internet connectivity. That connection allowed the tank to be remotely monitored, automatically adjust temperature and salinity, and automate feedings.
+Here is one of the most unconventional: a fish tank. Not just an ordinary fish tank, mind you, but a high-tech one that featured Internet connectivity. That connection allowed the tank to be remotely monitored, automatically adjust temperature and salinity, and automate feedings.
 
 It also allowed hackers to swipe 10 gigabytes of data from the North American casino that just installed it, according to a report from the threat intelligence experts at [Darktrace](http://www.darktrace.com/).
 
@@ -112,13 +112,13 @@ Building solutions with pre-certified Azure Sphere modules is the fastest way to
 
 ### Starbucks and the Avnet Azure Sphere Guardian Module
 
-[Starbucks turns to technology to brew up a more personal connection with its customers](https://news.microsoft.com/transform/starbucks-turns-to-technology-to-brew-up-a-more-personal-connection-with-its-customers/)
+[Starbucks turns to technology to brew up a more personal connection with its customers](https://news.microsoft.com/transform/starbucks-turns-to-technology-to-brew-up-a-more-personal-connection-with-its-customers/?WT.mc_id=github-blog-dglover)
 
 ---
 
 ## Azure Sphere Architecture
 
-The initial release of Azure Sphere is built on the Mediatec MT3620. This MCU consists of 5 cores. There is a dedicated communications core, a dedicated Security Subsystem core, and **three** user application cores.
+The initial release of the Azure Sphere is built on the Mediatec MT3620. This MCU consists of 5 cores. There is a dedicated communications core, a dedicated Security Subsystem core, and **three** user application cores.
 
 The **three applications** cores are as follows:
 
@@ -153,10 +153,10 @@ These labs support the following Azure Sphere Kits.
 
 ### Learn about Azure Sphere
 
-1. [Azure Sphere Documentation](https://docs.microsoft.com/en-au/azure-sphere/)
+1. [Azure Sphere Documentation](https://docs.microsoft.com/en-au/azure-sphere/?WT.mc_id=github-blog-dglover)
 1. Using Yocto to Build an IoT OS Targeting a Crossover SoC. [Video](https://www.youtube.com/watch?v=-T7Et5qfqQQ), and [Slides](https://static.sched.com/hosted_files/ossna19/91/Crossover_ELC2019.pdf)
-2. [Anatomy of a secured MCU](https://azure.microsoft.com/en-au/blog/anatomy-of-a-secured-mcu/)
-3. [Azure Sphere’s customized Linux-based OS](https://azure.microsoft.com/en-au/blog/azure-sphere-s-customized-linux-based-os/)
-4. [Tech Communities Blog](https://techcommunity.microsoft.com/t5/internet-of-things/bg-p/IoTBlog)
+2. [Anatomy of a secured MCU](https://azure.microsoft.com/en-au/blog/anatomy-of-a-secured-mcu/?WT.mc_id=github-blog-dglover)
+3. [Azure Sphere’s customized Linux-based OS](https://azure.microsoft.com/en-au/blog/azure-sphere-s-customized-linux-based-os/?WT.mc_id=github-blog-dglover)
+4. [Tech Communities Blog](https://techcommunity.microsoft.com/t5/internet-of-things/bg-p/IoTBlog?WT.mc_id=github-blog-dglover)
 5. The [Azure IoT Central Sample](https://github.com/Azure/azure-sphere-samples/blob/master/Samples/AzureIoT/IoTCentral.md)
 6. [Azure Sphere Wiki](https://en.wikipedia.org/wiki/Azure_Sphere)
