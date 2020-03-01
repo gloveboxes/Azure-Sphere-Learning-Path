@@ -147,7 +147,7 @@ These labs support the following Azure Sphere Kits.
 
 ---
 
-[Next](zdocs/Lab_0_Introduction_and_Lab_Set_Up/README.md)
+**[Next](zdocs/Lab_0_Introduction_and_Lab_Set_Up/README.md)**
 
 ---
 
