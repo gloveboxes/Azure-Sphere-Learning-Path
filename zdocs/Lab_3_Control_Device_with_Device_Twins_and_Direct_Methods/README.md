@@ -7,7 +7,7 @@
 |Author|[Dave Glover](https://developer.microsoft.com/en-us/advocates/dave-glover?WT.mc_id=github-blog-dglover), Microsoft Cloud Developer Advocate, [@dglover](https://twitter.com/dglover) |
 |:----|:---|
 |Source Code | https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git |
-|Date| January  2020|
+|Date| February  2020|
 
 ---
 
@@ -53,13 +53,13 @@ In Lab 1, **Peripherals** and **Timers** were introduced to simplify and effecti
 
 In this lab, **DeviceTwinBindings**, and **DirectMethodBindings** are introduced to simplify the implementation of Azure IoT [Device Twins](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins) and Azure IoT [Direct Methods](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods) on the device.
 
-Both Device Twins and Direct Methods provide a mechanism to invoke some functionality on a device from a custom Azure IoT Hub application or from an Azure IoT Central Application. For example, you may want to turn on a light, start a fan, or change the rate a sensor is sampled.
+Both Device Twins and Direct Methods provide a mechanism to invoke functionality on a device from a custom Azure IoT Hub application or from an Azure IoT Central Application. For example, you may want to turn on a light, start a fan, or change the rate a sensor is sampled.
 
 ### Azure IoT Device Twins
 
-When you set a Device Twin property in Azure IoT you are setting the *desired* state of a property on the device. Azure IoT will send a desired state message to the device, the device will action the request, for example, turn on a LED, and the device will then send a *reported* state msg back to Azure IoT. Azure IoT then stores the *reported* state in the Azure IoT.
+When you set a Device Twin property in Azure IoT you are setting the *desired* state of a property on the device. Azure IoT will send a desired state message to the device, the device then actions the request, for example, turn on a LED, and the device will then send a *reported* state msg back to Azure IoT. Azure IoT then stores the *reported* state in the Azure IoT.
 
-With the *reported* state stored in Azure IoT it is then possible to query this cloud-side *reported* state data. For example, list all devices that have a *reported* firmware version of 2.
+Azure IoT Central uses this *reported* state to display the last synced state of a property.
 
 For more information refer to the [Understand and use device twins in IoT Hub](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins) article.
 
@@ -86,6 +86,11 @@ static DeviceTwinBinding light = {
 	.handler = DeviceTwinHandler
 };
 ```
+
+This maps to the **led1** _property_ defined in the Azure IoT Central Device template.
+
+![](resources/iot-central-device-template-interface-led1.png)
+
 ---
 
 You can also define a DeviceTwinBinding without a Peripheral. The example below associates an Azure IoT Device Twin with a handler. This handler might do something like change the sampling rate for a sensor, or set a threshold on the device.
@@ -98,7 +103,7 @@ static DeviceTwinBinding sensorSampleRate = {
 };
 ```
 
-Like Peripherals and Timers, Device Twin Bindings can be automatically opened, initialized, and closed if they are added to the deviceTwinDevices array, also referred to as a **set** of device twin peripherals.
+Like Peripherals and Timers, Device Twin Bindings can be automatically opened, initialized, and closed if they are added to the deviceTwinDevices array, also referred to as a **set** of device twin bindings.
 
 ```c
 DeviceTwinBinding* deviceTwinBindings[] = { &light, &sensorSampleRate };
@@ -117,29 +122,26 @@ static DirectMethodBinding feedFish = {
 
 ```
 
-```c
-static DirectMethodBinding sensorSampleRate = {
-	.methodName = "sensorsamplerate",
-	.handler = SetSensorSampleRate
-};
+You will find the following example in **main.c**.
 
+```c
+static DirectMethodBinding fan = {
+	.methodName = "fan1",
+	.handler = SetFanSpeedDirectMethod
+};
 ```
 
-Like Peripherals, Timers, Device Twin Peripherals, Direct Method Bindings can be automatically opened, initialized, and closed if they are added to the directMethodDevices array, also referred to as a set of direct method peripherals.
+This maps to the **fan1** _command_ defined in the Azure IoT Central Device template.
+
+![](resources/iot-central-device-template-interface-fan1.png)
+
+### Setting DirectMethodBindings
+
+Like Peripherals, Timers, Device Twin Peripherals, Direct Method Bindings can be automatically opened, initialized, and closed if they are added to the directMethodDevices array, also referred to as a set of direct method bindings.
 
 ```c
 DirectMethodBinding* directMethodBinding[] = { &feedFish, &sensorSampleRate };
 ```
-
----
-
-## Controlling an Azure Sphere from Azure IoT Central
-
-There are two ways to control or set the state on the Azure Sphere device from Azure IoT Central.
-
-1. The first way to control a device is with Azure IoT Central **Properties**. Under the covers, these are implemented as [Azure IoT Device Twins](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins).
-
-2. The second way to control a device is with Azure IoT Central **Commands**. Under the covers, these are implemented as [Azure IoT Direct Methods](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods).
 
 ---
 
@@ -168,7 +170,7 @@ There are two ways to control or set the state on the Azure Sphere device from A
 
 ---
 
-## Adding support for Azure IoT Central Properties
+## Support for Azure IoT Central Properties
 
 1. Open the **main.c** file
 2. Scroll down to the line that reads **static DeviceTwinBinding relay**
