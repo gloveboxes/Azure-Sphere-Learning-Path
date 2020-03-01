@@ -35,6 +35,12 @@ In this lab you will learn how to secure, build, deploy, and debug your first Hi
 
 ---
 
+## Prerequisites
+
+This lab assumes you have completed **Lab 0: Lab set up, installation and configuration**
+
+---
+
 ## Tutorial Overview
 
 1. Understand Peripheral and Timer concepts.
@@ -324,3 +330,7 @@ Set a debugger breakpoint by clicking in the margin to the left of the line of c
 Congratulations, you secured, built, deployed and debugged your first Azure Sphere application.
 
 ![](resources/finished.jpg)
+
+---
+
+**[NEXT](../Lab_2_Send_Telemetry_to_Azure_IoT_Central/README.md)**

@@ -1,6 +1,4 @@
-# Lab 0: Introduction to Azure Sphere and Lab set up
-
-<!-- ![Azure Sphere with shield](resources/azure-sphere-shield.png) -->
+# Lab 0: Lab set up, installation and configuration
 
 |Author|[Dave Glover](https://developer.microsoft.com/en-us/advocates/dave-glover?WT.mc_id=github-blog-dglover), Microsoft Cloud Developer Advocate, [@dglover](https://twitter.com/dglover) |
 |:----|:---|
@@ -33,7 +31,9 @@ Each module assumes you have completed the previous module.
 
 ---
 
-## Tutorial Overview
+## Prerequisites
+
+1. Computer running up to date installation of Windows 10 or Ubuntu 18.04.
 
 ---
 
@@ -63,7 +63,7 @@ On Ubuntu 18.04, install the latest version of [Visual Studio Code](https://code
 
 **WARNING**: On Windows, do not clone the *Azure Sphere Learning Path* to a directory with a long folder name as CMake can have problems building with long path/folder names.
 
-Ideally clone to a directory close to the root directory. For example **c:\lab** on Windows, **~/lab** on Linux.
+Ideally clone (or download) to a directory close to the root directory. For example **c:\lab** on Windows, **~/lab** on Linux.
 
 ```bash
 git clone https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git Azure-Sphere
@@ -102,11 +102,16 @@ Skip this step if you are using a lab device or you have already claimed.
 
 ---
 
-## Azure Sphere Developer Kit Reference Documentation
+**[NEXT](../Lab_1_Visual_Studio_and_Azure_Sphere/README.md)**
+
+---
+
+## Appendix
+
+### Azure Sphere Developer Kit Reference Documentation
 
 * [Avnet Azure Sphere Start Kit - See Documents tab](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-sk-g-3074457345636825680/)
 * [Seeed Studio Azure Sphere MT3620 Reference Docs](http://wiki.seeedstudio.com/Azure_Sphere_MT3620_Development_Kit/)
 * [Grove Starter Kit for Azure Sphere MT3620 Development Kit](http://wiki.seeedstudio.com/Grove_Starter_Kit_for_Azure_Sphere_MT3620_Development_Kit/)
 * [Seeed Studio Azure Sphere MT3620 Mini Dev Board](http://wiki.seeedstudio.com/MT3620_Mini_Dev_Board/)
 * [MT3620 Grove Breakout](http://wiki.seeedstudio.com/MT3620_Grove_Breakout/)
-
