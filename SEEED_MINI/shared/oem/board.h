@@ -10,7 +10,7 @@
 
 #define BUILTIN_LED		AILINK_WFM620RSC1_PIN4_GPIO7
 #define LIGHT_PIN		AILINK_WFM620RSC1_PIN1_GPIO4
-#define RELAY_PIN		AILINK_WFM620RSC1_PIN2_GPIO5
+#define RELAY_PIN		AILINK_WFM620RSC1_PIN7_GPIO10
 
 int ReadTelemetry(char* msgBuffer, size_t bufferLen);
 bool InitializeDevKit(void);
