@@ -1,3 +1,10 @@
+/**
+ * This code is based on a sample from Microsoft (see license below),
+ * with modifications made by MediaTek.
+ * Modified version of linker.ld from Microsoft Azure Sphere sample code:
+ * https://github.com/Azure/azure-sphere-samples/blob/master/Samples/HelloWorld/HelloWorld_RTApp_MT3620_BareMetal/linker.ld
+ **/
+
 /* Copyright (c) Microsoft Corporation. All rights reserved.
    Licensed under the MIT License. */
 
@@ -18,8 +25,7 @@ REGION_ALIAS("RODATA_REGION", TCM);
 REGION_ALIAS("DATA_REGION", TCM);
 REGION_ALIAS("BSS_REGION", TCM);
 
-ENTRY(ExceptionVectorTable)
-
+ENTRY(__isr_vector)
 SECTIONS
 {
     /* The exception vector's virtual address must be aligned to a power of two,

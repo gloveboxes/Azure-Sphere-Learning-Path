@@ -53,14 +53,15 @@ Updated: Added blink and inter-core communications
 #include "os_hal_uart.h"
 
 #include "semphr.h"
+#include "../shared/Hardware/mt3620_rdb/inc/hw/mt3620_rdb.h"
 
 
 /******************************************************************************/
 /* Configurations */
 /******************************************************************************/
 
-#define BUILTIN_LED OS_HAL_GPIO_43
-#define BUTTON_A OS_HAL_GPIO_35
+#define BUILTIN_LED MT3620_GPIO10
+#define BUTTON_A MT3620_GPIO12
 #define UART_PORT_NUM OS_HAL_UART_ISU0
 
 #define APP_STACK_SIZE_BYTES (1024 / 4)
@@ -85,7 +86,7 @@ static uint32_t sharedBufSize = 0;
 
 #define SEEED_MINI_DK 1
 
-#ifdef SEEED_MINI_DK
+//#ifdef SEEED_MINI_DK
 static int generatePressEvent = 0;
 #endif // SEEED_MINI_DK
 
