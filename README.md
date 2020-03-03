@@ -102,7 +102,7 @@ Today the Mediatec MT3620 MCU powers Azure Sphere. The family of certified Azure
 
 ---
 
-## Building Real Solutions
+## Azure Sphere in Action
 
 ### Divvy Parking
 
