@@ -87,7 +87,7 @@ static DeviceTwinBinding light = {
 };
 ```
 
-This maps to the **led1** _property_ defined in the Azure IoT Central Device template.
+This maps to the **led1** _property_ of _schema type_ **Boolean** defined in the Azure IoT Central Device template.
 
 ![](resources/iot-central-device-template-interface-led1.png)
 
