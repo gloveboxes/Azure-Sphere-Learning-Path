@@ -114,7 +114,7 @@ Building solutions with pre-certified Azure Sphere modules is the fastest way to
 
 ![Prototype PCB design](zdocs/resources/divvy-parking.png)
 
-*Prototype PCB design included here with permission of Divvy Parking*
+*Prototype PCB design included here with the permission of Divvy Parking*
 
 ### Starbucks and the Avnet Azure Sphere Guardian Module
 
