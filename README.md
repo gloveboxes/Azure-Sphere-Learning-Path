@@ -1,5 +1,5 @@
 
-![](zdocs/resources/azure-sphere-learning-path.png)
+![Azure Sphere Learning Path](zdocs/resources/azure-sphere-learning-path.png)
 
 ---
 
@@ -13,7 +13,7 @@
 |Azure SDK | Azure Sphere SDK 20.01 or better |
 |Developer Tools| [Visual Studio (The free Community Edition or better)](https://visualstudio.microsoft.com/vs/?WT.mc_id=github-blog-dglover) or [Visual Studio Code (Free OSS)](https://code.visualstudio.com?WT.mc_id=github-blog-dglover)|
 |Supported Hardware | [Avnet Azure Sphere MT3620 Starter Kit](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-sk-g-3074457345636825680) [Seeed Studio Azure Sphere MT3620 Development Kit](https://www.seeedstudio.com/Azure-Sphere-MT3620-Development-Kit-US-Version-p-3052.html) and the [Seeed Studio MT3620 Mini Dev Board](https://www.seeedstudio.com/MT3620-Mini-Dev-Board-p-2919.html) |
-|Source Code | https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git |
+|Source Code | [https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git](https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git) |
 |Language| C|
 |Licence | [Review full MIT Licence](LICENSE). In summary. You are free to use, modify, and contribute back to the code in this project. No liability accepted.
 |Date| February  2020|
@@ -22,9 +22,15 @@
 
 ## Learn more about Azure Sphere
 
-Learn more about [Azure Sphere](https://azure.microsoft.com/en-au/services/azure-sphere/?WT.mc_id=github-blog-dglover).
+[Azure Sphere](https://azure.microsoft.com/en-au/services/azure-sphere/?WT.mc_id=github-blog-dglover) is a comprehensive IoT security solution – including hardware, OS, and cloud components – to actively protect your devices, your business, and your customers.
 
-Comprehensive IoT security solution – including hardware, OS, and cloud components – to actively protect your devices, your business, and your customers.
+Azure Sphere is made up of three interrelated components:
+
+1. Azure Sphere-certified chips
+1. Azure Sphere OS
+1. Azure Sphere Security Service
+
+These components are backed by Microsoft best-in-class security experts who monitor emerging threats, design updates and provide a decade of ongoing servicing.
 
 ---
 
@@ -34,7 +40,7 @@ This Azure Sphere developer learning path is designed to ease you into the world
 
 Your journey starts with the equivalent of hello world, the next step is sending telemetry to Azure IoT, then you will learn how to securely control a device from Azure IoT, and finally connect and send Azure IoT Events from a FreeRTOS application.
 
-Each module assumes you have completed the previous module.
+Each lab assumes you have completed the previous lab.
 
 You are also free to use and modify the code provided in this learning path for your projects, commercial or otherwise, no liability accepted.
 
@@ -62,7 +68,7 @@ Almost a day doesn't go by without some newsworthy IoT Security attack happening
 
 [The Seven Properties of Highly Secure Devices](https://www.microsoft.com/en-us/research/wp-content/uploads/2017/03/SevenPropertiesofHighlySecureDevices.pdf?WT.mc_id=github-blog-dglover) is highly recommended to help you understand what is required to mitigate exposure to IoT security issues. This IoT Security whitepaper draws from industry and Microsoft experience.
 
-![](zdocs/resources/fish-tank.jpg)
+![Connected Fish Tank](zdocs/resources/fish-tank.jpg)
 
 Here is one of the most unconventional: a fish tank. Not just an ordinary fish tank, mind you, but a high-tech one that featured Internet connectivity. That connection allowed the tank to be remotely monitored, automatically adjust temperature and salinity, and automate feedings.
 
@@ -76,7 +82,7 @@ It also allowed hackers to swipe 10 gigabytes of data from the North American ca
 
 Azure Sphere is a solution for securing MCU Power Devices. It comprises a secured, connected, crossover microcontroller unit (MCU), a custom high-level Linux-based operating system (OS), and a cloud-based security service that provides continuous, renewable security.
 
-![](zdocs/resources/azure-sphere-end-to-end.png)
+![Azure Sphere end-to-end](zdocs/resources/azure-sphere-end-to-end.png)
 
 ---
 
@@ -92,7 +98,7 @@ Get started with Azure Sphere using the prototyping developer kits from Avnet an
 
 Today the Mediatec MT3620 MCU powers Azure Sphere. The family of certified Azure Sphere MCUs will expand to include offerings from Qualcomm and NXP.
 
-![](zdocs/resources/azure-sphere.png)
+![Partners and their products](zdocs/resources/azure-sphere.png)
 
 ---
 
@@ -106,7 +112,7 @@ This PCB will initially support their parking solution, controlling boom gates a
 
 Building solutions with pre-certified Azure Sphere modules is the fastest way to bring a secure IoT product to market.
 
-![](zdocs/resources/divvy-parking.png)
+![Prototype PCB design](zdocs/resources/divvy-parking.png)
 
 *Prototype PCB design included here with permission of Divvy Parking*
 
@@ -120,10 +126,10 @@ Building solutions with pre-certified Azure Sphere modules is the fastest way to
 
 The initial release of the Azure Sphere is built on the Mediatec MT3620. This MCU consists of 5 cores. There is a dedicated communications core, a dedicated Security Subsystem core, and **three** user application cores.
 
-The **three applications** cores are as follows:
+The **three applications cores** are as follows:
 
 * One ARM Cortex A7 core running Embedded Linux (built with Yokto), exposing a set of POSIX APIs. Developers can build and deploy a **High Level** application to this core. This core is also responsible for the TrustZone Security Monitor, threat detection reporting, and OS and Application life cycle management.
-* Two ARM Cortex M4Fs. Developers can build and deploy **Real Time** applications to these cores. Real Time applications can be built against the baremetal or built using  real time frameworks such as FreeRTOS, and in the future, Azure RTOS.
+* Two ARM Cortex M4Fs. Developers can build and deploy **Real Time** applications to these cores. Real Time applications can be built against the bare metal or built using  real time frameworks such as FreeRTOS, and in the future, Azure RTOS.
 
 The MT3620 MCU is also known as a Crossover MCU as it bridges the application world of ARM Cortex A7 with the Real time world of ARM Cortex M4.
 
@@ -133,7 +139,7 @@ Applications on Azure Sphere are locked down by default and you must grant capab
 
 Capabilities, such as access to GPIO pins and network endpoint must be granted to both High Level and Real Time applications. This defends against application bugs and malicious code attacks.
 
-![](zdocs/resources/azure-sphere-architecture.png)
+![Azure Sphere architecture](zdocs/resources/azure-sphere-architecture.png)
 
 ---
 
@@ -143,9 +149,10 @@ These labs support the following Azure Sphere Kits.
 
 | Manufacturer | Image |
 |---|---|
-| [Avnet Azure Sphere MT3620 Starter Kit](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-sk-g-3074457345636825680/) <br/>This starter kit includes temperature, pressure and light sensors. | ![](zdocs/resources/avnet-azure-sphere.jpg)|
-| [Seeed Studio Azure Sphere MT3620 Development Kit](http://wiki.seeedstudio.com/Azure_Sphere_MT3620_Development_Kit/) | ![](zdocs/resources/seeed-studio-azure-sphere.png) |
-| [Seeed Studio Azure Sphere MT3620 Mini Dev Board]() | ![](zdocs/resources/seeed-studio-azure-sphere-mini.png) |
+| [Avnet Azure Sphere MT3620 Starter Kit](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-sk-g-3074457345636825680/)  
+This starter kit includes temperature, pressure and light sensors. | ![Avnet Azure Sphere MT3620 Starter Kit](zdocs/resources/avnet-azure-sphere.jpg)|
+| [Seeed Studio Azure Sphere MT3620 Development Kit](http://wiki.seeedstudio.com/Azure_Sphere_MT3620_Development_Kit/) | ![Seeed Studio Azure Sphere MT3620 Development Kit](zdocs/resources/seeed-studio-azure-sphere.png) |
+| [Seeed Studio Azure Sphere MT3620 Mini Dev Board]() | ![Seeed Studio Azure Sphere MT3620 Mini Dev Board](zdocs/resources/seeed-studio-azure-sphere-mini.png) |
 
 ---
 
@@ -159,8 +166,8 @@ These labs support the following Azure Sphere Kits.
 
 1. [Azure Sphere Documentation](https://docs.microsoft.com/en-au/azure-sphere/?WT.mc_id=github-blog-dglover)
 1. Using Yocto to Build an IoT OS Targeting a Crossover SoC. [Video](https://www.youtube.com/watch?v=-T7Et5qfqQQ), and [Slides](https://static.sched.com/hosted_files/ossna19/91/Crossover_ELC2019.pdf)
-2. [Anatomy of a secured MCU](https://azure.microsoft.com/en-au/blog/anatomy-of-a-secured-mcu/?WT.mc_id=github-blog-dglover)
-3. [Azure Sphere’s customized Linux-based OS](https://azure.microsoft.com/en-au/blog/azure-sphere-s-customized-linux-based-os/?WT.mc_id=github-blog-dglover)
-4. [Tech Communities Blog](https://techcommunity.microsoft.com/t5/internet-of-things/bg-p/IoTBlog?WT.mc_id=github-blog-dglover)
-5. The [Azure IoT Central Sample](https://github.com/Azure/azure-sphere-samples/blob/master/Samples/AzureIoT/IoTCentral.md)
-6. [Azure Sphere Wiki](https://en.wikipedia.org/wiki/Azure_Sphere)
+1. [Anatomy of a secured MCU](https://azure.microsoft.com/en-au/blog/anatomy-of-a-secured-mcu/?WT.mc_id=github-blog-dglover)
+1. [Azure Sphere’s customized Linux-based OS](https://azure.microsoft.com/en-au/blog/azure-sphere-s-customized-linux-based-os/?WT.mc_id=github-blog-dglover)
+1. [Tech Communities Blog](https://techcommunity.microsoft.com/t5/internet-of-things/bg-p/IoTBlog?WT.mc_id=github-blog-dglover)
+1. The [Azure IoT Central Sample](https://github.com/Azure/azure-sphere-samples/blob/master/Samples/AzureIoT/IoTCentral.md)
+1. [Azure Sphere Wiki](https://en.wikipedia.org/wiki/Azure_Sphere)
