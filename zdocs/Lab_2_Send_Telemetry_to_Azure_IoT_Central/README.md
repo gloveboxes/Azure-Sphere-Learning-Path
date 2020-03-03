@@ -130,9 +130,8 @@ Follow these steps to get the Azure IoT Central **Scope ID**, and the **Applicat
         "CmdArgs": [ "0ne9992KK6D" ],
         "AllowedConnections": [ "global.azure-devices-provisioning.net", "saas-iothub-9999999-f33a-4002-4444-7ca8989898989.azure-devices.net" ],
         "DeviceAuthentication": "--- YOUR AZURE SPHERE TENANT ID--- "
-    ```
-    
-4. **Copy the Tenant ID to _Notepad_** as you will need it soon.
+        ```
+5. **Copy the Tenant ID to _Notepad_** as you will need it soon.
 
 ### Azure Sphere Tenant ID
 
