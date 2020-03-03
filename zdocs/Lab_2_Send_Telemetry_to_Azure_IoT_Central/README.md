@@ -73,7 +73,7 @@ We are going to create an Azure IoT Central application from an application temp
 
 For this lab, we are going to create an Azure IoT Central Application from a predefined template.
 
-Right mouse click [Azure Sphere Learning Path Azure IoT Central Template](https://apps.azureiotcentral.com/build/new/0ecd2a95-6fd7-41bc-bdb5-e95512e14414) to open in a new browser tab.
+Right mouse click [Azure Sphere Learning Path Azure IoT Central Template](https://apps.azureiotcentral.com/build/new/107ea05b-c031-4866-a0f3-60c934551ac7) to open in a new browser tab.
 
 ### Configure the Azure IoT Central Template
 
