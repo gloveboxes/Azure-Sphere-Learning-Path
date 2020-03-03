@@ -98,15 +98,16 @@ You must **link** your Azure IoT Central Application with the Azure Sphere Tenan
 
 ## Azure IoT Central Connection Information
 
-The Azure Sphere device requires the following information to connect to the Azure IoT Central Application.
+The Azure Sphere device requires the following information to connect to your Azure IoT Central Application.
 
-1. The Azure IoT Central **Scope ID**,
-2. the Azure IoT Central **Application URI**,
-3. and the Azure **Sphere Tenant ID**.
+1. The **Azure IoT Central Application**:
+    * **Scope ID**,
+    * **Application URI**,
+2. The **Azure Sphere Tenant ID**.
 
-### Azure IoT Central Device Provisioning Service
+### Azure IoT Central Application Information
 
-Follow these steps to return the Azure IoT Central **Scope ID**, and the Azure IoT Central **Application URI**.
+Follow these steps to get the Azure IoT Central **Scope ID**, and the **Application URI**.
 
 1. Start the **Azure Sphere Developer Command Prompt**
 2. From the command prompt, navigate to the folder you cloned the **Azure Sphere** lab into.
@@ -142,8 +143,6 @@ Follow these steps to return the Azure IoT Central **Scope ID**, and the Azure I
         ```
     * The **Tenant ID** is the numeric value inside the parentheses.
 2. **Copy the Tenant ID to _Notepad_** as you will need it soon.
-
-
 
 ---
 
