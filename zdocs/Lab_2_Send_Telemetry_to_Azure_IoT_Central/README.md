@@ -98,28 +98,24 @@ You must **link** your Azure IoT Central Application with the Azure Sphere Tenan
 
 ## Azure IoT Central Connection Information
 
-Your Azure Sphere device needs the following information to connect to Azure IoT Central with the [Azure Device Provisioning Service](https://docs.microsoft.com/en-us/azure/iot-dps/?WT.mc_id=github-blog-dglover).
+The Azure Sphere device requires the following information to connect to the Azure IoT Central Application.
 
-1. Your Azure Sphere **Tenant ID**.
+1. The Azure IoT Central **Scope ID**,
+2. the Azure IoT Central **Application URI**,
+3. and the Azure **Sphere Tenant ID**.
 
-    * From the **Azure Sphere Developer Command Prompt**, run **```azsphere tenant show-selected```**.
-    * The output of this command will look similar to the following.
-        ```text
-        Default Azure Sphere tenant ID is 'yourSphereTenant' (99999999-e021-43ce-9999-fa9999499994).
-        ```
-    * The **Tenant ID** is the numeric value inside the parentheses.
+### Azure IoT Central Device Provisioning Service
 
+Follow these steps to return the Azure IoT Central **Scope ID**, and the Azure IoT Central **Application URI**.
 
-2. **Copy the Tenant ID to _Notepad_** as you will need it soon.
-3. Your **Azure IoT Central Device Provisioning Service** configuration information.
+1. Start the **Azure Sphere Developer Command Prompt**
+2. From the command prompt, navigate to the folder you cloned the **Azure Sphere** lab into.
+3. Change directory to **tools**.
+4. Run the **```ShowIoTCentralConfig.exe```** command.
 
-    1. From the **Azure Sphere Developer Command Prompt**, navigate to the folder you cloned the **Azure Sphere** lab into.
+    * When prompted, log in with your **Azure IoT Central credentials**.
 
-    2. Change to the **tools** folder and run **```ShowIoTCentralConfig.exe```**
-
-        When prompted, log in with your **Azure IoT Central credentials**.
-
-        The output from the _ShowIoTCentralConfig_ will be similar to the following.
+    * The output from the **ShowIoTCentralConfig** will be similar to the following.
 
         ```text
         Are you using a Work/School account to sign in to your IoT Central Application (Y/N) ?
@@ -133,9 +129,21 @@ Your Azure Sphere device needs the following information to connect to Azure IoT
         "CmdArgs": [ "0ne9992KK6D" ],
         "AllowedConnections": [ "global.azure-devices-provisioning.net", "saas-iothub-9999999-f33a-4002-4444-7ca8989898989.azure-devices.net" ],
         "DeviceAuthentication": "--- YOUR AZURE SPHERE TENANT ID--- "
+    ```
+    
+4. **Copy the Tenant ID to _Notepad_** as you will need it soon.
+
+### Azure Sphere Tenant ID
+
+1. From the **Azure Sphere Developer Command Prompt**, run **```azsphere tenant show-selected```**.
+    * The output of this command will look similar to the following.
+        ```text
+        Default Azure Sphere tenant ID is 'yourSphereTenant' (99999999-e021-43ce-9999-fa9999499994).
         ```
-        
-    3. **Copy** the output of this command from the _Azure Sphere Command Prompt_ to **notepad**.
+    * The **Tenant ID** is the numeric value inside the parentheses.
+2. **Copy the Tenant ID to _Notepad_** as you will need it soon.
+
+
 
 ---
 
