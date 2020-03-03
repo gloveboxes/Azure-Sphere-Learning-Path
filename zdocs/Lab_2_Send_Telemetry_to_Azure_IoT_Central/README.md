@@ -102,7 +102,7 @@ The Azure Sphere device requires the following information to connect to your Az
 
 1. The **Azure IoT Central Application**:
     * **Scope ID**,
-    * **Application URI**,
+    * and the **Application URI**,
 2. The **Azure Sphere Tenant ID**.
 
 ### Azure IoT Central Application Information
