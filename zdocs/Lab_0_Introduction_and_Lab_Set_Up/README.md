@@ -50,13 +50,11 @@ If you are using a shared lab device, then the lab instructor will tell you the 
 
 ## Step 1: Software Installation
 
-For complete instructions follow the Azure Sphere [Overview of set up procedures](https://docs.microsoft.com/en-au/azure-sphere/install/overview?WT.mc_id=github-blog-dglover) guide.
-
 The following is the recommended software for Windows 10 and Ubuntu 18.04.
 
 ### Windows 10 Recommended Software
 
-1. [Visual Studio (The free Community Edition or better)](https://visualstudio.microsoft.com/vs/?WT.mc_id=github-blog-dglover) is recommended
+1. [Visual Studio (The free Community Edition or better)](https://visualstudio.microsoft.com/vs/?WT.mc_id=github-blog-dglover)
 2. [Azure Sphere SDK for Visual Studio](https://docs.microsoft.com/en-au/azure-sphere/install/install-sdk#azure-sphere-sdk-for-visual-studio)
 3. [Git for Windows](https://git-scm.com/downloads)
 4. [Install Azure Sphere drivers for Windows](https://docs.microsoft.com/en-au/azure-sphere/install/install-sdk#set-up-your-dev-kit-on-a-windows-pc)
@@ -69,6 +67,7 @@ The following is the recommended software for Windows 10 and Ubuntu 18.04.
 4. [Set up your Linux system for app development](https://docs.microsoft.com/en-au/azure-sphere/install/development-environment-linux)
 4. Install Git support ```apt install git```.
 
+For complete instructions follow the Azure Sphere [Overview of set up procedures](https://docs.microsoft.com/en-au/azure-sphere/install/overview?WT.mc_id=github-blog-dglover) guide.
 ---
 
 ## Step 2: Clone the Azure Sphere Learning Path
@@ -118,7 +117,7 @@ You **cannot move** the device to another Azure Tenant once it has been claimed.
 
 ## Step 6: Ensure Azure Sphere OS Updated
 
-As of March 2020, your device should be version 20.01 or better.
+As of March 2020, your device should be version **20.01** or better.
 
 1. Start the **Azure Sphere Developer Command Prompt**
 	1. Press the <kbd>Windows Key</kbd>
