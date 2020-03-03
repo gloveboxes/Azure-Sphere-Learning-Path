@@ -100,7 +100,11 @@ Lab directories are named by Azure Sphere device manufacturer.
 
 ## Step 4: Claim your Azure Sphere
 
-Skip this step if you are using a lab device or you have already claimed.
+**Skip this step if you are using a lab device or you have already claimed your Azure Sphere.**
+
+**Note**, claiming an Azure Sphere device is a one-time operation. The device will become associated with an Azure Sphere Tenant and the email address you used when you claimed the device.
+
+You **cannot move** the device to another Azure Tenant once it has been claimed. However, you can add additional [users and roles](https://docs.microsoft.com/en-us/azure-sphere/deployment/add-tenant-users) to the Azure Sphere tenant, including users with Admin rights.
 
 [Claim your Azure Sphere device](https://docs.microsoft.com/en-au/azure-sphere/install/claim-device?WT.mc_id=github-blog-dglover)
 
