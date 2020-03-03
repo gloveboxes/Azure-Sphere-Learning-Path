@@ -48,11 +48,26 @@ If you are using a shared lab device, then the lab instructor will tell you the 
 
 ---
 
-## Step 1: Install the Developer Tools
+## Step 1: Software Installation
 
-On Windows 10, [Visual Studio (The free Community Edition or better)](https://visualstudio.microsoft.com/vs/?WT.mc_id=github-blog-dglover) is recommended
+For complete instructions follow the Azure Sphere [Overview of set up procedures](https://docs.microsoft.com/en-au/azure-sphere/install/overview?WT.mc_id=github-blog-dglover) guide.
 
-On Ubuntu 18.04, install the latest version of [Visual Studio Code](https://code.visualstudio.com/?WT.mc_id=github-blog-dglover) and the [Azure Sphere Extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.azure-sphere-tools&WT.mc_id=github-blog-dglover).
+The following is the recommended software for Windows 10 and Ubuntu 18.04.
+
+### Windows 10 Recommended Software
+
+1. [Visual Studio (The free Community Edition or better)](https://visualstudio.microsoft.com/vs/?WT.mc_id=github-blog-dglover) is recommended
+2. [Azure Sphere SDK for Visual Studio](https://docs.microsoft.com/en-au/azure-sphere/install/install-sdk#azure-sphere-sdk-for-visual-studio)
+3. [Git for Windows](https://git-scm.com/downloads)
+4. [Install Azure Sphere drivers for Windows](https://docs.microsoft.com/en-au/azure-sphere/install/install-sdk#set-up-your-dev-kit-on-a-windows-pc)
+
+### Ubuntu 18.04 Recommended Software
+
+1. [Visual Studio Code](https://code.visualstudio.com/?WT.mc_id=github-blog-dglover)
+2. [Azure Sphere Extension for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=ms-vscode.azure-sphere-tools&WT.mc_id=github-blog-dglover).
+3. [Install the Azure Sphere SDK on Linux](https://docs.microsoft.com/en-au/azure-sphere/install/install-sdk-linux)
+4. [Set up your Linux system for app development](https://docs.microsoft.com/en-au/azure-sphere/install/development-environment-linux)
+4. Install Git support ```apt install git```.
 
 ---
 
@@ -68,7 +83,7 @@ git clone https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git Azure-Sph
 
 ---
 
-## Step 3: Azure Learning Path Directory Layout
+## Step 3: Review the Azure Learning Path Directory Layout
 
 The labs support the three currently available developer kits from Avnet and Seeed Studio.
 
@@ -83,19 +98,15 @@ Lab directories are named by Azure Sphere device manufacturer.
 
 ---
 
-## Step 4: Install the Azure Sphere SDK and Developer Tools
-
-Follow the Azure Sphere [Overview of set up procedures](https://docs.microsoft.com/en-au/azure-sphere/install/overview?WT.mc_id=github-blog-dglover) guide.
-
-## Step 5: Claim your device
+## Step 4: Claim your Azure Sphere
 
 Skip this step if you are using a lab device or you have already claimed.
 
-[Claim your device](https://docs.microsoft.com/en-au/azure-sphere/install/claim-device?WT.mc_id=github-blog-dglover)
+[Claim your Azure Sphere device](https://docs.microsoft.com/en-au/azure-sphere/install/claim-device?WT.mc_id=github-blog-dglover)
 
-## Step 6: Configure Network
+## Step 5: Configure the Azure Sphere WiFi Networking
 
-[Configure WiFi Settings](https://docs.microsoft.com/en-au/azure-sphere/install/configure-wifi?WT.mc_id=github-blog-dglover)
+[Configure the Azure Sphere WiFi Settings](https://docs.microsoft.com/en-au/azure-sphere/install/configure-wifi?WT.mc_id=github-blog-dglover)
 
 ---
 
