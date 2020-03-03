@@ -219,7 +219,7 @@ DirectMethodBinding* directMethodBinding[] = { &feedFish, &SetFanSpeedDirectMeth
 ### Support for Azure IoT Central Commands
 
 1. Again, in the **main.c** file
-2. Scroll down to the line that reads **static DirectMethodPeripheral fan**
+2. Scroll down to the line that reads **static DirectMethodBinding fan**
 3. This data structure describes a generalized peripheral and what Azure IoT Central Device **Command** this peripheral is associated with.  Azure IoT Central device commands are implemented as Azure IoT Direct Methods.
 
     ```c
@@ -259,7 +259,7 @@ DirectMethodBinding* directMethodBinding[] = { &feedFish, &SetFanSpeedDirectMeth
 
 1. Again, in **main.c**.
 2. Scroll up to the line that reads **#pragma region define sets for auto initialization and close**
-3. In this region, there are several arrays that point to the **DeviceTwinBindings** and **DirectMethodPeripherals** defined above.
+3. In this region, there are several arrays that point to the **DeviceTwinBindings** and **DirectMethodBinding** defined above.
     ```c
     DeviceTwinBinding* deviceTwinBindings[] = { &relay, &light };
     DirectMethodBinding* directMethodBindings[] = { &fan };

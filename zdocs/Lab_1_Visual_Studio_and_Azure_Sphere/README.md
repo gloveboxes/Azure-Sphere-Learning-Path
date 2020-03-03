@@ -325,6 +325,12 @@ Set a debugger breakpoint by clicking in the margin to the left of the line of c
 
 ---
 
+## Close Visual Studio
+
+Now close **Close Visual Studio**.
+
+---
+
 ## Finished 完了 fertig finito ख़त्म होना terminado
 
 Congratulations, you secured, built, deployed and debugged your first Azure Sphere application.

@@ -67,8 +67,6 @@ We are going to create an Azure IoT Central application from an application temp
 
 ---
 
-## Open Lab 2
-
 ## Step 1: Create an Azure IoT Central Application
 
 For this lab, we are going to create an Azure IoT Central Application from a predefined template.
@@ -137,7 +135,15 @@ Your Azure Sphere device needs the following information to connect to Azure IoT
 
 1. Your Azure Sphere **Tenant ID**.
 
-    From the **Azure Sphere Developer Command Prompt**, run **```azsphere tenant show-selected```**. **Copy** the Tenant ID to **notepad** as you will need it later.
+    From the **Azure Sphere Developer Command Prompt**, run **```azsphere tenant show-selected```**. 
+
+    The output of this command will look similar to the following. **The Tenant ID** is the numeric value.
+
+    ```text
+    Default Azure Sphere tenant ID is 'yourSphereTenant' (99999999-e021-43ce-9999-fa9999499994).
+    ```    
+
+2. **Copy** the Tenant ID to **notepad** as you will need it later.
 2. Your Azure IoT Central Device Provisioning Service information.
 
     1. From the **Azure Sphere Developer Command Prompt**, navigate to the folder you cloned the **Azure Sphere** lab into.
@@ -164,6 +170,8 @@ Your Azure Sphere device needs the following information to connect to Azure IoT
 <!-- **[Next Step: Configure Visual Studio App Deployment Settings](README.md#configure-visual-studio-app-deployment-settings)** -->
 
 ---
+
+## Open Lab 2
 
 ### Step 1: Start Visual Studio 2019
 
@@ -209,6 +217,8 @@ Your Azure Sphere device needs the following information to connect to Azure IoT
         "ApplicationType": "Default"
     }
     ```
+
+4. **Note**, copy the contents of the **app_manifest.json** file to **notepad** as you will need this configuration information for the next labs.
 
 ---
 
@@ -267,6 +277,10 @@ You may need to wait a minute or two before the telemetry is displayed on the **
 Note, you can also rename the device but clicking on the **Rename** button.
 
 ![](resources/iot-central-display-measurements.png)
+
+## Close Visual Studio
+
+Now close **Close Visual Studio**.
 
 ---
 
