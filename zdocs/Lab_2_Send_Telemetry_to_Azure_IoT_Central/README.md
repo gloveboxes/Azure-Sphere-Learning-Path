@@ -131,7 +131,14 @@ Follow these steps to get the Azure IoT Central **Scope ID**, and the **Applicat
         "AllowedConnections": [ "global.azure-devices-provisioning.net", "saas-iothub-9999999-f33a-4002-4444-7ca8989898989.azure-devices.net" ],
         "DeviceAuthentication": "--- YOUR AZURE SPHERE TENANT ID--- "
         ```
-5. **Copy the output from this command to _Notepad_** as you will need it soon.
+5. Open **Notepad**
+6. Copy **two lines** from the output of _ShowIoTCentralConfig_ to **Notepad**. The following lines are required. Note, your values will be different.
+    * ```"CmdArgs": [ "0ne9992KK6D" ]```
+    * ```"AllowedConnections": [ "global.azure-devices-provisioning.net", "saas-iothub-9999999-f33a-4002-4444-7ca8989898989.azure-devices.net" ]```
+
+    The **CmdArgs** value is the **Scope ID** of your Azure IoT Central Application. The **Allowed connections** values includes the global URI for the Device Provision Service, followed by the your **Azure IoT Central Application URI**.
+
+5. **Copy these two lines to _Notepad_** as you will need it soon.
 
 ### Azure Sphere Tenant ID
 
