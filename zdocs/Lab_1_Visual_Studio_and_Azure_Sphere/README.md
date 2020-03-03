@@ -245,7 +245,7 @@ From Visual Studio open the **app_manifest.json** file.
 
 This application can only access the resources listed in the **Capabilities** section.
 
-**Note**, the resource names and capabilities will differ depending on the Azure Sphere device you are using. The following example uses the Avnet Azure Sphere resource names.
+**Note**, the following example is for the Avnet Azure Sphere device. The resource names and capabilities will differ depending on the Azure Sphere device you are using.
 
 ```json
   "Capabilities": {
