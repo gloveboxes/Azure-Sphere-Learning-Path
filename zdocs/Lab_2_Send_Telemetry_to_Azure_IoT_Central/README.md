@@ -138,8 +138,6 @@ Follow these steps to get the Azure IoT Central **Scope ID**, and the **Applicat
 
     The **CmdArgs** value is the **Scope ID** of your Azure IoT Central Application. The **Allowed connections** values includes the global URI for the Device Provision Service, followed by the your **Azure IoT Central Application URI**.
 
-5. **Copy these two lines to _Notepad_** as you will need it soon.
-
 ### Azure Sphere Tenant ID
 
 1. From the **Azure Sphere Developer Command Prompt**, run **```azsphere tenant show-selected```**.
