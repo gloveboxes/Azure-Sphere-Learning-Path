@@ -103,12 +103,12 @@ Your Azure Sphere device needs the following information to connect to Azure IoT
 1. Your Azure Sphere **Tenant ID**.
 
     * From the **Azure Sphere Developer Command Prompt**, run **```azsphere tenant show-selected```**.
-    * The **Tenant ID** is the numeric value inside the parentheses.
     * The output of this command will look similar to the following.
-
         ```text
         Default Azure Sphere tenant ID is 'yourSphereTenant' (99999999-e021-43ce-9999-fa9999499994).
         ```
+    * The **Tenant ID** is the numeric value inside the parentheses.
+
 
 2. **Copy the Tenant ID to _Notepad_** as you will need it soon.
 3. Your **Azure IoT Central Device Provisioning Service** configuration information.
