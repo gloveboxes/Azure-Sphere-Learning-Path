@@ -92,40 +92,7 @@ When you have connected your Azure Sphere to Azure IoT Central you will be able 
 
 You must **link** your Azure IoT Central Application with the Azure Sphere Tenant that your Azure Sphere was claimed into.
 
-**Right mouse click, and open in a new tab the [instructions to set up Azure IoT Central to work with Azure Sphere](https://docs.microsoft.com/en-au/azure-sphere/app-development/setup-iot-central?WT.mc_id=github-blog-dglover)**.
-
-<!-- ### Step 3: Connect Azure IoT Central to your Azure Sphere Tenant
-
-### Step 4: Start the Azure Sphere Developer Command Prompt
-
-1. Press the <kbd>Windows key</kbd>
-2. Start typing **Azure Sphere Developer Command Prompt**
-3. Select and start the **Azure Sphere Developer Command Prompt**. -->
-
-<!-- ### Step 5: Get the Azure Sphere Device ID
-
-From the Azure Sphere Developer Command Prompt run the following command.
-
-```bash
-azsphere device show-attached
-```
-
-Note: The Create New Device dialog box in Azure IoT Central requires that the device ID be in lowercase characters. From the Azure Sphere Developer Command Prompt, enter the following command, which gets the ID of the attached device and converts it to lowercase:
-
-```bash
-powershell -Command ((azsphere device show-attached)[0] -split ': ')[1].ToLower()
-```
-
-#### Switch back to Azure IoT Central Web Portal
-
-1. Select Devices from the side menu, then the Device Template previously created.
-![](resources/iot-central-create-device.png)
-2. Click **+ New** to add a new device
-
-    Paste in the **device ID** you generated with the PowerShell command into the **Device ID** field and give your device a friendly name.
-
-![](resources/iot-central-create-new-device.png)
-3. Click **Create** to create the new device. -->
+**Right mouse click, and open in a new tab the [instructions to set up Azure IoT Central to work with Azure Sphere](https://docs.microsoft.com/en-au/azure-sphere/app-development/setup-iot-central?WT.mc_id=github-blog-dglover#step-2-download-the-tenant-authentication-ca-certificate)**.
 
 ---
 
@@ -135,22 +102,24 @@ Your Azure Sphere device needs the following information to connect to Azure IoT
 
 1. Your Azure Sphere **Tenant ID**.
 
-    From the **Azure Sphere Developer Command Prompt**, run **```azsphere tenant show-selected```**. 
+    From the **Azure Sphere Developer Command Prompt**, run **```azsphere tenant show-selected```**.
 
-    The output of this command will look similar to the following. **The Tenant ID** is the numeric value.
+    The output of this command will look similar to the following. The **Tenant ID** is the numeric value.
 
     ```text
     Default Azure Sphere tenant ID is 'yourSphereTenant' (99999999-e021-43ce-9999-fa9999499994).
-    ```    
+    ```
 
-2. **Copy** the Tenant ID to **notepad** as you will need it later.
-2. Your Azure IoT Central Device Provisioning Service information.
+2. **Copy the Tenant ID to _Notepad_** as you will need it soon.
+3. Your **Azure IoT Central Device Provisioning Service** configuration information.
 
     1. From the **Azure Sphere Developer Command Prompt**, navigate to the folder you cloned the **Azure Sphere** lab into.
 
     2. Change to the **tools** folder and run **```ShowIoTCentralConfig.exe```**
 
-        When prompted, log in with your **Azure IoT Central credentials**. **Copy** the output of this command to **notepad**.
+        When prompted, log in with your **Azure IoT Central credentials**.
+
+        The output from the _ShowIoTCentralConfig_ will be similar to the following.
 
         ```text
         Are you using a Work/School account to sign in to your IoT Central Application (Y/N) ?
@@ -163,11 +132,10 @@ Your Azure Sphere device needs the following information to connect to Azure IoT
         Find and modify the following lines in your app_manifest.json:
         "CmdArgs": [ "0ne9992KK6D" ],
         "AllowedConnections": [ "global.azure-devices-provisioning.net", "saas-iothub-9999999-f33a-4002-4444-7ca8989898989.azure-devices.net" ],
-        "DeviceAuthentication": "--- YOUR AZURE SPHERE TENANT ID--- ",
+        "DeviceAuthentication": "--- YOUR AZURE SPHERE TENANT ID--- "
         ```
-
-
-<!-- **[Next Step: Configure Visual Studio App Deployment Settings](README.md#configure-visual-studio-app-deployment-settings)** -->
+        
+    3. **Copy** the output of this command from the _Azure Sphere Command Prompt_ to **notepad**.
 
 ---
 
@@ -193,9 +161,9 @@ Your Azure Sphere device needs the following information to connect to Azure IoT
 
 2.  Update the **app_manifest.json** with the information you saved to **notepad**:
 
-    * **CmdArgs**: Update with your Azure IoT Central Scope ID.    
+    * **CmdArgs**: Update with your Azure IoT Central Scope ID.
     * **AllowedConnections**: Update with your Azure IoT Central Application URI.
-    * **DeviceAuthentication**: Your Azure Sphere Tenant ID
+    * **DeviceAuthentication**: Your Azure Sphere Tenant ID. Remember, this was the numeric value output from the ```azsphere tenant show-selected``` command.
 
 3. Review your **manifest_app.json** file. It should look similar to the following when you have updated it.
 
@@ -218,7 +186,7 @@ Your Azure Sphere device needs the following information to connect to Azure IoT
     }
     ```
 
-4. **Note**, copy the contents of the **app_manifest.json** file to **notepad** as you will need this configuration information for the next labs.
+4. **Important**. Copy the contents of the **app_manifest.json** file to **notepad** as you will need this configuration information for the next labs.
 
 ---
 
@@ -262,10 +230,12 @@ To start the build, deploy, debug process, either click the Visual Studio **Star
 ## Migrate your device to an Azure IoT Central Template
 
 1. Open the Azure IoT Central Application you created.
-2. Open the **Devices** tab. There should be a new device listed with a numeric name. This numeric name is the ID of your Azure Sphere Device. You can check this by running the  ```azsphere device show``` command from the *Azure Sphere Command Prompt*.
-3. Select this new device and click **Migrate**
+2. For the next steps, you may need to **wait a minute or two** for **Azure IoT Central** to be updated.
+3. Open the **Devices** tab. You may need to wait a minute or two, but eventually there will be a new device listed with a numeric name. 
+This numeric name is the ID of your Azure Sphere Device. You can check this by running the  ```azsphere device show``` command from the *Azure Sphere Command Prompt*.
+4. Select this new device and click **Migrate**
     ![](resources/iot-central-migrate-device.png)
-3. Migrate the Azure Sphere device to the **Azure Sphere** Template
+5. Migrate the Azure Sphere device to the **Azure Sphere** Template
     ![](resources/iot-central-migrate-select-template.png)
 
 ---
