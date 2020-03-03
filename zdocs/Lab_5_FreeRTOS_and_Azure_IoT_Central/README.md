@@ -134,4 +134,8 @@ From Visual Studio open the **app_manifest.json** file.
     "Gpio": [ 10, 12 ],
     "AllowedApplicationConnections": [ "25025d2c-66da-4 -->
 
+---
+
 **[NEXT](../Lab_6_Mass_Device_Deployment/README.md)**
+
+---

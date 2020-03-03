@@ -289,3 +289,5 @@ Congratulations you have finished Lab 2.
 ---
 
 **[NEXT](../Lab_3_Control_Device_with_Device_Twins_and_Direct_Methods/README.md)**
+
+---

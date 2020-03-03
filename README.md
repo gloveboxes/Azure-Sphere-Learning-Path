@@ -155,10 +155,6 @@ These labs support the following Azure Sphere Kits.
 
 ---
 
-**[Next](zdocs/Lab_0_Introduction_and_Lab_Set_Up/README.md)**
-
----
-
 ## Appendix
 
 ### Learn about Azure Sphere
@@ -170,3 +166,10 @@ These labs support the following Azure Sphere Kits.
 1. [Tech Communities Blog](https://techcommunity.microsoft.com/t5/internet-of-things/bg-p/IoTBlog?WT.mc_id=github-blog-dglover)
 1. The [Azure IoT Central Sample](https://github.com/Azure/azure-sphere-samples/blob/master/Samples/AzureIoT/IoTCentral.md)
 1. [Azure Sphere Wiki](https://en.wikipedia.org/wiki/Azure_Sphere)
+
+
+---
+
+**[Next](zdocs/Lab_0_Introduction_and_Lab_Set_Up/README.md)**
+
+---

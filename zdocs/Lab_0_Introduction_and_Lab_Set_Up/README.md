@@ -129,10 +129,6 @@ As of March 2020, your device should be version **20.01** or better.
 
 ---
 
-**[NEXT](../Lab_1_Visual_Studio_and_Azure_Sphere/README.md)**
-
----
-
 ## Appendix
 
 ### Azure Sphere Developer Kit Reference Documentation
@@ -142,3 +138,9 @@ As of March 2020, your device should be version **20.01** or better.
 * [Grove Starter Kit for Azure Sphere MT3620 Development Kit](http://wiki.seeedstudio.com/Grove_Starter_Kit_for_Azure_Sphere_MT3620_Development_Kit/)
 * [Seeed Studio Azure Sphere MT3620 Mini Dev Board](http://wiki.seeedstudio.com/MT3620_Mini_Dev_Board/)
 * [MT3620 Grove Breakout](http://wiki.seeedstudio.com/MT3620_Grove_Breakout/)
+
+---
+
+**[NEXT](../Lab_1_Visual_Studio_and_Azure_Sphere/README.md)**
+
+---

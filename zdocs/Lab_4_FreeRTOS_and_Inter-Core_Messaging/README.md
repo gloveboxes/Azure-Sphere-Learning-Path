@@ -144,4 +144,8 @@ From Visual Studio open the **app_manifest.json** file.
     "AllowedApplicationConnections": [ "25025d2c-66da-4
 ```
 
+---
+
 **[NEXT](../Lab_5_FreeRTOS_and_Azure_IoT_Central/README.md)**
+
+---

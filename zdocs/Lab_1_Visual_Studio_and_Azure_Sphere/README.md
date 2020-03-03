@@ -340,3 +340,5 @@ Congratulations, you secured, built, deployed and debugged your first Azure Sphe
 ---
 
 **[NEXT](../Lab_2_Send_Telemetry_to_Azure_IoT_Central/README.md)**
+
+---

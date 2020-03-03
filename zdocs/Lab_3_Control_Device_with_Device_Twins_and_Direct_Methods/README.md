@@ -341,4 +341,8 @@ Congratulations you have finished lab 3.
 
 ![](resources/finished.jpg)
 
+---
+
 **[NEXT](../Lab_4_FreeRTOS_and_Inter-Core_Messaging/README.md)**
+
+---
