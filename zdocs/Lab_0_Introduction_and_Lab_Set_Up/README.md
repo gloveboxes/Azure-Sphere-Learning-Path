@@ -108,9 +108,25 @@ You **cannot move** the device to another Azure Tenant once it has been claimed.
 
 [Claim your Azure Sphere device](https://docs.microsoft.com/en-au/azure-sphere/install/claim-device?WT.mc_id=github-blog-dglover)
 
+---
+
 ## Step 5: Configure the Azure Sphere WiFi Networking
 
 [Configure the Azure Sphere WiFi Settings](https://docs.microsoft.com/en-au/azure-sphere/install/configure-wifi?WT.mc_id=github-blog-dglover)
+
+---
+
+## Step 6: Ensure Azure Sphere OS Updated
+
+As of March 2020, your device should be version 20.01 or better.
+
+1. Start the **Azure Sphere Developer Command Prompt**
+	1. Press the <kbd>Windows Key</kbd>
+	2. Start typing **Azure Sphere Developer Command Prompt**
+	3. Select and start the **Azure Sphere Developer Command Prompt**.
+2. Check the device OS version ```azsphere dev show-os-version```
+3. If the device is not up to date, then restart the device ```azsphere dev restart```. This will trigger an update.
+4. It will take a few minutes for the update to be applied. Then recheck the OS version ```azsphere dev show-os-version```.
 
 ---
 
