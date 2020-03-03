@@ -162,7 +162,7 @@ DirectMethodBinding* directMethodBinding[] = { &feedFish, &SetFanSpeedDirectMeth
 ### Step 3: Configure the Azure IoT Central Connection Information
 
 1. Open the **app_manifest.json** file
-2. You will need to redo the settings for the **app_manifest.json** file. Either copy from notepad if you still have open or copy from the **app_manifest.json** file you created in lab 2.
+2. You will need to redo the settings for the **app_manifest.json** file. Either copy from **Notepad** if you still have open or copy from the **app_manifest.json** file you created in lab 2.
 
     ![](resources/visual-studio-open-app-manifest.png)
 
@@ -174,8 +174,6 @@ DirectMethodBinding* directMethodBinding[] = { &feedFish, &SetFanSpeedDirectMeth
 
 1. Open the **main.c** file
 2. Scroll down to the line that reads **static DeviceTwinBinding relay**
-3. This data structure describes a generalized peripheral and what Azure IoT Central Device **Properties** this peripheral is associated with.  Azure IoT Central device settings are implemented as Azure IoT Device Twins.
-
     ```c
     static DeviceTwinBinding relay = {
         .peripheral = {
@@ -185,7 +183,11 @@ DirectMethodBinding* directMethodBinding[] = { &feedFish, &SetFanSpeedDirectMeth
         .handler = DeviceTwinHandler
     };
     ```
-4. Scroll down a towards the end of main.c and review the implementation of the C Function **DeviceTwinHandler**.
+3. This data structure describes the Device Twin. Defined is the Azure IoT Central Device **Property** this peripheral is associated with, the data type, and the **handler**, in this case, named **DeviceTwinHandler**. The handler is the name of the C function that will be called when the device receives a property update from Azure IoT Central.
+4. Right mouse click on **DeviceTwinHandler**, and select **Go To Definition**.
+    ![](resources/visual-studio-go-to-definition.png)
+5. This will jump you to the function named **DeviceTwinHandler**. Review the implementation of the handler.
+
     ```c
     static void DeviceTwinHandler(DeviceTwinBinding* DeviceTwinBinding) {
         switch (DeviceTwinBinding->twinType)
@@ -228,7 +230,8 @@ DirectMethodBinding* directMethodBinding[] = { &feedFish, &SetFanSpeedDirectMeth
         .handler = SetFanSpeedDirectMethod
     };
     ```
-4. Scroll down to the end of main.c and review the C Function **SetFanSpeedDirectMethod**.
+
+4. Again, right mouse click the **SetFanSpeedDirectMethod** handler, and select **Go To Definition**, and review the handler implementation.
 
     ```c
     static MethodResponseCode SetFanSpeedDirectMethod(JSON_Object* json, DirectMethodBinding* directMethodBinding) {
@@ -300,7 +303,7 @@ To start the build, deploy and debug process, either click the Visual Studio **S
 
 ---
 
-## Test the Solution
+## Test Azure IoT Central Property Updates
 
 Now the application is running on the Azure Sphere switch across to Azure IoT Central, select the **Devices** tab, then the **Azure Sphere** template, then the actual device.
 
@@ -315,6 +318,19 @@ The expected behaviour will differ depending on what Azure Sphere device you hav
 * **Azure Sphere MT3620 Starter Kit**: See that an **Orange** LED lights up on the Azure Sphere.
 * **Seeed Studio Azure Sphere MT3620 Development Kit**: See that a **Red** LED lights up on the Azure Sphere.
 * **Seeed Studio Azure Sphere MT3620 Mini Dev Board**: See that a **Green** LED lights up on the Azure Sphere.
+
+---
+
+## Test Azure IoT Central Commands
+
+1. With the application still is running on the Azure Sphere, select the Azure IoT Central **Commands** tab.
+2. Set the fan speed to 30 and click **Run**.
+    ![](resources/iot-central-device-command-run.png)
+3. Click the **View History** button
+    ![](resources/iot-central-device-command-view-history.png)
+4. The command histor will be similar to the following:
+    ![](resources/iot-central-device-commands-view-history.png)
+5. Try testing with numbers great that 100, and review the command history.
 
 ---
 
