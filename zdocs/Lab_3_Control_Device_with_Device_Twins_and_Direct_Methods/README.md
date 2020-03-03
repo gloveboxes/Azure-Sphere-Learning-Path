@@ -73,7 +73,9 @@ For more information refer to the [Understand and invoke direct methods from IoT
 
 In **main.c** there is a variable declared named **light** of type **DeviceTwinBinding**. Variables of type **DeviceTwinBinding** declare a generalized model to define the relationship between an Azure IoT Device Twin and optionally a Peripheral.
 
-The following example associates an Azure IoT Device Twin named **led1**, of type **TYPE_BOOL**, with a GPIO peripheral, that will invoke a handler function named **DeviceTwinHandler**. The implementation of the handler is in **main.c**, and the implementation for TYPE_BOOL will toggle an LED on and off.
+The following example associates an Azure IoT Device Twin named **led1**, of type **TYPE_BOOL**, with a GPIO **peripheral**, that will invoke a **handler** function named **DeviceTwinHandler**.
+
+The handler will be called when the Device Property is updated in Azure IoT Central, and an LED will be turned on or off.
 
 ```c
 static DeviceTwinBinding light = {
