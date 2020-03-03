@@ -245,6 +245,8 @@ From Visual Studio open the **app_manifest.json** file.
 
 This application can only access the resources listed in the **Capabilities** section.
 
+**Note**, the resource names and capabilities will differ depending on the Azure Sphere device you are using. The following example uses the Avnet Azure Sphere resource names.
+
 ```json
   "Capabilities": {
     "Gpio": [ "$AVNET_MT3620_SK_GPIO0", "$AVNET_MT3620_SK_APP_STATUS_LED_YELLOW", "$AVNET_MT3620_SK_WLAN_STATUS_LED_YELLOW" ],
