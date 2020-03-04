@@ -106,7 +106,7 @@ For this lab, we are manually creating an Azure Sphere device in Azure IoT Centr
 2. Run the **```azsphere device show-attached```** command. This returns the Azure Sphere Device Id.
 3. Next, run **```powershell -Command ((azsphere device show-attached)[0] -split ': ')[1].ToLower()```**. 
 This returns the **Device ID** and converts it to lowercase. Azure IoT Central requires device IDs to be lowercase.
-4. **Copy** the Device ID to the clipboard.
+4. **Copy** the **Device ID** to the clipboard.
 
 #### Switch back to Azure IoT Central Web Portal
 
