@@ -158,9 +158,9 @@ Peripheral* peripherals[] = { &builtinLed, &fanControl };
 
 ## Open Lab 1
 
-### Step 1: Ensure you have cloned the lab source code
+### Step 1: Ensure you are set up for the Labs
 
-Follow the [lab set-up guide](../Lab_0_Introduction_and_Lab_Set_Up/#step-2-clone-the-azure-sphere-learning-path) if you have not yet cloned the labs to your computer.
+Ensure that you have followed all the set up instructions in [lab set-up guide](../Lab_0_Introduction_and_Lab_Set_Up/#step-2-clone-the-azure-sphere-learning-path).
 
 ### Step 2: Start Visual Studio 2019
 
