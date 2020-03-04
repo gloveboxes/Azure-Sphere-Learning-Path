@@ -101,7 +101,7 @@ You must **link** your Azure IoT Central Application with the Azure Sphere Tenan
 
 ## Azure IoT Central Connection Information
 
-For this lab we are manually creating an Azure Sphere device in Azure IoT Central. In production environments you would bulk import the devices in to Azure IoT Central.
+For this lab, we are manually creating an Azure Sphere device in Azure IoT Central. In production environments, you would bulk import the devices into Azure IoT Central.
 
 ### Step 1: Create an Azure Sphere Device
 
@@ -127,7 +127,7 @@ For this lab we are manually creating an Azure Sphere device in Azure IoT Centra
     ![](resources/iot-central-create-new-device.png)
     3. Click **Create** to create the new device.
 
-### Step 2: Get Azure IoT Application URL
+### Step 2: Get the Azure IoT Application URL
 
 1. Open the newly created device by clicking on the device name.
 
