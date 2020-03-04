@@ -144,7 +144,7 @@ From the **Azure Sphere Developer Command Prompt**:
 
 1. List the existing WiFi network connections. Run **```azsphere device wifi list```**
 2. To add a new WiFi network connection. Run **```azsphere device wifi add -s <Your WiFi SSID> -p <Your WiFI Password>```**
-3. For more information on networking visit [Configure the Azure Sphere WiFi Settings](https://docs.microsoft.com/en-au/azure-sphere/install/configure-wifi?WT.mc_id=github-blog-dglover)
+3. For more information on networking, visit [Configure the Azure Sphere WiFi Settings](https://docs.microsoft.com/en-au/azure-sphere/install/configure-wifi?WT.mc_id=github-blog-dglover)
 
 ---
 
