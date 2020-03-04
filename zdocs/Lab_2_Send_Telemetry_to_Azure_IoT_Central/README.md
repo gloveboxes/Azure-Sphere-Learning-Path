@@ -238,7 +238,7 @@ To start the build, deploy, debug process, either click the Visual Studio **Star
 
 ![](resources/visual-studio-start-debug.png)
 
----
+<!-- ---
 
 ## Migrate your device to an Azure IoT Central Template
 
@@ -248,15 +248,16 @@ This numeric name is the ID of your Azure Sphere Device. You can check this by r
 4. Select this new device and click **Migrate**
     ![](resources/iot-central-migrate-device.png)
 5. Migrate the Azure Sphere device to the **Azure Sphere** Template
-    ![](resources/iot-central-migrate-select-template.png)
+    ![](resources/iot-central-migrate-select-template.png) -->
 
 ---
 
-## Azure IoT Central Dashboard
+## View the Azure IoT Central Dashboard
 
-You may need to wait a minute or two before the telemetry is displayed on the **Overview** tab.
-
-Note, you can also rename the device but clicking on the **Rename** button.
+1. Switch back to Azure IoT Central in your web browser.
+2. Ensure your device is selected.
+3. Ensure the **Overview** tab is selected.
+4. You need to wait a minute or two before the telemetry is displayed on the **Overview** tab.
 
 ![](resources/iot-central-display-measurements.png)
 
