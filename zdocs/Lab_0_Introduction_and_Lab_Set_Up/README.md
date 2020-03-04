@@ -31,7 +31,7 @@ Each module assumes you have completed the previous module.
 
 ## Prerequisites
 
-1. Computer running up to date installation of Windows 10 or Ubuntu 18.04
+1. Windows 10 Anniversary Update or later, or Ubuntu 18.04 LTS
 2. An Azure Sphere device
 
 ---
