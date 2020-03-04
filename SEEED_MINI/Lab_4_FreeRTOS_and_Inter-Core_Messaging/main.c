@@ -86,7 +86,7 @@ static uint32_t sharedBufSize = 0;
 
 #define SEEED_MINI_DK 1
 
-//#ifdef SEEED_MINI_DK
+#ifdef SEEED_MINI_DK
 static int generatePressEvent = 0;
 #endif // SEEED_MINI_DK
 
