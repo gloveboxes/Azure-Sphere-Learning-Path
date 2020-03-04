@@ -156,37 +156,6 @@ Peripheral* peripherals[] = { &builtinLed, &fanControl };
 
 ---
 
-## Enable Azure Sphere Device Development
-
-You will need the credentials for the Azure Sphere Tenant your device was claimed into.
-
-If you are using a lab device, then the lab instructor will provide you with the credentials.
-
-### Login to your Azure Sphere Tenant
-
-1. Start the **Azure Sphere Developer Command Prompt**
-	1. Press the <kbd>Windows Key</kbd>
-	2. Start typing **Azure Sphere Developer Command Prompt**
-	3. Select and start the **Azure Sphere Developer Command Prompt**.
-2. **Login to the Azure Sphere Tenant**
-
-	From the **Azure Sphere Developer Command Prompt**, run ```azsphere login```. You will be prompted for the tenant credentials.
-3. **List Azure Sphere Tenants**
-
-	From the **Azure Sphere Developer Command Prompt**, run ```azsphere tenant list```.
-4. Select the **default Azure Sphere Tenant**
-	If there is more than one tenant listed then you need to set the default tenant.
-	
-	From the **Azure Sphere Developer Command Prompt**, run ```azsphere tenant select -i <Tenant ID>```.
-
----
-
-## Enable Azure Sphere Device Debugging
-
-From the **Azure Sphere Developer Command Prompt**, run ```azsphere device enable-development``` to enable local debugging.
-
----
-
 ## Open Lab 1
 
 ### Step 1: Ensure you have cloned the lab source code
