@@ -108,9 +108,9 @@ If you are using a lab device, then the lab instructor will provide you with the
 	1. Press the <kbd>Windows Key</kbd>
 	2. Start typing **Azure Sphere Developer Command Prompt**
 	3. Select and start the **Azure Sphere Developer Command Prompt**.
-2. **Login to the Azure Sphere Tenant**
-
-	From the **Azure Sphere Developer Command Prompt**, run ```azsphere login```. You will be prompted for the tenant credentials.
+2. From the **Azure Sphere Developer Command Prompt**, run ```azsphere login```
+    
+    You will be prompted for the Azure Sphere Tenant credentials.
 
 ---
 
@@ -142,7 +142,7 @@ For more information visit [Claim your Azure Sphere device](https://docs.microso
 
 From the **Azure Sphere Developer Command Prompt**:
 
-1. List existing WiFi network connections. Run ```azsphere device wifi list```
+1. List the existing WiFi network connections. Run ```azsphere device wifi list```
 2. To add a new WiFi network connection. Run ```azsphere device wifi add -s <Your WiFi SSID> -p <Your WiFI Password>```
 3. For more information on networking visit [Configure the Azure Sphere WiFi Settings](https://docs.microsoft.com/en-au/azure-sphere/install/configure-wifi?WT.mc_id=github-blog-dglover)
 
@@ -176,11 +176,10 @@ From the **Azure Sphere Developer Command Prompt**, run ```azsphere device enabl
 
 The **Azure Sphere Developer Command Prompt** must be run as **Administrator**.
 
-1. Run **Azure Sphere Developer Command Prompt** as administrator.
-	1. Press the <kbd>Windows Key</kbd>
-	2. Start typing **Azure Sphere Developer Command Prompt**
-    ![](resources/azure-sphere-command-prompt-as-administrator.png)
-    3. Select **Run as administrator**
+1. Press the <kbd>Windows Key</kbd>
+2. Start typing **Azure Sphere Developer Command Prompt**
+![](resources/azure-sphere-command-prompt-as-administrator.png)
+3. Select **Run as administrator**
 4. Run ```azsphere device enable-development -r```
 
 ---
