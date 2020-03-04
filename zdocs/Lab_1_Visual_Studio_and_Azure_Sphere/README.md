@@ -160,7 +160,7 @@ Peripheral* peripherals[] = { &builtinLed, &fanControl };
 
 ### Step 1: Ensure Labs Set Up
 
-Ensure that you have followed all instructions in the [lab set-up guide](../Lab_0_Introduction_and_Lab_Set_Up/#step-2-clone-the-azure-sphere-learning-path).
+Ensure that you have followed all instructions in the [lab set-up guide](../Lab_0_Introduction_and_Lab_Set_Up).
 
 ### Step 2: Start Visual Studio 2019
 
