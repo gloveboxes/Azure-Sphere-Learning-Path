@@ -129,6 +129,15 @@ As of March 2020, your device should be version **20.01** or better.
 
 ---
 
+## Step 7: Prepare your Device for the labs
+
+From the **Azure Sphere Developer Command Prompt**
+
+1. Delete any existing applications on the Azure Sphere. Run ```azsphere device sideload delete```
+2. Enable Azure Sphere development. Run ```azsphere device enable-development```. If this fails then rerun the command.
+
+---
+
 ## Appendix
 
 ### Azure Sphere Developer Kit Reference Documentation
