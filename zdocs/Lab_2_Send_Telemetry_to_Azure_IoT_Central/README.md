@@ -104,24 +104,25 @@ For this lab, we are manually creating an Azure Sphere device in Azure IoT Centr
 
 1. Start the **Azure Sphere Developer Command Prompt**
 2. Run the **```azsphere device show-attached```** command. This returns the Azure Sphere Device Id.
-3. Next, run **```powershell -Command ((azsphere device show-attached)[0] -split ': ')[1].ToLower()```**. 
+3. Next, run **```powershell -Command ((azsphere device show-attached)[0] -split ': ')[1].ToLower()```**.
 This returns the **Device ID** and converts it to lowercase. Azure IoT Central requires device IDs to be lowercase.
 4. **Copy** the **Device ID** to the clipboard.
 
-#### Switch back to Azure IoT Central Web Portal
+### Step 2: Create an Azure IoT Central Device
 
-1. Select **Devices** from the side menu.
-2. Select the **Azure Sphere** device template
+1. Switch back to Azure IoT Central Web Portal
+2. Select **Devices** from the side menu.
+3. Select the **Azure Sphere** device template
     ![](resources/iot-central-create-device.png).
-3. Click **+ New** to add a new device.
-4. Paste the **Device ID** from the PowerShell command into the **Device ID** field.
-5. **Name** the Device, for example _Azure Sphere_.
-6. Click **Create** to create the new device.
+4. Click **+ New** to add a new device.
+5. Paste the **Device ID** from the PowerShell command into the **Device ID** field.
+6. **Name** the Device, for example _Azure Sphere_.
+7. Click **Create** to create the new device.
 
     ![](resources/iot-central-create-new-device.png)
 
 
-### Step 2: Get the Azure IoT Central Application URL
+### Step 3: Get the Azure IoT Central Application URL
 
 1. Open the newly created device by clicking on the device name.
 
@@ -145,7 +146,7 @@ This returns the **Device ID** and converts it to lowercase. Azure IoT Central r
 
 7. Leave this page open as you will need the Azure IoT Central Application URL soon.
 
-### Step 3: Azure Sphere Tenant ID
+### Step 4: Azure Sphere Tenant ID
 
 1. From the **Azure Sphere Developer Command Prompt**, run **```azsphere tenant show-selected```**.
     * The output of this command will look similar to the following.
