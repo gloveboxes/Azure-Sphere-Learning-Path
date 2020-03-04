@@ -130,8 +130,8 @@ For more information visit [Claim your Azure Sphere device](https://docs.microso
 
 From the **Azure Sphere Developer Command Prompt**:
 
-1. **List Azure Sphere Tenants**, run **```azsphere tenant list```**
-2. Select the **default Azure Sphere Tenant**
+1. List Azure Sphere Tenants, run **```azsphere tenant list```**
+2. Select the default Azure Sphere Tenant
 	If there is more than one tenant listed then you need to set the default tenant.
 	
 	Run **```azsphere tenant select -i <Tenant ID>```**
