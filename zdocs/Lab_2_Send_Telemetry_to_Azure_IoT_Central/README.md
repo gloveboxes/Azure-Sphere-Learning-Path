@@ -125,17 +125,11 @@ This returns the **Device ID** and converts it to lowercase. Azure IoT Central r
 ### Step 3: Get the Azure IoT Central Application URL
 
 1. Open the newly created device by clicking on the device name.
-
     ![](resources/iot-central-open-new-device.png)
-
 2. Open the Device Connection information panel by clicking on the **Connect** button.
-
     ![](resources/iot-central-open-connect.png)
-
 3. The device connection configuration will be displayed.
-
     ![](resources/iot-central-device-connection-information.png)
-
 4. **Right mouse click** and open the [Azure IoT Central Application URL](https://azuredps.z23.web.core.windows.net) in a **new browser tab**.
 
 5. Copy and paste the **Device Connection** information (Scope, Device Id, and Key) from Azure IoT Central to the **Azure IoT Central Application URL** web page.
@@ -177,16 +171,14 @@ This returns the **Device ID** and converts it to lowercase. Azure IoT Central r
 1. Open the **app_manifest.json** file
     ![](resources/visual-studio-open-app-manifest.png)
 
+2. Update the following properties using information from the **Generate Azure IoT Central Application URL** web page:
 
-2.  Update the **app_manifest.json**
+    * Update **CmdArgs** with your Azure IoT Central **Scope**.
+    * Update **AllowedConnections** with your **Azure IoT Central Application URL**.
 
-    1. From the **Generate Azure IoT Central Application URL** web page update the following properties in the app_manifest.json file.
+3. Update **DeviceAuthentication** with your **Azure Sphere Tenant ID**. Remember, this was the numeric value output from the ```azsphere tenant show-selected``` command that you copied to Notepad.
 
-        * Update **CmdArgs** with your Azure IoT Central **Scope**.
-        * Update **AllowedConnections** with your **Azure IoT Central Application URL**.
-    2. Update **DeviceAuthentication** with your **Azure Sphere Tenant ID**. Remember, this was the numeric value output from the ```azsphere tenant show-selected``` command that you copied to Notepad.
-
-3. Review your **manifest_app.json** file. It should look similar to the following when you have updated it.
+4. **Review** your manifest_app.json file. It should look similar to the following when you have updated it.
 
     ```json
     {
