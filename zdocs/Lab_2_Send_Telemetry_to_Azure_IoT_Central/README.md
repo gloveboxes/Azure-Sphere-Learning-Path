@@ -252,7 +252,7 @@ This numeric name is the ID of your Azure Sphere Device. You can check this by r
 
 ---
 
-## View the Azure IoT Central Dashboard
+## View Device Telemetry on the Azure IoT Central Dashboard
 
 1. Switch back to Azure IoT Central in your web browser.
 2. Ensure your device is selected.
