@@ -178,8 +178,8 @@ The **Azure Sphere Developer Command Prompt** must be run as **Administrator**.
 
 1. Press the <kbd>Windows Key</kbd>
 2. Start typing **Azure Sphere Developer Command Prompt**
-![](resources/azure-sphere-command-prompt-as-administrator.png)
 3. Select **Run as administrator**
+![](resources/azure-sphere-command-prompt-as-administrator.png)
 4. Run ```azsphere device enable-development -r```
 
 ---
