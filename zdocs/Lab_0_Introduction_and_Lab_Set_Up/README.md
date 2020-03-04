@@ -23,6 +23,18 @@ Each module assumes you have completed the previous module.
 
 ---
 
+## Acknowledgements
+
+### Azure Sphere Samples
+
+These **Azure Sphere Learning Path** labs build on the [Azure Sphere Samples](https://github.com/Azure/azure-sphere-samples). You will find full scenario and API coverage in the samples documentation.
+
+### Azure Sphere Documentation
+
+Full [Azure Sphere Documentation](https://azure.microsoft.com/en-au/services/azure-sphere/).
+
+---
+
 ## Troubleshooting
 
 1. If you have trouble connecting to the Azure Sphere over USB be sure to disable any VPNs you might have enabled.
