@@ -138,7 +138,7 @@ For more information visit [Claim your Azure Sphere device](https://docs.microso
 
 ---
 
-## Step 7: Configure the Azure Sphere WiFi Networking
+## Step 7: Configure the Azure Sphere WiFi Network
 
 From the **Azure Sphere Developer Command Prompt**:
 
