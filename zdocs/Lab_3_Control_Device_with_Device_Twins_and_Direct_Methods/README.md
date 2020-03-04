@@ -223,7 +223,7 @@ DirectMethodBinding* directMethodBinding[] = { &feedFish, &SetFanSpeedDirectMeth
 ### Support for Azure IoT Central Commands
 
 1. Again, in the **main.c** file
-2. Scroll down to the line that reads **static DirectMethodBinding fan**
+2. Scroll up to around line 40. The line reads **static DirectMethodBinding fan**.
 3. This data structure describes a generalized peripheral and what Azure IoT Central Device **Command** this peripheral is associated with.  Azure IoT Central device commands are implemented as Azure IoT Direct Methods.
 
     ```c
@@ -309,7 +309,7 @@ To start the build, deploy and debug process, either click the Visual Studio **S
 
 Now the application is running on the Azure Sphere switch across to Azure IoT Central, select the **Devices** tab, then the **Azure Sphere** template, then the actual device.
 
-Select the **Properties** tab and change the **Light** toggle state to **On**, then click **Update**.
+Select the **Properties** tab and change the **Light** toggle state to **On**, then click **Save**.
 
 ![iot central device settings](resources/iot-central-display-settings.png)
 
