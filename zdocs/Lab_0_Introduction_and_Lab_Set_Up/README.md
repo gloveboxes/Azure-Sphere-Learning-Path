@@ -31,7 +31,7 @@ These **Azure Sphere Learning Path** labs build on the [Azure Sphere Samples](ht
 
 ### Azure Sphere Documentation
 
-Full [Azure Sphere Documentation](https://azure.microsoft.com/en-au/services/azure-sphere/).
+Full [Azure Sphere Documentation](https://azure.microsoft.com/en-au/services/azure-sphere/?WT.mc_id=github-blog-dglover).
 
 ---
 
