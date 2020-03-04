@@ -92,10 +92,7 @@ When you have connected your Azure Sphere to Azure IoT Central you will be able 
 
 You must **link** your Azure IoT Central Application with the Azure Sphere Tenant that your Azure Sphere was claimed into.
 
-
-
-1. Right mouse click, and open in a new tab the [instructions to set up Azure IoT Central to work with Azure Sphere](https://docs.microsoft.com/en-au/azure-sphere/app-development/setup-iot-central?WT.mc_id=github-blog-dglover#step-2-download-the-tenant-authentication-ca-certificate).
-2. Complete steps 2 to 5.
+1. Right mouse click, and open in a new tab the [instructions to set up Azure IoT Central to work with Azure Sphere](https://docs.microsoft.com/en-au/azure-sphere/app-development/setup-iot-central?WT.mc_id=github-blog-dglover#step-2-download-the-tenant-authentication-ca-certificate), and complete steps 2 to 5.
 
 ---
 
@@ -105,15 +102,11 @@ For this lab, we are manually creating an Azure Sphere device in Azure IoT Centr
 
 ### Step 1: Create an Azure Sphere Device
 
-1. Start the **Azure Sphere Developer Command Prompt**, and run ```azsphere device show-attached```
+1. Start the **Azure Sphere Developer Command Prompt**
+2. Run the **```azsphere device show-attached```** command. This returns the Azure Sphere Device Id.
+3. Again,, from the **Azure Sphere Developer Command Prompt**, run **```powershell -Command ((azsphere device show-attached)[0] -split ': ')[1].ToLower()```**. This returns the Device ID and converts it to lowercase.
 
-2. From the **Azure Sphere Developer Command Prompt**, enter the following command, which returns the ID of the attached device and converts it to lowercase.
-
-    ```bash
-    powershell -Command ((azsphere device show-attached)[0] -split ': ')[1].ToLower()
-    ```
-
-    Note, Azure IoT Central requires the device IDs be lowercase.
+    **Note**, Azure IoT Central requires the device IDs be lowercase.
 
 #### Switch back to Azure IoT Central Web Portal
 
