@@ -104,19 +104,22 @@ For this lab, we are manually creating an Azure Sphere device in Azure IoT Centr
 
 1. Start the **Azure Sphere Developer Command Prompt**
 2. Run the **```azsphere device show-attached```** command. This returns the Azure Sphere Device Id.
-3. Next, run **```powershell -Command ((azsphere device show-attached)[0] -split ': ')[1].ToLower()```**. This returns the Device ID and converts it to lowercase. Azure IoT Central requires the device IDs be lowercase.
+3. Next, run **```powershell -Command ((azsphere device show-attached)[0] -split ': ')[1].ToLower()```**. 
+This returns the **Device ID** and converts it to lowercase. Azure IoT Central requires device IDs to be lowercase.
+4. **Copy** the Device ID to the clipboard.
 
 #### Switch back to Azure IoT Central Web Portal
 
-1. Select Devices from the side menu.
-2. Select the **Azure Sphere** device template.
-    ![](resources/iot-central-create-device.png)
-2. Click **+ New** to add a new device
-
-    Paste in the **device ID** you generated with the PowerShell command into the **Device ID** field and give the device a friendly name.
+1. Select **Devices** from the side menu.
+2. Select the **Azure Sphere** device template
+    ![](resources/iot-central-create-device.png).
+3. Click **+ New** to add a new device.
+4. Paste the **Device ID** from the PowerShell command into the **Device ID** field.
+5. **Name** the Device, for example _Azure Sphere_.
+6. Click **Create** to create the new device.
 
     ![](resources/iot-central-create-new-device.png)
-    3. Click **Create** to create the new device.
+
 
 ### Step 2: Get the Azure IoT Central Application URL
 
