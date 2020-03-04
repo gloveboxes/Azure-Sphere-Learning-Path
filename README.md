@@ -131,13 +131,21 @@ The **three applications cores** are as follows:
 * One ARM Cortex A7 core running Embedded Linux (built with Yokto), exposing a set of POSIX APIs. Developers can build and deploy a **High Level** application to this core. This core is also responsible for the TrustZone Security Monitor, threat detection reporting, and OS and Application life cycle management.
 * Two ARM Cortex M4Fs. Developers can build and deploy **Real Time** applications to these cores. Real Time applications can be built against the bare metal or built using  real time frameworks such as FreeRTOS, and in the future, Azure RTOS.
 
+With Visual Studio you can develop and debug applications running on all three cores. For example, you can simultaneously debug an app running on the A7 core and a M4 core FreeRTOS app.
+
 The MT3620 MCU is also known as a Crossover MCU as it bridges the application world of ARM Cortex A7 with the Real time world of ARM Cortex M4.
 
-### Firewalls
+### Security
 
 Applications on Azure Sphere are locked down by default and you must grant capabilities to the application. This is key to Azure Sphere security and is also known as the [Principle of least privilege](https://en.wikipedia.org/wiki/Principle_of_least_privilege).
 
 Capabilities, such as access to GPIO pins and network endpoint must be granted to both High Level and Real Time applications. This defends against application bugs and malicious code attacks.
+
+The chip includes a Memory Management Unit (MMU) to provide protected memory address spaces.
+
+Measured boot ensures only signed/certified OS components are loaded as part of the boot sequence.
+
+Only signed and verified apps can run on the microcontroller cores.
 
 ![Azure Sphere architecture](zdocs/resources/azure-sphere-architecture.png)
 
