@@ -50,7 +50,7 @@ If you are using a shared lab device, then the lab instructor will tell you the 
 
 ## Step 1: Software Installation
 
-The following is the recommended software for Windows 10 and Ubuntu 18.04.
+You can develop applications for Azure Sphere on Windows 10 Anniversary Update or later, or a Linux machine running Ubuntu 18.04 LTS
 
 ### Windows 10 Recommended Software
 
@@ -68,6 +68,7 @@ The following is the recommended software for Windows 10 and Ubuntu 18.04.
 4. Install Git support ```apt install git```.
 
 For complete instructions follow the Azure Sphere [Overview of set up procedures](https://docs.microsoft.com/en-au/azure-sphere/install/overview?WT.mc_id=github-blog-dglover) guide.
+
 ---
 
 ## Step 2: Clone the Azure Sphere Learning Path
@@ -121,7 +122,7 @@ If you are using a lab device, then the lab instructor will provide you with the
 
 You **cannot move** the device to another Azure Tenant once it has been claimed. However, you can add additional [users and roles](https://docs.microsoft.com/en-us/azure-sphere/deployment/add-tenant-users) to the Azure Sphere tenant, including users with Admin rights.
 
-1. From the **Azure Sphere Developer Command Prompt**, run ```azsphere device claim```.
+1. From the **Azure Sphere Developer Command Prompt**, run ```azsphere device claim```
 
 For more information visit [Claim your Azure Sphere device](https://docs.microsoft.com/en-au/azure-sphere/install/claim-device?WT.mc_id=github-blog-dglover).
 
@@ -129,11 +130,11 @@ For more information visit [Claim your Azure Sphere device](https://docs.microso
 
 1. **List Azure Sphere Tenants**
 
-	From the **Azure Sphere Developer Command Prompt**, run ```azsphere tenant list```.
+	From the **Azure Sphere Developer Command Prompt**, run ```azsphere tenant list```
 2. Select the **default Azure Sphere Tenant**
 	If there is more than one tenant listed then you need to set the default tenant.
 	
-	From the **Azure Sphere Developer Command Prompt**, run ```azsphere tenant select -i <Tenant ID>```.
+	From the **Azure Sphere Developer Command Prompt**, run ```azsphere tenant select -i <Tenant ID>```
 
 ---
 
@@ -154,8 +155,8 @@ As of March 2020, your device should be version **20.01** or better.
 From the **Azure Sphere Developer Command Prompt**:
 
 1. Check the device OS version ```azsphere dev show-os-version```
-2. If the device is not up to date, then restart the device ```azsphere dev restart```. This will trigger an update.
-3. It will take a few minutes for the update to be applied. Then recheck the OS version ```azsphere dev show-os-version```.
+2. If the device is not up to date, then restart to trigger the update process. Run ```azsphere dev restart```
+3. It will take a few minutes for the update to be applied. Then recheck the OS version ```azsphere dev show-os-version```
 
 ---
 
@@ -167,15 +168,20 @@ From the **Azure Sphere Developer Command Prompt**, run ```azsphere device sidel
 
 ## Step 10: Enable High Level Core Device Debugging
 
-From the **Azure Sphere Developer Command Prompt**, run ```azsphere device enable-development``` to enable local debugging.
+From the **Azure Sphere Developer Command Prompt**, run ```azsphere device enable-development```
 
 ---
 
 ## Step 11: Enable Real Time Core Device Debugging
 
-Start the **Azure Sphere Developer Command Prompt**  as **Administrator**
+The **Azure Sphere Developer Command Prompt** must be run as **Administrator**.
 
-Run ```azsphere device enable-development -r``` to enable local debugging.
+1. Run **Azure Sphere Developer Command Prompt** as administrator.
+	1. Press the <kbd>Windows Key</kbd>
+	2. Start typing **Azure Sphere Developer Command Prompt**
+    ![](resources/azure-sphere-command-prompt-as-administrator.png)
+    3. Select **Run as administrator**
+4. Run ```azsphere device enable-development -r```
 
 ---
 
