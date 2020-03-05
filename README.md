@@ -137,15 +137,15 @@ The MT3620 MCU is also known as a Crossover MCU as it bridges the application wo
 
 ### Security
 
-Applications on Azure Sphere are locked down by default and you must grant capabilities to the application. This is key to Azure Sphere security and is also known as the [Principle of least privilege](https://en.wikipedia.org/wiki/Principle_of_least_privilege).
+* Applications on Azure Sphere are locked down by default and you must grant capabilities to the application. This is key to Azure Sphere security and is also known as the [Principle of least privilege](https://en.wikipedia.org/wiki/Principle_of_least_privilege).
 
-Capabilities, such as access to GPIO pins and network endpoint must be granted to both High Level and Real Time applications. This defends against application bugs and malicious code attacks.
+* Capabilities, such as access to GPIO pins and network endpoint must be granted to both High Level and Real Time applications. This defends against application bugs and malicious code attacks.
 
-The chip includes a Memory Management Unit (MMU) to provide protected memory address spaces.
+* The chip includes a Memory Management Unit (MMU) to provide protected memory address spaces.
 
-Measured boot ensures only signed/certified OS components are loaded as part of the boot sequence.
+* Measured boot ensures only signed/certified OS components are loaded as part of the boot sequence.
 
-Only signed and verified apps can run on the microcontroller cores.
+* Only signed and verified apps can run on the microcontroller cores.
 
 ![Azure Sphere architecture](zdocs/resources/azure-sphere-architecture.png)
 
