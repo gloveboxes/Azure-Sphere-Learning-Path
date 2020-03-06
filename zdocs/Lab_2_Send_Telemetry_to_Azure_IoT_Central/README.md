@@ -77,12 +77,14 @@ Right mouse click [Azure Sphere Learning Path Azure IoT Central Template](https:
 
 1. Name your application
 2. Select the **Free** pricing plan
+3. Complete any required fields
+4. Click **Create** to create the Azure IoT Central Application.
 
 ![](resources/iot-central-create-from-template.png)
 
-When you have connected your Azure Sphere to Azure IoT Central you will be able to visualize the device telemetry.
+<!-- When you have connected your Azure Sphere to Azure IoT Central you will be able to visualize the device telemetry.
 
-![](resources/iot-central-azure-sphere-dashboad.png)
+![](resources/iot-central-azure-sphere-dashboad.png) -->
 
 <!-- Follow instructions to **[Create an Azure IoT Central Application](resources/azure-iot-central/azure-iot-central.md)** -->
 

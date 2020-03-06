@@ -170,8 +170,12 @@ From the **Azure Sphere Developer Command Prompt**:
     ```bash
     azsphere tenant list
     ```
+
 2. Select the default Azure Sphere Tenant
-	**If** there is more than one tenant listed then you need to set the default tenant. Run
+
+    **Skip this step if there was only one tenant listed in the previous step.**
+
+	If there is more than one tenant listed then you need to set the default tenant. You need to copy the ID from the ```azsphere tenant list``` command you ran in the previous step. Run
 
     ```bash
     azsphere tenant select -i <Tenant ID>
