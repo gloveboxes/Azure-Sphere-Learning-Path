@@ -110,13 +110,17 @@ Lab directories are named by Azure Sphere device manufacturer.
 
 ---
 
-## Step 4: Create new Tenant User
+## Step 4: Create a new Tenant User
+
+**Skip this step if you are using a lab device or you have already claimed your Azure Sphere.**
 
 ```bash
 azsphere login --newuser <email@address>
 ```
 
-## Step 5: Create new Tenant
+## Step 5: Create a new Tenant
+
+**Skip this step if you are using a lab device or you have already claimed your Azure Sphere.**
 
 ```bash
 azsphere tenant create <tenant_name>
@@ -213,11 +217,28 @@ From the **Azure Sphere Developer Command Prompt**:
     azsphere dev restart
     ```
 
-3. It will take a few minutes for the update to be applied. Then recheck the OS version **```azsphere dev show-os-version```**
+3. It will take a few minutes for the update to be applied. Then recheck the OS version.
+
+    ```bash
+    azsphere dev show-os-version
+    ```
 
 ---
 
-## Step 11: Delete any existing applications on the Azure Sphere
+## Step 11: Check WiFi Network Connection after update
+
+Check that the WiFi network connection is active.
+
+```bash
+azsphere device wifi show-status
+```
+
+If there is no network connect present then repeat step 9.
+
+
+---
+
+## Step 12: Delete any existing applications on the Azure Sphere
 
 From the **Azure Sphere Developer Command Prompt**, run
 
@@ -227,7 +248,7 @@ azsphere device sideload delete
 
 ---
 
-## Step 12: Enable High Level Core Device Debugging
+## Step 13: Enable High Level Core Device Debugging
 
 From the **Azure Sphere Developer Command Prompt**, run
 
@@ -237,7 +258,7 @@ azsphere device enable-development
 
 ---
 
-## Step 13: Enable Real Time Core Device Debugging
+## Step 14: Enable Real Time Core Device Debugging
 
 The **Azure Sphere Developer Command Prompt** must be run as **Administrator**.
 
