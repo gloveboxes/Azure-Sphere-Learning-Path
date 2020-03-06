@@ -88,11 +88,51 @@ When you have connected your Azure Sphere to Azure IoT Central you will be able 
 
 ---
 
-## Link Azure IoT Central with your Azure Sphere Tenant
+## Step 2: Set up Azure IoT Central to work with Azure Sphere
 
-You must **link** your Azure IoT Central Application with the Azure Sphere Tenant that your Azure Sphere was claimed into.
+After you have completed the tasks in this section, any device that is claimed by your Azure Sphere tenant will be automatically enrolled when it first connects to your Azure IoT Central application. Therefore, you only need to complete these steps once.
 
-1. Right mouse click, and open in a new tab the [instructions to set up Azure IoT Central to work with Azure Sphere](https://docs.microsoft.com/en-au/azure-sphere/app-development/setup-iot-central?WT.mc_id=github-blog-dglover#step-2-download-the-tenant-authentication-ca-certificate), and complete steps 2 to 5.
+### Download the tenant authentication CA certificate
+
+1. Open an **Azure Sphere Developer Command Prompt**
+2. Download the Certificate Authority (CA) certificate for your Azure Sphere tenant:
+
+    ```bash
+    azsphere tenant download-CA-certificate --output CAcertificate.cer
+    ```
+
+    The output file must have the .cer extension.
+
+### Upload the tenant CA certificate to Azure IoT Central and generate a verification code
+
+1. In Azure IoT Central, go to Administration > Device Connection > Manage primary certificate
+
+2. Click the folder icon next to the Primary box and navigate to the certificate you downloaded in Step 2. If you don't see the .cer file in the list, make sure that the view filter is set to All files (*). Select the certificate and then click the gear icon next to the Primary box.
+
+3. The Primary Certificate dialog box appears. The Subject and Thumbprint fields contain information about the current Azure Sphere tenant and primary root certificate.
+
+4. Click the Refresh icon to the right of the Verification Code box to generate a verification code. Copy the verification code to the clipboard.
+
+    ![](resources/iot-central-certificate-verify.png)
+
+### Verify the tenant CA certificate
+
+1. Return to the Azure Sphere Developer Command Prompt.
+
+2. Download a validation certificate that proves that you own the tenant CA certificate. Replace code in the command with the verification code from the previous step.
+
+    ```bash
+    azsphere tenant download-validation-certificate --output ValidationCertification.cer --verificationcode <code>
+    ```
+3. The Azure Sphere Security Service signs the validation certificate with the verification code to prove that you own the CA.
+
+### Use the validation certificate to verify the tenant identity
+
+1. Return to Azure IoT Central and click Verify.
+2. When prompted, navigate to the validation certificate that you downloaded in the previous step and select it. When the verification process is complete, the Primary Certificate dialog box displays the Verified message. Click Close to dismiss the box.
+    ![](resources/iot-central-certificate-verified.png)
+
+After you complete these steps, any device that is claimed into your Azure Sphere tenant will automatically be accessible to your Azure IoT Central application.
 
 ---
 
