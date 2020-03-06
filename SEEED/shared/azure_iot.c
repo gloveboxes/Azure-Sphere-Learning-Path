@@ -65,10 +65,15 @@ bool SendMsg(const char* msg) {
 
 	bool isNetworkReady = false;
 	if (Networking_IsNetworkingReady(&isNetworkReady) != -1) {
-		if (isNetworkReady && !iothubAuthenticated) {
-			if (!SetupAzureClient()) {
-				return false;
+		if (isNetworkReady) {
+			if (!iothubAuthenticated) {
+				if (!SetupAzureClient()) {
+					return false;
+				}
 			}
+		}
+		else {
+			Log_Debug("Network not ready\n");
 		}
 	}
 	else {
@@ -76,7 +81,7 @@ bool SendMsg(const char* msg) {
 		return false;
 	}
 
-	if (iothubAuthenticated) {
+	if (isNetworkReady && iothubAuthenticated) {
 
 		IOTHUB_MESSAGE_HANDLE messageHandle = IoTHubMessage_CreateFromString(msg);
 
