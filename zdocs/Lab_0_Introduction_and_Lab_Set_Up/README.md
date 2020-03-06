@@ -110,7 +110,19 @@ Lab directories are named by Azure Sphere device manufacturer.
 
 ---
 
-## Step 4: Login to your Azure Sphere Tenant
+## Step 4: Create new Tenant User
+
+```bash
+azsphere login --newuser <email@address>
+```
+
+## Step 5: Create new Tenant
+
+```bash
+azsphere tenant create <tenant_name>
+```
+
+## Step 5: Login to your Azure Sphere Tenant
 
 You will need the credentials for the Azure Sphere Tenant your device was claimed into.
 
@@ -120,13 +132,17 @@ If you are using a lab device, then the lab instructor will provide you with the
 	1. Press the <kbd>Windows Key</kbd>
 	2. Start typing **Azure Sphere Developer Command Prompt**
 	3. Select and start the **Azure Sphere Developer Command Prompt**.
-2. From the **Azure Sphere Developer Command Prompt**, run **```azsphere login```**
+2. From the **Azure Sphere Developer Command Prompt**, run
+
+    ```bash
+    azsphere login
+    ```
     
-    You will be prompted for the Azure Sphere Tenant credentials.
+You will be prompted for the Azure Sphere Tenant credentials.
 
 ---
 
-## Step 5: Claim your Azure Sphere
+## Step 6: Claim your Azure Sphere
 
 **Skip this step if you are using a lab device or you have already claimed your Azure Sphere.**
 
@@ -134,57 +150,94 @@ If you are using a lab device, then the lab instructor will provide you with the
 
 You **cannot move** the device to another Azure Tenant once it has been claimed. However, you can add additional [users and roles](https://docs.microsoft.com/en-us/azure-sphere/deployment/add-tenant-users) to the Azure Sphere tenant, including users with Admin rights.
 
-1. From the **Azure Sphere Developer Command Prompt**, run **```azsphere device claim```**
+1. From the **Azure Sphere Developer Command Prompt**, run 
+
+    ```bash
+    azsphere device claim
+    ```
 
 For more information visit [Claim your Azure Sphere device](https://docs.microsoft.com/en-au/azure-sphere/install/claim-device?WT.mc_id=github-blog-dglover).
 
-## Step 6: Select the default Azure Sphere Tenant
+## Step 8: Select the default Azure Sphere Tenant
 
 From the **Azure Sphere Developer Command Prompt**:
 
-1. List Azure Sphere Tenants, run **```azsphere tenant list```**
+1. List Azure Sphere Tenants, run
+    ```bash
+    azsphere tenant list
+    ```
 2. Select the default Azure Sphere Tenant
-	If there is more than one tenant listed then you need to set the default tenant.
-	
-	Run **```azsphere tenant select -i <Tenant ID>```**
+	**If** there is more than one tenant listed then you need to set the default tenant. Run
+
+    ```bash
+    azsphere tenant select -i <Tenant ID>
+    ```
 
 ---
 
-## Step 7: Configure the Azure Sphere WiFi Network
+## Step 9: Configure the Azure Sphere WiFi Network
 
 From the **Azure Sphere Developer Command Prompt**:
 
-1. List the existing WiFi network connections. Run **```azsphere device wifi list```**
-2. To add a new WiFi network connection. Run **```azsphere device wifi add -s <Your WiFi SSID> -p <Your WiFI Password>```**
-3. For more information on networking, visit [Configure the Azure Sphere WiFi Settings](https://docs.microsoft.com/en-au/azure-sphere/install/configure-wifi?WT.mc_id=github-blog-dglover)
+1. List the existing WiFi network connections. Run
+
+    ```bash
+    azsphere device wifi list
+    ```
+
+2. To add a new WiFi network connection. Run 
+
+    ```bash
+    azsphere device wifi add -s <Your WiFi SSID> -p <Your WiFI Password>
+    ```
+
+For more information on networking, visit [Configure the Azure Sphere WiFi Settings](https://docs.microsoft.com/en-au/azure-sphere/install/configure-wifi?WT.mc_id=github-blog-dglover)
 
 ---
 
-## Step 8: Ensure Azure Sphere OS Updated
+## Step 10: Ensure Azure Sphere OS Updated
 
 As of March 2020, your device should be version **20.01** or better.
 
 From the **Azure Sphere Developer Command Prompt**:
 
-1. Check the device OS version **```azsphere dev show-os-version```**
-2. If the device is not up to date, then restart to trigger the update process. Run **```azsphere dev restart```**
+1. Check the device OS version
+
+    ```bash
+    azsphere dev show-os-version
+    ```
+
+2. If the device is not up to date, then restart to trigger the update process. Run
+
+    ```bash
+    azsphere dev restart
+    ```
+
 3. It will take a few minutes for the update to be applied. Then recheck the OS version **```azsphere dev show-os-version```**
 
 ---
 
-## Step 9: Delete any existing applications on the Azure Sphere
+## Step 11: Delete any existing applications on the Azure Sphere
 
-From the **Azure Sphere Developer Command Prompt**, run **```azsphere device sideload delete```**
+From the **Azure Sphere Developer Command Prompt**, run
 
----
-
-## Step 10: Enable High Level Core Device Debugging
-
-From the **Azure Sphere Developer Command Prompt**, run ```azsphere device enable-development```
+```bash
+azsphere device sideload delete
+```
 
 ---
 
-## Step 11: Enable Real Time Core Device Debugging
+## Step 12: Enable High Level Core Device Debugging
+
+From the **Azure Sphere Developer Command Prompt**, run
+
+```bash
+azsphere device enable-development
+```
+
+---
+
+## Step 13: Enable Real Time Core Device Debugging
 
 The **Azure Sphere Developer Command Prompt** must be run as **Administrator**.
 
