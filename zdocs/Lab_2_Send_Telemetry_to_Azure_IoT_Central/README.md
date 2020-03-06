@@ -132,6 +132,7 @@ After you have completed the tasks in this section, any device that is claimed b
 
 1. Return to Azure IoT Central and click Verify.
 2. When prompted, navigate to the validation certificate that you downloaded in the previous step and select it. When the verification process is complete, the Primary Certificate dialog box displays the Verified message. Click Close to dismiss the box.
+
     ![](resources/iot-central-certificate-verified.png)
 
 After you complete these steps, any device that is claimed into your Azure Sphere tenant will automatically be accessible to your Azure IoT Central application.
