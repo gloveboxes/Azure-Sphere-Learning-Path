@@ -35,6 +35,34 @@ You will need to **copy** and **paste** the Lab 2 **app_manifest.json** you crea
 
 ---
 
+## Set Up
+
+### Step 1: FreeRTOS on the Real Time Core
+
+The **AzureSphereRTCoreToolchainVFP.cmake** file is required for Lab 4 to build the FreeRTOS example that will run on the Cortex M4 Real Time Core.
+
+You need to copy the **AzureSphereRTCoreToolchainVFP.cmake** file from Azure Sphere Learning Path directory into the system Azure Sphere SDK CMakeFiles directory. The Default path is C:\Program Files (x86)\Microsoft Azure Sphere SDK\CMakeFiles.
+
+---
+
+### Step 2: Enable Real Time Core Debugging
+
+The **Azure Sphere Developer Command Prompt** must be run as **Administrator**.
+
+1. Press the <kbd>Windows Key</kbd>
+2. Start typing **Azure Sphere Developer Command Prompt**
+3. Select **Run as administrator**
+![](resources/azure-sphere-command-prompt-as-administrator.png)
+4. Run
+
+    ```bash
+    azsphere device enable-development -r
+    ```
+
+5. Exit the command prompt, type **exit** and press return.
+
+---
+
 ## Problems Addressed in this Tutorial
 
 1. Internet enabling an existing FreeRTOS application
