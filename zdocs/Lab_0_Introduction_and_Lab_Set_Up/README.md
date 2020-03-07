@@ -127,7 +127,7 @@ azsphere login --newuser <email@address>
 azsphere tenant create <tenant_name>
 ```
 
-## Step 5: Login to your Azure Sphere Tenant
+## Step 6: Login to your Azure Sphere Tenant
 
 You will need the credentials for the Azure Sphere Tenant your device was claimed into.
 
@@ -147,7 +147,7 @@ You will be prompted for the Azure Sphere Tenant credentials.
 
 ---
 
-## Step 6: Claim your Azure Sphere
+## Step 7: Claim your Azure Sphere
 
 **Skip this step if you are using a lab device or you have already claimed your Azure Sphere.**
 
