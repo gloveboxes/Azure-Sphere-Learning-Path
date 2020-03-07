@@ -269,7 +269,7 @@ azsphere device enable-development
 
 ---
 
-## Step 14: Enable FreeRTOS on Real Time Core Development
+## Step 14: FreeRTOS on the Real Time Core
 
 The **AzureSphereRTCoreToolchainVFP.cmake** file is required for Lab 4 to build the FreeRTOS example that will run on the Cortex M4 Real Time Core.
 
