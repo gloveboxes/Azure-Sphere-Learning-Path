@@ -38,6 +38,7 @@ Full [Azure Sphere Documentation](https://azure.microsoft.com/en-au/services/azu
 ## Troubleshooting
 
 1. If you have trouble connecting to the Azure Sphere over USB be sure to disable any VPNs you might have enabled.
+2. The **TAP-Windows Adapter V9** installed with VPN clients, including OpenVPN client is not compatible with the **TAP-Windows Adapter V9** required and installed by the Azure Sphere SDK for Visual Studio. You will need to uninstall the VPN client and reinstall the Azure Sphere SDK for Visual Studio.
 
 ---
 
