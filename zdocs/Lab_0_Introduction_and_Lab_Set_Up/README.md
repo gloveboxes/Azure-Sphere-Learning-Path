@@ -268,7 +268,15 @@ azsphere device enable-development
 
 ---
 
-## Step 14: Enable Real Time Core Device Debugging
+## Step 14: Enable FreeRTOS on Real Time Core Development
+
+The **AzureSphereRTCoreToolchainVFP.cmake** file is required for Lab 4 to build the FreeRTOS example that will run on the Cortex M4 Real Time Core.
+
+You need to copy the **AzureSphereRTCoreToolchainVFP.cmake** file from Azure Sphere Learning Path directory into the system Azure Sphere SDK CMakeFiles directory. The Default path is C:\Program Files (x86)\Microsoft Azure Sphere SDK\CMakeFiles.
+
+---
+
+## Step 15: Enable Real Time Core Debugging
 
 The **Azure Sphere Developer Command Prompt** must be run as **Administrator**.
 
@@ -281,6 +289,8 @@ The **Azure Sphere Developer Command Prompt** must be run as **Administrator**.
     ```bash
     azsphere device enable-development -r
     ```
+
+5. Exit the command prompt, type **exit** and press return.
 
 ---
 
