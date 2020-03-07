@@ -73,7 +73,7 @@ bool SendMsg(const char* msg) {
 			}
 		}
 		else {
-			Log_Debug("Network not ready\n");
+			Log_Debug("\nNetwork not ready.\nFrom azure sphere command prompt, run azsphere device wifi show-status\n\n");
 		}
 	}
 	else {
