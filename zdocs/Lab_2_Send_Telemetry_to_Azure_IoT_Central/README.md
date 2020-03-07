@@ -141,7 +141,7 @@ After you complete these steps, any device that is claimed into your Azure Spher
 
 ## Azure IoT Central Connection Information
 
-For this lab, we are manually creating an Azure Sphere device in Azure IoT Central. In production environments, you would bulk import the devices into Azure IoT Central.
+For this lab, we are manually creating an Azure Sphere device in Azure IoT Central so we are able to get the Azure IoT Central Application URL.
 
 ### Step 1: Create an Azure Sphere Device
 
