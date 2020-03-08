@@ -53,15 +53,15 @@ Updated: Added blink and inter-core communications
 #include "os_hal_uart.h"
 
 #include "semphr.h"
-#include "../shared/Hardware/mt3620_rdb/inc/hw/mt3620_rdb.h"
+#include "../shared/Hardware/seeed_mt3620_mdb/inc/hw/seeed_mt3620_mdb.h"
 
 
 /******************************************************************************/
 /* Configurations */
 /******************************************************************************/
 
-#define BUILTIN_LED MT3620_GPIO10
-#define BUTTON_A MT3620_GPIO12
+#define BUILTIN_LED AILINK_WFM620RSC1_PIN15_GPIO33
+#define BUTTON_A AILINK_WFM620RSC1_PIN16_GPIO35
 #define UART_PORT_NUM OS_HAL_UART_ISU0
 
 #define APP_STACK_SIZE_BYTES (1024 / 4)
