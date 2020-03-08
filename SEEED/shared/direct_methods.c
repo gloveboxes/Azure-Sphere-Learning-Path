@@ -77,7 +77,7 @@ int AzureDirectMethodHandler(const char* method_name, const unsigned char* paylo
 		}
 	}
 
-	if (directMethodBinding != NULL) {	// was a DirectMethodBinding found
+	if (directMethodBinding != NULL && directMethodBinding->handler != NULL) {	// was a DirectMethodBinding found
 		MethodResponseCode responseCode = directMethodBinding->handler(jsonObject, directMethodBinding);
 
 		result = (int)responseCode;
