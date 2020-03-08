@@ -43,6 +43,16 @@ You will need to **copy** and **paste** the Lab 2 **app_manifest.json** you crea
 
 ## Tutorial Overview
 
+There are three ways that Azure IoT cloud applications can communicate with devices. 
+
+[Direct Methods](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods) for communications that require immediate confirmation of the result. Direct methods are often used for interactive control of devices such as turning on a fan.
+
+[Device Twins](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins) for long-running commands intended to put the device into a certain desired state. For example, set the telemetry send interval to 30 minutes.
+
+[Cloud-to-device](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-messages-c2d) messages for one-way notifications to the device app.
+
+This lab will cover Azure Iot Device Twins and Direct Methods.
+
 ---
 
 ## Key Concepts
