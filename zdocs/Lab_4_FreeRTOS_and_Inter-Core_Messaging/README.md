@@ -7,7 +7,7 @@
 |Author|[Dave Glover](https://developer.microsoft.com/en-us/advocates/dave-glover?WT.mc_id=github-blog-dglover), Microsoft Cloud Developer Advocate, [@dglover](https://twitter.com/dglover) |
 |:----|:---|
 |Source Code | https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git |
-|Date| January  2020|
+|Date| March  2020|
 
 ---
 
@@ -29,13 +29,13 @@ Each module assumes you have completed the previous module.
 
 ## What you will learn
 
-You will learn how to deploy a [FreeRTOS](https://www.freertos.org/) application to an Azure Sphere Cortex M4 Real Time core.
+You will learn how to deploy a [FreeRTOS](https://www.freertos.org/) application to an Azure Sphere Cortex M4 Real-Time core.
 
-You can run Bare Metal applications or applications built on Real Time frameworks such as FreeRTOS and Azure RTOS on the Azure Sphere Real Time cores.
+You can run Bare Metal applications or applications built on Real-Time frameworks such as FreeRTOS and Azure RTOS on the Azure Sphere Real-Time cores.
 
-The primary reason you would run an application on a Real Time core is when you need precise or highly deterministic timing. For example, you have a sensor driver that requires precise timing.
+The primary reason you would run an application on a Real-Time core is when you need precise or highly deterministic timing. For example, you have a sensor driver that requires precise timing.
 
- For security, applications running on Real Time cores do not have direct internet access. They communicate with the internet via a High Level application.
+ For security, applications running on Real-Time cores do not have direct internet access. They communicate with the internet via a High-Level application.
 
  In this lab, you will also learn about **Inter-Core** messaging.
 
@@ -45,26 +45,26 @@ The primary reason you would run an application on a Real Time core is when you 
 
 This lab assumes you have completed [Lab 2: Send Telemetry from an Azure Sphere to Azure IoT Central](https://github.com/gloveboxes/Azure-Sphere-Learning-Path/tree/master/Lab%202%20-%20Send%20Telemetry%20from%20an%20Azure%20Sphere%20to%20Azure%20IoT%20Central). You will have created an Azure IoT Central application, connected Azure IoT Central to your Azure Sphere Tenant and you have configured the **app_manifest.json** for the Azure Device Provisioning Service.
 
-You will need to **copy** and **paste** the Lab 2 **app_manifest.json** you created and copied to Notepad to this labs **app_manifest.json** file.
+You will need to **copy** and **paste** the Lab 2 **app_manifest.json** you created and copied to Notepad to this lab's **app_manifest.json** file.
 
 ---
 
 ## Tutorial Overview
 
-1. Enable Real Time core development
+1. Enable Real-Time core development
 2. Deploy your first FreeRTOS Application to Azure Sphere.
 
 ---
 
 ## Key Concepts
 
-In this lab you will learn how to secure, deploy and debug a **Real-Time** FreeRTOS application running on one of the Azure Sphere **Cortex M4** Real-Time cores.
+In this lab, you will learn how to secure, deploy, and debug a **Real-Time** FreeRTOS application running on one of the Azure Sphere **Cortex M4** Real-Time cores.
 
 As a reminder, the Azure Sphere has three application cores. The Cortex A7 runs High-Level applications, the two Cortex M4s run Real-Time applications.
 
 Like High-Level applications, Real-Time core applications are locked down by default, so you need to grant permissions to access hardware resources.
 
-For security, applications running on Real-Time cores cannot connect directly to **any** networks.
+For security, applications running on Real-Time cores cannot connect directly to **any** network.
 
 In this lab and the next, you will learn about  **Inter-Core** messaging. Inter-Core messaging provides a secure channel for applications running on different cores to communicate.
 
@@ -76,7 +76,7 @@ The
 
 The FreeRTOS application will send **Button Pressed** events to the **Partner** High-Level application. The High-Level application will then forward the events to Azure IoT Central on behalf of the FreeRTOS application.
 
-Both the FreeRTOS application running on the Real-Time core and the High-Level application need **Inter-Core** messaging permissions. The **app_manifest.json** property **AllowedApplicationConnections** of both applications must include the _Component ID_ of **Partner** application.
+Both the FreeRTOS application running on the Real-Time core and the High-Level application need **Inter-Core** messaging permissions. The **app_manifest.json** property **AllowedApplicationConnections** of both applications must include the _Component ID_ of the **Partner** application.
 
 In the following FreeRTOS Real-Time **app_manifest.json** file, the **AllowedApplicationConnections** property is set to the Component ID of the High-Level application.
 
@@ -122,9 +122,9 @@ In the following High-Level **app_manifest.json** file, the **AllowedApplication
 
 ## Set up FreeRTOS Real-Time Core Development
 
-### Step 1: Enable Real Time Core Debugging
+### Step 1: Enable Real-Time Core Debugging
 
-The **Azure Sphere Developer Command Prompt** must be run as **Administrator**.
+Run the **Azure Sphere Developer Command Prompt** as **Administrator**.
 
 1. Press the <kbd>Windows Key</kbd>
 2. Start typing **Azure Sphere Developer Command Prompt**
@@ -136,7 +136,7 @@ The **Azure Sphere Developer Command Prompt** must be run as **Administrator**.
     azsphere device enable-development -r
     ```
 
-5. Exit the command prompt, type **exit** and press return.
+5. Exit the command prompt, type **exit**, and press return.
 
 ### Step 2: Copy the Floating Point Toolchain
 
@@ -192,7 +192,7 @@ Copy the **AzureSphereRTCoreToolchainVFP.cmake** file from **Azure Sphere Learni
 ![](resources/seeed-studio-azure-sphere-mini.png)
 
 1. The green LED, the one closest to the USB plug will start to blink.
-2. The Seeed Studio Azure Sphere Mini developer kit does not have a built in button, so every 10 seconds the blink rate will change automatically.
+2. The Seeed Studio Azure Sphere Mini developer kit does not have a built-in button, so every 10 seconds the blink rate will change automatically.
 
 ---
 
@@ -209,13 +209,13 @@ You can Debug the FreeRTOS application running on Azure Sphere Cortex M4 Core.
     ![](resources/visual-studio-debug-led-task-stop.png)
 5.  You can now start stepping through the code by pressing <kbd>F10</kbd> to step over, <kbd>F11</kbd> to step into, or <kbd>F5</kbd> to continue.
 6. Explorer debugging, hover the mouse over the variable named **BuiltInLedOn** and you can see its current value.
-7. Click on the breakpoint to turn off and press <kbd>F5</kbd> to continue execution.
+7. Click on the **red dot** to delete the breakpoint, and press <kbd>F5</kbd> to continue execution.
 
 ---
 
-## Finished
+## Finished 完了 fertig finito ख़त्म होना terminado
 
-**Do NOT** close or stop Visual Studio as we need it running for the next lab. 
+**Do NOT** close or stop Visual Studio as we need the FreeRTOS application running for the next lab.
 
 ---
 
