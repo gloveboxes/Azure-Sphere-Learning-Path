@@ -198,7 +198,7 @@ Copy the **AzureSphereRTCoreToolchainVFP.cmake** file from **Azure Sphere Learni
 
 ## Debugging Real-Time Core Applications
 
-You can Debug the FreeRTOS application running on Azure Sphere Cortex M4 Core.
+You can Debug the FreeRTOS application running on Azure Sphere Cortex M4 Real-Time Core.
 
 1. From Visual Studio, open the FreeRTOS application **main.c** file.
 2. Scroll down to the C function named **LedTask**.
