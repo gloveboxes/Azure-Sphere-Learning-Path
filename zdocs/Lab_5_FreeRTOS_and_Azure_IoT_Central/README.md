@@ -108,8 +108,10 @@ In this lab we are going to deploy a High-Level application that will accept eve
 ## Set a Breakpoint in the InterCoreHandler Function
 
 1. Open **main.c**
-2. From the **Navigate Functions dropdown**, select the second of the two **InterCoreHandler**s listed.
+2. From the **Navigate Functions dropdown**, select the second of the two **InterCoreHandler** items listed.
     ![](resources/visual-studio-function-navigate.png)
+3. Set a debugger breakpoint in near the beginning of the function.
+    ![](resources/visual-studio-breakpoint-inter-core-handler.png)
 
 ---
 
@@ -123,12 +125,39 @@ Before building the application with Visual Studio ensure ARM-Debug and GDB Debu
 
 ## Build, Deploy and start Debugging
 
-To start the build, deploy and debug process, either click the Visual Studio **Start Selected Item** icon or press <kbd>**F5**</kbd>. To Build and deploy without attaching the debugger, press <kbd>**Ctrl+F5**</kbd>.
+1. To start the build, deploy and debug process, either click the Visual Studio **Start Selected Item** icon or press <kbd>**F5**</kbd>.
 
-![](resources/visual-studio-start-debug.png)
+    ![](resources/visual-studio-start-debug.png)
+
+## Expected Behaviour
+
+1. Generate a **Button Pressed** event from the FreeRTOS application running on the Real-Time core.
+
+    * For the Azure Sphere devices with the built-in buttons, press **Button A** to generate a **ButtonPressed** event.
+    * For the Seeed Studio MT3620 Mini Dev Board, a **ButtonPressed** event is automatically generated every 10 seconds.
+
+2. Visual Studio will halt execute in the **InterCoreHandler** at the breakpoint.
+3. You can now start stepping through the code by pressing <kbd>F10</kbd> to step over, <kbd>F11</kbd> to step into, or <kbd>F5</kbd> to continue.
+4. Delete all Breakpoints. From the Visual Studio main menu, select Debug, then **Delete All Breakpoints**.
+    ![](resources/visual-studio-breakpoints-delete-all.png)
+5. Press <kbd>F5</kbd> to continue application execution.
 
 ---
 
-**[NEXT](../Lab_6_Mass_Device_Deployment/README.md)**
+## Close Visual Studio
+
+1. Close both instances of Visual Studio
+
+---
+
+## Finished 完了 fertig finito ख़त्म होना terminado
+
+Congratulations you have finished lab 5.
+
+![](resources/finished.jpg)
+
+---
+
+<!-- **[NEXT](../Lab_6_Mass_Device_Deployment/README.md)** -->
 
 ---
