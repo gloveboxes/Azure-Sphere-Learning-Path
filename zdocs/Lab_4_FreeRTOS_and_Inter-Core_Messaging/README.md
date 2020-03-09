@@ -198,20 +198,24 @@ Copy the **AzureSphereRTCoreToolchainVFP.cmake** file from **Azure Sphere Learni
 
 ## Debugging Real-Time Core Applications
 
-You can **Remote Debug** the FreeRTOS application running on Azure Sphere Cortex M4 Core.
+You can Debug the FreeRTOS application running on Azure Sphere Cortex M4 Core.
 
 1. From Visual Studio, open the FreeRTOS application **main.c** file.
-2. Set a [Visual Studio Breakpoint](https://docs.microsoft.com/en-us/visualstudio/debugger/using-breakpoints?view=vs-2019) in the **ButtonTask** function on the line that reads **buttonPressed = true;**
+2. Scroll down to the C function named **LedTask**.
+3. Set a [Visual Studio Breakpoint](https://docs.microsoft.com/en-us/visualstudio/debugger/using-breakpoints?view=vs-2019) in the **LedTask** function on the line that reads **rt = xSemaphoreTake(LEDSemphr, portMAX_DELAY);**
 
-* For the Avnet Azure Sphere MT3620 Starter Kit and Azure Sphere MT3620 Development Kit the ButtonTask function will look similar to the following.
+    ![](resources/visual-studio-debug-led-task.png)
+4. The code will stop executing at the breakpoint
+    ![](resources/visual-studio-debug-led-task-stop.png)
+5.  You can now start stepping through the code by pressing <kbd>F10</kbd> to step over, <kbd>F11</kbd> to step into, or <kbd>F5</kbd> to continue.
+6. Explorer debugging, hover the mouse over the variable named **BuiltInLedOn** and you can see its current value.
+7. Click on the breakpoint to turn off and press <kbd>F5</kbd> to continue execution.
 
-    ![](resources/visual-studio-debug-button-task.png)
+---
 
-* For the Seeed Studio MT3620 Mini Dev Board, the ButtonTask function will look similar to the following.
+## Finished
 
-    ![](resources/visual-studio-debug-button-task-mini.png)
-
-3. Press **Button A** on the Azure Sphere, Visual Studio will halt the execution of the FreeRTOS application and you can step through the code. Pretty darn neat!
+**Do NOT** close or stop Visual Studio as we need it running for the next lab. 
 
 ---
 
