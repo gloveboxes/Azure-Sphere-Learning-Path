@@ -58,7 +58,7 @@ You will learn how Azure Sphere **Inter-Core** messaging works.
 
 As a reminder, the Azure Sphere has three application cores. The Cortex A7 runs High-Level applications, the two Cortex M4s run Real-Time applications.
 
-In this lab we are going to deploy a High-Level application that will accept event messages from the FreeRTOS Real-Time application and forward them on to Azure IoT Central.
+In this lab we are going to deploy a High-Level application that will accept event messages from the FreeRTOS Real-Time application and then will forward them on to Azure IoT Central.
 
 ![](resources/azure-sphere-application-architecture.png)
 
