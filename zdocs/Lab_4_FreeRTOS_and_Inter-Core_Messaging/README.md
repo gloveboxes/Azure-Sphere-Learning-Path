@@ -70,8 +70,6 @@ In this lab and the next, you will learn about  **Inter-Core** messaging. Inter-
 
 ### Inter-Core Messaging Security
 
-The
-
 The FreeRTOS application will send **Button Pressed** events to the **Partner** High-Level application. The High-Level application will then forward the events to Azure IoT Central on behalf of the FreeRTOS application.
 
 Both the FreeRTOS application running on the Real-Time core and the High-Level application need **Inter-Core** messaging permissions. The **app_manifest.json** property **AllowedApplicationConnections** of both applications must include the _Component ID_ of the **Partner** application.
@@ -96,7 +94,6 @@ In the following FreeRTOS Real-Time **app_manifest.json** file, the **AllowedApp
 In the following High-Level **app_manifest.json** file, the **AllowedApplicationConnections** property is set to the Component ID of the FreeRTOS Real-Time application.
 
 ```json
-{
 {
   "SchemaVersion": 1,
   "Name": "AzureSphereIoTCentral",
