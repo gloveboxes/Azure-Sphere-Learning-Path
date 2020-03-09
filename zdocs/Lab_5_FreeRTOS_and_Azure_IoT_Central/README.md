@@ -105,7 +105,7 @@ In this lab we are going to deploy a High-Level application that will accept eve
 
 ---
 
-## Set InterCoreHandler Breakpoint
+## Set a Breakpoint in the InterCoreHandler Function
 
 1. Open **main.c**
 2. From the **Navigate Functions dropdown**, select the second of the two **InterCoreHandler**s listed.
