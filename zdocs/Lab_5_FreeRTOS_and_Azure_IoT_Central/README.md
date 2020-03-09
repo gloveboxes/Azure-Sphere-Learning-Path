@@ -137,7 +137,7 @@ Before building the application with Visual Studio ensure ARM-Debug and GDB Debu
     * For the Seeed Studio MT3620 Mini Dev Board, a **ButtonPressed** event is automatically generated every 10 seconds.
 
 2. Visual Studio will halt execute in the **InterCoreHandler** at the breakpoint.
-3. You can now start stepping through the code by pressing <kbd>F10</kbd> to step over, <kbd>F11</kbd> to step into, or <kbd>F5</kbd> to continue.
+3. You can now step through the code by pressing <kbd>F10</kbd> to step over, <kbd>F11</kbd> to step into, or <kbd>F5</kbd> to continue.
 4. Delete all Breakpoints. From the Visual Studio main menu, select Debug, then **Delete All Breakpoints**.
     ![](resources/visual-studio-breakpoints-delete-all.png)
 5. Press <kbd>F5</kbd> to continue application execution.
