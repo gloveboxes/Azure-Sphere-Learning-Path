@@ -189,16 +189,6 @@ static void LedTask(void* pParameters)
 		if (rt == pdPASS) {
 			BuiltInLedOn = !BuiltInLedOn;
 			gpio_output(BUILTIN_LED, BuiltInLedOn);
-
-#ifdef SEEED_MINI_DK
-			// simulate a button press - useful for the Seeed Studio Azure Sphere Mini which does not have built in buttons
-			if (generatePressEvent++ > 25) {
-				blinkIntervalIndex = (blinkIntervalIndex + 1) % numBlinkIntervals;
-				buttonPressed = true;
-				generatePressEvent = 0;
-			}
-#endif // SEEED_AZURE_SPHERE_MINI
-
 		}
 	}
 }

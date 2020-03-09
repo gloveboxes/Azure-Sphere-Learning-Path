@@ -168,11 +168,50 @@ Copy the **AzureSphereRTCoreToolchainVFP.cmake** file from **Azure Sphere Learni
 
     ![](resources/azure-sphere-rtcore-startup-config.png)
 3. Press <kbd>**F5**</kbd>, this will start the build, deploy, attach debugger process. The leftmost **blue LED** on the Azure Sphere will start **blinking**.
-5. Press **Button A** on the Azure Sphere to change the blink rate. 
-6. You can **Remote Debug** the FreeRTOS application running on Azure Sphere Cortex M4 Core. 
-    1. From Visual Studio, open the FreeRTOS application **main.c** file.
-    2. Set a [Visual Studio Breakpoint](https://docs.microsoft.com/en-us/visualstudio/debugger/using-breakpoints?view=vs-2019) in the **ButtonTask** function on the line that reads ```bool pressed = !newState;```.
-    3. Press **Button A** on the Azure Sphere, Visual Studio will halt the execution of the FreeRTOS application and you can step through the code. Pretty darn neat!
+
+---
+
+## Expected Behaviour
+
+### Avnet Azure Sphere MT3620 Starter Kit
+
+![](resources/avnet-azure-sphere.jpg)
+
+1. The blue LED will start to blink
+2. Press **Button A** on the device to change the blink rate.
+
+### Azure Sphere MT3620 Development Kit
+
+![](resources/seeed-studio-azure-sphere-rdb.jpg)
+
+1. The blue LED will start to blink
+2. Press **Button A** on the device to change the blink rate.
+
+### Seeed Studio MT3620 Mini Dev Board
+
+![](resources/seeed-studio-azure-sphere-mini.png)
+
+1. The green LED, the one closest to the USB plug will start to blink.
+2. The Seeed Studio Azure Sphere Mini developer kit does not have a built in button, so every 10 seconds the blink rate will change automatically.
+
+---
+
+## Debugging Real-Time Core Applications
+
+You can **Remote Debug** the FreeRTOS application running on Azure Sphere Cortex M4 Core.
+
+1. From Visual Studio, open the FreeRTOS application **main.c** file.
+2. Set a [Visual Studio Breakpoint](https://docs.microsoft.com/en-us/visualstudio/debugger/using-breakpoints?view=vs-2019) in the **ButtonTask** function on the line that reads **buttonPressed = true;**
+
+* For the Avnet Azure Sphere MT3620 Starter Kit and Azure Sphere MT3620 Development Kit the ButtonTask function will look similar to the following.
+
+    ![](resources/visual-studio-debug-button-task.png)
+
+* For the Seeed Studio MT3620 Mini Dev Board, the ButtonTask function will look similar to the following.
+
+    ![](resources/visual-studio-debug-button-task-mini.png)
+
+3. Press **Button A** on the Azure Sphere, Visual Studio will halt the execution of the FreeRTOS application and you can step through the code. Pretty darn neat!
 
 ---
 

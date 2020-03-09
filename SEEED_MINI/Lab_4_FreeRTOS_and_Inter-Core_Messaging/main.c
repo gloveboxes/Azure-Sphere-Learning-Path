@@ -33,16 +33,16 @@
  * MEDIATEK SOFTWARE AT ISSUE.
  */
 
-/*
-Date: March 2020
-This software has been modified by Dave Glover
-Updated: Added blink and inter-core communications
-*/
-
+ /*
+ Date: March 2020
+ This software has been modified by Dave Glover
+ Updated: Added blink and inter-core communications
+ */
 
 #include <stddef.h>
 #include <stdbool.h>
 #include <stdint.h>
+
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -56,11 +56,11 @@ Updated: Added blink and inter-core communications
 #include "../shared/Hardware/seeed_mt3620_mdb/inc/hw/seeed_mt3620_mdb.h"
 
 
-/******************************************************************************/
-/* Configurations */
-/******************************************************************************/
+ /******************************************************************************/
+ /* Configurations */
+ /******************************************************************************/
 
-#define BUILTIN_LED AILINK_WFM620RSC1_PIN15_GPIO33
+#define BUILTIN_LED AILINK_WFM620RSC1_PIN4_GPIO7
 #define BUTTON_A AILINK_WFM620RSC1_PIN16_GPIO35
 #define UART_PORT_NUM OS_HAL_UART_ISU0
 
@@ -84,15 +84,9 @@ static bool buttonPressed = false;
 static BufferHeader* outbound, * inbound;
 static uint32_t sharedBufSize = 0;
 
-#define SEEED_MINI_DK 1
-
-#ifdef SEEED_MINI_DK
-static int generatePressEvent = 0;
-#endif // SEEED_MINI_DK
-
 
 /******************************************************************************/
-/* Applicaiton Hooks */
+/* Application Hooks */
 /******************************************************************************/
 // Hook for "stack over flow".
 void vApplicationStackOverflowHook(TaskHandle_t xTask, char* pcTaskName)
@@ -161,28 +155,13 @@ static int gpio_input(u8 gpio_no, os_hal_gpio_data* pvalue)
 
 static void ButtonTask(void* pParameters)
 {
-	os_hal_gpio_data value = 0;
-
-	printf("GPIO Task Started\n");
+	printf("Button Task Started\n");
 	while (1) {
 
-		// Get Button_A status and set LED Red.
-		gpio_input(BUTTON_A, &value);
+		blinkIntervalIndex = (blinkIntervalIndex + 1) % numBlinkIntervals;
+		buttonPressed = true;
 
-		if (value == OS_HAL_GPIO_DATA_HIGH) {
-			//gpio_output(BUILTIN_LED, OS_HAL_GPIO_DATA_HIGH);
-			blinkIntervalIndex = (blinkIntervalIndex + 1) % numBlinkIntervals;
-			buttonPressed = true;
-#ifdef SEEED_MINI_DK
-			generatePressEvent = 0;
-#endif
-		}
-		//} else {
-		//	gpio_output(BUILTIN_LED, OS_HAL_GPIO_DATA_LOW);
-		//}
-
-		// Delay for 100ms
-		vTaskDelay(pdMS_TO_TICKS(100));
+		vTaskDelay(pdMS_TO_TICKS(10000));	// 10 seconds
 	}
 }
 
@@ -203,16 +182,6 @@ static void LedTask(void* pParameters)
 		if (rt == pdPASS) {
 			BuiltInLedOn = !BuiltInLedOn;
 			gpio_output(BUILTIN_LED, BuiltInLedOn);
-
-#ifdef SEEED_MINI_DK
-			// simulate a button press - useful for the Seeed Studio Azure Sphere Mini which does not have built in buttons
-			if (generatePressEvent++ > 25) {
-				blinkIntervalIndex = (blinkIntervalIndex + 1) % numBlinkIntervals;
-				buttonPressed = true;
-				generatePressEvent = 0;
-			}
-#endif // SEEED_AZURE_SPHERE_MINI
-
 		}
 	}
 }
@@ -238,9 +207,8 @@ static void RTCoreMsgTask(void* pParameters)
 			EnqueueData(inbound, outbound, sharedBufSize, buf, dataSize);
 			buttonPressed = false;
 		}
-
-		// Delay for 100ms
-		vTaskDelay(pdMS_TO_TICKS(100));
+		
+		vTaskDelay(pdMS_TO_TICKS(500));		// Delay for 500ms
 	}
 }
 
