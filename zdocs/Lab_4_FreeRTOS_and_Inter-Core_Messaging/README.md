@@ -202,9 +202,9 @@ You can Debug the FreeRTOS application running on Azure Sphere Cortex M4 Real-Ti
     ![](resources/visual-studio-debug-led-task.png)
 4. The code will stop executing at the breakpoint
     ![](resources/visual-studio-debug-led-task-stop.png)
-5.  You can now start stepping through the code by pressing <kbd>F10</kbd> to step over, <kbd>F11</kbd> to step into, or <kbd>F5</kbd> to continue.
+5.  You can now start stepping through the code by pressing <kbd>**F10**</kbd> to step over, <kbd>**F11**</kbd> to step into, or <kbd>**F5**</kbd> to continue.
 6. Explorer debugging, hover the mouse over the variable named **BuiltInLedOn** and you can see its current value.
-7. Click on the **red dot** to delete the breakpoint, and press <kbd>F5</kbd> to continue execution.
+7. Click on the **red dot** to delete the breakpoint, and press <kbd>**F5**</kbd> to continue execution.
 
 ---
 
