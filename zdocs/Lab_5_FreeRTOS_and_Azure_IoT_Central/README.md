@@ -156,7 +156,7 @@ Congratulations you have finished lab 5.
 
 ![](resources/finished.jpg)
 
----
+<!-- ---  -->
 
 <!-- **[NEXT](../Lab_6_Mass_Device_Deployment/README.md)** -->
 
