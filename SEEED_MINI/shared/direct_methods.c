@@ -113,7 +113,7 @@ cleanup:
 		json_value_free(root_value);
 	}
 
-	if (*responsePayloadSize != NULL) {
+	if (payLoadString != NULL) {
 		free(payLoadString);
 		payLoadString = NULL;
 	}
