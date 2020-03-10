@@ -67,7 +67,13 @@ You can develop applications for Azure Sphere on Windows 10 Anniversary Update o
 
 ### Windows 10 Recommended Software
 
-1. [Visual Studio (The free Community Edition or better)](https://visualstudio.microsoft.com/vs/?WT.mc_id=github-blog-dglover). **The installation must include the C++/CMake options.**
+1. [Visual Studio (The free Community Edition or better)](https://visualstudio.microsoft.com/vs/?WT.mc_id=github-blog-dglover).
+    * No specific **Workloads** options are required.
+    * Select **Individual components**.
+    * Type *cmake* in search box.
+    * Select **C++ CMake tools for Windows**.
+    * Click install.
+    ![install c++ cmake tools for windows](resources/visual-studio-install-cmake.png)
 2. [Azure Sphere SDK for Visual Studio](https://docs.microsoft.com/en-au/azure-sphere/install/install-sdk#azure-sphere-sdk-for-visual-studio)
 3. [Git for Windows](https://git-scm.com/downloads)
 4. [Install Azure Sphere drivers for Windows](https://docs.microsoft.com/en-au/azure-sphere/install/install-sdk#set-up-your-dev-kit-on-a-windows-pc)
@@ -76,6 +82,7 @@ You can develop applications for Azure Sphere on Windows 10 Anniversary Update o
 
 1. [Visual Studio Code](https://code.visualstudio.com/?WT.mc_id=github-blog-dglover)
 2. [Azure Sphere Extension for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=ms-vscode.azure-sphere-tools&WT.mc_id=github-blog-dglover).
+3. [CMake Tools Extension for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools&WT.mc_id=github-blog-dglover)
 3. [Install the Azure Sphere SDK on Linux](https://docs.microsoft.com/en-au/azure-sphere/install/install-sdk-linux)
 4. [Set up your Linux system for app development](https://docs.microsoft.com/en-au/azure-sphere/install/development-environment-linux)
 4. Install Git support **```apt install git```**.
