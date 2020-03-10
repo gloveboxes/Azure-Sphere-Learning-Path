@@ -98,16 +98,21 @@ int AzureDirectMethodHandler(const char* method_name, const unsigned char* paylo
 
 cleanup:
 
-	// Prepare the payload for the response. This is a heap allocated null terminated string.
+	// Prepare the payload for the response.
 	// The Azure IoT Hub SDK is responsible of freeing it.
 	responseMessageLength = strlen(responseMessage);
 	*responsePayloadSize = responseMessageLength + 2; // add two as going to wrap the message with quotes for JSON
-	*responsePayload = (unsigned char*)malloc(*responsePayloadSize);
 
-	// response message needs to be wrapped in quotes as it is part of a JSON payload object
-	memcpy(*responsePayload, "\"", 1);
-	memcpy(*responsePayload + 1, responseMessage, responseMessageLength);
-	memcpy(*responsePayload + responseMessageLength + 1, "\"", 1);
+	*responsePayload = (unsigned char*)malloc(*responsePayloadSize);
+	if (*responsePayload != NULL) {
+		// response message needs to be wrapped in quotes as it is part of the JSON payload object
+		memcpy(*responsePayload, "\"", 1);
+		memcpy(*responsePayload + 1, responseMessage, responseMessageLength);
+		memcpy(*responsePayload + responseMessageLength + 1, "\"", 1);
+	}
+	else {
+		*responsePayloadSize = 0;
+	}
 
 	if (root_value != NULL) {
 		json_value_free(root_value);

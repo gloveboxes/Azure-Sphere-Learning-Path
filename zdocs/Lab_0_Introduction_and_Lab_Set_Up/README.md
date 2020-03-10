@@ -98,7 +98,7 @@ For complete instructions follow the Azure Sphere [Overview of set up procedures
 Ideally clone (or download) to a directory close to the root directory. For example **c:\lab** on Windows, **~/lab** on Linux.
 
 ```bash
-git clone https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git Azure-Sphere
+git clone --depth 1 https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git Azure-Sphere
 ```
 
 ---
