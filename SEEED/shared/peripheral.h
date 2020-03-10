@@ -26,3 +26,5 @@ int OpenPeripheral(Peripheral* peripheral);
 void OpenPeripheralSet(Peripheral** peripherals, size_t peripheralCount);
 void ClosePeripheralSet(void);
 void CloseFdAndPrintError(int fd, const char* fdName);
+void Gpio_On(Peripheral* peripheral);
+void Gpio_Off(Peripheral* peripheral);

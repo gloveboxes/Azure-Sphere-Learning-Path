@@ -81,14 +81,14 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 		return;
 	}
 
-	GPIO_ON(builtinLed); // blink send status LED
+	Gpio_On(&builtinLed); // blink send status LED
 
 	if (ReadTelemetry(msgBuffer, JSON_MESSAGE_BYTES) > 0) {
 		Log_Debug("%s\n", msgBuffer);
 		SendMsg(msgBuffer);
 	}
 
-	GPIO_OFF(builtinLed);
+	Gpio_Off(&builtinLed);
 }
 
 
@@ -98,7 +98,7 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 /// <returns>0 on success, or -1 on failure</returns>
 static int InitPeripheralsAndHandlers(void)
 {
-	InitializeDevKit();  // Avnet Starter kit
+	InitializeDevKit();
 
 	OpenPeripheralSet(peripherals, NELEMS(peripherals));
 	StartTimerSet(timers, NELEMS(timers));
@@ -119,7 +119,7 @@ static void ClosePeripheralsAndHandlers(void)
 	StopCloudToDevice();
 
 	ClosePeripheralSet();
-	CloseDevKit();	// Avnet Starter kit
+	CloseDevKit();
 
 	StopTimerEventLoop();
 }

@@ -115,14 +115,14 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 		return;
 	}
 
-	GPIO_ON(builtinLed); // blink send status LED
+	Gpio_On(&builtinLed); // blink send status LED
 
 	if (ReadTelemetry(msgBuffer, JSON_MESSAGE_BYTES) > 0) {
 		Log_Debug("%s\n\n", msgBuffer);
 		SendMsg(msgBuffer);
 	}
 
-	GPIO_OFF(builtinLed);
+	Gpio_Off(&builtinLed);
 }
 
 
@@ -173,10 +173,10 @@ static void DeviceTwinHandler(DeviceTwinBinding* deviceTwinBinding) {
 	{
 	case TYPE_BOOL:
 		if (*(bool*)deviceTwinBinding->twinState) {
-			GPIO_ON(deviceTwinBinding->peripheral);
+			Gpio_On(&deviceTwinBinding->peripheral);
 		}
 		else {
-			GPIO_OFF(deviceTwinBinding->peripheral);
+			Gpio_Off(&deviceTwinBinding->peripheral);
 		}
 		break;
 	case TYPE_INT:
@@ -228,14 +228,14 @@ static void InterCoreHandler(char* msg) {
 
 
 	// Toggle LED
-	if (*(bool*)relay.twinState) { GPIO_OFF(relay.peripheral); }
-	else { GPIO_ON(relay.peripheral); }
+	if (*(bool*)relay.twinState) { Gpio_Off(&relay.peripheral); }
+	else { Gpio_On(&relay.peripheral); }
 
 	nanosleep(&sleepTime, NULL);
 
 	// Return LED to twinState
-	if (*(bool*)relay.twinState) { GPIO_ON(relay.peripheral); }
-	else { GPIO_OFF(relay.peripheral); }
+	if (*(bool*)relay.twinState) { Gpio_On(&relay.peripheral); }
+	else { Gpio_Off(&relay.peripheral); }
 
 	if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, "{ \"ButtonPressed\": %d }", ++buttonPressCount) > 0) {
 		SendMsg(msgBuffer);
