@@ -123,7 +123,7 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 /// <returns>0 on success, or -1 on failure</returns>
 static int InitPeripheralsAndHandlers(void)
 {
-	InitializeDevKit();  // Avnet Starter Kit
+	InitializeDevKit();
 
 	OpenPeripheralSet(peripherals, NELEMS(peripherals));
 	OpenDeviceTwinSet(deviceTwinBindings, NELEMS(deviceTwinBindings));
@@ -150,7 +150,7 @@ static void ClosePeripheralsAndHandlers(void)
 	CloseDeviceTwinSet();
 	CloseDirectMethodSet();	
 
-	CloseDevKit();	// Avnet Starter Kit
+	CloseDevKit();
 
 	StopTimerEventLoop();
 }
