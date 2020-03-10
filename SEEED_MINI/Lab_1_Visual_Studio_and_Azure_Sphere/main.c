@@ -74,13 +74,13 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 		return;
 	}
 
-	GPIO_ON(builtinLed); // blink built in LED
+	Gpio_On(&builtinLed); // blink built in LED
 
 	if (ReadTelemetry(msgBuffer, JSON_MESSAGE_BYTES) > 0) {
 		Log_Debug("%s\n", msgBuffer);
 	}
 
-	GPIO_OFF(builtinLed);
+	Gpio_Off(&builtinLed);
 }
 
 
