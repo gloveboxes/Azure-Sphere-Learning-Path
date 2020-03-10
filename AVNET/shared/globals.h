@@ -9,8 +9,6 @@
 #define RT_APP_COMPONENT_LENGTH 36 + 1  // GUID 36 Char + 1 NULL terminate)
 
 #define NELEMS(x)  (sizeof(x) / sizeof((x)[0]))
-#define GPIO_ON(x) GPIO_SetValue(x.fd, x.invertPin ? GPIO_Value_Low : GPIO_Value_High)
-#define GPIO_OFF(x) GPIO_SetValue(x.fd, x.invertPin ? GPIO_Value_High : GPIO_Value_Low)
 
 extern char scopeId[SCOPEID_LENGTH]; // ScopeId for the Azure IoT Central application, set in app_manifest.json, CmdArgs
 extern char rtAppComponentId[RT_APP_COMPONENT_LENGTH];  //initialized from cmdline argument
