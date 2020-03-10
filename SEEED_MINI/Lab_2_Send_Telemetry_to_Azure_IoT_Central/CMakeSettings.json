@@ -2,7 +2,7 @@
   "environments": [
     {
       "environment": "AzureSphere",
-      "AzureSphereTargetApiSet": "4+Beta2001",
+      "AzureSphereTargetApiSet": "4",
       "AzureSphereTargetHardwareDefinitionDirectory": "..\\shared\\Hardware\\seeed_mt3620_mdb",
       "AzureSphereTargetHardwareDefinition": "seeed_mt3620_mdb.json"
     }
