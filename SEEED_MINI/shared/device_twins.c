@@ -106,8 +106,11 @@ cleanup:
 	if (root_value != NULL) {
 		json_value_free(root_value);
 	}
-	free(payLoadString);
-	payLoadString = NULL;
+
+	if (payLoadString != NULL) {
+		free(payLoadString);
+		payLoadString = NULL;
+	}
 }
 
 /// <summary>
