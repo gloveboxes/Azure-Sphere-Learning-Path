@@ -259,11 +259,17 @@ If there is no network connect present then repeat step 9.
 
 ## Step 9: Delete any existing applications on the Azure Sphere
 
-From the **Azure Sphere Developer Command Prompt**, run
+1. From the **Azure Sphere Developer Command Prompt**, run
 
-```bash
-azsphere device sideload delete
-```
+    ```bash
+    azsphere device sideload delete
+    ```
+
+2. Restart the Azure Sphere. From the **Azure Sphere Developer Command Prompt**, run
+
+    ```bash
+    azsphere device restart
+    ```
 
 ---
 
