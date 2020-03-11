@@ -21,6 +21,7 @@ void OpenPeripheralSet(Peripheral** peripherals, size_t peripheralCount) {
 	_peripheralCount = peripheralCount;
 
 	for (int i = 0; i < _peripheralCount; i++) {
+		_peripherals[i]->fd = -1;
 		if (_peripherals[i]->initialise != NULL) {
 			_peripherals[i]->initialise(_peripherals[i]);
 		} 
@@ -48,5 +49,15 @@ void ClosePeripheralSet(void) {
 	}
 }
 
+void Gpio_On(Peripheral* peripheral) {
+	if (peripheral == NULL || peripheral->fd < 0 || peripheral->pin < 0) { return; }
 
+	GPIO_SetValue(peripheral->fd, peripheral->invertPin ? GPIO_Value_Low : GPIO_Value_High);
+}
+
+void Gpio_Off(Peripheral* peripheral) {
+	if (peripheral == NULL || peripheral->fd < 0 || peripheral->pin < 0) { return; }
+
+	GPIO_SetValue(peripheral->fd, peripheral->invertPin ? GPIO_Value_High : GPIO_Value_Low);
+}
 

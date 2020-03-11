@@ -36,7 +36,7 @@ int AzureDirectMethodHandler(const char* method_name, const unsigned char* paylo
 
 	const char* responseMessage = methodNotFoundMsg;
 	int result = METHOD_NOT_FOUND;
-	int responseMessageLength;
+	size_t responseMessageLength;
 
 	JSON_Value* root_value = NULL;
 	JSON_Object* jsonObject = NULL;
