@@ -8,9 +8,10 @@
 #include "../Hardware/seeed_mt3620_mdb/inc/hw/seeed_mt3620_mdb.h"
 
 
-#define BUILTIN_LED		AILINK_WFM620RSC1_PIN16_GPIO35
+#define BUILTIN_LED		AILINK_WFM620RSC1_PIN4_GPIO7
 #define LIGHT_PIN		AILINK_WFM620RSC1_PIN15_GPIO33
 #define RELAY_PIN		AILINK_WFM620RSC1_PIN3_GPIO43
+#define LED_2			AILINK_WFM620RSC1_PIN16_GPIO35
 
 int ReadTelemetry(char* msgBuffer, size_t bufferLen);
 bool InitializeDevKit(void);

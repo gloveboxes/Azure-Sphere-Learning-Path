@@ -5,7 +5,7 @@
   "EntryPoint": "/bin/app",
   "CmdArgs": [ "Fake", "<Replace with your Scope ID>", "6583cf17-d321-4d72-8283-0b7c5b56442b" ],
   "Capabilities": {
-    "Gpio": [ "$AILINK_WFM620RSC1_PIN15_GPIO33", "$AILINK_WFM620RSC1_PIN16_GPIO35", "$AILINK_WFM620RSC1_PIN3_GPIO43" ],
+    "Gpio": [ "$AILINK_WFM620RSC1_PIN4_GPIO7" ],
     "AllowedConnections": [ "global.azure-devices-provisioning.net", "<Replace with your Azure IoT Central URI>" ],
     "DeviceAuthentication": "00000000-0000-0000-0000-000000000000",
     "AllowedApplicationConnections": [ "6583cf17-d321-4d72-8283-0b7c5b56442b" ]

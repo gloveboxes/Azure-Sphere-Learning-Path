@@ -26,7 +26,7 @@ static Peripheral builtinLed = {
 };
 
 static Timer measureSensorTimer = {
-	.period = { 5, 0 },
+	.period = { 4, 0 },
 	.name = "MeasureSensor",
 	.timerEventHandler = MeasureSensorHandler
 };
@@ -69,6 +69,7 @@ int main(int argc, char* argv[])
 /// </summary>
 static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 {
+	const struct timespec sleepTime = { 0, 250000000L };
 	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
 		Terminate();
 		return;
@@ -80,6 +81,8 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 		Log_Debug("%s\n", msgBuffer);
 	}
 
+	nanosleep(&sleepTime, NULL);
+
 	Gpio_Off(&builtinLed);
 }
 
@@ -90,7 +93,7 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 /// <returns>0 on success, or -1 on failure</returns>
 static int InitPeripheralsAndHandlers(void)
 {
-	InitializeDevKit();  // Avnet Starter kit
+	InitializeDevKit();
 
 	OpenPeripheralSet(peripherals, NELEMS(peripherals));
 	StartTimerSet(timers, NELEMS(timers));
@@ -108,7 +111,7 @@ static void ClosePeripheralsAndHandlers(void)
 	StopTimerSet();
 
 	ClosePeripheralSet();
-	CloseDevKit();	// Avnet Starter kit
+	CloseDevKit();
 
 	StopTimerEventLoop();
 }
