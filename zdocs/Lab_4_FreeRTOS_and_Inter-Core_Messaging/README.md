@@ -143,13 +143,18 @@ Copy the **AzureSphereRTCoreToolchainVFP.cmake** file from **Azure Sphere Learni
 
 ## Delete Existing Applications on the Azure Sphere
 
-There will be some GPIO pin reassignments between the existing High-Level application that is running on the Azure Sphere and the new Real-Time application that will be deployed to the Azure Sphere in this lab. So delete any existing applications on the Azure Sphere to avoid any clashes.
+1. There will be some GPIO pin reassignments between the existing High-Level application that is running on the Azure Sphere and the new Real-Time application that will be deployed to the Azure Sphere in this lab. So delete any existing applications on the Azure Sphere to avoid any clashes.
 
-From the **Azure Sphere Developer Command Prompt**, run
+    From the **Azure Sphere Developer Command Prompt**, run
 
-```bash
-azsphere device sideload delete
-```
+    ```bash
+    azsphere device sideload delete
+    ```
+2. Restart the Azure Sphere. From the **Azure Sphere Developer Command Prompt**, run
+
+    ```bash
+    azsphere device restart
+    ```
 
 ---
 
