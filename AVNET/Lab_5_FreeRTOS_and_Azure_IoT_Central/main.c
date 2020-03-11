@@ -71,11 +71,9 @@ Peripheral* peripherals[] = { &builtinLed };
 Timer* timers[] = { &measureSensorTimer, &rtCoreHeatBeat };
 
 #pragma endregion
-// end define sets for auto initialization and close
 
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
 	RegisterTerminationHandler();
 	ProcessCmdArgs(argc, argv);
 
@@ -108,8 +106,7 @@ int main(int argc, char* argv[])
 /// <summary>
 /// Azure timer event:  Check connection status and send telemetry
 /// </summary>
-static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
-{
+static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer) {
 	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
 		Terminate();
 		return;
@@ -130,9 +127,8 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 ///     Set up SIGTERM termination handler, initialize peripherals, and set up event handlers.
 /// </summary>
 /// <returns>0 on success, or -1 on failure</returns>
-static int InitPeripheralsAndHandlers(void)
-{
-	InitializeDevKit();  // Avnet Starter Kit
+static int InitPeripheralsAndHandlers(void) {
+	InitializeDevKit();
 
 	OpenPeripheralSet(peripherals, NELEMS(peripherals));
 	OpenDeviceTwinSet(deviceTwinBindings, NELEMS(deviceTwinBindings));
@@ -151,8 +147,7 @@ static int InitPeripheralsAndHandlers(void)
 /// <summary>
 ///     Close peripherals and handlers.
 /// </summary>
-static void ClosePeripheralsAndHandlers(void)
-{
+static void ClosePeripheralsAndHandlers(void) {
 	Log_Debug("Closing file descriptors\n");
 
 	StopTimerSet();
@@ -160,17 +155,16 @@ static void ClosePeripheralsAndHandlers(void)
 
 	ClosePeripheralSet();
 	CloseDeviceTwinSet();
-	CloseDirectMethodSet();	
+	CloseDirectMethodSet();
 
-	CloseDevKit();	// Avnet Starter Kit
+	CloseDevKit();
 
 	StopTimerEventLoop();
 }
 
 
 static void DeviceTwinHandler(DeviceTwinBinding* deviceTwinBinding) {
-	switch (deviceTwinBinding->twinType)
-	{
+	switch (deviceTwinBinding->twinType) {
 	case TYPE_BOOL:
 		if (*(bool*)deviceTwinBinding->twinState) {
 			Gpio_On(&deviceTwinBinding->peripheral);
@@ -212,8 +206,7 @@ static MethodResponseCode SetFanSpeedDirectMethod(JSON_Object* json, DirectMetho
 		Log_Debug("\nDirect Method Response '%s'\n", directMethodBinding->responseMessage);
 		return METHOD_SUCCEEDED;
 	}
-	else
-	{
+	else {
 		snprintf(directMethodBinding->responseMessage, responseLen, "%s FAILED, speed out of range %d", directMethodBinding->methodName, speed);
 		Log_Debug("\nDirect Method Response '%s'\n", directMethodBinding->responseMessage);
 		return METHOD_FAILED;
@@ -225,7 +218,6 @@ static MethodResponseCode SetFanSpeedDirectMethod(JSON_Object* json, DirectMetho
 static void InterCoreHandler(char* msg) {
 	static int buttonPressCount = 0;
 	const struct timespec sleepTime = { 0, 100000000L };
-
 
 	// Toggle LED
 	if (*(bool*)relay.twinState) { Gpio_Off(&relay.peripheral); }
@@ -245,8 +237,7 @@ static void InterCoreHandler(char* msg) {
 /// <summary>
 ///     Handle send timer event by writing data to the real-time capable application.
 /// </summary>
-static void InterCoreHeartBeat(EventLoopTimer* eventLoopTimer)
-{
+static void InterCoreHeartBeat(EventLoopTimer* eventLoopTimer) {
 	static int heartBeatCount = 0;
 	char interCoreMsg[30];
 
