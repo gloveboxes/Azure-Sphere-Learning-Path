@@ -234,7 +234,7 @@ This time we are going to deploy the FreeRTOS Real-Time application to the Azure
     ![](resources/visual-studio-release-mode.png)
 2. Press <kbd>Ctrl-F5</kbd>, or from the main menu select *Debug* -> *Start Without Debugging*.
 3. This will deploy and run the application on the Azure Sphere.
-4. Try pressing the Azure Sphere **Reset** button. You will notice the LED will start rapidly blinking again which indicates that the FreeRTOS Real-Time application is restarted after the reset.
+4. Try pressing the Azure Sphere **Reset** button. You will notice the LED will start rapidly blinking again which indicates that the FreeRTOS Real-Time application has restarted after the reset.
 
 ---
 
