@@ -29,6 +29,10 @@ Each module assumes you have completed the previous module.
 
 These **Azure Sphere Learning Path** labs build on the [Azure Sphere Samples](https://github.com/Azure/azure-sphere-samples). You will find full scenario and API coverage in the samples documentation.
 
+---
+
+## Documentation
+
 ### Azure Sphere Documentation
 
 Full [Azure Sphere Documentation](https://azure.microsoft.com/en-au/services/azure-sphere/?WT.mc_id=github-blog-dglover).
