@@ -275,11 +275,19 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 }
 ```
 
-### Start the Azure Sphere Application
+### Step 1: Start the Azure Sphere Application
 
 To start the build, deploy, debug process, either click the Visual Studio **Start Selected Item** icon or press **<kbd>F5</kbd>**. To Build and deploy without attaching the debugger, simply press **<kbd>Ctrl+F5</kbd>**.
 
 ![](resources/visual-studio-start-debug.png)
+
+### Step 2: View Debugger Output
+
+Open the **Output** window to view the output from **Log_Debug** statements in the code. You will see the device negotiating security and then it will start sending telemetry to Azure IoT Central.
+
+You can open the output window by using the Visual Studio <kbd>Ctrl+Alt+O</kbd> shortcut or click the **Output** tab found along the bottom/right of Visual Studio.
+
+![](resources/visual-studio-debug-output-view.png)
 
 <!-- ---
 
@@ -295,7 +303,7 @@ This numeric name is the ID of your Azure Sphere Device. You can check this by r
 
 ---
 
-## View Device Telemetry on the Azure IoT Central Dashboard
+## Step 3: View Device Telemetry on the Azure IoT Central Dashboard
 
 1. Switch back to Azure IoT Central in your web browser.
 2. Ensure your device is selected.
