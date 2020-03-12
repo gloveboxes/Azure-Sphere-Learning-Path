@@ -35,7 +35,7 @@ Full [Azure Sphere Documentation](https://azure.microsoft.com/en-au/services/azu
 
 ### Azure Sphere (azsphere) Command Line Reference
 
-[Overview of azsphere command-line utility](https://docs.microsoft.com/en-us/azure-sphere/reference/overview).
+[Overview of azsphere command-line utility](https://docs.microsoft.com/en-us/azure-sphere/reference/overview?WT.mc_id=github-blog-dglover).
 
 ---
 
@@ -65,7 +65,7 @@ If you are using a shared lab device, then the lab instructor will tell you the 
 
 ---
 
-## Step 1: Software Installation
+## Step 1: Install Software
 
 You can develop applications for Azure Sphere on Windows 10 Anniversary Update or later, or a Linux machine running Ubuntu 18.04 LTS
 
@@ -78,18 +78,18 @@ You can develop applications for Azure Sphere on Windows 10 Anniversary Update o
     * Select **C++ CMake tools for Windows**.
     * Click install.
     ![install c++ cmake tools for windows](resources/visual-studio-install-cmake.png)
-2. [Azure Sphere SDK for Visual Studio](https://docs.microsoft.com/en-au/azure-sphere/install/install-sdk#azure-sphere-sdk-for-visual-studio)
+2. [Azure Sphere SDK for Visual Studio](https://docs.microsoft.com/en-au/azure-sphere/install/install-sdk?WT.mc_id=github-blog-dglover)
 3. [Git for Windows](https://git-scm.com/downloads)
-4. [Install Azure Sphere drivers for Windows](https://docs.microsoft.com/en-au/azure-sphere/install/install-sdk#set-up-your-dev-kit-on-a-windows-pc)
+4. [Install Azure Sphere drivers for Windows](https://docs.microsoft.com/en-au/azure-sphere/install/install-sdk?WT.mc_id=github-blog-dglover)
 
 ### Ubuntu 18.04 Recommended Software
 
 1. [Visual Studio Code](https://code.visualstudio.com/?WT.mc_id=github-blog-dglover)
 2. [Azure Sphere Extension for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=ms-vscode.azure-sphere-tools&WT.mc_id=github-blog-dglover).
 3. [CMake Tools Extension for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools&WT.mc_id=github-blog-dglover)
-3. [Install the Azure Sphere SDK on Linux](https://docs.microsoft.com/en-au/azure-sphere/install/install-sdk-linux)
-4. [Set up your Linux system for app development](https://docs.microsoft.com/en-au/azure-sphere/install/development-environment-linux)
-4. Install Git support **```apt install git```**.
+4. [Install the Azure Sphere SDK on Linux](https://docs.microsoft.com/en-au/azure-sphere/install/install-sdk-linux?WT.mc_id=github-blog-dglover)
+5. [Set up your Linux system for app development](https://docs.microsoft.com/en-au/azure-sphere/install/development-environment-linux?WT.mc_id=github-blog-dglover)
+6. Install Git support **```apt install git```**.
 
 For complete instructions follow the Azure Sphere [Overview of set up procedures](https://docs.microsoft.com/en-au/azure-sphere/install/overview?WT.mc_id=github-blog-dglover) guide.
 
@@ -122,7 +122,7 @@ Lab directories are named by Azure Sphere device manufacturer.
 
 ---
 
-## Step 4: Set up Azure Sphere Tenant and Login 
+## Step 4: Set up Azure Sphere Tenant and Login
 
 ### Create a new Tenant User
 
@@ -155,7 +155,7 @@ If you are using a lab device, then the lab instructor will provide you with the
     ```bash
     azsphere login
     ```
-    
+
 You will be prompted for the Azure Sphere Tenant credentials.
 
 ### Select the default Azure Sphere Tenant
@@ -163,6 +163,7 @@ You will be prompted for the Azure Sphere Tenant credentials.
 From the **Azure Sphere Developer Command Prompt**:
 
 1. List Azure Sphere Tenants, run
+
     ```bash
     azsphere tenant list
     ```
@@ -171,7 +172,7 @@ From the **Azure Sphere Developer Command Prompt**:
 
     **Skip this step if there was only one tenant listed in the previous step.**
 
-	If there is more than one tenant listed then you need to set the default tenant. You need to copy the ID from the ```azsphere tenant list``` command you ran in the previous step. Run
+    If there is more than one tenant listed then you need to set the default tenant. You need to copy the ID from the ```azsphere tenant list``` command you ran in the previous step. Run
 
     ```bash
     azsphere tenant select -i <Tenant ID>
@@ -185,9 +186,9 @@ From the **Azure Sphere Developer Command Prompt**:
 
 **Note**, claiming an Azure Sphere device is a one-time operation. The device will become associated with an Azure Sphere Tenant and the email address you used when you claimed the device.
 
-You **cannot move** the device to another Azure Tenant once it has been claimed. However, you can add additional [users and roles](https://docs.microsoft.com/en-us/azure-sphere/deployment/add-tenant-users) to the Azure Sphere tenant, including users with Admin rights.
+You **cannot move** the device to another Azure Tenant once it has been claimed. However, you can add additional [users and roles](https://docs.microsoft.com/en-us/azure-sphere/deployment/add-tenant-users?WT.mc_id=github-blog-dglover) to the Azure Sphere tenant, including users with Admin rights.
 
-1. From the **Azure Sphere Developer Command Prompt**, run 
+1. From the **Azure Sphere Developer Command Prompt**, run
 
     ```bash
     azsphere device claim
@@ -213,7 +214,7 @@ From the **Azure Sphere Developer Command Prompt**:
     azsphere device wifi add -s <Your WiFi SSID> -p <Your WiFI Password>
     ```
 
-4. Check WiFi connection status. Run
+3. Check WiFi connection status. Run
 
     ```bash
     azsphere device wifi show-status
