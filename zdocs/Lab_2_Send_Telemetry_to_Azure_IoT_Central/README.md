@@ -304,6 +304,8 @@ This numeric name is the ID of your Azure Sphere Device. You can check this by r
 
 ![](resources/iot-central-display-measurements.png)
 
+---
+
 ## Close Visual Studio
 
 Now close **Close Visual Studio**.

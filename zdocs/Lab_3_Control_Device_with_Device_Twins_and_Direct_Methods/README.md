@@ -340,10 +340,16 @@ The expected behaviour will differ depending on what Azure Sphere device you hav
     ![](resources/iot-central-device-command-run.png)
 3. Click the **View History** button
     ![](resources/iot-central-device-command-view-history.png)
-4. The command histor will be similar to the following:
+4. The command history will be similar to the following:
     ![](resources/iot-central-device-commands-view-history.png)
 5. Try testing with numbers great that 100, and review the command history.
 6. From Visual Studio, try setting a breakpoint in the **SetFanSpeedDirectMethod** handler and then from Azure IoT Central rerun the command. You should see that the Visual Studio debugger has halted the code execution in the handler.
+
+---
+
+## Close Visual Studio
+
+Now close **Close Visual Studio**.
 
 ---
 

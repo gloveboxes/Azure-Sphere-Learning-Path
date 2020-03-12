@@ -105,7 +105,18 @@ In this lab we are going to deploy a High-Level application that will accept eve
 
 ---
 
-## Set a Breakpoint in the InterCoreHandler Function
+## Step 4: Set Azure IoT Central Connection Information
+
+1. Open the **app_manifest.json** file.
+2. **DO NOT** replace the contents of the **app_manifest.json** file as you did in previous labs. The GPIO pin allocation is different as some pins have been now been allocated to the FreeRTOS Real-Time application.
+3. Using the information you saved to **Notepad** property.
+4. Update the **Scope ID** property.
+5. Update the **Azure IoT Central URL** property.
+6. Update the **DeviceAuthentication** property.
+
+---
+
+## Step 5: Set a Breakpoint in the InterCoreHandler Function
 
 1. Open **main.c**
 2. From the **Navigate Functions dropdown**, select the second of the two **InterCoreHandler** items listed.
