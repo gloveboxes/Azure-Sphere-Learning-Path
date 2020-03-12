@@ -154,7 +154,23 @@ The MT3620 MCU is also known as a Crossover MCU as it bridges the application wo
 
 ---
 
-## Supported Starter/Developer Kits
+## Azure Sphere Devices
+
+For simplicity, only the LEDs and sensors built into the Azure Sphere developer boards are used. These labs do not require any expansion boards or extra sensors.
+
+The following Azure Sphere developer boards are supported by these labs.
+
+| [Avnet Azure Sphere MT3620 Starter Kit](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-sk-g-3074457345636825680/) | [Seeed Studio Azure Sphere MT3620 Development Kit](https://www.seeedstudio.com/mt3620-for-azure-sphere) | [Seeed Studio Seeed Studio MT3620 Mini Dev Board](https://www.seeedstudio.com/mt3620-for-azure-sphere) |
+| :-------------: | :---------------: | :-----: |
+| [Reference](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-sk-g-3074457345636825680/) | [Reference](http://wiki.seeedstudio.com/Azure_Sphere_MT3620_Development_Kit/) | [Reference](http://wiki.seeedstudio.com/MT3620_Mini_Dev_Board/) |
+| ![](zdocs/resources/avnet-azure-sphere.jpg) | ![](zdocs/resources/seeed-studio-azure-sphere-rdb.jpg) | ![](zdocs/resources/seeed-studio-azure-sphere-mini.png) |
+| [Mikroe Click Boards](https://www.mikroe.com/) and Seeed Grove I2C | [Grove Starter Kit for Azure Sphere MT3620 Development Kit](http://wiki.seeedstudio.com/Grove_Starter_Kit_for_Azure_Sphere_MT3620_Development_Kit/) | [MT3620 Grove Breakout](https://www.seeedstudio.com/MT3620-Grove-Breakout-p-4043.html) |
+| ![](zdocs/resources/MIKROE-relay2.jpg) | ![](zdocs/resources/Grove_Starter_Kit_for_Azure_Sphere_MT3620_Development_Kit.jpg)  | ![](zdocs/resources/mt3620-grove-breakout-preview.png) |
+
+
+<!-- --- -->
+
+<!-- ## Supported Starter/Developer Kits
 
 These labs support the following Azure Sphere Kits.
 
@@ -162,7 +178,7 @@ These labs support the following Azure Sphere Kits.
 |---|---|
 | [Avnet Azure Sphere MT3620 Starter Kit](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-sk-g-3074457345636825680/). This starter kit includes a 3D accelerometer, a 3D Gyro, along with temperature, pressure, and ambient light sensors. | ![Avnet Azure Sphere MT3620 Starter Kit](zdocs/resources/avnet-azure-sphere.jpg)|
 | [Seeed Studio Azure Sphere MT3620 Development Kit](http://wiki.seeedstudio.com/Azure_Sphere_MT3620_Development_Kit/) | ![Seeed Studio Azure Sphere MT3620 Development Kit](zdocs/resources/seeed-studio-azure-sphere.png) |
-| [Seeed Studio Azure Sphere MT3620 Mini Dev Board]() | ![Seeed Studio Azure Sphere MT3620 Mini Dev Board](zdocs/resources/seeed-studio-azure-sphere-mini.png) |
+| [Seeed Studio Azure Sphere MT3620 Mini Dev Board]() | ![Seeed Studio Azure Sphere MT3620 Mini Dev Board](zdocs/resources/seeed-studio-azure-sphere-mini.png) | -->
 
 ---
 
