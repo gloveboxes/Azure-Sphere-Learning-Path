@@ -147,7 +147,10 @@ The MT3620 MCU is also known as a Crossover MCU as it bridges the application wo
 
 * Only signed and verified apps can run on the microcontroller cores.
 
-![Azure Sphere architecture](zdocs/resources/azure-sphere-architecture.png)
+<!-- ![Azure Sphere architecture](zdocs/resources/azure-sphere-architecture.png) -->
+
+![Azure Sphere architecture](zdocs/resources/azure-sphere-architecture-detailed.png)
+
 
 ---
 
