@@ -228,7 +228,7 @@ You can Debug the FreeRTOS application running on Azure Sphere Cortex M4 Real-Ti
 
 ## Deploy the FreeRTOS Application to the Real-Time Core
 
-This time we are going to deploy the FreeRTOS Real-Time application to the Azure Sphere in release mode without the debugger attached.
+This time we are going to deploy the FreeRTOS Real-Time application to the Azure Sphere in release mode without attaching the debugger.
 
 1. Set the startup configuration. Select the ARM-Release configuration and the GDB Debugger (RTCore) startup item.
     ![](resources/visual-studio-release-mode.png)
