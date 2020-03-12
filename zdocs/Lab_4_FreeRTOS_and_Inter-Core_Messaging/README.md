@@ -226,7 +226,7 @@ You can Debug the FreeRTOS application running on Azure Sphere Cortex M4 Real-Ti
 
 ---
 
-## Deploy FreeRTOS Application to the Real-Time Core
+## Deploy the FreeRTOS Application to the Real-Time Core
 
 This time we are going to deploy the FreeRTOS Real-Time application to the Azure Sphere in release mode without the debugger attached.
 
