@@ -222,12 +222,29 @@ You can Debug the FreeRTOS application running on Azure Sphere Cortex M4 Real-Ti
 5.  You can now start stepping through the code by pressing <kbd>**F10**</kbd> to step over, <kbd>**F11**</kbd> to step into, or <kbd>**F5**</kbd> to continue.
 6. Explorer debugging, hover the mouse over the variable named **BuiltInLedOn** and you can see its current value.
 7. Click on the **red dot** to delete the breakpoint, and press <kbd>**F5**</kbd> to continue execution.
+8. Stop the debugging session. Press <kbd>Shift+F5</kbd>.
+
+---
+
+## Deploy FreeRTOS Application to the Real-Time Core
+
+This time we are going to deploy the FreeRTOS Real-Time application to the Azure Sphere in release mode without the debugger attached.
+
+1. Set the startup configuration. Select the ARM-Release configuration and the GDB Debugger (RTCore) startup item.
+    ![](resources/visual-studio-release-mode.png)
+2. Press <kbd>Ctrl-F5</kbd>, or from the main menu select *Debug* -> *Start Without Debugging*.
+3. This will deploy and run the application on the Azure Sphere.
+4. Try pressing the Azure Sphere **Reset** button. You will notice the LED will start rapidly blinking again which indicates that the FreeRTOS Real-Time application is restarted after the reset.
+
+---
+
+## Close Visual Studio
+
+Now close **Close Visual Studio**.
 
 ---
 
 ## Finished 完了 fertig finito ख़त्म होना terminado
-
-**Do NOT** close or stop Visual Studio as we need the FreeRTOS application running for the next lab.
 
 ---
 
