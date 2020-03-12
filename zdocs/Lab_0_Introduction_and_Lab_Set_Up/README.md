@@ -285,7 +285,7 @@ azsphere device enable-development
 
 ## Azure Sphere Devices
 
-The following Azure Sphere Kits are supported by these labs. For simplicity, only the built-in LEDs are used for the labs.
+The following Azure Sphere Kits are supported by these labs. These labs do not use or require any expansion boards or external sensors. For simplicity, only built-in LEDs and sensors are used.
 
 | [Avnet Azure Sphere MT3620 Starter Kit](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-sk-g-3074457345636825680/) | [Seeed Studio Azure Sphere MT3620 Development Kit](https://www.seeedstudio.com/mt3620-for-azure-sphere) | [Seeed Studio Seeed Studio MT3620 Mini Dev Board](https://www.seeedstudio.com/mt3620-for-azure-sphere) |
 | :-------------: | :---------------: | :-----: |
