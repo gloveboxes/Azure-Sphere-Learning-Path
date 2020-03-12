@@ -286,7 +286,7 @@ azsphere device enable-development
 ## Azure Sphere Devices
 
 | Avnet Azure Sphere MT3620 Starter Kit | Seeed Studio Azure Sphere MT3620 Development Kit | Seeed Studio Seeed Studio MT3620 Mini Dev Board|
-|-------------|---------------|-----|
+| :-------------: | :---------------: | :-----: |
 | ![](resources/avnet-azure-sphere.jpg) | ![](resources/seeed-studio-azure-sphere-rdb.jpg) | ![](resources/seeed-studio-azure-sphere-mini.png) |
 | [Mikroe Click Boards](https://www.mikroe.com/) and Seeed Grove I2C | [Grove Starter Kit for Azure Sphere MT3620 Development Kit](http://wiki.seeedstudio.com/Grove_Starter_Kit_for_Azure_Sphere_MT3620_Development_Kit/) | [MT3620 Grove Breakout](https://www.seeedstudio.com/MT3620-Grove-Breakout-p-4043.html) |
 | ![](resources/MIKROE-relay2.jpg) | ![](resources/Grove_Starter_Kit_for_Azure_Sphere_MT3620_Development_Kit.jpg)  | ![](resources/mt3620-grove-breakout-preview.png) |
