@@ -73,7 +73,11 @@ static Peripheral builtinLed = {
 
 ### Timers
 
-In **main.c** there is another variable named **measureSensorTimer** of type **Timer**. Variables of type **Timer** declare a generalized Timer object. A Timer is a regularly occurring event. For example, you may want to blink an LED every second, or perhaps read data from a sensor every 5 seconds.
+Timers are periodic events. For example, you may want to blink an LED every second, or perhaps read data from a sensor every 5 seconds. Timers are a useful way to coordinate activities and help to simplify application design.
+
+Given timers are used throughout these labs there is a generalized model to simplify working with timers.
+
+In **main.c** there is another variable named **measureSensorTimer** of type **Timer**. Variables of type **Timer** declare a generalized Timer object.
 
 ```c
 static Timer measureSensorTimer = {
@@ -196,7 +200,7 @@ The generation of the CMake cache runs automatically when you open a CMake proje
 
 	![](resources/visual-studio-cmake-generate-completed.png)
 
-	If the CMake Generation fails, then there is a good chance the lab has been cloned to a directory with a long file path and name. This can be a problem for CMake. Try moving the labs closer to the root directory on your local drive.
+	If the CMake Generation fails, then move the labs to a directory closer to the root directory on your local drive.
 
 ---
 
