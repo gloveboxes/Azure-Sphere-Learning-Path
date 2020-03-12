@@ -262,7 +262,7 @@ Check that the WiFi network connection is active.
 azsphere device wifi show-status
 ```
 
-If there is no network connect present then repeat step 9.
+If there is no network connection then repeat step 6.
 
 ---
 
