@@ -16,7 +16,7 @@
 |Source Code | [https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git](https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git) |
 |Language| C|
 |Licence | [Review full MIT Licence](LICENSE). In summary. You are free to use, modify, and contribute back to the code in this project. No liability accepted.
-|Date| February  2020|
+|Date| March  2020|
 
 ---
 
