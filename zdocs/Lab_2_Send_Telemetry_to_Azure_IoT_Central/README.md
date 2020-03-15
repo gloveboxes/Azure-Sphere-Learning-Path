@@ -327,15 +327,24 @@ This numeric name is the ID of your Azure Sphere Device. You can check this by r
 
 You need to **Migrate** the newly enrolled device to the **Azure Sphere** template. The template maps the JSON formatted telemetry to the dashboard.
 
-1. Select the newly enrolled device.
-2. Click **Migrate**, and select the Azure Sphere Template, and migrate.
+1. Select the newly enrolled device from the **All devices** template.
+2. Click **Migrate**
+
+    ![](resources/iot-central-migrate-device.png)
+
+3. Select the Azure Sphere Template, and then click migrate.
+
+    ![](resources/iot-central-migrate-select-template.png)
 
 ---
 
 ### Step 5: Display the Azure Sphere device telemetry
 
-1. Click on the migrated device, then select the **Overview** tab to view the device telemetry.
-2. You can click on the **Rename** button to give your device a friendly name.
+1. Click **Devices** on the sidebar.
+2. Select the **Azure Sphere** template
+3. Click on the migrated device
+4. Select the **Overview** tab to view the device telemetry.
+5. Optionally, you can rename your device. Click the **Rename** button and give your device a friendly name.
 
 ![](resources/iot-central-display-measurements.png)
 
