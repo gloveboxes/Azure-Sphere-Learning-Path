@@ -64,7 +64,7 @@ As billions of new devices are connected, organizations need to secure them to h
 
 ---
 
-## Why you should care about IoT Security
+## Why you should care about IoT security
 
 Almost a day doesn't go by without some newsworthy IoT Security attack happening, and those are just the ones that make the news cycle. IoT security is fundamental and at the same time often absent from many conversations in the rush to get products to market.
 
