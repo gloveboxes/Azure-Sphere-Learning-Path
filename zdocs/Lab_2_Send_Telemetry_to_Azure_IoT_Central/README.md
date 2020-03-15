@@ -65,7 +65,7 @@ This project leverages the [Azure IoT Hub Device Provisioning Service (PDS)](htt
 
 ---
 
-## Getting Started with Azure IoT Central
+## Getting started with Azure IoT Central
 
 We are going to create an Azure IoT Central application from an application template.
 
@@ -192,7 +192,7 @@ This returns the **Device ID** and converts it to lowercase. Azure IoT Central r
 
 7. Leave this page open as you will need the Azure IoT Central Application URL soon.
 
-### Step 4: Azure Sphere Tenant ID
+### Step 4: Get the Azure Sphere Tenant ID
 
 We need the ID of the Azure Sphere Tenant that is now trusted by Azure IoT Central.
 
@@ -264,7 +264,7 @@ Before building the application with Visual Studio ensure ARM-Debug and GDB Debu
 
 ![](resources/visual-studio-start-config.png)
 
-### Sending Telemetry to Azure IoT Central
+### Sending telemetry to Azure IoT Central
 
 In **main.c**, scroll down to the **MeasureSensorHandler** C Function. In this function there is a call to **SendMsg(msgBuffer);**. This will send a JSON formatted telemetry message to Azure IoT Central.
 
@@ -293,7 +293,7 @@ To start the build, deploy, debug process, either click the Visual Studio **Star
 
 ![](resources/visual-studio-start-debug.png)
 
-### Step 2: View Debugger Output
+### Step 2: View debugger output
 
 Open the **Output** window to view the output from **Log_Debug** statements in the code. You will see the device negotiating security and then it will start sending telemetry to Azure IoT Central.
 
@@ -315,7 +315,7 @@ This numeric name is the ID of your Azure Sphere Device. You can check this by r
 
 ---
 
-## Step 3: View Device Telemetry on the Azure IoT Central Dashboard
+## Step 3: View the device telemetry on the Azure IoT Central Dashboard
 
 1. Switch back to Azure IoT Central in your web browser.
 2. You need to wait a minute or two before your Azure Sphere device is automatically enrolled.
@@ -323,7 +323,7 @@ This numeric name is the ID of your Azure Sphere Device. You can check this by r
 
 ---
 
-## Step 4: Migrate your device to the Azure Sphere template
+## Step 4: Migrate your device to the Azure Sphere Template
 
 You need to **Migrate** the newly enrolled device to the **Azure Sphere** template. The template maps the JSON formatted telemetry to the dashboard.
 
