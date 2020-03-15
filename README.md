@@ -26,9 +26,11 @@
 
 Azure Sphere is made up of three interrelated components:
 
-1. Azure Sphere-certified chips
-1. Azure Sphere OS
-1. Azure Sphere Security Service
+1. Azure Sphere-certified MCUs
+2. Azure Sphere OS
+3. Azure Sphere Security Service
+
+![Azure Sphere end-to-end](zdocs/resources/azure-sphere-end-to-end.png)
 
 These components are backed by Microsoft best-in-class security experts who monitor emerging threats, design updates and provide a decade of ongoing servicing.
 
@@ -76,19 +78,13 @@ It also allowed hackers to swipe 10 gigabytes of data from the North American ca
 
 [Criminals Hacked A Fish Tank To Steal Data From A Casino](https://www.forbes.com/sites/leemathews/2017/07/27/criminals-hacked-a-fish-tank-to-steal-data-from-a-casino/#46045c1d32b9)
 
----
+<!-- ---
 
 ## What is Azure Sphere
 
 Azure Sphere is a solution for securing MCU Power Devices. It comprises a secured, connected, crossover microcontroller unit (MCU), a custom high-level Linux-based operating system (OS), and a cloud-based security service that provides continuous, renewable security.
 
-![Azure Sphere end-to-end](zdocs/resources/azure-sphere-end-to-end.png)
-
----
-
-## Recent Azure Sphere Articles
-
-1. [Why Azure Sphere From Microsoft Is A Big Deal For The IoT Ecosystem](https://www.forbes.com/sites/janakirammsv/2020/02/25/why-azure-sphere-from-microsoft-is-a-big-deal-for-the-iot-ecosystem/#6063a8c15f1b)
+![Azure Sphere end-to-end](zdocs/resources/azure-sphere-end-to-end.png) -->
 
 ---
 
@@ -183,6 +179,10 @@ These labs support the following Azure Sphere Kits.
 ---
 
 ## Appendix
+
+### Azure Sphere Articles
+
+1. [Why Azure Sphere From Microsoft Is A Big Deal For The IoT Ecosystem](https://www.forbes.com/sites/janakirammsv/2020/02/25/why-azure-sphere-from-microsoft-is-a-big-deal-for-the-iot-ecosystem/#6063a8c15f1b)
 
 ### Learn about Azure Sphere
 
