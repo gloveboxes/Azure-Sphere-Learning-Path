@@ -75,7 +75,7 @@ static Peripheral builtinLed = {
 
 Timers are periodic events. For example, you may want to blink an LED every second, or perhaps read data from a sensor every 5 seconds. Timers are a useful way to coordinate activities and help to simplify application design.
 
-Given timers are used throughout these labs there is a generalized model to simplify working with timers.
+Given timers are used throughout these labs, and in lots of projects, there is a generalized model to simplify working with timers.
 
 In **main.c** there is another variable named **measureSensorTimer** of type **Timer**. Variables of type **Timer** declare a generalized Timer object.
 
