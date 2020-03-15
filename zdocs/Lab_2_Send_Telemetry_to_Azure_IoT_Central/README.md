@@ -75,7 +75,7 @@ We are going to create an Azure IoT Central application from an application temp
 
 For this lab, we are going to create an Azure IoT Central Application from a predefined template.
 
-Right mouse click [Azure Sphere Learning Path Azure IoT Central Template](https://apps.azureiotcentral.com/build/new/107ea05b-c031-4866-a0f3-60c934551ac7) to open in a new browser tab.
+Right mouse click [Azure Sphere Learning Path Azure IoT Central Template](https://apps.azureiotcentral.com/build/new/107ea05b-c031-4866-a0f3-60c934551ac7) to open the link in a new browser tab.
 
 ### Configure the Azure IoT Central Template
 
@@ -115,7 +115,7 @@ After you have completed this step, any device that is claimed by your Azure Sph
 
 1. In Azure IoT Central, go to Administration > Device Connection > Manage primary certificate
 
-2. Click the folder icon next to the Primary box and navigate to the certificate you downloaded in Step 2. If you don't see the .cer file in the list, make sure that the view filter is set to All files (*). Select the certificate and then click the gear icon next to the Primary box.
+2. Click the folder icon next to the Primary box and navigate to the certificate you downloaded. If you don't see the .cer file in the list, make sure that the view filter is set to All files (*). Select the certificate and then click the gear icon next to the Primary box.
 
 3. The Primary Certificate dialog box appears. The Subject and Thumbprint fields contain information about the current Azure Sphere tenant and primary root certificate.
 
@@ -141,11 +141,11 @@ After you have completed this step, any device that is claimed by your Azure Sph
 
     ![](resources/iot-central-certificate-verified.png)
 
-After you complete these steps, any device that is claimed into your Azure Sphere tenant will automatically be accessible to your Azure IoT Central application.
+After you complete these steps, any device that is claimed into your Azure Sphere tenant will automatically be enrolled into your Azure IoT Central application when it first connects.
 
 ---
 
-## Step 3: Azure IoT Central Application Endpoint for Whitelisting
+## Step 3: Whitelist the Azure IoT Central Application Endpoint
 
 Remember, applications on Azure Sphere are locked down by default, including hardware and network endpoints.
 
@@ -153,13 +153,13 @@ You must whitelist the network endpoint of your Azure IoT Central application ot
 
 In this step, we are going to create a dummy device and use that device to obtain the Azure IoT Central Application URL that we will whitelist.
 
-### Create an Azure Sphere Device
+<!-- ### Create an Azure Sphere Device
 
 1. Start the **Azure Sphere Developer Command Prompt**
 2. Run the **```azsphere device show-attached```** command. This returns the Azure Sphere Device Id.
 3. Next, run **```powershell -Command ((azsphere device show-attached)[0] -split ': ')[1].ToLower()```**.
 This returns the **Device ID** and converts it to lowercase. Azure IoT Central requires device IDs to be lowercase.
-4. **Copy** the **Device ID** to the clipboard.
+4. **Copy** the **Device ID** to the clipboard. -->
 
 ### Create an Azure IoT Central Device
 
@@ -168,8 +168,8 @@ This returns the **Device ID** and converts it to lowercase. Azure IoT Central r
 3. Select the **Azure Sphere** device template
     ![](resources/iot-central-create-device.png).
 4. Click **+ New** to add a new device.
-5. Paste the **Device ID** from the PowerShell command into the **Device ID** field.
-6. **Name** the Device, for example, _Azure Sphere_.
+5. Set the **Device ID** name to _Dummy-Device_, or something similar.
+6. Leave the default **Device Name**.
 7. Click **Create** to create the new device.
 
     ![](resources/iot-central-create-new-device.png)
