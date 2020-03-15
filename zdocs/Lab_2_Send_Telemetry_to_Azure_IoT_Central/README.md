@@ -94,7 +94,7 @@ Right mouse click [Azure Sphere Learning Path Azure IoT Central Template](https:
 
 ---
 
-## Step 2: Trust the Devices from your Azure Sphere Tenant
+## Step 2: Trust all devices in your Azure Sphere Tenant
 
 We need to tell Azure IoT Central to trust all devices in your Azure Sphere Tenant.
 
@@ -266,7 +266,7 @@ Before building the application with Visual Studio ensure ARM-Debug and GDB Debu
 
 ### Sending Telemetry to Azure IoT Central
 
-In **main.c**, scroll down to the **MeasureSensorHandler** C Function. In this function there is a call to **SendMsg(msgBuffer);**. This will send the JSON telemetry to Azure IoT Central.
+In **main.c**, scroll down to the **MeasureSensorHandler** C Function. In this function there is a call to **SendMsg(msgBuffer);**. This will send a JSON formatted telemetry message to Azure IoT Central.
 
 ```c
 static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
@@ -318,9 +318,24 @@ This numeric name is the ID of your Azure Sphere Device. You can check this by r
 ## Step 3: View Device Telemetry on the Azure IoT Central Dashboard
 
 1. Switch back to Azure IoT Central in your web browser.
-2. Ensure your device is selected.
-3. Ensure the **Overview** tab is selected.
-4. You need to wait a minute or two before the telemetry is displayed on the **Overview** tab.
+2. You need to wait a minute or two before your Azure Sphere device is automatically enrolled.
+3. The newly enrolled device will have a numeric name that matches your Azure Sphere Device ID.
+
+---
+
+## Step 4: Migrate your device to the Azure Sphere template
+
+You need to **Migrate** the newly enrolled device to the **Azure Sphere** template. The template maps the JSON formatted telemetry to the dashboard.
+
+1. Select the newly enrolled device.
+2. Click **Migrate**, and select the Azure Sphere Template, and migrate.
+
+---
+
+### Step 5: Display the Azure Sphere device telemetry
+
+1. Click on the migrated device, then select the **Overview** tab to view the device telemetry.
+2. You can click on the **Rename** button to give your device a friendly name.
 
 ![](resources/iot-central-display-measurements.png)
 
