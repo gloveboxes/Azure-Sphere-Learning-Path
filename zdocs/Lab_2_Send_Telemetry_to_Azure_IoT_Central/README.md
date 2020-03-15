@@ -29,7 +29,7 @@ Each module assumes you have completed the previous module.
 
 ## What you will learn
 
-You will learn how to build a High Level [Azure Sphere](https://azure.microsoft.com/services/azure-sphere/?WT.mc_id=github-blog-dglover) application that connects and sends telemetry to [Azure IoT Central](https://azure.microsoft.com/services/iot-central/?WT.mc_id=github-blog-dglover).
+You will learn how to build a High-Level [Azure Sphere](https://azure.microsoft.com/services/azure-sphere/?WT.mc_id=github-blog-dglover) application that connects and sends telemetry to [Azure IoT Central](https://azure.microsoft.com/services/iot-central/?WT.mc_id=github-blog-dglover).
 
 ---
 
@@ -151,7 +151,7 @@ Remember, applications on Azure Sphere are locked down by default, including har
 
 You must whitelist the network endpoint of your Azure IoT Central application otherwise your Azure Sphere Application will not be able to connect to it.
 
-In this step we are going to create a dummy device and use that device to obtain the Azure IoT Central Application URL that we will whitelist.
+In this step, we are going to create a dummy device and use that device to obtain the Azure IoT Central Application URL that we will whitelist.
 
 ### Create an Azure Sphere Device
 
@@ -169,7 +169,7 @@ This returns the **Device ID** and converts it to lowercase. Azure IoT Central r
     ![](resources/iot-central-create-device.png).
 4. Click **+ New** to add a new device.
 5. Paste the **Device ID** from the PowerShell command into the **Device ID** field.
-6. **Name** the Device, for example _Azure Sphere_.
+6. **Name** the Device, for example, _Azure Sphere_.
 7. Click **Create** to create the new device.
 
     ![](resources/iot-central-create-new-device.png)
@@ -328,7 +328,7 @@ This numeric name is the ID of your Azure Sphere Device. You can check this by r
 
 ## In Review
 
-We learnt the following:
+We learned the following:
 
 1. How to create an Azure IoT Central Application from a template.
 
