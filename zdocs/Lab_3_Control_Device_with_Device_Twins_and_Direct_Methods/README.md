@@ -65,7 +65,7 @@ Both Device Twins and Direct Methods provide a mechanism to invoke functionality
 
 ### Azure IoT Device Twins
 
-When you set a Device Twin property in Azure IoT you are setting the *desired* state of a property on the device. Azure IoT will send a desired state message to the device, the device then actions the request, for example, turn on a LED, and the device will then send a *reported* state msg back to Azure IoT. Azure IoT then stores the *reported* state in the Azure IoT.
+When you set a Device Twin property in Azure IoT you are setting the *desired* state of a property on the device. Azure IoT will send a desired state message to the device, the device then actions the request, for example, turn on a LED, and the device will then send a *reported* state message back to Azure IoT. Azure IoT then stores the *reported* state in the Azure IoT.
 
 Azure IoT Central uses this *reported* state to display the last synced state of a property.
 
