@@ -20,7 +20,7 @@ static int InitPeripheralsAndHandlers(void);
 static void ClosePeripheralsAndHandlers(void);
 static void MeasureSensorHandler(EventLoopTimer* eventData);
 static void DeviceTwinHandler(DeviceTwinBinding* deviceTwinBinding);
-static MethodResponseCode SetFanSpeedDirectMethod(JSON_Object* json, DirectMethodBinding* directMethodBinding);
+static DirectMethodResponseCode SetFanSpeedDirectMethod(JSON_Object* json, DirectMethodBinding* directMethodBinding, char** responseMsg);
 
 
 static DeviceTwinBinding relay = {
@@ -178,25 +178,27 @@ static void DeviceTwinHandler(DeviceTwinBinding* deviceTwinBinding) {
 	}
 }
 
+// Sample SetFanSpeedDirectMethod implementation - doesn't do anything other than returning a response message and status
+static DirectMethodResponseCode SetFanSpeedDirectMethod(JSON_Object* json, DirectMethodBinding* directMethodBinding, char** responseMsg) {
+	const char propertyName[] = "speed";
+	const size_t responseLen = 40; // Allocate and initialize a response message buffer. The calling function is responsible for the freeing memory
+	
+	*responseMsg = (char*)malloc(responseLen);
+	memset(*responseMsg, 0, responseLen);
 
-static MethodResponseCode SetFanSpeedDirectMethod(JSON_Object* json, DirectMethodBinding* directMethodBinding) {
-	// Sample implementation - doesn't do anything other than returning a response message and status
-
-	// Allocate and initialize a response message buffer. The calling function is responsible for the freeing memory
-	const size_t responseLen = 40;
-	directMethodBinding->responseMessage = (char*)malloc(responseLen);
-	memset(directMethodBinding->responseMessage, 0, responseLen);
-
-	int speed = (int)json_object_get_number(json, "speed");
+	if (!json_object_has_value_of_type(json, propertyName, JSONNumber)) {
+		return METHOD_FAILED;
+	}
+	int speed = (int)json_object_get_number(json, propertyName);
 
 	if (speed >= 0 && speed <= 100) {
-		snprintf(directMethodBinding->responseMessage, responseLen, "%s succeeded, speed set to %d", directMethodBinding->methodName, speed);
-		Log_Debug("\nDirect Method Response '%s'\n", directMethodBinding->responseMessage);
+		snprintf(*responseMsg, responseLen, "%s succeeded, speed set to %d", directMethodBinding->methodName, speed);
+		Log_Debug("\nDirect Method Response '%s'\n", *responseMsg);
 		return METHOD_SUCCEEDED;
 	}
 	else {
-		snprintf(directMethodBinding->responseMessage, responseLen, "%s FAILED, speed out of range %d", directMethodBinding->methodName, speed);
-		Log_Debug("\nDirect Method Response '%s'\n", directMethodBinding->responseMessage);
+		snprintf(*responseMsg, responseLen, "%s FAILED, speed out of range %d", directMethodBinding->methodName, speed);
+		Log_Debug("\nDirect Method Response '%s'\n", *responseMsg);
 		return METHOD_FAILED;
 	}
 }
