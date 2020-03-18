@@ -32,6 +32,9 @@ int AzureDirectMethodHandler(const char* method_name, const unsigned char* paylo
 	const char* mallocFailedMsg = "Memory Allocation failed";
 	const char* invalidJsonMsg = "Invalid JSON";
 
+	DirectMethodResponseCode responseCode = METHOD_NOT_FOUND;
+	char* responseMsg = NULL;
+
 	DirectMethodBinding* directMethodBinding = NULL;
 
 	const char* responseMessage = methodNotFoundMsg;
@@ -79,17 +82,18 @@ int AzureDirectMethodHandler(const char* method_name, const unsigned char* paylo
 	}
 
 	if (directMethodBinding != NULL && directMethodBinding->handler != NULL) {	// was a DirectMethodBinding found
-		MethodResponseCode responseCode = directMethodBinding->handler(jsonObject, directMethodBinding);
+
+		responseCode = directMethodBinding->handler(jsonObject, directMethodBinding, &responseMsg);
 
 		result = (int)responseCode;
 
 		switch (responseCode)
 		{
 		case METHOD_SUCCEEDED:	// 200
-			responseMessage = strlen(directMethodBinding->responseMessage) == 0 ? methodSucceededMsg : directMethodBinding->responseMessage;
+			responseMessage = strlen(responseMsg) == 0 ? methodSucceededMsg : responseMsg;
 			break;
 		case METHOD_FAILED:		// 500
-			responseMessage = strlen(directMethodBinding->responseMessage) == 0 ? methodErrorMsg : directMethodBinding->responseMessage;
+			responseMessage = strlen(responseMsg) == 0 ? methodErrorMsg : responseMsg;
 			break;
 		case METHOD_NOT_FOUND:
 			break;
@@ -124,9 +128,9 @@ cleanup:
 	}
 
 	if (directMethodBinding != NULL) {
-		if (directMethodBinding->responseMessage != NULL) { // there was memory allocated for a response message so free it now
-			free(directMethodBinding->responseMessage);
-			directMethodBinding->responseMessage = NULL;
+		if (responseMsg != NULL) { // there was memory allocated for a response message so free it now
+			free(responseMsg);
+			responseMsg = NULL;
 		}
 	}
 

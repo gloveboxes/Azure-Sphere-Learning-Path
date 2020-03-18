@@ -191,10 +191,11 @@ static void DeviceTwinHandler(DeviceTwinBinding* deviceTwinBinding) {
 }
 
 
+// Sample SetFanSpeedDirectMethod implementation - doesn't do anything other than returning a response message and status
 static DirectMethodResponseCode SetFanSpeedDirectMethod(JSON_Object* json, DirectMethodBinding* directMethodBinding, char** responseMsg) {
 	const char propertyName[] = "speed";
 	const size_t responseLen = 40; // Allocate and initialize a response message buffer. The calling function is responsible for the freeing memory
-	
+
 	*responseMsg = (char*)malloc(responseLen);
 	memset(*responseMsg, 0, responseLen);
 
