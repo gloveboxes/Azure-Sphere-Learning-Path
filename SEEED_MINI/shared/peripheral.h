@@ -9,20 +9,28 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include "terminate.h"
+
+typedef enum {
+	DIRECTION_UNKNOWN,
+	INPUT,
+	OUTPUT
+} Direction;
 
 struct _peripheral {
 	int fd;
 	int pin;
 	GPIO_Value initialState;
 	bool invertPin;
-	int (*initialise)(struct _peripheral* peripheral);
+	bool (*initialise)(struct _peripheral* peripheral);
 	char* name;
+	Direction direction;
 };
 
 typedef struct _peripheral Peripheral;
 
 
-int OpenPeripheral(Peripheral* peripheral);
+bool OpenPeripheral(Peripheral* peripheral);
 void OpenPeripheralSet(Peripheral** peripherals, size_t peripheralCount);
 void ClosePeripheralSet(void);
 void CloseFdAndPrintError(int fd, const char* fdName);
