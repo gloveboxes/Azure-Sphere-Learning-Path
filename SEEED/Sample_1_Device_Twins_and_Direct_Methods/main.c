@@ -144,8 +144,8 @@ static void ButtonPressCheckHandler(EventLoopTimer* eventLoopTimer) {
 		blinkIntervalIndex = (blinkIntervalIndex + 1) % blinkIntervalsCount;
 		ChangeTimer(&blinkLed1Timer, &blinkIntervals[blinkIntervalIndex]);
 
-		*(int*)ledBlinkRate.twinState = blinkIntervalIndex;		// Update TwinState
-		TwinReportState(&ledBlinkRate);							// Report TwinState
+		*(int*)ledBlinkRate.twinState = blinkIntervalIndex;		// Update TwinState first
+		TwinReportState(&ledBlinkRate);							// Report TwinState second
 
 		if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, cstrJsonEvent, cstrEvtButtonA) > 0) {
 			SendMsg(msgBuffer);
