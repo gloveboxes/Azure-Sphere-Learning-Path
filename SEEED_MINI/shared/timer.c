@@ -12,6 +12,15 @@ EventLoop* GetTimerEventLoop(void) {
 	return eventLoop;
 }
 
+bool ChangeTimer(Timer* timer, const struct timespec* period) {
+	if (timer->eventLoopTimer == 0) { return false; }
+	timer->period.tv_nsec = period->tv_nsec;
+	timer->period.tv_sec = period->tv_sec;
+	int result = SetEventLoopTimerPeriod(timer->eventLoopTimer, period);
+
+	return result == 0 ? true : false;
+}
+
 bool StartTimer(Timer* timer) {
 	EventLoop* eventLoop = GetTimerEventLoop();
 	if (eventLoop == NULL) {

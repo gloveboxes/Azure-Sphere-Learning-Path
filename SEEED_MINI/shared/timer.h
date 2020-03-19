@@ -17,3 +17,4 @@ bool StartTimer(Timer* timer);
 void StopTimer(Timer* timer);
 EventLoop* GetTimerEventLoop(void);
 void StopTimerEventLoop(void);
+bool ChangeTimer(Timer* timer, const struct timespec* period);

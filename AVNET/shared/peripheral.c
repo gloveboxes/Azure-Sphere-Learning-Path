@@ -58,7 +58,7 @@ void CloseFdAndPrintError(int fd, const char* fdName) {
 	if (fd >= 0) {
 		int result = close(fd);
 		if (result != 0) {
-			Log_Debug("ERROR: Could not close fd %s: %s (%d).\n", fdName, strerror(errno), errno);
+			Log_Debug("ERROR: Could not close peripheral %s: %s (%d).\n", fdName == NULL ? "No name" : fdName, strerror(errno), errno);
 		}
 	}
 }

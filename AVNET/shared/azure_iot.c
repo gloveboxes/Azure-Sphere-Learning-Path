@@ -5,7 +5,6 @@ const char* GetReasonString(IOTHUB_CLIENT_CONNECTION_STATUS_REASON reason);
 void SendMessageCallback(IOTHUB_CLIENT_CONFIRMATION_RESULT, void*);
 bool SetupAzureClient(void);
 void HubConnectionStatusCallback(IOTHUB_CLIENT_CONNECTION_STATUS, IOTHUB_CLIENT_CONNECTION_STATUS_REASON, void*);
-bool IsNetworkReady(void);
 
 
 IOTHUB_DEVICE_CLIENT_LL_HANDLE iothubClientHandle = NULL;
