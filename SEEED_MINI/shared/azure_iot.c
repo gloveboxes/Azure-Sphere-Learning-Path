@@ -5,6 +5,7 @@ const char* GetReasonString(IOTHUB_CLIENT_CONNECTION_STATUS_REASON reason);
 void SendMessageCallback(IOTHUB_CLIENT_CONFIRMATION_RESULT, void*);
 bool SetupAzureClient(void);
 void HubConnectionStatusCallback(IOTHUB_CLIENT_CONNECTION_STATUS, IOTHUB_CLIENT_CONNECTION_STATUS_REASON, void*);
+bool IsNetworkReady(void);
 
 
 IOTHUB_DEVICE_CLIENT_LL_HANDLE iothubClientHandle = NULL;
@@ -41,8 +42,7 @@ void SetConnectionString(const char* connectionString) {
 /// </summary>
 /// <param name="result">Message delivery status</param>
 /// <param name="context">User specified context</param>
-void SendMessageCallback(IOTHUB_CLIENT_CONFIRMATION_RESULT result, void* context)
-{
+void SendMessageCallback(IOTHUB_CLIENT_CONFIRMATION_RESULT result, void* context) {
 	Log_Debug("INFO: Message received by IoT Hub. Result is: %d\n", result);
 }
 
@@ -63,48 +63,68 @@ bool SendMsg(const char* msg) {
 		return true;
 	}
 
+	if (!ConnectToAzureIot()) {
+		return false;
+	}
+
+	IOTHUB_MESSAGE_HANDLE messageHandle = IoTHubMessage_CreateFromString(msg);
+
+	if (messageHandle == 0) {
+		Log_Debug("WARNING: unable to create a new IoTHubMessage\n");
+		return false;
+	}
+
+	if (IoTHubDeviceClient_LL_SendEventAsync(iothubClientHandle, messageHandle, SendMessageCallback,
+		/*&callback_param*/ 0) != IOTHUB_CLIENT_OK) {
+		Log_Debug("WARNING: failed to hand over the message to IoTHubClient\n");
+		return false;
+	}
+	else {
+		Log_Debug("INFO: IoTHubClient accepted the message for delivery\n");
+	}
+
+	IoTHubMessage_Destroy(messageHandle);
+
+	return true;
+}
+
+bool IsNetworkReady(void) {
 	bool isNetworkReady = false;
 	if (Networking_IsNetworkingReady(&isNetworkReady) != -1) {
 		if (isNetworkReady) {
-			if (!iothubAuthenticated) {
-				if (!SetupAzureClient()) {
-					return false;
-				}
-			}
+			return true;
 		}
 		else {
 			Log_Debug("\nNetwork not ready.\nFrom azure sphere command prompt, run azsphere device wifi show-status\n\n");
+			return false;
 		}
 	}
 	else {
 		Log_Debug("Failed to get Network state\n");
 		return false;
 	}
+}
 
-	if (isNetworkReady && iothubAuthenticated) {
 
-		IOTHUB_MESSAGE_HANDLE messageHandle = IoTHubMessage_CreateFromString(msg);
+IOTHUB_DEVICE_CLIENT_LL_HANDLE GetAzureIotClientHandle(void) {
+	return iothubClientHandle;
+}
 
-		if (messageHandle == 0) {
-			Log_Debug("WARNING: unable to create a new IoTHubMessage\n");
-			return false;
-		}
 
-		if (IoTHubDeviceClient_LL_SendEventAsync(iothubClientHandle, messageHandle, SendMessageCallback,
-			/*&callback_param*/ 0) != IOTHUB_CLIENT_OK) {
-			Log_Debug("WARNING: failed to hand over the message to IoTHubClient\n");
-			return false;
-		}
-		else {
-			Log_Debug("INFO: IoTHubClient accepted the message for delivery\n");
-		}
-
-		IoTHubMessage_Destroy(messageHandle);
-
-		return true;
+/// <summary>
+///     Check if network connected or already connected, else sets up connection to Azure IoT
+/// </summary>
+bool ConnectToAzureIot(void) {
+	if (!IsNetworkReady()) {
+		return false;
 	}
 	else {
-		return false;
+		if (iothubAuthenticated) {
+			return true;
+		}
+		else {
+			return SetupAzureClient();
+		}
 	}
 }
 
@@ -114,8 +134,7 @@ bool SendMsg(const char* msg) {
 ///     When the SAS Token for a device expires the connection needs to be recreated
 ///     which is why this is not simply a one time call.
 /// </summary>
-bool SetupAzureClient()
-{
+bool SetupAzureClient() {
 	if (iothubClientHandle != NULL) {
 		IoTHubDeviceClient_LL_Destroy(iothubClientHandle);
 	}
@@ -125,8 +144,7 @@ bool SetupAzureClient()
 	if (_connectionString != NULL && strlen(_connectionString) != 0) {
 		IOTHUB_CLIENT_TRANSPORT_PROVIDER protocol = MQTT_Protocol;
 		iothubClientHandle = IoTHubDeviceClient_LL_CreateFromConnectionString(_connectionString, protocol);
-		if (iothubClientHandle == NULL)
-		{
+		if (iothubClientHandle == NULL) {
 			Log_Debug("Failure to create IoT Hub Client from connection string");
 		}
 	}
@@ -159,8 +177,7 @@ bool SetupAzureClient()
 ///     Sets the IoT Hub authentication state for the app
 ///     The SAS Token expires which will set the authentication state
 /// </summary>
-void HubConnectionStatusCallback(IOTHUB_CLIENT_CONNECTION_STATUS result, IOTHUB_CLIENT_CONNECTION_STATUS_REASON reason, void* userContextCallback)
-{
+void HubConnectionStatusCallback(IOTHUB_CLIENT_CONNECTION_STATUS result, IOTHUB_CLIENT_CONNECTION_STATUS_REASON reason, void* userContextCallback) {
 	iothubAuthenticated = (result == IOTHUB_CLIENT_CONNECTION_AUTHENTICATED);
 	Log_Debug("IoT Hub Authenticated: %s\n", GetReasonString(reason));
 }
@@ -169,8 +186,7 @@ void HubConnectionStatusCallback(IOTHUB_CLIENT_CONNECTION_STATUS result, IOTHUB_
 ///     Converts AZURE_SPHERE_PROV_RETURN_VALUE to a string.
 /// </summary>
 const char* getAzureSphereProvisioningResultString(
-	AZURE_SPHERE_PROV_RETURN_VALUE provisioningResult)
-{
+	AZURE_SPHERE_PROV_RETURN_VALUE provisioningResult) {
 	switch (provisioningResult.result) {
 	case AZURE_SPHERE_PROV_RESULT_OK:
 		return "AZURE_SPHERE_PROV_RESULT_OK";
@@ -192,8 +208,7 @@ const char* getAzureSphereProvisioningResultString(
 /// <summary>
 ///     Converts the IoT Hub connection status reason to a string.
 /// </summary>
-const char* GetReasonString(IOTHUB_CLIENT_CONNECTION_STATUS_REASON reason)
-{
+const char* GetReasonString(IOTHUB_CLIENT_CONNECTION_STATUS_REASON reason) {
 	static char* reasonString = "unknown reason";
 	switch (reason) {
 	case IOTHUB_CLIENT_CONNECTION_EXPIRED_SAS_TOKEN:
@@ -220,15 +235,3 @@ const char* GetReasonString(IOTHUB_CLIENT_CONNECTION_STATUS_REASON reason)
 	}
 	return reasonString;
 }
-
-//void DeviceTwinUpdateReportedState(char* reportedPropertiesString) {
-//	if (IoTHubDeviceClient_LL_SendReportedState(
-//		iothubClientHandle, (unsigned char*)reportedPropertiesString,
-//		strlen(reportedPropertiesString), DeviceTwinsReportStatusCallback, 0) != IOTHUB_CLIENT_OK) {
-//		Log_Debug("ERROR: failed to set reported state for '%s'.\n", reportedPropertiesString);
-//	}
-//	else {
-//		Log_Debug("INFO: Reported state updated '%s'.\n", reportedPropertiesString);
-//	}
-//}
-

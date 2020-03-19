@@ -6,6 +6,8 @@
 #include "peripheral.h"
 #include <iothub_device_client_ll.h>
 
+#define DEVICE_TWIN_REPORT_LEN 50
+
 typedef enum {
 	TYPE_UNKNOWN = 0,
 	TYPE_BOOL = 1,
@@ -32,5 +34,6 @@ void CloseDeviceTwinSet(void);
 
 void OpenDeviceTwin(DeviceTwinBinding* deviceTwinBinding);
 void CloseDeviceTwin(DeviceTwinBinding* deviceTwinBinding);
+bool TwinReportState(DeviceTwinBinding* deviceTwinBinding);
 
 #endif
