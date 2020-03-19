@@ -1,0 +1,23 @@
+﻿{
+  "SchemaVersion": 1,
+  "Name": "AzureSphereIoTCentral",
+  "ComponentId": "25025d2c-66da-4448-bae1-ac26fcdd3627",
+  "EntryPoint": "/bin/app",
+  "CmdArgs": [ "Fake", "0ne000D0312", "6583cf17-d321-4d72-8283-0b7c5b56442b" ],
+  "Capabilities": {
+    "Gpio": [
+      "$MT3620_RDB_BUTTON_A",
+      "$MT3620_RDB_BUTTON_B",
+      "$MT3620_RDB_LED1_BLUE",
+      "$MT3620_RDB_LED2_GREEN",
+      "$MT3620_RDB_NETWORKING_LED_BLUE",
+      "$MT3620_RDB_NETWORKING_LED_GREEN"
+    ],
+    "Uart": [ "$MT3620_ISU0_UART" ],
+    "PowerControls": [ "ForceReboot" ],
+    "AllowedConnections": [ "global.azure-devices-provisioning.net", "glovebox-dps.azure-devices-provisioning.net", "glovebox-iothub.azure-devices.net" ],
+    "DeviceAuthentication": "9d7e79eb-e021-43ce-9f2b-fa944b447494",
+    "AllowedApplicationConnections": [ "6583cf17-d321-4d72-8283-0b7c5b56442b" ]
+  },
+  "ApplicationType": "Default"
+}
