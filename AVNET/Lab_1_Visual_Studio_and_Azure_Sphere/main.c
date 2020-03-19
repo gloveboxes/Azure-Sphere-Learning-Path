@@ -22,7 +22,9 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer);
 
 
 static Peripheral builtinLed = {
-	.fd = -1, .pin = BUILTIN_LED,
+	.fd = -1, 
+	.pin = BUILTIN_LED, 
+	.direction = OUTPUT,
 	.initialState = GPIO_Value_High,
 	.invertPin = true,
 	.initialise = OpenPeripheral,

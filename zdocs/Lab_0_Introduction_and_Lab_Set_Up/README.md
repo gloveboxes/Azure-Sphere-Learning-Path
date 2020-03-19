@@ -82,7 +82,7 @@ You can develop applications for Azure Sphere on Windows 10 Anniversary Update o
     * Select **C++ CMake tools for Windows**.
     * Click install.
     ![install c++ cmake tools for windows](resources/visual-studio-install-cmake.png)
-2. [Azure Sphere SDK for Visual Studio](https://docs.microsoft.com/en-au/azure-sphere/install/install-sdk?WT.mc_id=github-blog-dglover)
+2. [Azure Sphere SDK for Visual Studio](https://docs.microsoft.com/en-au/azure-sphere/install/install-sdk?WT.mc_id=github-blog-dglover#azure-sphere-sdk-for-visual-studio)
 3. [Git for Windows](https://git-scm.com/downloads)
 4. [Install Azure Sphere drivers for Windows](https://docs.microsoft.com/en-au/azure-sphere/install/install-sdk?WT.mc_id=github-blog-dglover)
 

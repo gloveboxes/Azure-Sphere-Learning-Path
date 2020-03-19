@@ -28,7 +28,7 @@ static void InterCoreHeartBeat(EventLoopTimer* eventLoopTimer);
 
 static DeviceTwinBinding relay = {
 	.peripheral = {
-		.fd = -1, .pin = RELAY_PIN, .initialState = GPIO_Value_Low, .invertPin = false, .initialise = OpenPeripheral, .name = "relay1" },
+		.fd = -1, .pin = RELAY_PIN, .direction = OUTPUT, .initialState = GPIO_Value_Low, .invertPin = false, .initialise = OpenPeripheral, .name = "relay1" },
 	.twinProperty = "relay1",
 	.twinType = TYPE_BOOL,
 	.handler = DeviceTwinHandler
@@ -36,7 +36,7 @@ static DeviceTwinBinding relay = {
 
 static DeviceTwinBinding light = {
 	.peripheral = {
-		.fd = -1, .pin = LIGHT_PIN, .initialState = GPIO_Value_High, .invertPin = true, .initialise = OpenPeripheral, .name = "led1" },
+		.fd = -1, .pin = LIGHT_PIN, .direction = OUTPUT, .initialState = GPIO_Value_High, .invertPin = true, .initialise = OpenPeripheral, .name = "led1" },
 	.twinProperty = "led1",
 	.twinType = TYPE_BOOL,
 	.handler = DeviceTwinHandler
@@ -48,7 +48,7 @@ static DirectMethodBinding fan = {
 };
 
 static Peripheral builtinLed = {
-	.fd = -1, .pin = BUILTIN_LED, .initialState = GPIO_Value_High, .invertPin = true, .initialise = OpenPeripheral, .name = "SendStatus"
+	.fd = -1, .pin = BUILTIN_LED, .direction = OUTPUT, .initialState = GPIO_Value_High, .invertPin = true, .initialise = OpenPeripheral, .name = "SendStatus"
 };
 
 static Timer measureSensorTimer = {
