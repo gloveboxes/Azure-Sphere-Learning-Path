@@ -7,6 +7,7 @@ project (AzureSphereIoTCentral C)
 
 set(Source
     "main.c"
+    "exit_codes.h"
     "../shared/globals.c"
     "../shared/azure_iot.c"
     "../shared/peripheral.c"

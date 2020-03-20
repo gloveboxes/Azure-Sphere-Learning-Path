@@ -5,6 +5,7 @@
 #include "../shared/terminate.h"
 #include "../shared/timer.h"
 #include "applibs_versions.h"
+#include "exit_codes.h"
 #include <applibs/gpio.h>
 #include <applibs/log.h>
 #include <applibs/powermanagement.h>
@@ -96,11 +97,11 @@ int main(int argc, char* argv[]) {
 
 	if (strlen(scopeId) == 0) {
 		Log_Debug("ScopeId needs to be set in the app_manifest CmdArgs\n");
-		Terminate();
+		return ExitCode_Missing_ID_Scope;
 	}
 
 	if (InitPeripheralsAndHandlers() != 0) {
-		Terminate();
+		return ExitCode_Init_Failed;
 	}
 
 	// Main loop
