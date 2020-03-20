@@ -1,6 +1,7 @@
 #include "terminate.h"
 
 volatile sig_atomic_t terminationRequired = false;
+int lastTerminationCode = 0;
 
 void RegisterTerminationHandler(void) {
 	struct sigaction action;
@@ -22,6 +23,10 @@ void Terminate(void) {
 
 bool IsTerminationRequired(void) {
 	return terminationRequired;
+}
+
+int GetTerminationExitCode(void) {
+	return lastTerminationCode;
 }
 
 

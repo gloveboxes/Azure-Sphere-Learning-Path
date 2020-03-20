@@ -96,7 +96,7 @@ int main(int argc, char* argv[]) {
 
 	if (strlen(scopeId) == 0) {
 		Log_Debug("ScopeId needs to be set in the app_manifest CmdArgs\n");
-		return -1;
+		Terminate();
 	}
 
 	if (InitPeripheralsAndHandlers() != 0) {
@@ -113,8 +113,9 @@ int main(int argc, char* argv[]) {
 	}
 
 	ClosePeripheralsAndHandlers();
+
 	Log_Debug("Application exiting.\n");
-	return 0;
+	return GetTerminationExitCode();
 }
 
 void SendMsgWithBlink(char* message) {
