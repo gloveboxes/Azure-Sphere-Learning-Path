@@ -27,11 +27,19 @@ bool StartTimer(Timer* timer) {
 		return false;
 	}
 	else {
-		timer->eventLoopTimer = CreateEventLoopPeriodicTimer(eventLoop, timer->timerEventHandler, &timer->period);
-		if (timer->eventLoopTimer == NULL) {
-			return false;
+		if (timer->period.tv_nsec == 0 && timer->period.tv_sec == 0) {  // Set up a disabled Timer for oneshot or change timer
+			timer->eventLoopTimer = CreateEventLoopDisarmedTimer(eventLoop, timer->timerEventHandler);
+			if (timer->eventLoopTimer == NULL) {
+				return false;
+			}
 		}
-	}	
+		else {
+			timer->eventLoopTimer = CreateEventLoopPeriodicTimer(eventLoop, timer->timerEventHandler, &timer->period);
+			if (timer->eventLoopTimer == NULL) {
+				return false;
+			}
+		}
+	}
 
 	return true;
 }
@@ -64,4 +72,21 @@ void StopTimerEventLoop(void) {
 	if (eventLoop != NULL) {
 		EventLoop_Close(eventLoop);
 	}
+}
+
+bool SetOneShotTimer(Timer* timer, const struct timespec* period) {
+	EventLoop* eventLoop = GetTimerEventLoop();
+	if (eventLoop == NULL) {
+		return false;
+	}
+
+	if (timer->eventLoopTimer == NULL) {
+		return false;
+	}
+
+	if (SetEventLoopTimerOneShot(timer->eventLoopTimer, period) != 0) {
+		return false;
+	}
+
+	return true;
 }

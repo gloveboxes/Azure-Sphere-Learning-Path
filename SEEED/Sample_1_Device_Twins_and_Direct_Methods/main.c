@@ -18,16 +18,18 @@ static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 // Forward signatures
 static int InitPeripheralsAndHandlers(void);
 static void ClosePeripheralsAndHandlers(void);
-static void BlinkLed1Handler(EventLoopTimer* eventData);
-static void ButtonPressCheckHandler(EventLoopTimer* eventData);
-static void AzureConnectionStatusHandler(EventLoopTimer* eventData);
-static void ResetDeviceHandler(EventLoopTimer* eventData);
+static void BlinkLed1Handler(EventLoopTimer* eventLoopTimer);
+static void blinkLed2Handler(EventLoopTimer* eventLoopTimer);
+static void ButtonPressCheckHandler(EventLoopTimer* eventLoopTimer);
+static void AzureConnectionStatusHandler(EventLoopTimer* eventLoopTimer);
+static void ResetDeviceHandler(EventLoopTimer* eventLoopTimer);
 static void DeviceTwinBlinkRateHandler(DeviceTwinBinding* deviceTwinBinding);
 static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMethodBinding* directMethodBinding, char** responseMsg);
 
 static const char cstrJsonEvent[] = "{\"%s\":\"occurred\"}";
 static const char cstrEvtButtonB[] = "buttonB";
 static const char cstrEvtButtonA[] = "buttonA";
+static const struct timespec defaultBlinkTimeLed2 = { 0, 300 * 1000 * 1000 };
 
 static int blinkIntervalIndex = 0;
 static const struct timespec blinkIntervals[] = { {0, 125000000}, {0, 250000000}, {0, 500000000} };
@@ -43,12 +45,16 @@ static Peripheral led1 = {
 	.fd = -1, .pin = MT3620_RDB_LED1_BLUE, .direction = OUTPUT, .initialState = GPIO_Value_High, .invertPin = true,
 	.initialise = OpenPeripheral, .name = "led1"
 };
+static Peripheral led2 = {
+	.fd = -1, .pin = MT3620_RDB_LED2_GREEN, .direction = OUTPUT, .initialState = GPIO_Value_High, .invertPin = true,
+	.initialise = OpenPeripheral, .name = "led2"
+};
 static Peripheral networkConnectedLed = {
-	.fd = -1, .pin = MT3620_RDB_NETWORKING_LED_BLUE, .direction = OUTPUT, .initialState = GPIO_Value_High, .invertPin = true,
+	.fd = -1, .pin = MT3620_RDB_NETWORKING_LED_GREEN, .direction = OUTPUT, .initialState = GPIO_Value_High, .invertPin = true,
 	.initialise = OpenPeripheral, .name = "networkConnectedLed"
 };
 static Peripheral networkDisconnectedLed = {
-	.fd = -1, .pin = MT3620_RDB_NETWORKING_LED_GREEN, .direction = OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true,
+	.fd = -1, .pin = MT3620_RDB_NETWORKING_LED_BLUE, .direction = OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true,
 	.initialise = OpenPeripheral, .name = "networkDisconnectedLed"
 };
 
@@ -64,17 +70,22 @@ static Timer azureConnectionStatusTimer = {
 	.period = { 5, 0 },
 	.name = "azureConnectionStatusTimer", .timerEventHandler = AzureConnectionStatusHandler
 };
-static Timer ResetDeviceTimer = {
+static Timer ResetDeviceOneShotTimer = {
 	.period = { 0, 0 },
 	.name = "azureConnectionStatusTimer", .timerEventHandler = ResetDeviceHandler
 };
+static Timer blinkLed2OneShotTimer = {
+	.period = { 0, 0 },
+	.name = "blinkLed2OneShotTimer", .timerEventHandler = blinkLed2Handler
+};
+
 
 #pragma region define sets for auto initialization and close
 
 DeviceTwinBinding* deviceTwinBindings[] = { &ledBlinkRate };
 DirectMethodBinding* directMethodBindings[] = { &reset };
-Peripheral* peripherals[] = { &buttonA, &buttonB, &led1, &networkConnectedLed, &networkDisconnectedLed };
-Timer* timers[] = { &blinkLed1Timer, &buttonPressCheckTimer, &azureConnectionStatusTimer };
+Peripheral* peripherals[] = { &buttonA, &buttonB, &led1, &led2, &networkConnectedLed, &networkDisconnectedLed };
+Timer* timers[] = { &blinkLed1Timer, &buttonPressCheckTimer, &azureConnectionStatusTimer, &blinkLed2OneShotTimer, &ResetDeviceOneShotTimer };
 
 #pragma endregion
 
@@ -106,6 +117,12 @@ int main(int argc, char* argv[]) {
 	return 0;
 }
 
+void SendMsgWithBlink(char* message) {
+	Gpio_On(&led2);
+	SendMsg(message);
+	SetOneShotTimer(&blinkLed2OneShotTimer, &defaultBlinkTimeLed2);
+}
+
 /// <summary>
 /// Read Button Peripheral returns pressed state
 /// </summary>
@@ -123,7 +140,6 @@ static bool IsButtonPressed(Peripheral button, GPIO_Value_Type* oldState) {
 		isButtonPressed = (newState != *oldState) && (newState == GPIO_Value_Low);
 		*oldState = newState;
 	}
-
 	return isButtonPressed;
 }
 
@@ -148,18 +164,18 @@ static void ButtonPressCheckHandler(EventLoopTimer* eventLoopTimer) {
 		TwinReportState(&ledBlinkRate);							// Report TwinState second
 
 		if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, cstrJsonEvent, cstrEvtButtonA) > 0) {
-			SendMsg(msgBuffer);
+			SendMsgWithBlink(msgBuffer);
 		}
 
 		if (ReadTelemetry(msgBuffer, JSON_MESSAGE_BYTES) > 0) {
 			Log_Debug("%s\n", msgBuffer);
-			SendMsg(msgBuffer);
+			SendMsgWithBlink(msgBuffer);
 		}
 	}
 
 	if (IsButtonPressed(buttonB, &buttonBState)) {
 		if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, cstrJsonEvent, cstrEvtButtonB) > 0) {
-			SendMsg(msgBuffer);
+			SendMsgWithBlink(msgBuffer);
 		}
 	}
 }
@@ -179,6 +195,14 @@ static void BlinkLed1Handler(EventLoopTimer* eventLoopTimer) {
 
 	if (blinkingLedState) { Gpio_Off(&led1); }
 	else { Gpio_On(&led1); }
+}
+
+static void blinkLed2Handler(EventLoopTimer* eventLoopTimer) {
+	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
+		Terminate();
+		return;
+	}
+	Gpio_Off(&led2);
 }
 
 /// <summary>
@@ -208,7 +232,6 @@ static void ResetDeviceHandler(EventLoopTimer* eventLoopTimer) {
 		Terminate();
 		return;
 	}
-
 	PowerManagement_ForceSystemReboot();
 }
 
@@ -238,6 +261,7 @@ static void DeviceTwinBlinkRateHandler(DeviceTwinBinding* deviceTwinBinding) {
 static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMethodBinding* directMethodBinding, char** responseMsg) {
 	const char propertyName[] = "reset_timer";
 	const size_t responseLen = 60; // Allocate and initialize a response message buffer. The calling function is responsible for the freeing memory
+	static struct timespec period;
 
 	*responseMsg = (char*)malloc(responseLen);
 	memset(*responseMsg, 0, responseLen);
@@ -249,9 +273,9 @@ static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMetho
 	int seconds = (int)json_object_get_number(json, propertyName);
 
 	if (seconds > 1 && seconds < 10) {
-		ResetDeviceTimer.period.tv_sec = seconds;
 
-		StartTimer(&ResetDeviceTimer);
+		period = (struct timespec){ .tv_sec = seconds, .tv_nsec = 0 };
+		SetOneShotTimer(&ResetDeviceOneShotTimer, &period);
 
 		snprintf(*responseMsg, responseLen, "%s called. Reset in %d seconds", directMethodBinding->methodName, seconds);
 		return METHOD_SUCCEEDED;
@@ -261,7 +285,6 @@ static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMetho
 		return METHOD_FAILED;
 	}
 }
-
 
 /// <summary>
 ///  Initialize peripherals, device twins, direct methods, timers.
