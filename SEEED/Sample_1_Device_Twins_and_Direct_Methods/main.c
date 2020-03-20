@@ -58,9 +58,13 @@ static Peripheral networkDisconnectedLed = {
 	.initialise = OpenPeripheral, .name = "networkDisconnectedLed"
 };
 
-static Timer blinkLed1Timer = {
+static Timer led1BlinkTimer = {
 	.period = { 0, 125000000 },
 	.name = "BlinkLedTimer", .timerEventHandler = BlinkLed1Handler
+};
+static Timer led2BlinkOneShotTimer = {
+	.period = { 0, 0 },
+	.name = "led2BlinkOneShotTimer", .timerEventHandler = blinkLed2Handler
 };
 static Timer buttonPressCheckTimer = {
 	.period = { 0, 1000000 },
@@ -70,13 +74,9 @@ static Timer azureConnectionStatusTimer = {
 	.period = { 5, 0 },
 	.name = "azureConnectionStatusTimer", .timerEventHandler = AzureConnectionStatusHandler
 };
-static Timer ResetDeviceOneShotTimer = {
+static Timer resetDeviceOneShotTimer = {
 	.period = { 0, 0 },
 	.name = "azureConnectionStatusTimer", .timerEventHandler = ResetDeviceHandler
-};
-static Timer blinkLed2OneShotTimer = {
-	.period = { 0, 0 },
-	.name = "blinkLed2OneShotTimer", .timerEventHandler = blinkLed2Handler
 };
 
 
@@ -85,7 +85,7 @@ static Timer blinkLed2OneShotTimer = {
 DeviceTwinBinding* deviceTwinBindings[] = { &ledBlinkRate };
 DirectMethodBinding* directMethodBindings[] = { &reset };
 Peripheral* peripherals[] = { &buttonA, &buttonB, &led1, &led2, &networkConnectedLed, &networkDisconnectedLed };
-Timer* timers[] = { &blinkLed1Timer, &buttonPressCheckTimer, &azureConnectionStatusTimer, &blinkLed2OneShotTimer, &ResetDeviceOneShotTimer };
+Timer* timers[] = { &led1BlinkTimer, &led2BlinkOneShotTimer, &buttonPressCheckTimer, &azureConnectionStatusTimer, &resetDeviceOneShotTimer };
 
 #pragma endregion
 
@@ -120,7 +120,7 @@ int main(int argc, char* argv[]) {
 void SendMsgWithBlink(char* message) {
 	Gpio_On(&led2);
 	SendMsg(message);
-	SetOneShotTimer(&blinkLed2OneShotTimer, &defaultBlinkTimeLed2);
+	SetOneShotTimer(&led2BlinkOneShotTimer, &defaultBlinkTimeLed2);
 }
 
 /// <summary>
@@ -158,7 +158,7 @@ static void ButtonPressCheckHandler(EventLoopTimer* eventLoopTimer) {
 	if (IsButtonPressed(buttonA, &buttonAState)) {
 
 		blinkIntervalIndex = (blinkIntervalIndex + 1) % blinkIntervalsCount;
-		ChangeTimer(&blinkLed1Timer, &blinkIntervals[blinkIntervalIndex]);
+		ChangeTimer(&led1BlinkTimer, &blinkIntervals[blinkIntervalIndex]);
 
 		*(int*)ledBlinkRate.twinState = blinkIntervalIndex;		// Update TwinState first
 		TwinReportState(&ledBlinkRate);							// Report TwinState second
@@ -244,7 +244,7 @@ static void DeviceTwinBlinkRateHandler(DeviceTwinBinding* deviceTwinBinding) {
 		Log_Debug("\nInteger Value '%d'\n", *(int*)deviceTwinBinding->twinState);
 
 		blinkIntervalIndex = *(int*)deviceTwinBinding->twinState % blinkIntervalsCount;
-		ChangeTimer(&blinkLed1Timer, &blinkIntervals[blinkIntervalIndex]);
+		ChangeTimer(&led1BlinkTimer, &blinkIntervals[blinkIntervalIndex]);
 		break;
 
 	case TYPE_BOOL:
@@ -275,7 +275,7 @@ static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMetho
 	if (seconds > 1 && seconds < 10) {
 
 		period = (struct timespec){ .tv_sec = seconds, .tv_nsec = 0 };
-		SetOneShotTimer(&ResetDeviceOneShotTimer, &period);
+		SetOneShotTimer(&resetDeviceOneShotTimer, &period);
 
 		snprintf(*responseMsg, responseLen, "%s called. Reset in %d seconds", directMethodBinding->methodName, seconds);
 		return METHOD_SUCCEEDED;
