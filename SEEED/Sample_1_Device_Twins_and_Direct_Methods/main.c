@@ -36,7 +36,7 @@ static const struct timespec blinkIntervals[] = { {0, 125000000}, {0, 250000000}
 static const int blinkIntervalsCount = NELEMS(blinkIntervals);
 
 static DeviceTwinBinding ledBlinkRate = { .twinProperty = "LedBlinkRateProperty", .twinType = TYPE_INT, .handler = DeviceTwinBlinkRateHandler };
-static DirectMethodBinding reset = { .methodName = "ResetMethod", .handler = ResetDirectMethod };
+static DirectMethodBinding resetDevice = { .methodName = "ResetMethod", .handler = ResetDirectMethod };
 
 static Peripheral buttonA = { .fd = -1, .pin = MT3620_RDB_BUTTON_A, .direction = INPUT, .initialise = OpenPeripheral, .name = "buttonA" };
 static Peripheral buttonB = { .fd = -1, .pin = MT3620_RDB_BUTTON_B, .direction = INPUT, .initialise = OpenPeripheral, .name = "buttonB" };
@@ -83,7 +83,7 @@ static Timer resetDeviceOneShotTimer = {
 #pragma region define sets for auto initialization and close
 
 DeviceTwinBinding* deviceTwinBindings[] = { &ledBlinkRate };
-DirectMethodBinding* directMethodBindings[] = { &reset };
+DirectMethodBinding* directMethodBindings[] = { &resetDevice };
 Peripheral* peripherals[] = { &buttonA, &buttonB, &led1, &led2, &networkConnectedLed, &networkDisconnectedLed };
 Timer* timers[] = { &led1BlinkTimer, &led2BlinkOneShotTimer, &buttonPressCheckTimer, &azureConnectionStatusTimer, &resetDeviceOneShotTimer };
 
