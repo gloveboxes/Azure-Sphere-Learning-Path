@@ -33,11 +33,12 @@ static const char cstrEvtButtonA[] = "buttonA";
 static const struct timespec defaultBlinkTimeLed2 = { 0, 300 * 1000 * 1000 };
 
 static int blinkIntervalIndex = 0;
-static const struct timespec blinkIntervals[] = { {0, 125000000}, {0, 250000000}, {0, 500000000} };
+static const struct timespec blinkIntervals[] = { {0, 125000000}, {0, 250000000}, {0, 500000000}, {0, 750000000}, {1, 0} };
 static const int blinkIntervalsCount = NELEMS(blinkIntervals);
 
-static DeviceTwinBinding ledBlinkRate = { .twinProperty = "LedBlinkRateProperty", .twinType = TYPE_INT, .handler = DeviceTwinBlinkRateHandler };
+static DeviceTwinBinding ledBlinkRate = { .twinProperty = "LedBlinkRate", .twinType = TYPE_INT, .handler = DeviceTwinBlinkRateHandler };
 static DeviceTwinBinding buttonPressed = { .twinProperty = "ButtonPressed", .twinType = TYPE_STRING };
+
 static DirectMethodBinding resetDevice = { .methodName = "ResetMethod", .handler = ResetDirectMethod };
 
 static Peripheral buttonA = { .fd = -1, .pin = MT3620_RDB_BUTTON_A, .direction = INPUT, .initialise = OpenPeripheral, .name = "buttonA" };
@@ -301,8 +302,6 @@ static int InitPeripheralsAndHandlers(void) {
 	OpenDirectMethodSet(directMethodBindings, NELEMS(directMethodBindings));
 
 	StartTimerSet(timers, NELEMS(timers));
-
-	StartCloudToDevice();
 
 	return 0;
 }

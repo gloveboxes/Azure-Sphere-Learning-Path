@@ -13,7 +13,7 @@ EventLoop* GetTimerEventLoop(void) {
 }
 
 bool ChangeTimer(Timer* timer, const struct timespec* period) {
-	if (timer->eventLoopTimer == 0) { return false; }
+	if (timer->eventLoopTimer == NULL) { return false; }
 	timer->period.tv_nsec = period->tv_nsec;
 	timer->period.tv_sec = period->tv_sec;
 	int result = SetEventLoopTimerPeriod(timer->eventLoopTimer, period);
@@ -47,6 +47,7 @@ bool StartTimer(Timer* timer) {
 void StopTimer(Timer* timer) {
 	if (timer->eventLoopTimer != NULL) {
 		DisposeEventLoopTimer(timer->eventLoopTimer);
+		timer->eventLoopTimer = NULL;
 	}
 }
 
