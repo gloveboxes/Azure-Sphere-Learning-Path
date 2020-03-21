@@ -37,6 +37,7 @@ static const struct timespec blinkIntervals[] = { {0, 125000000}, {0, 250000000}
 static const int blinkIntervalsCount = NELEMS(blinkIntervals);
 
 static DeviceTwinBinding ledBlinkRate = { .twinProperty = "LedBlinkRateProperty", .twinType = TYPE_INT, .handler = DeviceTwinBlinkRateHandler };
+static DeviceTwinBinding buttonPressed = { .twinProperty = "ButtonPressed", .twinType = TYPE_STRING };
 static DirectMethodBinding resetDevice = { .methodName = "ResetMethod", .handler = ResetDirectMethod };
 
 static Peripheral buttonA = { .fd = -1, .pin = MT3620_RDB_BUTTON_A, .direction = INPUT, .initialise = OpenPeripheral, .name = "buttonA" };
@@ -83,7 +84,7 @@ static Timer resetDeviceOneShotTimer = {
 
 #pragma region define sets for auto initialization and close
 
-DeviceTwinBinding* deviceTwinBindings[] = { &ledBlinkRate };
+DeviceTwinBinding* deviceTwinBindings[] = { &ledBlinkRate, &buttonPressed };
 DirectMethodBinding* directMethodBindings[] = { &resetDevice };
 Peripheral* peripherals[] = { &buttonA, &buttonB, &led1, &led2, &networkConnectedLed, &networkDisconnectedLed };
 Timer* timers[] = { &led1BlinkTimer, &led2BlinkOneShotTimer, &buttonPressCheckTimer, &azureConnectionStatusTimer, &resetDeviceOneShotTimer };
@@ -162,21 +163,21 @@ static void ButtonPressCheckHandler(EventLoopTimer* eventLoopTimer) {
 		blinkIntervalIndex = (blinkIntervalIndex + 1) % blinkIntervalsCount;
 		ChangeTimer(&led1BlinkTimer, &blinkIntervals[blinkIntervalIndex]);
 
-		*(int*)ledBlinkRate.twinState = blinkIntervalIndex;		// Update TwinState first
-		TwinReportState(&ledBlinkRate);							// Report TwinState second
+		DeviceTwinReportState(&ledBlinkRate, &blinkIntervalIndex);		// TwinType = TYPE_INT
+		DeviceTwinReportState(&buttonPressed, "ButtonA");				// TwinType = TYPE_STRING
 
 		if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, cstrJsonEvent, cstrEvtButtonA) > 0) {
 			SendMsgWithBlink(msgBuffer);
 		}
 
 		if (ReadTelemetry(msgBuffer, JSON_MESSAGE_BYTES) > 0) {
-			Log_Debug("%s\n", msgBuffer);
 			SendMsgWithBlink(msgBuffer);
 		}
 	}
 
 	if (IsButtonPressed(buttonB, &buttonBState)) {
 		if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, cstrJsonEvent, cstrEvtButtonB) > 0) {
+			DeviceTwinReportState(&buttonPressed, "ButtonB");			// TwinType = TYPE_STRING
 			SendMsgWithBlink(msgBuffer);
 		}
 	}
