@@ -34,6 +34,6 @@ void CloseDeviceTwinSet(void);
 
 void OpenDeviceTwin(DeviceTwinBinding* deviceTwinBinding);
 void CloseDeviceTwin(DeviceTwinBinding* deviceTwinBinding);
-bool TwinReportState(DeviceTwinBinding* deviceTwinBinding);
+bool DeviceTwinReportState(DeviceTwinBinding* deviceTwinBinding, void* state);
 
 #endif

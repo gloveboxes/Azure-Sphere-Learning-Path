@@ -3,6 +3,7 @@
 void SetDesiredState(JSON_Object* desiredProperties, DeviceTwinBinding* deviceTwinBinding);
 void DeviceTwinsReportStatusCallback(int result, void* context);
 bool DeviceTwinUpdateReportedState(char* reportedPropertiesString);
+bool TwinReportState(DeviceTwinBinding* deviceTwinBinding);
 
 
 DeviceTwinBinding** _deviceTwins = NULL;
@@ -161,6 +162,49 @@ void SetDesiredState(JSON_Object* jsonObject, DeviceTwinBinding* deviceTwinBindi
 	}
 }
 
+bool DeviceTwinReportState(DeviceTwinBinding* deviceTwinBinding, void* state) {
+	int len = 0;
+
+	if (deviceTwinBinding == NULL) {
+		return false;
+	}
+
+	if (!ConnectToAzureIot()) {
+		return false;
+	}
+
+	static char reportedPropertiesString[DEVICE_TWIN_REPORT_LEN] = { 0 };
+	switch (deviceTwinBinding->twinType) {
+	case TYPE_INT:
+		*(int*)deviceTwinBinding->twinState = *(int*)state;
+		len = snprintf(reportedPropertiesString, DEVICE_TWIN_REPORT_LEN, "{\"%s\":%d}", deviceTwinBinding->twinProperty,
+			(*(int*)deviceTwinBinding->twinState));
+		break;
+	case TYPE_FLOAT:
+		*(float*)deviceTwinBinding->twinState = *(float*)state;
+		len = snprintf(reportedPropertiesString, DEVICE_TWIN_REPORT_LEN, "{\"%s\":%f}", deviceTwinBinding->twinProperty,
+			(*(float*)deviceTwinBinding->twinState));
+		break;
+	case TYPE_BOOL:
+		*(bool*)deviceTwinBinding->twinState = *(bool*)state;
+		len = snprintf(reportedPropertiesString, DEVICE_TWIN_REPORT_LEN, "{\"%s\":%s}", deviceTwinBinding->twinProperty,
+			(*(bool*)deviceTwinBinding->twinState ? "true" : "false"));
+		break;
+	case TYPE_STRING:
+		deviceTwinBinding->twinState = NULL;
+		len = snprintf(reportedPropertiesString, DEVICE_TWIN_REPORT_LEN, "{\"%s\":\"%s\"}", deviceTwinBinding->twinProperty, (char*)state);
+		break;
+	case TYPE_UNKNOWN:
+		Log_Debug("Device Twin Type Unknown");
+		break;
+	default:
+		break;
+	}
+
+	if (len == 0) { return false; }
+
+	return DeviceTwinUpdateReportedState(reportedPropertiesString);
+}
 
 bool TwinReportState(DeviceTwinBinding* deviceTwinBinding) {
 	int len = 0;
