@@ -122,7 +122,13 @@ bool ConnectToAzureIot(void) {
 			return true;
 		}
 		else {
-			return SetupAzureClient();
+			if (SetupAzureClient()) {
+				StartCloudToDevice();
+				return true;
+			}
+			else {
+				return false;
+			}
 		}
 	}
 }
@@ -178,6 +184,9 @@ bool SetupAzureClient() {
 /// </summary>
 void HubConnectionStatusCallback(IOTHUB_CLIENT_CONNECTION_STATUS result, IOTHUB_CLIENT_CONNECTION_STATUS_REASON reason, void* userContextCallback) {
 	iothubAuthenticated = (result == IOTHUB_CLIENT_CONNECTION_AUTHENTICATED);
+	if (!iothubAuthenticated) {
+		StopCloudToDevice();
+	}
 	Log_Debug("IoT Hub Authenticated: %s\n", GetReasonString(reason));
 }
 

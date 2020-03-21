@@ -18,3 +18,4 @@ void StopTimer(Timer* timer);
 EventLoop* GetTimerEventLoop(void);
 void StopTimerEventLoop(void);
 bool ChangeTimer(Timer* timer, const struct timespec* period);
+bool SetOneShotTimer(Timer* timer, const struct timespec* delay);
