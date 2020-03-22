@@ -3,7 +3,7 @@
   "Name": "AzureSphereIoTCentral",
   "ComponentId": "25025d2c-66da-4448-bae1-ac26fcdd3627",
   "EntryPoint": "/bin/app",
-  "CmdArgs": [ "Fake", "0ne000D0312", "6583cf17-d321-4d72-8283-0b7c5b56442b" ],
+  "CmdArgs": [ "Fake", "<Replace with your ID Scope>", "6583cf17-d321-4d72-8283-0b7c5b56442b" ],
   "Capabilities": {
     "Gpio": [
       "$LED2",
@@ -11,7 +11,7 @@
     ],
     "Uart": [ "$UART0" ],
     "PowerControls": [ "ForceReboot" ],
-    "AllowedConnections": [ "global.azure-devices-provisioning.net", "glovebox-dps.azure-devices-provisioning.net", "glovebox-iothub.azure-devices.net" ],
+    "AllowedConnections": [ "global.azure-devices-provisioning.net", "<Replace with your Azure IoT Central URI>" ],
     "DeviceAuthentication": "9d7e79eb-e021-43ce-9f2b-fa944b447494",
     "AllowedApplicationConnections": [ "6583cf17-d321-4d72-8283-0b7c5b56442b" ]
   },
