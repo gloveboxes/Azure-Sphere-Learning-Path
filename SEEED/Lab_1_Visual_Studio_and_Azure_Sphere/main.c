@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <time.h>
 
+
 // Forward signatures
 static int InitPeripheralsAndHandlers(void);
 static void ClosePeripheralsAndHandlers(void);
