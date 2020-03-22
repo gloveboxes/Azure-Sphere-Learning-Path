@@ -7,6 +7,7 @@ project (AzureSphereIoTCentral C)
 
 set(Source
     "main.c"
+    "exit_codes.h"
     "../shared/globals.c"
     "../shared/azure_iot.c"
     "../shared/peripheral.c"
@@ -17,7 +18,7 @@ set(Source
     "../shared/eventloop_timer_utilities.c"
     "../shared/parson.c"
     "../shared/inter_core.c"
-    "../shared/oem/board.c"
+    "../oem/board.c"
 )
 source_group("Source" FILES ${Source})
 

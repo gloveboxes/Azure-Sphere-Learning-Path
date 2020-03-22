@@ -53,15 +53,14 @@ Updated: Added blink and inter-core communications
 #include "os_hal_uart.h"
 
 #include "semphr.h"
-#include "../shared/Hardware/avnet_mt3620_sk/inc/hw/avnet_mt3620_sk.h"
+#include "../oem/board.h"
 
 
 /******************************************************************************/
 /* Configurations */
 /******************************************************************************/
 
-#define BUILTIN_LED AVNET_AESMS_PIN13_GPIO10
-#define BUTTON_A AVNET_AESMS_PIN14_GPIO12
+
 #define UART_PORT_NUM OS_HAL_UART_ISU0
 
 #define APP_STACK_SIZE_BYTES (1024 / 4)
@@ -79,7 +78,8 @@ static bool BuiltInLedOn = false;
 static const size_t payloadStart = 20;
 static uint8_t buf[256];
 static uint32_t dataSize;
-static bool buttonPressed = false;
+static bool buttonA_Pressed = false;
+static bool buttonB_Pressed = false;
 static BufferHeader* outbound, * inbound;
 static uint32_t sharedBufSize = 0;
 
@@ -164,7 +164,14 @@ static void ButtonTask(void* pParameters)
 
 		if (value == OS_HAL_GPIO_DATA_LOW) {
 			blinkIntervalIndex = (blinkIntervalIndex + 1) % numBlinkIntervals;
-			buttonPressed = true;
+			buttonA_Pressed = true;
+		}
+
+		// Get Button_B status
+		gpio_input(BUTTON_B, &value);
+
+		if (value == OS_HAL_GPIO_DATA_LOW) {
+			buttonB_Pressed = true;
 		}
 
 		// Delay for 100ms
@@ -188,17 +195,7 @@ static void LedTask(void* pParameters)
 		rt = xSemaphoreTake(LEDSemphr, portMAX_DELAY);
 		if (rt == pdPASS) {
 			BuiltInLedOn = !BuiltInLedOn;
-			gpio_output(BUILTIN_LED, BuiltInLedOn);
-
-#ifdef SEEED_MINI_DK
-			// simulate a button press - useful for the Seeed Studio Azure Sphere Mini which does not have built in buttons
-			if (generatePressEvent++ > 25) {
-				blinkIntervalIndex = (blinkIntervalIndex + 1) % numBlinkIntervals;
-				buttonPressed = true;
-				generatePressEvent = 0;
-			}
-#endif // SEEED_AZURE_SPHERE_MINI
-
+			gpio_output(LED1, BuiltInLedOn);
 		}
 	}
 }
@@ -216,13 +213,22 @@ static void RTCoreMsgTask(void* pParameters)
 			HLAppReady = true;
 		}
 
-		if (buttonPressed && HLAppReady) {
-			const char msg[] = "ButtonPressed";
+		if (buttonA_Pressed && HLAppReady) {
+			const char msg[] = "ButtonA";
 			strncpy((char*)buf + payloadStart, msg, sizeof buf - payloadStart);
 			dataSize = payloadStart + sizeof msg - 1;
 
 			EnqueueData(inbound, outbound, sharedBufSize, buf, dataSize);
-			buttonPressed = false;
+			buttonA_Pressed = false;
+		}
+
+		if (buttonB_Pressed && HLAppReady) {
+			const char msg[] = "ButtonB";
+			strncpy((char*)buf + payloadStart, msg, sizeof buf - payloadStart);
+			dataSize = payloadStart + sizeof msg - 1;
+
+			EnqueueData(inbound, outbound, sharedBufSize, buf, dataSize);
+			buttonB_Pressed = false;
 		}
 
 		// Delay for 100ms
@@ -251,7 +257,6 @@ _Noreturn void RTCoreMain(void)
 
 	xTaskCreate(PeriodicTask, "Periodic Task", APP_STACK_SIZE_BYTES, NULL, 6, NULL);
 	xTaskCreate(LedTask, "LED Task", APP_STACK_SIZE_BYTES, NULL, 5, NULL);
-	// Create GPIO Task
 	xTaskCreate(ButtonTask, "GPIO Task", APP_STACK_SIZE_BYTES, NULL, 4, NULL);
 	xTaskCreate(RTCoreMsgTask, "RTCore Msg Task", APP_STACK_SIZE_BYTES, NULL, 2, NULL);
 	vTaskStartScheduler();

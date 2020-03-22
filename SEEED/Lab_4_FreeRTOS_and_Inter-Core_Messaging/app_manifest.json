@@ -5,7 +5,7 @@
   "EntryPoint": "/bin/app",
   "CmdArgs": [],
   "Capabilities": {
-    "Gpio": [ "$MT3620_GPIO10", "$MT3620_GPIO12" ],
+    "Gpio": [ "$LED1", "$BUTTON_A", "$BUTTON_B" ],
     "AllowedApplicationConnections": [ "25025d2c-66da-4448-bae1-ac26fcdd3627" ]
   },
   "ApplicationType": "RealTimeCapable"

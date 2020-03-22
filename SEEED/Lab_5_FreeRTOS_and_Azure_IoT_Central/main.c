@@ -1,76 +1,85 @@
-﻿#include "../shared/azure_iot.h"
+﻿#include "../oem/board.h"
+#include "../shared/azure_iot.h"
 #include "../shared/globals.h"
 #include "../shared/inter_core.h"
-#include "../shared/oem/board.h"
 #include "../shared/peripheral.h"
 #include "../shared/terminate.h"
 #include "../shared/timer.h"
 #include "applibs_versions.h"
+#include "exit_codes.h"
 #include <applibs/gpio.h>
 #include <applibs/log.h>
+#include <applibs/powermanagement.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <time.h>
 
-
 #define JSON_MESSAGE_BYTES 128  // Number of bytes to allocate for the JSON telemetry message for IoT Central
-static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 
 // Forward signatures
 static int InitPeripheralsAndHandlers(void);
 static void ClosePeripheralsAndHandlers(void);
-static void MeasureSensorHandler(EventLoopTimer* eventData);
-static void DeviceTwinHandler(DeviceTwinBinding* deviceTwinBinding);
-static DirectMethodResponseCode SetFanSpeedDirectMethod(JSON_Object* json, DirectMethodBinding* directMethodBinding, char** responseMsg);
+static void Led2OffHandler(EventLoopTimer* eventLoopTimer);
+static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer);
+static void NetworkConnectionStatusHandler(EventLoopTimer* eventLoopTimer);
+static void ResetDeviceHandler(EventLoopTimer* eventLoopTimer);
+static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMethodBinding* directMethodBinding, char** responseMsg);
 static void InterCoreHandler(char* msg);
 static void InterCoreHeartBeat(EventLoopTimer* eventLoopTimer);
 
+static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 
-static DeviceTwinBinding relay = {
-	.peripheral = {
-		.fd = -1, .pin = RELAY_PIN, .direction = OUTPUT, .initialState = GPIO_Value_Low, .invertPin = false, .initialise = OpenPeripheral, .name = "relay1" },
-	.twinProperty = "relay1",
-	.twinType = TYPE_BOOL,
-	.handler = DeviceTwinHandler
+static const char cstrJsonEvent[] = "{\"%s\":\"occurred\"}";
+
+static const struct timespec led2BlinkPeriod = { 0, 300 * 1000 * 1000 };
+
+static int Led1BlinkIntervalIndex = 0;
+static const struct timespec led1BlinkIntervals[] = { {0, 125000000}, {0, 250000000}, {0, 500000000}, {0, 750000000}, {1, 0} };
+static const int led1BlinkIntervalsCount = NELEMS(led1BlinkIntervals);
+
+// GPIO Peripherals
+static Peripheral led2 = {
+	.fd = -1, .pin = LED2, .direction = OUTPUT, .initialState = GPIO_Value_High, .invertPin = true,
+	.initialise = OpenPeripheral, .name = "led2"
 };
-
-static DeviceTwinBinding light = {
-	.peripheral = {
-		.fd = -1, .pin = LIGHT_PIN, .direction = OUTPUT, .initialState = GPIO_Value_High, .invertPin = true, .initialise = OpenPeripheral, .name = "led1" },
-	.twinProperty = "led1",
-	.twinType = TYPE_BOOL,
-	.handler = DeviceTwinHandler
+static Peripheral networkConnectedLed = {
+	.fd = -1, .pin = NETWORK_CONNECTED_LED, .direction = OUTPUT, .initialState = GPIO_Value_High, .invertPin = true,
+	.initialise = OpenPeripheral, .name = "networkConnectedLed"
 };
+//static Peripheral networkDisconnectedLed = {
+//	.fd = -1, .pin = NETWORK_DISCONNECTED_LED, .direction = OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true,
+//	.initialise = OpenPeripheral, .name = "networkDisconnectedLed"
+//};
 
-static DirectMethodBinding fan = {
-	.methodName = "fan1",
-	.handler = SetFanSpeedDirectMethod
+// Timers
+static Timer led2BlinkOffOneShotTimer = {
+	.period = { 0, 0 },
+	.name = "led2BlinkOffOneShotTimer", .timerEventHandler = Led2OffHandler
 };
-
-static Peripheral builtinLed = {
-	.fd = -1, .pin = BUILTIN_LED, .direction = OUTPUT, .initialState = GPIO_Value_High, .invertPin = true, .initialise = OpenPeripheral, .name = "SendStatus"
+static Timer networkConnectionStatusTimer = {
+	.period = { 5, 0 },
+	.name = "networkConnectionStatusTimer", .timerEventHandler = NetworkConnectionStatusHandler
 };
-
-static Timer measureSensorTimer = {
-	.period = { 10, 0 },
-	.name = "MeasureSensor",
-	.timerEventHandler = MeasureSensorHandler
+static Timer resetDeviceOneShotTimer = {
+	.period = { 0, 0 },
+	.name = "resetDeviceOneShotTimer", .timerEventHandler = ResetDeviceHandler
 };
-
-static Timer rtCoreHeatBeat = {
-	.period = { 30, 0 },
-	.name = "rtCoreSend",
-	.timerEventHandler = InterCoreHeartBeat
+static Timer measureSensorTimer = {.period = { 10, 0 }, 
+	.name = "measureSensorTimer", .timerEventHandler = MeasureSensorHandler
 };
+static Timer rtCoreHeatBeat = { .period = { 30, 0 }, .name = "rtCoreSend", .timerEventHandler = InterCoreHeartBeat };
 
-#pragma region define sets for auto initialization and close
+// Azure IoT Device Twins
+static DeviceTwinBinding buttonPressed = { .twinProperty = "ButtonPressed", .twinType = TYPE_STRING };
 
-DeviceTwinBinding* deviceTwinBindings[] = { &relay, &light };
-DirectMethodBinding* directMethodBindings[] = { &fan };
-Peripheral* peripherals[] = { &builtinLed };
-Timer* timers[] = { &measureSensorTimer, &rtCoreHeatBeat };
+// Azure IoT Direct Methods
+static DirectMethodBinding resetDevice = { .methodName = "ResetMethod", .handler = ResetDirectMethod };
 
-#pragma endregion
+// Initialize peripheral, timer, device twin, and direct method sets
+DeviceTwinBinding* deviceTwinBindings[] = { &buttonPressed };
+DirectMethodBinding* directMethodBindings[] = { &resetDevice };
+Peripheral* peripherals[] = { &led2, &networkConnectedLed };
+Timer* timers[] = { &led2BlinkOffOneShotTimer, &networkConnectionStatusTimer, &resetDeviceOneShotTimer, &measureSensorTimer, &rtCoreHeatBeat };
 
 
 int main(int argc, char* argv[]) {
@@ -79,13 +88,11 @@ int main(int argc, char* argv[]) {
 
 	if (strlen(scopeId) == 0) {
 		Log_Debug("ScopeId needs to be set in the app_manifest CmdArgs\n");
-		return -1;
+		return ExitCode_Missing_ID_Scope;
 	}
 
-	Log_Debug("IoT Hub/Central Application starting.\n");
-
 	if (InitPeripheralsAndHandlers() != 0) {
-		Terminate();
+		return ExitCode_Init_Failed;
 	}
 
 	// Main loop
@@ -98,33 +105,133 @@ int main(int argc, char* argv[]) {
 	}
 
 	ClosePeripheralsAndHandlers();
+
 	Log_Debug("Application exiting.\n");
-	return 0;
+	return GetTerminationExitCode();
 }
 
+/// <summary>
+/// Check status of connection to Azure IoT
+/// </summary>
+static void NetworkConnectionStatusHandler(EventLoopTimer* eventLoopTimer) {
+	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
+		Terminate();
+		return;
+	}
+
+	if (ConnectToAzureIot()) {
+		Gpio_On(&networkConnectedLed);
+		//Gpio_Off(&networkDisconnectedLed);
+	}
+	else {
+		Gpio_Off(&networkConnectedLed);
+		//Gpio_On(&networkDisconnectedLed);
+	}
+}
 
 /// <summary>
-/// Azure timer event:  Check connection status and send telemetry
+/// Turn on LED2, send message to Azure IoT and set a one shot timer to turn LED2 off
+/// </summary>
+static void SendMsgLed2On(char* message) {
+	Gpio_On(&led2);
+	SendMsg(message);
+	SetOneShotTimer(&led2BlinkOffOneShotTimer, &led2BlinkPeriod);
+}
+
+/// <summary>
+/// One shot timer to turn LED2 off
+/// </summary>
+static void Led2OffHandler(EventLoopTimer* eventLoopTimer) {
+	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
+		Terminate();
+		return;
+	}
+	Gpio_Off(&led2);
+}
+
+/// <summary>
+/// Read sensor and send to Azure IoT
 /// </summary>
 static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer) {
 	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
 		Terminate();
 		return;
 	}
-
-	Gpio_On(&builtinLed); // blink send status LED
-
 	if (ReadTelemetry(msgBuffer, JSON_MESSAGE_BYTES) > 0) {
-		Log_Debug("%s\n\n", msgBuffer);
-		SendMsg(msgBuffer);
+		Log_Debug(msgBuffer);
+		SendMsgLed2On(msgBuffer);
 	}
-
-	Gpio_Off(&builtinLed);
 }
 
+/// <summary>
+/// Reset the Device
+/// </summary>
+static void ResetDeviceHandler(EventLoopTimer* eventLoopTimer) {
+	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
+		Terminate();
+		return;
+	}
+	PowerManagement_ForceSystemReboot();
+}
 
 /// <summary>
-///     Set up SIGTERM termination handler, initialize peripherals, and set up event handlers.
+/// Start Device Power Restart Direct Method 'ResetMethod' {"reset_timer":5}
+/// </summary>
+static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMethodBinding* directMethodBinding, char** responseMsg) {
+	const char propertyName[] = "reset_timer";
+	const size_t responseLen = 60; // Allocate and initialize a response message buffer. The calling function is responsible for the freeing memory
+	static struct timespec period;
+
+	*responseMsg = (char*)malloc(responseLen);
+	memset(*responseMsg, 0, responseLen);
+
+	if (!json_object_has_value_of_type(json, propertyName, JSONNumber)) {
+		return METHOD_FAILED;
+	}
+
+	int seconds = (int)json_object_get_number(json, propertyName);
+
+	if (seconds > 1 && seconds < 10) {
+
+		period = (struct timespec){ .tv_sec = seconds, .tv_nsec = 0 };
+		SetOneShotTimer(&resetDeviceOneShotTimer, &period);
+
+		snprintf(*responseMsg, responseLen, "%s called. Reset in %d seconds", directMethodBinding->methodName, seconds);
+		return METHOD_SUCCEEDED;
+	}
+	else {
+		snprintf(*responseMsg, responseLen, "%s called. Reset Failed. Seconds out of range: %d", directMethodBinding->methodName, seconds);
+		return METHOD_FAILED;
+	}
+}
+
+static void InterCoreHandler(char* msg) {
+	DeviceTwinReportState(&buttonPressed, msg);					// TwinType = TYPE_STRING
+
+	if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, cstrJsonEvent, msg) > 0) {
+		SendMsgLed2On(msgBuffer);
+	}
+}
+
+/// <summary>
+///     Handle send timer event by writing data to the real-time capable application.
+/// </summary>
+static void InterCoreHeartBeat(EventLoopTimer* eventLoopTimer) {
+	static int heartBeatCount = 0;
+	char interCoreMsg[30];
+
+	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
+		Terminate();
+		return;
+	}
+
+	if (snprintf(interCoreMsg, sizeof(interCoreMsg), "HeartBeat-%d", heartBeatCount++) > 0) {
+		SendInterCoreMessage(interCoreMsg);
+	}
+}
+
+/// <summary>
+///  Initialize peripherals, device twins, direct methods, timers.
 /// </summary>
 /// <returns>0 on success, or -1 on failure</returns>
 static int InitPeripheralsAndHandlers(void) {
@@ -135,8 +242,6 @@ static int InitPeripheralsAndHandlers(void) {
 	OpenDirectMethodSet(directMethodBindings, NELEMS(directMethodBindings));
 
 	StartTimerSet(timers, NELEMS(timers));
-
-	StartCloudToDevice();
 
 	EnableInterCoreCommunications(rtAppComponentId, InterCoreHandler);  // Initialize Inter Core Communications
 	SendInterCoreMessage("HeartBeat"); // Prime RT Core with Component ID Signature
@@ -161,97 +266,3 @@ static void ClosePeripheralsAndHandlers(void) {
 
 	StopTimerEventLoop();
 }
-
-
-static void DeviceTwinHandler(DeviceTwinBinding* deviceTwinBinding) {
-	switch (deviceTwinBinding->twinType) {
-	case TYPE_BOOL:
-		if (*(bool*)deviceTwinBinding->twinState) {
-			Gpio_On(&deviceTwinBinding->peripheral);
-		}
-		else {
-			Gpio_Off(&deviceTwinBinding->peripheral);
-		}
-		break;
-	case TYPE_INT:
-		Log_Debug("\nInteger Value '%d'\n", *(int*)deviceTwinBinding->twinState);
-		// Your implementation goes here - for example change the sensor measure rate
-		break;
-	case TYPE_FLOAT:
-		Log_Debug("\nFloat Value '%f'\n", *(float*)deviceTwinBinding->twinState);
-		// Your implementation goes here - for example set a threshold
-		break;
-	case TYPE_STRING:
-		Log_Debug("\nString Value '%s'\n", (char*)deviceTwinBinding->twinState);
-		// Your implementation goes here - for example update display
-		break;
-	default:
-		break;
-	}
-}
-
-
-// Sample SetFanSpeedDirectMethod implementation - doesn't do anything other than returning a response message and status
-static DirectMethodResponseCode SetFanSpeedDirectMethod(JSON_Object* json, DirectMethodBinding* directMethodBinding, char** responseMsg) {
-	const char propertyName[] = "speed";
-	const size_t responseLen = 40; // Allocate and initialize a response message buffer. The calling function is responsible for the freeing memory
-
-	*responseMsg = (char*)malloc(responseLen);
-	memset(*responseMsg, 0, responseLen);
-
-	if (!json_object_has_value_of_type(json, propertyName, JSONNumber)) {
-		return METHOD_FAILED;
-	}
-	int speed = (int)json_object_get_number(json, propertyName);
-
-	if (speed >= 0 && speed <= 100) {
-		snprintf(*responseMsg, responseLen, "%s succeeded, speed set to %d", directMethodBinding->methodName, speed);
-		Log_Debug("\nDirect Method Response '%s'\n", *responseMsg);
-		return METHOD_SUCCEEDED;
-	}
-	else {
-		snprintf(*responseMsg, responseLen, "%s FAILED, speed out of range %d", directMethodBinding->methodName, speed);
-		Log_Debug("\nDirect Method Response '%s'\n", *responseMsg);
-		return METHOD_FAILED;
-	}
-}
-
-#pragma InterCore Communications Support
-
-static void InterCoreHandler(char* msg) {
-	static int buttonPressCount = 0;
-	const struct timespec sleepTime = { 0, 100000000L };
-
-	// Toggle LED
-	if (*(bool*)relay.twinState) { Gpio_Off(&relay.peripheral); }
-	else { Gpio_On(&relay.peripheral); }
-
-	nanosleep(&sleepTime, NULL);
-
-	// Return LED to twinState
-	if (*(bool*)relay.twinState) { Gpio_On(&relay.peripheral); }
-	else { Gpio_Off(&relay.peripheral); }
-
-	if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, "{ \"ButtonPressed\": %d }", ++buttonPressCount) > 0) {
-		SendMsg(msgBuffer);
-	}
-}
-
-/// <summary>
-///     Handle send timer event by writing data to the real-time capable application.
-/// </summary>
-static void InterCoreHeartBeat(EventLoopTimer* eventLoopTimer) {
-	static int heartBeatCount = 0;
-	char interCoreMsg[30];
-
-	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
-		Terminate();
-		return;
-	}
-
-	if (snprintf(interCoreMsg, sizeof(interCoreMsg), "HeartBeat-%d", heartBeatCount++) > 0) {
-		SendInterCoreMessage(interCoreMsg);
-	}
-}
-
-#pragma endregion

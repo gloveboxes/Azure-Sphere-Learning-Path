@@ -3,20 +3,19 @@
   "Name": "AzureSphereIoTCentral",
   "ComponentId": "25025d2c-66da-4448-bae1-ac26fcdd3627",
   "EntryPoint": "/bin/app",
-  "CmdArgs": [ "Fake", "<DPS ID Scope>", "6583cf17-d321-4d72-8283-0b7c5b56442b" ],
+  "CmdArgs": [ "Fake", "<Replace with your ID Scope>", "6583cf17-d321-4d72-8283-0b7c5b56442b" ],
   "Capabilities": {
     "Gpio": [
-      "$MT3620_RDB_BUTTON_A",
-      "$MT3620_RDB_BUTTON_B",
-      "$MT3620_RDB_LED1_BLUE",
-      "$MT3620_RDB_LED2_GREEN",
-      "$MT3620_RDB_NETWORKING_LED_BLUE",
-      "$MT3620_RDB_NETWORKING_LED_GREEN"
+      "$BUTTON_A",
+      "$BUTTON_B",
+      "$LED1",
+      "$LED2",
+      "$NETWORK_CONNECTED_LED"
     ],
-    "Uart": [ "$MT3620_ISU0_UART" ],
+    "Uart": [ "$UART0" ],
     "PowerControls": [ "ForceReboot" ],
-    "AllowedConnections": [ "global.azure-devices-provisioning.net", "<device provisioning url>", "<iot hub url>" ],
-    "DeviceAuthentication": "9d7e79eb-e021-43ce-9f2b-fa944b447494",
+    "AllowedConnections": [ "global.azure-devices-provisioning.net", "<Replace with your Azure IoT Central URI>" ],
+    "DeviceAuthentication": "00000000-0000-0000-0000-000000000000",
     "AllowedApplicationConnections": [ "6583cf17-d321-4d72-8283-0b7c5b56442b" ]
   },
   "ApplicationType": "Default"

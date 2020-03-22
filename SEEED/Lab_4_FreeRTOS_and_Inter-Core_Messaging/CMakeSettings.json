@@ -4,8 +4,8 @@
       "environment": "AzureSphere",
 
       "AzureSphereTargetApiSet": "4+Beta2001",
-      "AzureSphereTargetHardwareDefinitionDirectory": "..\\shared\\Hardware\\mt3620_rdb",
-      "AzureSphereTargetHardwareDefinition": "mt3620_rdb.json"
+      "AzureSphereTargetHardwareDefinitionDirectory": "..\\oem\\Hardware\\mt3620_rdb",
+      "AzureSphereTargetHardwareDefinition": "azure_sphere_learning_path.json"
     }
   ],
   "configurations": [
