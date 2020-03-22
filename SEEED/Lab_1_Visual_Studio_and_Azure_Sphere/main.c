@@ -178,7 +178,6 @@ static void ButtonPressCheckHandler(EventLoopTimer* eventLoopTimer) {
 	}
 
 	if (IsButtonPressed(buttonA, &buttonAState)) {
-
 		led1BlinkIntervalIndex = (led1BlinkIntervalIndex + 1) % led1BlinkIntervalsCount;
 		ChangeTimer(&led1BlinkTimer, &led1BlinkIntervals[led1BlinkIntervalIndex]);
 

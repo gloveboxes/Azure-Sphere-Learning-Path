@@ -60,15 +60,27 @@ In **main.c** there is a variable named **builtinLed** of type **Peripheral**. V
 This variable holds the Operating System file descriptor, the GPIO pin number, the initial state of the pin when it is opened, whether the pin logic needs to be inverted for turning a pin on and off, and the C Function to be called to open and initialize the GPIO output pin.
 
 ```c
-static Peripheral builtinLed = {
-	.fd = -1, // The OS reference to the GPIO pin
-	.pin = BUILTIN_LED, // The GPIO pin number
-	.initialState = GPIO_Value_High,  // Set the initial state on the pin when opened
-	.invertPin = true,  // Should the switching logic be reverse for on/off, high/low
-	.initialise = OpenPeripheral,  // The name of C function to be called to open the Pin. The OpenPeripheral implementation is provided in peripheral.c.
-	.name = "SendStatus"  // An arbitrary name for the sensor.
+static Peripheral led1 = {
+	.fd = -1, // The OS reference to the GPIO pin - always initialize to -1
+	.pin = LED1, // The GPIO pin number
+	.direction = OUTPUT, // OUTPUT or INPUT
+	.initialState = GPIO_Value_High, // Set the initial state on the pin when opened
+	.invertPin = true, // Should the switching logic be reverse for on/off, high/low
+	.initialise = OpenPeripheral, // The name of C function to be called to open the Pin.
+	.name = "led1" // An arbitrary name for the perifpheral.
 };
+```
 
+Open a Button ping for Input
+
+```c
+static Peripheral buttonA = {
+	.fd = -1, 
+	.pin = BUTTON_A, 
+	.direction = INPUT, 
+	.initialise = OpenPeripheral, 
+	.name = "buttonA" 
+};
 ```
 
 ### Timers
@@ -119,20 +131,18 @@ static int InitPeripheralsAndHandlers(void)
 The **measureSensorTimer** timer is called every 5 seconds.
 
 ```c
-static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
-{
+/// <summary>
+/// Read sensor and send to Azure IoT
+/// </summary>
+static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer) {
 	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
 		Terminate();
 		return;
 	}
-
-	GPIO_ON(builtinLed); // blink built in LED
-
 	if (ReadTelemetry(msgBuffer, JSON_MESSAGE_BYTES) > 0) {
 		Log_Debug("%s\n", msgBuffer);
+		Led2On();
 	}
-
-	GPIO_OFF(builtinLed);
 }
 ```
 
