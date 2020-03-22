@@ -13,13 +13,18 @@
 #include <stdio.h>
 #include <time.h>
 
+#define JSON_MESSAGE_BYTES 128  // Number of bytes to allocate for the JSON telemetry message for IoT Central
+
 // Forward signatures
 static int InitPeripheralsAndHandlers(void);
 static void ClosePeripheralsAndHandlers(void);
 static void Led1BlinkHandler(EventLoopTimer* eventLoopTimer);
 static void Led2OffHandler(EventLoopTimer* eventLoopTimer);
+static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer);
 static void ButtonPressCheckHandler(EventLoopTimer* eventLoopTimer);
 static void NetworkConnectionStatusHandler(EventLoopTimer* eventLoopTimer);
+
+static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 
 static const struct timespec led2BlinkPeriod = { 0, 300 * 1000 * 1000 };
 
@@ -60,10 +65,14 @@ static Timer networkConnectionStatusTimer = {
 	.period = { 5, 0 },
 	.name = "networkConnectionStatusTimer", .timerEventHandler = NetworkConnectionStatusHandler
 };
+static Timer measureSensorTimer = {
+	.period = { 10, 0 },
+	.name = "measureSensorTimer", .timerEventHandler = MeasureSensorHandler
+};
 
 // Initialize peripheral, timer, device twin, and direct method sets
 Peripheral* peripherals[] = { &buttonA, &buttonB, &led1, &led2, &networkConnectedLed };
-Timer* timers[] = { &led1BlinkTimer, &led2BlinkOffOneShotTimer, &buttonPressCheckTimer, &networkConnectionStatusTimer };
+Timer* timers[] = { &led1BlinkTimer, &led2BlinkOffOneShotTimer, &buttonPressCheckTimer, &networkConnectionStatusTimer, &measureSensorTimer };
 
 
 int main(int argc, char* argv[]) {
@@ -125,6 +134,20 @@ static void Led2OffHandler(EventLoopTimer* eventLoopTimer) {
 }
 
 /// <summary>
+/// Read sensor and send to Azure IoT
+/// </summary>
+static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer) {
+	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
+		Terminate();
+		return;
+	}
+	if (ReadTelemetry(msgBuffer, JSON_MESSAGE_BYTES) > 0) {
+		Log_Debug("%s\n", msgBuffer);
+		Led2On();
+	}
+}
+
+/// <summary>
 /// Read Button Peripheral returns pressed state
 /// </summary>
 static bool IsButtonPressed(Peripheral button, GPIO_Value_Type* oldState) {
@@ -159,11 +182,17 @@ static void ButtonPressCheckHandler(EventLoopTimer* eventLoopTimer) {
 		led1BlinkIntervalIndex = (led1BlinkIntervalIndex + 1) % led1BlinkIntervalsCount;
 		ChangeTimer(&led1BlinkTimer, &led1BlinkIntervals[led1BlinkIntervalIndex]);
 
-		Led2On();
+		if (ReadTelemetry(msgBuffer, JSON_MESSAGE_BYTES) > 0) {
+			Log_Debug("%s\n", msgBuffer);
+			Led2On();
+		}
 	}
 
 	if (IsButtonPressed(buttonB, &buttonBState)) {
-		Led2On();
+		if (ReadTelemetry(msgBuffer, JSON_MESSAGE_BYTES) > 0) {
+			Log_Debug("%s\n", msgBuffer);
+			Led2On();
+		}
 	}
 }
 
