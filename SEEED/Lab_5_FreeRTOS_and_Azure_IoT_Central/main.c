@@ -1,10 +1,10 @@
-﻿#include "../oem/board.h"
-#include "../shared/azure_iot.h"
-#include "../shared/globals.h"
-#include "../shared/inter_core.h"
-#include "../shared/peripheral.h"
-#include "../shared/terminate.h"
-#include "../shared/timer.h"
+﻿#include "../libs/azure_iot.h"
+#include "../libs/globals.h"
+#include "../libs/inter_core.h"
+#include "../libs/peripheral.h"
+#include "../libs/terminate.h"
+#include "../libs/timer.h"
+#include "../oem/board.h"
 #include "applibs_versions.h"
 #include "exit_codes.h"
 #include <applibs/gpio.h>
@@ -25,17 +25,11 @@ static void NetworkConnectionStatusHandler(EventLoopTimer* eventLoopTimer);
 static void ResetDeviceHandler(EventLoopTimer* eventLoopTimer);
 static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMethodBinding* directMethodBinding, char** responseMsg);
 static void InterCoreHandler(char* msg);
-static void InterCoreHeartBeat(EventLoopTimer* eventLoopTimer);
+static void RealTimeCoreHeartBeat(EventLoopTimer* eventLoopTimer);
 
 static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
-
 static const char cstrJsonEvent[] = "{\"%s\":\"occurred\"}";
-
 static const struct timespec led2BlinkPeriod = { 0, 300 * 1000 * 1000 };
-
-static int Led1BlinkIntervalIndex = 0;
-static const struct timespec led1BlinkIntervals[] = { {0, 125000000}, {0, 250000000}, {0, 500000000}, {0, 750000000}, {1, 0} };
-static const int led1BlinkIntervalsCount = NELEMS(led1BlinkIntervals);
 
 // GPIO Peripherals
 static Peripheral led2 = {
@@ -46,10 +40,6 @@ static Peripheral networkConnectedLed = {
 	.fd = -1, .pin = NETWORK_CONNECTED_LED, .direction = OUTPUT, .initialState = GPIO_Value_High, .invertPin = true,
 	.initialise = OpenPeripheral, .name = "networkConnectedLed"
 };
-//static Peripheral networkDisconnectedLed = {
-//	.fd = -1, .pin = NETWORK_DISCONNECTED_LED, .direction = OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true,
-//	.initialise = OpenPeripheral, .name = "networkDisconnectedLed"
-//};
 
 // Timers
 static Timer led2BlinkOffOneShotTimer = {
@@ -64,10 +54,14 @@ static Timer resetDeviceOneShotTimer = {
 	.period = { 0, 0 },
 	.name = "resetDeviceOneShotTimer", .timerEventHandler = ResetDeviceHandler
 };
-static Timer measureSensorTimer = {.period = { 10, 0 }, 
+static Timer measureSensorTimer = {
+	.period = { 10, 0 }, 
 	.name = "measureSensorTimer", .timerEventHandler = MeasureSensorHandler
 };
-static Timer rtCoreHeatBeat = { .period = { 30, 0 }, .name = "rtCoreSend", .timerEventHandler = InterCoreHeartBeat };
+static Timer realTimeCoreHeatBeatTimer = { 
+	.period = { 30, 0 }, 
+	.name = "rtCoreSend", .timerEventHandler = RealTimeCoreHeartBeat 
+};
 
 // Azure IoT Device Twins
 static DeviceTwinBinding buttonPressed = { .twinProperty = "ButtonPressed", .twinType = TYPE_STRING };
@@ -79,7 +73,7 @@ static DirectMethodBinding resetDevice = { .methodName = "ResetMethod", .handler
 DeviceTwinBinding* deviceTwinBindings[] = { &buttonPressed };
 DirectMethodBinding* directMethodBindings[] = { &resetDevice };
 Peripheral* peripherals[] = { &led2, &networkConnectedLed };
-Timer* timers[] = { &led2BlinkOffOneShotTimer, &networkConnectionStatusTimer, &resetDeviceOneShotTimer, &measureSensorTimer, &rtCoreHeatBeat };
+Timer* timers[] = { &led2BlinkOffOneShotTimer, &networkConnectionStatusTimer, &resetDeviceOneShotTimer, &measureSensorTimer, &realTimeCoreHeatBeatTimer };
 
 
 int main(int argc, char* argv[]) {
@@ -121,11 +115,9 @@ static void NetworkConnectionStatusHandler(EventLoopTimer* eventLoopTimer) {
 
 	if (ConnectToAzureIot()) {
 		Gpio_On(&networkConnectedLed);
-		//Gpio_Off(&networkDisconnectedLed);
 	}
 	else {
 		Gpio_Off(&networkConnectedLed);
-		//Gpio_On(&networkDisconnectedLed);
 	}
 }
 
@@ -205,6 +197,9 @@ static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMetho
 	}
 }
 
+/// <summary>
+/// Callback handler for Inter-Core Messaging - Does Device Twin Update, and Event Message
+/// </summary>
 static void InterCoreHandler(char* msg) {
 	DeviceTwinReportState(&buttonPressed, msg);					// TwinType = TYPE_STRING
 
@@ -214,9 +209,9 @@ static void InterCoreHandler(char* msg) {
 }
 
 /// <summary>
-///     Handle send timer event by writing data to the real-time capable application.
+/// Real Time Inter-Core Heartbeat - primarily sends HL Component ID to RT core to enable secure messaging
 /// </summary>
-static void InterCoreHeartBeat(EventLoopTimer* eventLoopTimer) {
+static void RealTimeCoreHeartBeat(EventLoopTimer* eventLoopTimer) {
 	static int heartBeatCount = 0;
 	char interCoreMsg[30];
 
@@ -250,7 +245,7 @@ static int InitPeripheralsAndHandlers(void) {
 }
 
 /// <summary>
-///     Close peripherals and handlers.
+/// Close peripherals and handlers.
 /// </summary>
 static void ClosePeripheralsAndHandlers(void) {
 	Log_Debug("Closing file descriptors\n");

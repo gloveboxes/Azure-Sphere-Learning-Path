@@ -4,7 +4,7 @@
 cmake_minimum_required (VERSION 3.8)
 project (AzureSphereIoTCentral C)
 
-add_subdirectory("../shared" out)
+add_subdirectory("../libs" out)
 
 set(Source
     "main.c"
@@ -21,7 +21,7 @@ set(ALL_FILES
 # Create executable
 add_executable(${PROJECT_NAME} ${ALL_FILES})
 target_compile_definitions(${PROJECT_NAME} PUBLIC AZURE_IOT_HUB_CONFIGURED)
-target_link_libraries(${PROJECT_NAME} applibs pthread gcc_s c azure_sphere_learning_path_library)
+target_link_libraries(${PROJECT_NAME} applibs pthread gcc_s c azsphere_libs)
 
 
 # Add MakeImage post-build command

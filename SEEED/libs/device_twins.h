@@ -17,7 +17,6 @@ typedef enum {
 } valueType;
 
 struct _deviceTwinBinding {
-	Peripheral peripheral;
 	const char* twinProperty;
 	void* twinState;
 	valueType twinType;

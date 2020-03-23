@@ -43,10 +43,6 @@ void OpenDeviceTwin(DeviceTwinBinding* deviceTwinBinding) {
 	default:
 		break;
 	}
-
-	if (deviceTwinBinding->peripheral.initialise != NULL) {
-		deviceTwinBinding->peripheral.initialise(&deviceTwinBinding->peripheral);
-	}
 }
 
 void CloseDeviceTwin(DeviceTwinBinding* deviceTwinBinding) {
@@ -54,8 +50,6 @@ void CloseDeviceTwin(DeviceTwinBinding* deviceTwinBinding) {
 		free(deviceTwinBinding->twinState);
 		deviceTwinBinding->twinState = NULL;
 	}
-
-	CloseFdAndPrintError(deviceTwinBinding->peripheral.fd, deviceTwinBinding->peripheral.name);
 }
 
 /// <summary>

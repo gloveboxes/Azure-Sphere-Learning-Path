@@ -11,7 +11,6 @@ typedef enum
 } DirectMethodResponseCode;
 
 struct _directMethodBinding {
-	Peripheral peripheral;
 	const char* methodName;
 	DirectMethodResponseCode(*handler)(JSON_Object* json, struct _directMethodBinding* peripheral, char** responseMsg);
 };

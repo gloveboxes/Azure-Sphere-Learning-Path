@@ -6,18 +6,11 @@ size_t _directMethodCount;
 void OpenDirectMethodSet(DirectMethodBinding* directMethods[], size_t directMethodCount) {
 	_directMethods = directMethods;
 	_directMethodCount = directMethodCount;
-
-	for (int i = 0; i < _directMethodCount; i++) {
-		if (_directMethods[i]->peripheral.initialise != NULL) {
-			_directMethods[i]->peripheral.initialise(&_directMethods[i]->peripheral);
-		}
-	}
 }
 
 void CloseDirectMethodSet(void) {
-	for (int i = 0; i < _directMethodCount; i++) {
-		CloseFdAndPrintError(_directMethods[i]->peripheral.fd, _directMethods[i]->peripheral.name);
-	}
+	_directMethods = NULL;
+	_directMethodCount = 0;
 }
 
 /*
