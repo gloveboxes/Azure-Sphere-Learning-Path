@@ -24,7 +24,7 @@
         {"Name": "LED1", "Type": "Gpio", "Mapping": "MT3620_RDB_LED1_GREEN", "Comment": "MT3620 RDB: LED 1"},
         {"Name": "LED2", "Type": "Gpio", "Mapping": "MT3620_RDB_LED4_BLUE", "Comment": "MT3620 RDB: LED 2"},
         {"Name": "NETWORK_CONNECTED_LED", "Type": "Gpio", "Mapping": "MT3620_RDB_NETWORKING_LED_RED", "Comment": "MT3620 RDB: Network Connected"},
-        {"Name": "RELAY", "Type": "Gpio", "Mapping": "MT3620_RDB_HEADER1_PIN4_GPIO", "Comment": "MT3620 RDB: Grove Relay"},
+        {"Name": "RELAY", "Type": "Gpio", "Mapping": "MT3620_GPIO16", "Comment": "MT3620 RDB: Grove Relay"},
         {"Name": "UART0", "Type": "Uart", "Mapping": "MT3620_ISU0_UART", "Comment": "MT3620 RDB: UART for Seeed Studio Grove Board"}
     ]
 }

@@ -23,6 +23,7 @@ static void Led2OffHandler(EventLoopTimer* eventLoopTimer);
 static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer);
 static void NetworkConnectionStatusHandler(EventLoopTimer* eventLoopTimer);
 static void ResetDeviceHandler(EventLoopTimer* eventLoopTimer);
+static void DeviceTwinRelay1RateHandler(DeviceTwinBinding* deviceTwinBinding);
 static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMethodBinding* directMethodBinding, char** responseMsg);
 static void InterCoreHandler(char* msg);
 static void RealTimeCoreHeartBeat(EventLoopTimer* eventLoopTimer);
@@ -40,6 +41,10 @@ static Peripheral networkConnectedLed = {
 	.fd = -1, .pin = NETWORK_CONNECTED_LED, .direction = OUTPUT, .initialState = GPIO_Value_High, .invertPin = true,
 	.initialise = OpenPeripheral, .name = "networkConnectedLed"
 };
+static Peripheral relay1 = {
+	.fd = -1, .pin = RELAY, .direction = OUTPUT, .initialState = GPIO_Value_Low, .invertPin = false,
+	.initialise = OpenPeripheral, .name = "relay1"
+};
 
 // Timers
 static Timer led2BlinkOffOneShotTimer = {
@@ -55,24 +60,25 @@ static Timer resetDeviceOneShotTimer = {
 	.name = "resetDeviceOneShotTimer", .timerEventHandler = ResetDeviceHandler
 };
 static Timer measureSensorTimer = {
-	.period = { 10, 0 }, 
+	.period = { 10, 0 },
 	.name = "measureSensorTimer", .timerEventHandler = MeasureSensorHandler
 };
-static Timer realTimeCoreHeatBeatTimer = { 
-	.period = { 30, 0 }, 
-	.name = "rtCoreSend", .timerEventHandler = RealTimeCoreHeartBeat 
+static Timer realTimeCoreHeatBeatTimer = {
+	.period = { 30, 0 },
+	.name = "rtCoreSend", .timerEventHandler = RealTimeCoreHeartBeat
 };
 
 // Azure IoT Device Twins
 static DeviceTwinBinding buttonPressed = { .twinProperty = "ButtonPressed", .twinType = TYPE_STRING };
+static DeviceTwinBinding relay1DeviceTwin = { .twinProperty = "Relay1", .twinType = TYPE_BOOL, .handler = DeviceTwinRelay1RateHandler };
 
 // Azure IoT Direct Methods
 static DirectMethodBinding resetDevice = { .methodName = "ResetMethod", .handler = ResetDirectMethod };
 
 // Initialize peripheral, timer, device twin, and direct method sets
-DeviceTwinBinding* deviceTwinBindings[] = { &buttonPressed };
+DeviceTwinBinding* deviceTwinBindings[] = { &buttonPressed, &relay1DeviceTwin };
 DirectMethodBinding* directMethodBindings[] = { &resetDevice };
-Peripheral* peripherals[] = { &led2, &networkConnectedLed };
+Peripheral* peripherals[] = { &led2, &networkConnectedLed, &relay1 };
 Timer* timers[] = { &led2BlinkOffOneShotTimer, &networkConnectionStatusTimer, &resetDeviceOneShotTimer, &measureSensorTimer, &realTimeCoreHeatBeatTimer };
 
 
@@ -150,8 +156,30 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer) {
 		return;
 	}
 	if (ReadTelemetry(msgBuffer, JSON_MESSAGE_BYTES) > 0) {
-		Log_Debug(msgBuffer);
+		Log_Debug("%s\n", msgBuffer);
 		SendMsgLed2On(msgBuffer);
+	}
+}
+
+/// <summary>
+/// Set Relay state using Device Twin "Relay1": {"value": true },
+/// </summary>
+static void DeviceTwinRelay1RateHandler(DeviceTwinBinding* deviceTwinBinding) {
+	switch (deviceTwinBinding->twinType) {
+	case TYPE_BOOL:
+		Log_Debug("\nBool Value '%d'\n", *(bool*)deviceTwinBinding->twinState);
+		if (*(bool*)deviceTwinBinding->twinState) {
+			Gpio_On(&relay1);
+		}
+		else {
+			Gpio_Off(&relay1);
+		}
+		break;
+	case TYPE_INT:
+	case TYPE_FLOAT:
+	case TYPE_STRING:
+	case TYPE_UNKNOWN:
+		break;
 	}
 }
 

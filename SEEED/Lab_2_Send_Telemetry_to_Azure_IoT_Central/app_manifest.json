@@ -10,7 +10,8 @@
       "$BUTTON_B",
       "$LED1",
       "$LED2",
-      "$NETWORK_CONNECTED_LED"
+      "$NETWORK_CONNECTED_LED",
+      "$RELAY"
     ],
     "Uart": [ "$UART0" ],
     "PowerControls": [ "ForceReboot" ],
