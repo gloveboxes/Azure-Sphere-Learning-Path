@@ -166,7 +166,7 @@ DirectMethodBinding* directMethodBinding[] = { &feedFish, &SetFanSpeedDirectMeth
 1. Click **Open a local folder**
 2. Open the Azure-Sphere lab folder
 3. Open the **folder name** that corresponds to the **Azure Sphere board** you are using
-4. Open the **Lab_3_Control_Device_with_Device_Twins_and_Direct_Methods** folder
+4. Open the **Lab_3_Cloud_to_Device_Control_Twins_Methods** folder
 5. Click **Select Folder** button to open the project
 
     <!-- ![](resources/visual-studio-open-lab3.png) -->
