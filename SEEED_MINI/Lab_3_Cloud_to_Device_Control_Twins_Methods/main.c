@@ -1,6 +1,5 @@
 ﻿#include "../libs/azure_iot.h"
 #include "../libs/globals.h"
-#include "../libs/inter_core.h"
 #include "../libs/peripheral.h"
 #include "../libs/terminate.h"
 #include "../libs/timer.h"
@@ -19,20 +18,36 @@
 // Forward signatures
 static int InitPeripheralsAndHandlers(void);
 static void ClosePeripheralsAndHandlers(void);
+static void Led1BlinkHandler(EventLoopTimer* eventLoopTimer);
 static void Led2OffHandler(EventLoopTimer* eventLoopTimer);
 static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer);
+static void ButtonPressCheckHandler(EventLoopTimer* eventLoopTimer);
+static void VirtualButtonsHandler(EventLoopTimer* eventLoopTimer);
 static void NetworkConnectionStatusHandler(EventLoopTimer* eventLoopTimer);
 static void ResetDeviceHandler(EventLoopTimer* eventLoopTimer);
+static void DeviceTwinBlinkRateHandler(DeviceTwinBinding* deviceTwinBinding);
 static void DeviceTwinRelay1RateHandler(DeviceTwinBinding* deviceTwinBinding);
 static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMethodBinding* directMethodBinding, char** responseMsg);
-static void InterCoreHandler(char* msg);
-static void RealTimeCoreHeartBeat(EventLoopTimer* eventLoopTimer);
 
 static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
+
 static const char cstrJsonEvent[] = "{\"%s\":\"occurred\"}";
+static const char cstrEvtButtonB[] = "buttonB";
+static const char cstrEvtButtonA[] = "buttonA";
+
 static const struct timespec led2BlinkPeriod = { 0, 300 * 1000 * 1000 };
 
+static int Led1BlinkIntervalIndex = 0;
+static const struct timespec led1BlinkIntervals[] = { {0, 125000000}, {0, 250000000}, {0, 500000000}, {0, 750000000}, {1, 0} };
+static const int led1BlinkIntervalsCount = NELEMS(led1BlinkIntervals);
+
 // GPIO Peripherals
+static Peripheral buttonA = { .fd = -1, .pin = BUTTON_A, .direction = INPUT, .initialise = OpenPeripheral, .name = "buttonA" };
+static Peripheral buttonB = { .fd = -1, .pin = BUTTON_B, .direction = INPUT, .initialise = OpenPeripheral, .name = "buttonB" };
+static Peripheral led1 = {
+	.fd = -1, .pin = LED1, .direction = OUTPUT, .initialState = GPIO_Value_High, .invertPin = true,
+	.initialise = OpenPeripheral, .name = "led1"
+};
 static Peripheral led2 = {
 	.fd = -1, .pin = LED2, .direction = OUTPUT, .initialState = GPIO_Value_Low, .invertPin = false,
 	.initialise = OpenPeripheral, .name = "led2"
@@ -47,9 +62,17 @@ static Peripheral relay1 = {
 };
 
 // Timers
+static Timer led1BlinkTimer = {
+	.period = { 0, 125000000 },
+	.name = "led1BlinkTimer", .timerEventHandler = Led1BlinkHandler
+};
 static Timer led2BlinkOffOneShotTimer = {
 	.period = { 0, 0 },
 	.name = "led2BlinkOffOneShotTimer", .timerEventHandler = Led2OffHandler
+};
+static Timer buttonPressCheckTimer = {
+	.period = { 0, 1000000 },
+	.name = "buttonPressCheckTimer", .timerEventHandler = ButtonPressCheckHandler
 };
 static Timer networkConnectionStatusTimer = {
 	.period = { 5, 0 },
@@ -63,12 +86,13 @@ static Timer measureSensorTimer = {
 	.period = { 10, 0 },
 	.name = "measureSensorTimer", .timerEventHandler = MeasureSensorHandler
 };
-static Timer realTimeCoreHeatBeatTimer = {
-	.period = { 30, 0 },
-	.name = "rtCoreSend", .timerEventHandler = RealTimeCoreHeartBeat
+static Timer virtualButtonsTimer = {
+	.period = { 5, 0 },
+	.name = "virtualButtonsTimer", .timerEventHandler = VirtualButtonsHandler
 };
 
 // Azure IoT Device Twins
+static DeviceTwinBinding led1BlinkRate = { .twinProperty = "LedBlinkRate", .twinType = TYPE_INT, .handler = DeviceTwinBlinkRateHandler };
 static DeviceTwinBinding buttonPressed = { .twinProperty = "ButtonPressed", .twinType = TYPE_STRING };
 static DeviceTwinBinding relay1DeviceTwin = { .twinProperty = "Relay1", .twinType = TYPE_BOOL, .handler = DeviceTwinRelay1RateHandler };
 
@@ -76,10 +100,10 @@ static DeviceTwinBinding relay1DeviceTwin = { .twinProperty = "Relay1", .twinTyp
 static DirectMethodBinding resetDevice = { .methodName = "ResetMethod", .handler = ResetDirectMethod };
 
 // Initialize peripheral, timer, device twin, and direct method sets
-DeviceTwinBinding* deviceTwinBindings[] = { &buttonPressed, &relay1DeviceTwin };
+DeviceTwinBinding* deviceTwinBindings[] = { &led1BlinkRate, &buttonPressed, &relay1DeviceTwin };
 DirectMethodBinding* directMethodBindings[] = { &resetDevice };
-Peripheral* peripherals[] = { &led2, &networkConnectedLed, &relay1 };
-Timer* timers[] = { &led2BlinkOffOneShotTimer, &networkConnectionStatusTimer, &resetDeviceOneShotTimer, &measureSensorTimer, &realTimeCoreHeatBeatTimer };
+Peripheral* peripherals[] = { &buttonA, &buttonB, &led1, &led2, &networkConnectedLed, &relay1 };
+Timer* timers[] = { &led1BlinkTimer, &led2BlinkOffOneShotTimer, &buttonPressCheckTimer, &networkConnectionStatusTimer, &resetDeviceOneShotTimer, &measureSensorTimer, &virtualButtonsTimer };
 
 
 int main(int argc, char* argv[]) {
@@ -162,8 +186,137 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer) {
 }
 
 /// <summary>
-/// Set Relay state using Device Twin "Relay1": {"value": true },
+/// Read Button Peripheral returns pressed state
 /// </summary>
+static bool IsButtonPressed(Peripheral button, GPIO_Value_Type* oldState) {
+	bool isButtonPressed = false;
+	GPIO_Value_Type newState;
+
+	if (GPIO_GetValue(button.fd, &newState) != 0) {
+		Terminate();
+	}
+	else {
+		// Button is pressed if it is low and different than last known state.
+		isButtonPressed = (newState != *oldState) && (newState == GPIO_Value_Low);
+		*oldState = newState;
+	}
+	return isButtonPressed;
+}
+
+/// <summary>
+/// Handler to check for Button Presses
+/// </summary>
+static void ButtonPressCheckHandler(EventLoopTimer* eventLoopTimer) {
+	static GPIO_Value_Type buttonAState;
+	static GPIO_Value_Type buttonBState;
+
+	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
+		Terminate();
+		return;
+	}
+
+	if (IsButtonPressed(buttonA, &buttonAState)) {
+
+		Led1BlinkIntervalIndex = (Led1BlinkIntervalIndex + 1) % led1BlinkIntervalsCount;
+		ChangeTimer(&led1BlinkTimer, &led1BlinkIntervals[Led1BlinkIntervalIndex]);
+
+		DeviceTwinReportState(&led1BlinkRate, &Led1BlinkIntervalIndex);		// TwinType = TYPE_INT
+		DeviceTwinReportState(&buttonPressed, "ButtonA");					// TwinType = TYPE_STRING
+
+		if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, cstrJsonEvent, cstrEvtButtonA) > 0) {
+			SendMsgLed2On(msgBuffer);
+		}
+	}
+	if (IsButtonPressed(buttonB, &buttonBState)) {
+
+		DeviceTwinReportState(&buttonPressed, "ButtonB");					// TwinType = TYPE_STRING
+
+		if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, cstrJsonEvent, cstrEvtButtonB) > 0) {
+			SendMsgLed2On(msgBuffer);
+		}
+	}
+}
+
+/// <summary>
+/// On the Seeed Studio Azure Sphere Mini there are no built in button - so this function emulates button presses
+/// </summary>
+static void VirtualButtonsHandler(EventLoopTimer* eventLoopTimer) {
+	static bool toggle = false;
+
+	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
+		Terminate();
+		return;
+	}
+
+	if (toggle) {
+		Led1BlinkIntervalIndex = (Led1BlinkIntervalIndex + 1) % led1BlinkIntervalsCount;
+		ChangeTimer(&led1BlinkTimer, &led1BlinkIntervals[Led1BlinkIntervalIndex]);
+
+		DeviceTwinReportState(&led1BlinkRate, &Led1BlinkIntervalIndex);		// TwinType = TYPE_INT
+		DeviceTwinReportState(&buttonPressed, "ButtonA");					// TwinType = TYPE_STRING
+
+		if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, cstrJsonEvent, cstrEvtButtonA) > 0) {
+			SendMsgLed2On(msgBuffer);
+		}
+	}
+	else {
+		DeviceTwinReportState(&buttonPressed, "ButtonB");					// TwinType = TYPE_STRING
+
+		if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, cstrJsonEvent, cstrEvtButtonB) > 0) {
+			SendMsgLed2On(msgBuffer);
+		}
+	}
+
+	toggle = !toggle;
+}
+
+/// <summary>
+/// Blink Led1 Handler
+/// </summary>
+static void Led1BlinkHandler(EventLoopTimer* eventLoopTimer) {
+	static bool blinkingLedState = false;
+
+	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
+		Terminate();
+		return;
+	}
+
+	blinkingLedState = !blinkingLedState;
+
+	if (blinkingLedState) { Gpio_Off(&led1); }
+	else { Gpio_On(&led1); }
+}
+
+/// <summary>
+/// Reset the Device
+/// </summary>
+static void ResetDeviceHandler(EventLoopTimer* eventLoopTimer) {
+	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
+		Terminate();
+		return;
+	}
+	PowerManagement_ForceSystemReboot();
+}
+
+/// <summary>
+/// Set Blink Rate using Device Twin "LedBlinkRateProperty": {"value": 2 },
+/// </summary>
+static void DeviceTwinBlinkRateHandler(DeviceTwinBinding* deviceTwinBinding) {
+	switch (deviceTwinBinding->twinType) {
+	case TYPE_INT:
+		Log_Debug("\nInteger Value '%d'\n", *(int*)deviceTwinBinding->twinState);
+
+		Led1BlinkIntervalIndex = *(int*)deviceTwinBinding->twinState % led1BlinkIntervalsCount;
+		ChangeTimer(&led1BlinkTimer, &led1BlinkIntervals[Led1BlinkIntervalIndex]);
+		break;
+	case TYPE_BOOL:
+	case TYPE_FLOAT:
+	case TYPE_STRING:
+	case TYPE_UNKNOWN:
+		break;
+	}
+}
+
 static void DeviceTwinRelay1RateHandler(DeviceTwinBinding* deviceTwinBinding) {
 	switch (deviceTwinBinding->twinType) {
 	case TYPE_BOOL:
@@ -181,17 +334,6 @@ static void DeviceTwinRelay1RateHandler(DeviceTwinBinding* deviceTwinBinding) {
 	case TYPE_UNKNOWN:
 		break;
 	}
-}
-
-/// <summary>
-/// Reset the Device
-/// </summary>
-static void ResetDeviceHandler(EventLoopTimer* eventLoopTimer) {
-	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
-		Terminate();
-		return;
-	}
-	PowerManagement_ForceSystemReboot();
 }
 
 /// <summary>
@@ -226,34 +368,6 @@ static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMetho
 }
 
 /// <summary>
-/// Callback handler for Inter-Core Messaging - Does Device Twin Update, and Event Message
-/// </summary>
-static void InterCoreHandler(char* msg) {
-	DeviceTwinReportState(&buttonPressed, msg);					// TwinType = TYPE_STRING
-
-	if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, cstrJsonEvent, msg) > 0) {
-		SendMsgLed2On(msgBuffer);
-	}
-}
-
-/// <summary>
-/// Real Time Inter-Core Heartbeat - primarily sends HL Component ID to RT core to enable secure messaging
-/// </summary>
-static void RealTimeCoreHeartBeat(EventLoopTimer* eventLoopTimer) {
-	static int heartBeatCount = 0;
-	char interCoreMsg[30];
-
-	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
-		Terminate();
-		return;
-	}
-
-	if (snprintf(interCoreMsg, sizeof(interCoreMsg), "HeartBeat-%d", heartBeatCount++) > 0) {
-		SendInterCoreMessage(interCoreMsg);
-	}
-}
-
-/// <summary>
 ///  Initialize peripherals, device twins, direct methods, timers.
 /// </summary>
 /// <returns>0 on success, or -1 on failure</returns>
@@ -266,14 +380,11 @@ static int InitPeripheralsAndHandlers(void) {
 
 	StartTimerSet(timers, NELEMS(timers));
 
-	EnableInterCoreCommunications(rtAppComponentId, InterCoreHandler);  // Initialize Inter Core Communications
-	SendInterCoreMessage("HeartBeat"); // Prime RT Core with Component ID Signature
-
 	return 0;
 }
 
 /// <summary>
-/// Close peripherals and handlers.
+///     Close peripherals and handlers.
 /// </summary>
 static void ClosePeripheralsAndHandlers(void) {
 	Log_Debug("Closing file descriptors\n");

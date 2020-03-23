@@ -39,10 +39,10 @@
  Updated: Added blink and inter-core communications
  */
 
+
 #include <stddef.h>
 #include <stdbool.h>
 #include <stdint.h>
-
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -53,15 +53,15 @@
 #include "os_hal_uart.h"
 
 #include "semphr.h"
-#include "../shared/Hardware/seeed_mt3620_mdb/inc/hw/seeed_mt3620_mdb.h"
+
+#include "../oem/Hardware/seeed_mt3620_mdb/inc/hw/azure_sphere_learning_path.h"
 
 
  /******************************************************************************/
  /* Configurations */
  /******************************************************************************/
 
-#define BUILTIN_LED AILINK_WFM620RSC1_PIN4_GPIO7
-#define BUTTON_A AILINK_WFM620RSC1_PIN16_GPIO35
+
 #define UART_PORT_NUM OS_HAL_UART_ISU0
 
 #define APP_STACK_SIZE_BYTES (1024 / 4)
@@ -70,7 +70,6 @@
 static const int blinkIntervalsMs[] = { 75, 125, 250, 500, 1000, 2000 };
 static int blinkIntervalIndex = 0;
 static const int numBlinkIntervals = sizeof(blinkIntervalsMs) / sizeof(blinkIntervalsMs[0]);
-static const int buttonPressCheckPeriodMs = 10;
 static SemaphoreHandle_t LEDSemphr;
 static bool BuiltInLedOn = false;
 
@@ -80,7 +79,8 @@ static bool BuiltInLedOn = false;
 static const size_t payloadStart = 20;
 static uint8_t buf[256];
 static uint32_t dataSize;
-static bool buttonPressed = false;
+static bool buttonA_Pressed = false;
+static bool buttonB_Pressed = false;
 static BufferHeader* outbound, * inbound;
 static uint32_t sharedBufSize = 0;
 
@@ -89,20 +89,17 @@ static uint32_t sharedBufSize = 0;
 /* Application Hooks */
 /******************************************************************************/
 // Hook for "stack over flow".
-void vApplicationStackOverflowHook(TaskHandle_t xTask, char* pcTaskName)
-{
+void vApplicationStackOverflowHook(TaskHandle_t xTask, char* pcTaskName) {
 	printf("%s: %s\n", __func__, pcTaskName);
 }
 
 // Hook for "memory allocation failed".
-void vApplicationMallocFailedHook(void)
-{
+void vApplicationMallocFailedHook(void) {
 	printf("%s\n", __func__);
 }
 
 // Hook for "printf".
-void _putchar(char character)
-{
+void _putchar(char character) {
 	mtk_os_hal_uart_put_char(UART_PORT_NUM, character);
 	if (character == '\n')
 		mtk_os_hal_uart_put_char(UART_PORT_NUM, '\r');
@@ -111,8 +108,7 @@ void _putchar(char character)
 /******************************************************************************/
 /* Functions */
 /******************************************************************************/
-static int gpio_output(u8 gpio_no, u8 level)
-{
+static int gpio_output(u8 gpio_no, u8 level) {
 	int ret;
 
 	ret = mtk_os_hal_gpio_request(gpio_no);
@@ -130,8 +126,7 @@ static int gpio_output(u8 gpio_no, u8 level)
 	return 0;
 }
 
-static int gpio_input(u8 gpio_no, os_hal_gpio_data* pvalue)
-{
+static int gpio_input(u8 gpio_no, os_hal_gpio_data* pvalue) {
 	u8 ret;
 
 	ret = mtk_os_hal_gpio_request(gpio_no);
@@ -153,41 +148,45 @@ static int gpio_input(u8 gpio_no, os_hal_gpio_data* pvalue)
 	return 0;
 }
 
-static void ButtonTask(void* pParameters)
-{
+static void ButtonTask(void* pParameters) {
+	static bool toggle = false;
 	printf("Button Task Started\n");
-	while (1) {
 
-		blinkIntervalIndex = (blinkIntervalIndex + 1) % numBlinkIntervals;
-		buttonPressed = true;
+	while (1) {
+		if (toggle) {
+			blinkIntervalIndex = (blinkIntervalIndex + 1) % numBlinkIntervals;
+			buttonA_Pressed = true;
+		}
+		else {
+			buttonB_Pressed = true;
+		}
+
+		toggle = !toggle;
 
 		vTaskDelay(pdMS_TO_TICKS(10000));	// 10 seconds
 	}
 }
 
-static void PeriodicTask(void* pParameters)
-{
+static void PeriodicTask(void* pParameters) {
 	while (1) {
 		vTaskDelay(pdMS_TO_TICKS(blinkIntervalsMs[blinkIntervalIndex]));
 		xSemaphoreGive(LEDSemphr);
 	}
 }
 
-static void LedTask(void* pParameters)
-{
+static void LedTask(void* pParameters) {
 	BaseType_t rt;
 
 	while (1) {
 		rt = xSemaphoreTake(LEDSemphr, portMAX_DELAY);
 		if (rt == pdPASS) {
 			BuiltInLedOn = !BuiltInLedOn;
-			gpio_output(BUILTIN_LED, BuiltInLedOn);
+			gpio_output(LED1, BuiltInLedOn);
 		}
 	}
 }
 
-static void RTCoreMsgTask(void* pParameters)
-{
+static void RTCoreMsgTask(void* pParameters) {
 	bool HLAppReady = false;
 
 	while (1) {
@@ -199,21 +198,30 @@ static void RTCoreMsgTask(void* pParameters)
 			HLAppReady = true;
 		}
 
-		if (buttonPressed && HLAppReady) {
-			const char msg[] = "ButtonPressed";
+		if (buttonA_Pressed && HLAppReady) {
+			const char msg[] = "ButtonA";
 			strncpy((char*)buf + payloadStart, msg, sizeof buf - payloadStart);
 			dataSize = payloadStart + sizeof msg - 1;
 
 			EnqueueData(inbound, outbound, sharedBufSize, buf, dataSize);
-			buttonPressed = false;
+			buttonA_Pressed = false;
 		}
-		
-		vTaskDelay(pdMS_TO_TICKS(500));		// Delay for 500ms
+
+		if (buttonB_Pressed && HLAppReady) {
+			const char msg[] = "ButtonB";
+			strncpy((char*)buf + payloadStart, msg, sizeof buf - payloadStart);
+			dataSize = payloadStart + sizeof msg - 1;
+
+			EnqueueData(inbound, outbound, sharedBufSize, buf, dataSize);
+			buttonB_Pressed = false;
+		}
+
+		// Delay for 100ms
+		vTaskDelay(pdMS_TO_TICKS(100));
 	}
 }
 
-_Noreturn void RTCoreMain(void)
-{
+_Noreturn void RTCoreMain(void) {
 	// Setup Vector Table
 	NVIC_SetupVectorTable();
 
@@ -233,7 +241,6 @@ _Noreturn void RTCoreMain(void)
 
 	xTaskCreate(PeriodicTask, "Periodic Task", APP_STACK_SIZE_BYTES, NULL, 6, NULL);
 	xTaskCreate(LedTask, "LED Task", APP_STACK_SIZE_BYTES, NULL, 5, NULL);
-	// Create GPIO Task
 	xTaskCreate(ButtonTask, "GPIO Task", APP_STACK_SIZE_BYTES, NULL, 4, NULL);
 	xTaskCreate(RTCoreMsgTask, "RTCore Msg Task", APP_STACK_SIZE_BYTES, NULL, 2, NULL);
 	vTaskStartScheduler();
