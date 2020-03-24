@@ -13,14 +13,9 @@ void ProcessCmdArgs(int argc, char* argv[]) {
 		switch (argc)
 		{
 		case 1:
-			if (strcmp(argv[1], "Real") == 0) {
-				realTelemetry = true;
-			}
-			break;
-		case 2:
 			strncpy(scopeId, argv[2], SCOPEID_LENGTH);
 			break;
-		case 3:
+		case 2:
 			strncpy(rtAppComponentId, argv[3], RT_APP_COMPONENT_LENGTH);
 			break;
 		}
