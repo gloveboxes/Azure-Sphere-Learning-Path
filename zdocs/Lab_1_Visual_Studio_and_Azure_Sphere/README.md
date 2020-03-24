@@ -51,19 +51,21 @@ This lab assumes you have completed **Lab 0: Lab set up, installation and config
 
 ## Key Concepts
 
-Lab 1 introduces two data structures used to greatly simplify and effectively describe in  code how [GPIO](https://en.wikipedia.org/wiki/General-purpose_input/output) and Timers will work.
+Lab 1 introduces two data structures used to greatly simplify and effectively describe in code how [GPIO](https://en.wikipedia.org/wiki/General-purpose_input/output) and Event Timers work.
 
-### Peripherals
+### Input and Output Peripherals
 
-In **main.c** there is a variable named **builtinLed** of type **Peripheral**. Variables of type **Peripheral** declare a generalized GPIO **output** peripheral.
+In **main.c** there is a variable named **builtinLed** of type **Peripheral**. Variables of type **Peripheral** declare a generalized GPIO model for **input** and **output** single pin peripherals to support simple peripherals like LEDs, buttons, reed switches, relays and more.
 
-This variable holds the Operating System file descriptor, the GPIO pin number, the initial state of the pin when it is opened, whether the pin logic needs to be inverted for turning a pin on and off, and the C Function to be called to open and initialize the GPIO output pin.
+This object holds the Operating System file descriptor, the GPIO pin number, the initial state of the pin when it is opened, whether the pin logic needs to be inverted for turning a pin on and off, and the C Function to be called to open and initialize the peripheral.
+
+The following example declares an LED **OUTPUT** peripheral.
 
 ```c
 static Peripheral led1 = {
 	.fd = -1, // The OS reference to the GPIO pin - always initialize to -1
 	.pin = LED1, // The GPIO pin number
-	.direction = OUTPUT, // OUTPUT or INPUT
+	.direction = OUTPUT, // for OUTPUT
 	.initialState = GPIO_Value_High, // Set the initial state on the pin when opened
 	.invertPin = true, // Should the switching logic be reverse for on/off, high/low
 	.initialise = OpenPeripheral, // The name of C function to be called to open the Pin.
@@ -71,37 +73,112 @@ static Peripheral led1 = {
 };
 ```
 
-Open a Button ping for Input
+The following example declares a button **INPUT** peripheral.
 
 ```c
 static Peripheral buttonA = {
-	.fd = -1, 
-	.pin = BUTTON_A, 
-	.direction = INPUT, 
-	.initialise = OpenPeripheral, 
-	.name = "buttonA" 
+	.fd = -1,
+	.pin = BUTTON_A,
+	.direction = INPUT, 	// for INPUT
+	.initialise = OpenPeripheral,
+	.name = "buttonA"
 };
 ```
 
-### Timers
+### Event Timers
 
-Timers are periodic events. For example, you may want to blink an LED every second, or perhaps read data from a sensor every 5 seconds. Timers are a useful way to coordinate activities and help to simplify application design.
+Events Timers generate periodic events. For example, you may want to blink an LED every second, or perhaps read data from a sensor every 10 seconds. This is also known as [event-driven programming](https://en.wikipedia.org/wiki/Event-driven_programming).
 
-Given timers are used throughout these labs, and in lots of projects, there is a generalized model to simplify working with timers.
+Timers generate events, and the events are bound to handler functions. Event-driven programming helps to simplify application design. For example, every 10 seconds read the temperate, every 20 seconds check the network connection, every 1 second blink an LED so the user knows the device is active, every 100 milliseconds read the state of a button.
 
-In **main.c** there is another variable named **measureSensorTimer** of type **Timer**. Variables of type **Timer** declare a generalized Timer object.
+![](resources/timer-events.png)
+
+Event timers are used throughout these labs, and in lots of projects, so there is a generalized model to simplify working with timers.
+
+There are two types of timers, **periodic timers**, and **one shot timers**.
+
+#### Periodic Timers
+
+In **main.c** there is variable named **measureSensorTimer** of type **Timer**. Variables of type **Timer** declare a generalized Timer object. This timer object is initialized with a period of 10 seconds **{ 10, 0 }**.
+
+In this example, the handler function **MeasureSensorHandler** is called every 10 seconds. There are two values used to initialize the **.period** variable, the first is the number of seconds, followed by the number of nanoseconds.
 
 ```c
 static Timer measureSensorTimer = {
-	.period = { 5, 0 },  // Fire the timer event every 5 seconds + zero nanoseconds.
-	.name = "MeasureSensor",  // An arbitrary name for the timer, used for error handling
-	.timerEventHandler = MeasureSensorHandler // The address of the C function to be called when the timer fires.
+	.period = { 10, 0 },	// Fire the timer event every 10 seconds + zero nanoseconds.
+	.name = "measureSensorTimer",	// An arbitrary name for the timer, used for error handling
+	.timerEventHandler = MeasureSensorHandler	// The address of the C handler function to be called when the timer fires.
 };
 ```
 
-In this example, the function named **MeasureSensorHandler** is called every 5 seconds. There are two values used to initialize the **.period** variable, the first is the number of seconds, followed by the number of nanoseconds.
+The **measureSensorTimer** timer is called every 10 seconds. Telemetry sensor data is read, and Led2On() is called to turn on LED2, the one shot timer is set to turn off LED2 after 300 milliseconds.
 
-If you wanted the timer to fire every half a second (500 milliseconds), you would set the .period to be { 0, 500000000 }
+```c
+/// <summary>
+/// Read sensor and send to Azure IoT
+/// </summary>
+static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer) {
+	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
+		Terminate();
+		return;
+	}
+	if (ReadTelemetry(msgBuffer, JSON_MESSAGE_BYTES) > 0) {
+		Log_Debug("%s\n", msgBuffer);
+		Led2On();
+	}
+}
+```
+
+If you wanted the timer to fire events every half a second (500 milliseconds), you would set the .period to be { 0, 500000000 }.
+
+#### One Shot Timers
+
+The following code uses a one shot timer to blink an LED once when a button is pushed. The LED is turned on, then a one shot timer is set, when the period expires, a handler function is called to turn off the LED.
+
+The advantage of this event driven pattern is the device can continue to service other events such as checking if a user has pressed a button.
+
+In **main.c** there is variable named **led2BlinkOffOneShotTimer** of type **Timer**. This timer is initialized with a period of { 0, 0 }. Timers initialized with a period of 0 seconds are one shot timers. They will only fire when the period has been set in code. When the period is set and expires the handler function **Led2OffHandler** will be called.
+
+```c
+static Timer led2BlinkOffOneShotTimer = {
+	.period = { 0, 0 },
+	.name = "led2BlinkOffOneShotTimer",
+	.timerEventHandler = Led2OffHandler
+};
+```
+
+The **led2BlinkPeriod** variable is set to 300,000,000 nanoseconds (300 milliseconds).
+
+```c
+static const struct timespec led2BlinkPeriod = { 0, 300 * 1000 * 1000 };
+```
+
+In the **Led2On** function, Led2 is turned on, then the *one shot timer* period is set from the *led2BlinkPeriod* variable.
+
+```c
+/// <summary>
+/// Turn on LED2 and set a one shot timer to turn LED2 off
+/// </summary>
+static void Led2On(void) {
+	Gpio_On(&led2);
+	SetOneShotTimer(&led2BlinkOffOneShotTimer, &led2BlinkPeriod);
+}
+```
+
+When the one shot timer period expires the **Led2OffHandler** handler function is called and LED2 is turned off.
+
+```c
+/// <summary>
+/// One shot timer to turn LED2 off
+/// </summary>
+static void Led2OffHandler(EventLoopTimer* eventLoopTimer) {
+	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
+		Terminate();
+		return;
+	}
+	Gpio_Off(&led2);
+}
+```
 
 ### Automatic Initialization of Peripherals and Timers
 
@@ -128,24 +205,6 @@ static int InitPeripheralsAndHandlers(void)
 }
 ```
 
-The **measureSensorTimer** timer is called every 5 seconds.
-
-```c
-/// <summary>
-/// Read sensor and send to Azure IoT
-/// </summary>
-static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer) {
-	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
-		Terminate();
-		return;
-	}
-	if (ReadTelemetry(msgBuffer, JSON_MESSAGE_BYTES) > 0) {
-		Log_Debug("%s\n", msgBuffer);
-		Led2On();
-	}
-}
-```
-
 ### Easy to Extend
 
 This model makes it easy to declare another peripheral or timer and add them to the **peripherals** or **timers** arrays. The following is an example of adding a GPIO output peripheral.
@@ -154,9 +213,10 @@ This model makes it easy to declare another peripheral or timer and add them to 
 static Peripheral fanControl = {
 	.fd = -1, // The OS reference to the GPIO pin
 	.pin = 43, // The GPIO pin number
+	.direction = OUTPUT, // for OUTPUT
 	.initialState = GPIO_Value_High,  // Set the initial state on the pin when opened
 	.invertPin = true,  // Should the switching logic be reverse for on/off, high/low
-	.initialise = OpenPeripheral,  // The name of C function to be called to open the Pin. The OpenPeripheral implementation is provided in peripheral.c.
+	.initialise = OpenPeripheral,  // The name of C function to be called to open the Pin.
 	.name = "FanControl"  // An arbitrary name for the senor.
 };
 
@@ -232,10 +292,20 @@ This application can only access the resources listed in the **Capabilities** se
 
 ```json
   "Capabilities": {
-    "Gpio": [ "$AVNET_MT3620_SK_GPIO0", "$AVNET_MT3620_SK_APP_STATUS_LED_YELLOW", "$AVNET_MT3620_SK_WLAN_STATUS_LED_YELLOW" ],
-    "Uart": [],
+    "Gpio": [
+      "$BUTTON_A",
+      "$BUTTON_B",
+      "$LED1",
+      "$LED2",
+      "$NETWORK_CONNECTED_LED",
+      "$RELAY"
+    ],
     "I2cMaster": [ "$AVNET_MT3620_SK_ISU2_I2C" ],
-    "Adc": [ "$AVNET_MT3620_SK_ADC_CONTROLLER0" ]
+    "Adc": [ "$AVNET_MT3620_SK_ADC_CONTROLLER0" ],
+    "PowerControls": [ "ForceReboot" ],
+    "AllowedConnections": [ "global.azure-devices-provisioning.net" ],
+    "DeviceAuthentication": "00000000-0000-0000-0000-000000000000",
+    "AllowedApplicationConnections": [ "6583cf17-d321-4d72-8283-0b7c5b56442b" ]
   },
 ```
 

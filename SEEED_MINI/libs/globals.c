@@ -13,10 +13,10 @@ void ProcessCmdArgs(int argc, char* argv[]) {
 		switch (argc)
 		{
 		case 1:
-			strncpy(scopeId, argv[2], SCOPEID_LENGTH);
+			strncpy(scopeId, argv[1], SCOPEID_LENGTH);
 			break;
 		case 2:
-			strncpy(rtAppComponentId, argv[3], RT_APP_COMPONENT_LENGTH);
+			strncpy(rtAppComponentId, argv[2], RT_APP_COMPONENT_LENGTH);
 			break;
 		}
 	} while (argc > 1);
