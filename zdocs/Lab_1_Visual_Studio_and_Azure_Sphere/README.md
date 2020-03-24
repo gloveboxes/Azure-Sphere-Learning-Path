@@ -135,7 +135,7 @@ If you wanted the timer to fire events every half a second (500 milliseconds), y
 
 The following code uses a one shot timer to blink an LED once when a button is pushed. The LED is turned on, then a one shot timer is set, when the period expires, a handler function is called to turn off the LED.
 
-The advantage of this event driven pattern is the device can continue to service other events such as checking if a user has pressed a button.
+The advantage of this event driven pattern is the device can continue to service other events such as checking if a user has pressed a button before turing off the LED.
 
 In **main.c** there is variable named **led2BlinkOffOneShotTimer** of type **Timer**. This timer is initialized with a period of { 0, 0 }. Timers initialized with a period of 0 seconds are one shot timers. They will only fire when the period has been set in code. When the period is set and expires the handler function **Led2OffHandler** will be called.
 
