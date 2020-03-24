@@ -25,7 +25,7 @@ static void ButtonPressCheckHandler(EventLoopTimer* eventLoopTimer);
 static void NetworkConnectionStatusHandler(EventLoopTimer* eventLoopTimer);
 static void ResetDeviceHandler(EventLoopTimer* eventLoopTimer);
 static void DeviceTwinBlinkRateHandler(DeviceTwinBinding* deviceTwinBinding);
-static void DeviceTwinRelay1RateHandler(DeviceTwinBinding* deviceTwinBinding);
+static void DeviceTwinRelay1Handler(DeviceTwinBinding* deviceTwinBinding);
 static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMethodBinding* directMethodBinding, char** responseMsg);
 
 static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
@@ -89,7 +89,7 @@ static Timer measureSensorTimer = {
 // Azure IoT Device Twins
 static DeviceTwinBinding led1BlinkRate = { .twinProperty = "LedBlinkRate", .twinType = TYPE_INT, .handler = DeviceTwinBlinkRateHandler };
 static DeviceTwinBinding buttonPressed = { .twinProperty = "ButtonPressed", .twinType = TYPE_STRING };
-static DeviceTwinBinding relay1DeviceTwin = { .twinProperty = "Relay1", .twinType = TYPE_BOOL, .handler = DeviceTwinRelay1RateHandler };
+static DeviceTwinBinding relay1DeviceTwin = { .twinProperty = "Relay1", .twinType = TYPE_BOOL, .handler = DeviceTwinRelay1Handler };
 
 // Azure IoT Direct Methods
 static DirectMethodBinding resetDevice = { .methodName = "ResetMethod", .handler = ResetDirectMethod };
@@ -151,6 +151,7 @@ static void NetworkConnectionStatusHandler(EventLoopTimer* eventLoopTimer) {
 /// </summary>
 static void SendMsgLed2On(char* message) {
 	Gpio_On(&led2);
+	Log_Debug("%s\n", message);
 	SendMsg(message);
 	SetOneShotTimer(&led2BlinkOffOneShotTimer, &led2BlinkPeriod);
 }
@@ -175,7 +176,6 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer) {
 		return;
 	}
 	if (ReadTelemetry(msgBuffer, JSON_MESSAGE_BYTES) > 0) {
-		Log_Debug("%s\n", msgBuffer);
 		SendMsgLed2On(msgBuffer);
 	}
 }
@@ -261,7 +261,7 @@ static void ResetDeviceHandler(EventLoopTimer* eventLoopTimer) {
 }
 
 /// <summary>
-/// Set Blink Rate using Device Twin "LedBlinkRateProperty": {"value": 2 },
+/// Set Blink Rate using Device Twin "LedBlinkRate": {"value": 0}
 /// </summary>
 static void DeviceTwinBlinkRateHandler(DeviceTwinBinding* deviceTwinBinding) {
 	switch (deviceTwinBinding->twinType) {
@@ -279,7 +279,10 @@ static void DeviceTwinBlinkRateHandler(DeviceTwinBinding* deviceTwinBinding) {
 	}
 }
 
-static void DeviceTwinRelay1RateHandler(DeviceTwinBinding* deviceTwinBinding) {
+/// <summary>
+/// Device Twin to control relay "Relay1": {"value": true }, "Relay1": {"value": false },
+/// </summary>
+static void DeviceTwinRelay1Handler(DeviceTwinBinding* deviceTwinBinding) {
 	switch (deviceTwinBinding->twinType) {
 	case TYPE_BOOL:
 		Log_Debug("\nBool Value '%d'\n", *(bool*)deviceTwinBinding->twinState);

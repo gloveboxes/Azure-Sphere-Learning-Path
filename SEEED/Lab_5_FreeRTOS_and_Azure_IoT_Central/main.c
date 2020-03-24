@@ -132,6 +132,7 @@ static void NetworkConnectionStatusHandler(EventLoopTimer* eventLoopTimer) {
 /// </summary>
 static void SendMsgLed2On(char* message) {
 	Gpio_On(&led2);
+	Log_Debug("%s\n", message);
 	SendMsg(message);
 	SetOneShotTimer(&led2BlinkOffOneShotTimer, &led2BlinkPeriod);
 }
@@ -156,7 +157,6 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer) {
 		return;
 	}
 	if (ReadTelemetry(msgBuffer, JSON_MESSAGE_BYTES) > 0) {
-		Log_Debug("%s\n", msgBuffer);
 		SendMsgLed2On(msgBuffer);
 	}
 }
