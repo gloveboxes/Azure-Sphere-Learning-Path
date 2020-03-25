@@ -67,7 +67,8 @@ This project leverages the [Azure IoT Hub Device Provisioning Service (PDS)](htt
 
 ## Getting started with Azure IoT Central
 
-We are going to create an Azure IoT Central application from an application template.
+We are going to create an Azure IoT Central application from an application template. 
+>See [Define a new IoT device type in your Azure IoT Central application](https://docs.microsoft.com/en-us/azure/iot-central/core/howto-set-up-template) for information on creating your own device templates.
 
 ---
 
@@ -241,14 +242,22 @@ We need the ID of the Azure Sphere Tenant that is now trusted by Azure IoT Centr
         "Name": "AzureSphereIoTCentral",
         "ComponentId": "25025d2c-66da-4448-bae1-ac26fcdd3627",
         "EntryPoint": "/bin/app",
-        "CmdArgs": [ "Fake", "0ne0099999D", "6583cf17-d321-4d72-8283-0b7c5b56442b" ],
+        "CmdArgs": [ "0ne0099999D", "6583cf17-d321-4d72-8283-0b7c5b56442b" ],
         "Capabilities": {
-            "Gpio": [ "$AVNET_MT3620_SK_GPIO0", "$AVNET_MT3620_SK_APP_STATUS_LED_YELLOW", "$AVNET_MT3620_SK_WLAN_STATUS_LED_YELLOW" ],
-            "Uart": [],
+            "Gpio": [
+            "$BUTTON_A",
+            "$BUTTON_B",
+            "$LED1",
+            "$LED2",
+            "$NETWORK_CONNECTED_LED",
+            "$RELAY"
+            ],
             "I2cMaster": [ "$AVNET_MT3620_SK_ISU2_I2C" ],
             "Adc": [ "$AVNET_MT3620_SK_ADC_CONTROLLER0" ],
+            "PowerControls": [ "ForceReboot" ],
             "AllowedConnections": [ "global.azure-devices-provisioning.net", "saas-iothub-99999999-f33a-9999-a44a-7c99999900b6.azure-devices.net" ],
-            "DeviceAuthentication": "9d7e79eb-9999-43ce-9999-fa8888888894"
+            "DeviceAuthentication": "9d7e79eb-9999-43ce-9999-fa8888888894",
+            "AllowedApplicationConnections": [ "6583cf17-d321-4d72-8283-0b7c5b56442b" ]
         },
         "ApplicationType": "Default"
     }
@@ -266,24 +275,40 @@ Before building the application with Visual Studio ensure ARM-Debug and GDB Debu
 
 ### Sending telemetry to Azure IoT Central
 
-In **main.c**, scroll down to the **MeasureSensorHandler** C Function. In this function there is a call to **SendMsg(msgBuffer);**. This will send a JSON formatted telemetry message to Azure IoT Central.
+From **main.c**, scroll down to the **MeasureSensorHandler** function.
+
+>Pro Tip: Use the **Function Navigator** dropdown for quick code navigation. Click on the dropdown list, then select and click the function name. You will often see a function name listed twice in the dropdown. The first is the function forward signature, the second is the implementation of the function.
+
+![](resources/visual-studio-function-navigate-measure-sensor-telemetry.png)
+
+In the **MeasureSensorHandler** function there is a call to **SendMsgLed2On(msgBuffer);**.
 
 ```c
-static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
-{
+/// <summary>
+/// Read sensor and send to Azure IoT
+/// </summary>
+static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer) {
 	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
 		Terminate();
 		return;
 	}
-
-	GPIO_ON(builtinLed); // blink send status LED
-
 	if (ReadTelemetry(msgBuffer, JSON_MESSAGE_BYTES) > 0) {
-		Log_Debug("%s\n", msgBuffer);
-		SendMsg(msgBuffer);
+		SendMsgLed2On(msgBuffer);
 	}
+}
+```
 
-	GPIO_OFF(builtinLed);
+Function **SendMsgLed2On** will turn on LED2, then **SendMsg(message)** is called to send a JSON formatted telemetry message to Azure IoT Central.
+
+```c
+/// <summary>
+/// Turn on LED2, send message to Azure IoT and set a one shot timer to turn LED2 off
+/// </summary>
+static void SendMsgLed2On(char* message) {
+	Gpio_On(&led2);
+	Log_Debug("%s\n", message);
+	SendMsg(message);
+	SetOneShotTimer(&led2BlinkOffOneShotTimer, &led2BlinkPeriod);
 }
 ```
 
