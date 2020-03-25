@@ -314,7 +314,7 @@ static void SendMsgLed2On(char* message) {
 
 ### Step 1: Start the Azure Sphere Application
 
-To start the build, deploy, debug process, either click the Visual Studio **Start Selected Item** icon or press **<kbd>F5</kbd>**. To Build and deploy without attaching the debugger, simply press **<kbd>Ctrl+F5</kbd>**.
+To start the build, deploy, debug process, either click the Visual Studio **Start Selected Item** icon, or press **<kbd>F5</kbd>**, or from the main menu of Visual Studio, click **Debug**, then **Start**.
 
 ![](resources/visual-studio-start-debug.png)
 
