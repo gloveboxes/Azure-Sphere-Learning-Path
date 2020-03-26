@@ -169,9 +169,14 @@ Azure IoT Central uses Commands to control devices. Commands are implemented in 
 
 Direct methods represent a request-reply interaction with a device similar to an HTTP call in that they succeed or fail immediately (after a user-specified timeout).
 
-When you invoke a *Direct Method* from Azure IoT, a message is sent to the device. This message includes the name of the direct method and a payload. The device will apply the action and then respond with an HTTP status code to indicate success or failure along with an optional message.
+The following outlines how a commands are sent to a device using Direct Methods:
 
+1. A user invokes an Azure IoT Central Command and a Direct Method message is sent to the device.
+2. The handler function associated with the Direct Method is called on the device.
+3. The action is applied.
+4. The device responds with an HTTP status code, and optionally a message.
 
+![](resources/azure-direct-method-pattern.png)
 
 ### Declaring a Direct Method Binding
 
@@ -183,7 +188,7 @@ Direct Method Bindings associate Azure IoT Direct Methods with a handler functio
 static DirectMethodBinding resetDevice = { .methodName = "ResetMethod", .handler = ResetDirectMethod };
 ```
 
-![](resources/azure-direct-method-pattern.png)
+
 
 ### Direct Method Handler Function
 
