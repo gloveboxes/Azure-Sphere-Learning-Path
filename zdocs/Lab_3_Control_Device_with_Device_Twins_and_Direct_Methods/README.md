@@ -219,15 +219,20 @@ static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMetho
 	if (!json_object_has_value_of_type(json, propertyName, JSONNumber)) {
 		return METHOD_FAILED;
 	}
-
 	int seconds = (int)json_object_get_number(json, propertyName);
 
 	if (seconds > 1 && seconds < 10) {
 
+		// Report Device Reset UTC
+		DeviceTwinReportState(&deviceResetUtc, GetCurrentUtc(msgBuffer, sizeof(msgBuffer)));			// TYPE_STRING
+
+		// Create Direct Method Response
+		snprintf(*responseMsg, responseLen, "%s called. Reset in %d seconds", directMethodBinding->methodName, seconds);
+
+		// Set One Shot Timer
 		period = (struct timespec){ .tv_sec = seconds, .tv_nsec = 0 };
 		SetOneShotTimer(&resetDeviceOneShotTimer, &period);
 
-		snprintf(*responseMsg, responseLen, "%s called. Reset in %d seconds", directMethodBinding->methodName, seconds);
 		return METHOD_SUCCEEDED;
 	}
 	else {

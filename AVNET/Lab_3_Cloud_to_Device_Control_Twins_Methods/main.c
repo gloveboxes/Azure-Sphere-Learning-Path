@@ -251,17 +251,6 @@ static void Led1BlinkHandler(EventLoopTimer* eventLoopTimer) {
 }
 
 /// <summary>
-/// Reset the Device
-/// </summary>
-static void ResetDeviceHandler(EventLoopTimer* eventLoopTimer) {
-	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
-		Terminate();
-		return;
-	}
-	PowerManagement_ForceSystemReboot();
-}
-
-/// <summary>
 /// Set Blink Rate using Device Twin "LedBlinkRate": {"value": 0}
 /// </summary>
 static void DeviceTwinBlinkRateHandler(DeviceTwinBinding* deviceTwinBinding) {
@@ -312,15 +301,23 @@ static void DeviceTwinRelay1Handler(DeviceTwinBinding* deviceTwinBinding) {
 }
 
 /// <summary>
+/// Reset the Device
+/// </summary>
+static void ResetDeviceHandler(EventLoopTimer* eventLoopTimer) {
+	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
+		Terminate();
+		return;
+	}
+	PowerManagement_ForceSystemReboot();
+}
+
+/// <summary>
 /// Start Device Power Restart Direct Method 'ResetMethod' {"reset_timer":5}
 /// </summary>
 static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMethodBinding* directMethodBinding, char** responseMsg) {
 	const char propertyName[] = "reset_timer";
 	const size_t responseLen = 60; // Allocate and initialize a response message buffer. The calling function is responsible for the freeing memory
 	static struct timespec period;
-	char timeStamp[20];
-	
-
 
 	*responseMsg = (char*)malloc(responseLen);
 	memset(*responseMsg, 0, responseLen);
@@ -328,13 +325,17 @@ static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMetho
 	if (!json_object_has_value_of_type(json, propertyName, JSONNumber)) {
 		return METHOD_FAILED;
 	}
-
 	int seconds = (int)json_object_get_number(json, propertyName);
 
 	if (seconds > 1 && seconds < 10) {
+
+		// Report Device Reset UTC
 		DeviceTwinReportState(&deviceResetUtc, GetCurrentUtc(msgBuffer, sizeof(msgBuffer)));			// TYPE_STRING
+
+		// Create Direct Method Response
 		snprintf(*responseMsg, responseLen, "%s called. Reset in %d seconds", directMethodBinding->methodName, seconds);
 
+		// Set One Shot Timer
 		period = (struct timespec){ .tv_sec = seconds, .tv_nsec = 0 };
 		SetOneShotTimer(&resetDeviceOneShotTimer, &period);
 
