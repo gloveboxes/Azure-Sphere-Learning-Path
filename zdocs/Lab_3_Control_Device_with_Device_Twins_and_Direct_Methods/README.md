@@ -69,11 +69,15 @@ When you set a Device Twin property in Azure IoT you are setting the *desired* s
 
 Azure IoT Central uses this *reported* state to display the last synced state of a property.
 
+![](resources/device-twin-configuration-pattern.png)
+
 For more information refer to the [Understand and use device twins in IoT Hub](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins?WT.mc_id=github-blog-dglover) article.
 
 ### Azure IoT Direct Methods
 
 Azure IoT Direct Methods are simpler. When you invoke a *Direct Method* from Azure, a message is sent to the device. This message includes the name of the direct method and a data payload. The device will action the request and then respond with an HTTP status code to indicate success or failure along with an optional message.
+
+![](resources/direct-method-pattern.png)
 
 For more information refer to the [Understand and invoke direct methods from IoT Hub](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods?WT.mc_id=github-blog-dglover) article.
 
