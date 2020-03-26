@@ -57,7 +57,7 @@ This lab will cover Azure Iot Device Twins and Direct Methods.
 
 ## Key Concepts
 
-In Lab 1, **Peripherals** and **Timers** were introduced to simplify and effectively describe GPIO pins and Timers and their interactions.
+In Lab 1, **Peripherals** and **Event Timers** were introduced to simplify and effectively describe GPIO pins and Timers and their interactions.
 
 In this lab, **DeviceTwinBindings**, and **DirectMethodBindings** are introduced to simplify the implementation of Azure IoT [Device Twins](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins?WT.mc_id=github-blog-dglover) and Azure IoT [Direct Methods](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods?WT.mc_id=github-blog-dglover) on the device.
 
@@ -81,76 +81,165 @@ For more information refer to the [Understand and invoke direct methods from IoT
 
 ## Device Twin Bindings
 
-In **main.c** there is a variable declared named **light** of type **DeviceTwinBinding**. Variables of type **DeviceTwinBinding** declare a generalized model to define the relationship between an Azure IoT Device Twin and optionally a Peripheral.
+In **main.c** there is a variable declared named **led1BlinkRate** of type **DeviceTwinBinding**. Variables of type **DeviceTwinBinding** declare a generalized model to define the relationship between an Azure IoT Device Twin and a handler function.
 
-The following example associates an Azure IoT Device Twin named **led1**, of type **TYPE_BOOL**, with a GPIO **peripheral**, that will invoke a **handler** function named **DeviceTwinHandler**.
+### Declaring a Device Twin Binding
 
-The handler will be called when the Device Property is updated in Azure IoT Central, and an LED will be turned on or off.
+The following example associates an Azure IoT Device Twin named **LedBlinkRate**, of type **TYPE_INT**, that will invoke a **handler** function named **DeviceTwinBlinkRateHandler**.
+
+When the Device Property is updated in Azure IoT Central, the handler function will be called and LED1 blink rate will be changed.
 
 ```c
-static DeviceTwinBinding light = {
-	.peripheral = {
-		.fd = -1, .pin = LIGHT_PIN, .initialState = GPIO_Value_High, .invertPin = true, .initialise = OpenPeripheral, .name = "led1" },
-	.twinProperty = "led1",
-	.twinType = TYPE_BOOL,
-	.handler = DeviceTwinHandler
-};
+static DeviceTwinBinding led1BlinkRate = { .twinProperty = "LedBlinkRate", .twinType = TYPE_INT, .handler = DeviceTwinBlinkRateHandler };
 ```
 
-This maps to the **led1** _property_ of _schema type_ **Boolean** defined in the Azure IoT Central Device template.
+### Device Twin Binding Handler Functions
+
+This is the implementation on the **DeviceTwinBlinkRateHandler**. The handler function is called when the device receives a Device Twin desired state message for the **LedBlinkRate** property from Azure IoT Central.
+
+```c
+/// <summary>
+/// Set Blink Rate using Device Twin "LedBlinkRate": {"value": 0}
+/// </summary>
+static void DeviceTwinBlinkRateHandler(DeviceTwinBinding* deviceTwinBinding) {
+	switch (deviceTwinBinding->twinType) {
+	case TYPE_INT:
+		Log_Debug("\nInteger Value '%d'\n", *(int*)deviceTwinBinding->twinState);
+
+		Led1BlinkIntervalIndex = *(int*)deviceTwinBinding->twinState % led1BlinkIntervalsCount;
+		ChangeTimer(&led1BlinkTimer, &led1BlinkIntervals[Led1BlinkIntervalIndex]);
+
+		break;
+	case TYPE_BOOL:
+		Log_Debug("\nBoolean Value '%d'\n", *(bool*)deviceTwinBinding->twinState);
+		// Your implementation goes here - for example turn in light
+	case TYPE_FLOAT:
+		Log_Debug("\nFloat Value '%f'\n", *(float*)deviceTwinBinding->twinState);
+		// Your implementation goes here - for example set a threshold
+		break;
+	case TYPE_STRING:
+		Log_Debug("\nString Value '%s'\n", (char*)deviceTwinBinding->twinState);
+		// Your implementation goes here - for example update display
+		break;
+	default:
+		break;
+	}
+}
+```
+
+### Mapping Azure IoT Central Interface Properties with Device Twin Bindings
+
+This maps to the **LedBlinkRate** _property_ of _schema type_ **Integer** defined in the Azure IoT Central Device template.
 
 ![](resources/iot-central-device-template-interface-led1.png)
 
----
+### Device to Cloud Device Twin Bindings
 
-You can also define a DeviceTwinBinding without a Peripheral. The example below associates an Azure IoT Device Twin with a handler. This handler might do something like change the sampling rate for a sensor or set a threshold on the device.
+You can also define a one-way Device to Cloud update DeviceTwinBinding. The following example binds the Device Twin property ButtonPressed. Note, there is no handler function as this is a one-way binding only.
 
 ```c
-static DeviceTwinBinding sensorSampleRate = {
-	.twinProperty = "sensorsamplerate",
-	.twinType = TYPE_INT,
-	.handler = SensorSampleRateTwinHandler
-};
+static DeviceTwinBinding buttonPressed = { .twinProperty = "ButtonPressed", .twinType = TYPE_STRING };
 ```
+
+To update the Device Twin, call the DeviceTwinReportState function. You must pass in a property of the correct type, in this case **TYPE_STRING** (aka char*). This example can be found in the **ButtonPressCheckHandler** handler function. 
+
+```c
+DeviceTwinReportState(&buttonPressed, "ButtonA");   // TwinType = TYPE_STRING
+```
+
+### Initializing Device Twin Bindings
 
 Like Peripherals and Timers, Device Twin Bindings can be automatically opened, initialized, and closed if they are added to the deviceTwinDevices array, also referred to as a **set** of device twin bindings.
 
 ```c
-DeviceTwinBinding* deviceTwinBindings[] = { &light, &sensorSampleRate };
+DeviceTwinBinding* deviceTwinBindings[] = { &led1BlinkRate, &buttonPressed, &relay1DeviceTwin };
 ```
 
 ---
 
 ## Direct Method Bindings
 
-```c
-static DirectMethodBinding feedFish = {
-    	.peripheral = { .fd = -1, .pin = FEED_FISH_PIN, .initialState = GPIO_Value_High, .invertPin = true, .initialise = OpenPeripheral, .name = "feedfish" },
-	.methodName = "feedfish",
-	.handler = FeedFishDirectMethod
-};
+Direct methods represent a request-reply interaction with a device similar to an HTTP call in that they succeed or fail immediately (after a user-specified timeout).
 
-```
+When you invoke a *Direct Method* from Azure IoT, a message is sent to the device. This message includes the name of the direct method and a payload. The device will action the request and then respond with an HTTP status code to indicate success or failure along with an optional message.
 
-You will find the following example in **main.c**.
+### Declaring a Direct Method Binding
+
+Direct Method Bindings associate Azure IoT Direct Methods with a handler function. In the following example, when the device receives Azure IoT Direct Method named **ResetMethod**, the **ResetDirectMethod** handler function will be called.
 
 ```c
-static DirectMethodBinding fan = {
-	.methodName = "fan1",
-	.handler = SetFanSpeedDirectMethod
-};
+static DirectMethodBinding resetDevice = { .methodName = "ResetMethod", .handler = ResetDirectMethod };
 ```
 
-This maps to the **fan1** _command_ defined in the Azure IoT Central Device template.
+### Direct Method Handler Function
+
+The **ResetDirectMethod** handler function found in **main.c** implements the DirectMethodBinding. The function is passed a JSON object *{"reset_timer":5}*, this is deserialized, range checked, a One Shot Timer is set to do the device reset. This leaves enough time for the application to respond to Azure IoT Central with a response message and an HTTP status code before resetting.
+
+```c
+/// <summary>
+/// Start Device Power Restart Direct Method 'ResetMethod' {"reset_timer":5}
+/// </summary>
+static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMethodBinding* directMethodBinding, char** responseMsg) {
+	const char propertyName[] = "reset_timer";
+	const size_t responseLen = 60; // Allocate and initialize a response message buffer. The calling function is responsible for the freeing memory
+	static struct timespec period;
+
+	*responseMsg = (char*)malloc(responseLen);
+	memset(*responseMsg, 0, responseLen);
+
+	if (!json_object_has_value_of_type(json, propertyName, JSONNumber)) {
+		return METHOD_FAILED;
+	}
+
+	int seconds = (int)json_object_get_number(json, propertyName);
+
+	if (seconds > 1 && seconds < 10) {
+
+		period = (struct timespec){ .tv_sec = seconds, .tv_nsec = 0 };
+		SetOneShotTimer(&resetDeviceOneShotTimer, &period);
+
+		snprintf(*responseMsg, responseLen, "%s called. Reset in %d seconds", directMethodBinding->methodName, seconds);
+		return METHOD_SUCCEEDED;
+	}
+	else {
+		snprintf(*responseMsg, responseLen, "%s called. Reset Failed. Seconds out of range: %d", directMethodBinding->methodName, seconds);
+		return METHOD_FAILED;
+	}
+}
+```
+
+### Mapping Azure IoT Central Interface Command with Direct Method Bindings
+
+This maps to the **ResetMethod** command defined in the Azure IoT Central Device template.
 
 ![](resources/iot-central-device-template-interface-fan1.png)
 
-### Setting DirectMethodBindings
+#### ResetMethod Object Schema
 
-Like Peripherals, Timers, Device Twin Peripherals, Direct Method Bindings can be automatically opened, initialized, and closed if they are added to the directMethodDevices array, also referred to as a set of direct method bindings.
+The **ResetMethod** schema is of type **Object**. Clicking on the **view** button will display the object definition. The Object definition describes the shape of the JSON payload sent when the Direct Method is invoked.
+
+The **ResetMethod** handler function is expecting a JSON payload like this {"reset_timer":5}.
+
+![](resources/iot-central-device-template-interface-command-schema.png)
+
+### Initializing and Closing Direct Method Bindings
+
+Like Peripherals, Timers, and Device Twins, Direct Method Bindings can be automatically initialized and closed if they are added to the directMethodDevices array. An array of direct method bindings is also referred to as a set of direct method bindings.
 
 ```c
-DirectMethodBinding* directMethodBinding[] = { &feedFish, &SetFanSpeedDirectMethod };
+DirectMethodBinding* directMethodBindings[] = { &resetDevice };
+```
+
+The Direct Method Bindings are initialized in the **InitPeripheralsAndHandlers** function found in **main.c**.
+
+```c
+OpenDirectMethodSet(directMethodBindings, NELEMS(directMethodBindings));
+```
+
+The Direct Method Bindings are closed in the **ClosePeripheralsAndHandlers** function found in **main.c**.
+
+```c
+CloseDirectMethodSet();
 ```
 
 ---

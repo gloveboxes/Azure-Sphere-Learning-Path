@@ -272,9 +272,17 @@ static void DeviceTwinBlinkRateHandler(DeviceTwinBinding* deviceTwinBinding) {
 		ChangeTimer(&led1BlinkTimer, &led1BlinkIntervals[Led1BlinkIntervalIndex]);
 		break;
 	case TYPE_BOOL:
+		Log_Debug("\nBoolean Value '%d'\n", *(bool*)deviceTwinBinding->twinState);
+		// Your implementation goes here - for example turn in light
 	case TYPE_FLOAT:
+		Log_Debug("\nFloat Value '%f'\n", *(float*)deviceTwinBinding->twinState);
+		// Your implementation goes here - for example set a threshold
+		break;
 	case TYPE_STRING:
-	case TYPE_UNKNOWN:
+		Log_Debug("\nString Value '%s'\n", (char*)deviceTwinBinding->twinState);
+		// Your implementation goes here - for example update display
+		break;
+	default:
 		break;
 	}
 }
