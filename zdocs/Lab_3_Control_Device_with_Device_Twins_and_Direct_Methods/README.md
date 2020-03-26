@@ -204,6 +204,8 @@ static DirectMethodBinding resetDevice = { .methodName = "ResetMethod", .handler
 
 The **ResetDirectMethod** handler function found in **main.c** implements the DirectMethodBinding. The function is passed a JSON object *{"reset_timer":5}*, this is deserialized, range checked, a One Shot Timer is set to do the device reset. This leaves enough time for the application to respond to Azure IoT Central with a response message and an HTTP status code before resetting.
 
+![](resources/azure-sphere-method-and-twin.png)
+
 ```c
 /// <summary>
 /// Start Device Power Restart Direct Method 'ResetMethod' {"reset_timer":5}
