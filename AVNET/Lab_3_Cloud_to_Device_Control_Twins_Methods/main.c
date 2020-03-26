@@ -90,12 +90,13 @@ static Timer measureSensorTimer = {
 static DeviceTwinBinding led1BlinkRate = { .twinProperty = "LedBlinkRate", .twinType = TYPE_INT, .handler = DeviceTwinBlinkRateHandler };
 static DeviceTwinBinding buttonPressed = { .twinProperty = "ButtonPressed", .twinType = TYPE_STRING };
 static DeviceTwinBinding relay1DeviceTwin = { .twinProperty = "Relay1", .twinType = TYPE_BOOL, .handler = DeviceTwinRelay1Handler };
+static DeviceTwinBinding deviceResetUtc = { .twinProperty = "DeviceResetUTC", .twinType = TYPE_STRING };
 
 // Azure IoT Direct Methods
 static DirectMethodBinding resetDevice = { .methodName = "ResetMethod", .handler = ResetDirectMethod };
 
 // Initialize peripheral, timer, device twin, and direct method sets
-DeviceTwinBinding* deviceTwinBindings[] = { &led1BlinkRate, &buttonPressed, &relay1DeviceTwin };
+DeviceTwinBinding* deviceTwinBindings[] = { &led1BlinkRate, &buttonPressed, &relay1DeviceTwin, &deviceResetUtc };
 DirectMethodBinding* directMethodBindings[] = { &resetDevice };
 Peripheral* peripherals[] = { &buttonA, &buttonB, &led1, &led2, &networkConnectedLed, &relay1 };
 Timer* timers[] = { &led1BlinkTimer, &led2BlinkOffOneShotTimer, &buttonPressCheckTimer, &networkConnectionStatusTimer, &resetDeviceOneShotTimer, &measureSensorTimer };
@@ -270,6 +271,7 @@ static void DeviceTwinBlinkRateHandler(DeviceTwinBinding* deviceTwinBinding) {
 
 		Led1BlinkIntervalIndex = *(int*)deviceTwinBinding->twinState % led1BlinkIntervalsCount;
 		ChangeTimer(&led1BlinkTimer, &led1BlinkIntervals[Led1BlinkIntervalIndex]);
+
 		break;
 	case TYPE_BOOL:
 		Log_Debug("\nBoolean Value '%d'\n", *(bool*)deviceTwinBinding->twinState);
@@ -316,6 +318,9 @@ static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMetho
 	const char propertyName[] = "reset_timer";
 	const size_t responseLen = 60; // Allocate and initialize a response message buffer. The calling function is responsible for the freeing memory
 	static struct timespec period;
+	char timeStamp[20];
+	
+
 
 	*responseMsg = (char*)malloc(responseLen);
 	memset(*responseMsg, 0, responseLen);
@@ -327,11 +332,12 @@ static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMetho
 	int seconds = (int)json_object_get_number(json, propertyName);
 
 	if (seconds > 1 && seconds < 10) {
+		DeviceTwinReportState(&deviceResetUtc, GetCurrentUtc(msgBuffer, sizeof(msgBuffer)));			// TYPE_STRING
+		snprintf(*responseMsg, responseLen, "%s called. Reset in %d seconds", directMethodBinding->methodName, seconds);
 
 		period = (struct timespec){ .tv_sec = seconds, .tv_nsec = 0 };
 		SetOneShotTimer(&resetDeviceOneShotTimer, &period);
 
-		snprintf(*responseMsg, responseLen, "%s called. Reset in %d seconds", directMethodBinding->methodName, seconds);
 		return METHOD_SUCCEEDED;
 	}
 	else {
