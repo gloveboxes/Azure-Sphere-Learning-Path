@@ -1,5 +1,5 @@
 {
-  "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mq:1",
+  "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mq:3",
   "@type": "Interface",
   "displayName": {
     "en": "Interface"
@@ -53,68 +53,98 @@
       "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mq:relay1:1",
       "@type": "Property",
       "displayName": {
-        "en": "Relay"
+        "en": "Relay1"
       },
-      "name": "relay1",
+      "name": "Relay1",
       "writable": true,
       "schema": "boolean"
     },
     {
-      "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mq:led1:1",
+      "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mq:LedBlinkRate:2",
       "@type": "Property",
       "displayName": {
-        "en": "Light"
+        "en": "Led Blink Rate"
       },
-      "name": "led1",
+      "name": "LedBlinkRate",
       "writable": true,
-      "schema": "boolean"
+      "schema": "integer"
     },
     {
-      "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mq:ButtonPressed:1",
+      "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mq:ButtonPressed:2",
+      "@type": "Property",
+      "displayName": {
+        "en": "Button Pressed"
+      },
+      "name": "ButtonPressed",
+      "schema": "string"
+    },
+    {
+      "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mq:DeviceResetUTC:2",
+      "@type": "Property",
+      "displayName": {
+        "en": "Device Reset UTC"
+      },
+      "name": "DeviceResetUTC",
+      "schema": "string"
+    },
+    {
+      "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mq:buttonA:2",
       "@type": [
         "Telemetry",
         "SemanticType/Event"
       ],
       "displayName": {
-        "en": "Button Pressed"
+        "en": "Button A Alert"
       },
-      "name": "ButtonPressed",
-      "schema": "integer"
+      "name": "buttonA",
+      "schema": "string"
     },
     {
-      "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mq:fan1:1",
+      "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mq:buttonB:2",
+      "@type": [
+        "Telemetry",
+        "SemanticType/Event"
+      ],
+      "displayName": {
+        "en": "Button B Alert"
+      },
+      "name": "buttonB",
+      "schema": "string"
+    },
+    {
+      "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mq:ResetMethod:3",
       "@type": "Command",
       "commandType": "synchronous",
       "request": {
-        "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mq:fan1:SetFanSpeed:1",
+        "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mq:ResetMethod:ResetMethod:3",
         "@type": "SchemaField",
         "displayName": {
-          "en": "Set Fan Speed"
+          "en": "Reset Device"
         },
-        "name": "SetFanSpeed",
+        "name": "ResetMethod",
         "schema": {
-          "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mq:fan1:SetFanSpeed:xxf4y5vyp:1",
+          "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mq:ResetMethod:ResetMethod:7cdrl0fku:3",
           "@type": "Object",
           "displayName": {
-            "en": "Fan"
+            "en": "Object"
           },
           "fields": [
             {
-              "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mq:fan1:SetFanSpeed:xxf4y5vyp:speed:1",
+              "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mq:ResetMethod:ResetMethod:7cdrl0fku:reset_timer:3",
               "@type": "SchemaField",
               "displayName": {
-                "en": "Speed"
+                "en": "Reset Azure Sphere in [1..9] seconds"
               },
-              "name": "speed",
+              "name": "reset_timer",
               "schema": "integer"
             }
           ]
         }
       },
       "displayName": {
-        "en": "Fan"
+        "en": "Reset Device"
       },
-      "name": "fan1"
+      "name": "ResetMethod"
     }
   ],
   "@context": [
