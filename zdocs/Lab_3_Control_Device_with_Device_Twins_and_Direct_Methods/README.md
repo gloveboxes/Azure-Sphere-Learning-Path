@@ -305,90 +305,33 @@ CloseDirectMethodSet();
 ## Support for Azure IoT Central Properties
 
 1. Open the **main.c** file
-2. Scroll down to the line that reads **static DeviceTwinBinding relay**
-    ```c
-    static DeviceTwinBinding relay = {
-        .peripheral = {
-            .fd = -1, .pin = RELAY_PIN, .initialState = GPIO_Value_Low, .invertPin = false, .initialise = OpenPeripheral, .name = "relay1" },
-        .twinProperty = "relay1",
-        .twinType = TYPE_BOOL,
-        .handler = DeviceTwinHandler
-    };
-    ```
-3. This data structure describes the Device Twin. Defined is the Azure IoT Central Device **Property** this peripheral is associated with, the data type, and the **handler**, in this case, named **DeviceTwinHandler**. The handler is the name of the C function that will be called when the device receives a property update from Azure IoT Central.
-4. Right mouse click on **DeviceTwinHandler**, and select **Go To Definition**.
-    ![](resources/visual-studio-go-to-definition.png)
-5. This will jump you to the function named **DeviceTwinHandler**. Review the implementation of the handler.
+2. Navigate to the declaration of **static DeviceTwinBinding led1BlinkRate**. 
+
+    * If you have Visual Studio line numbers then scroll down to around line 90. 
+    * You can also use **find**, press <kbd>ctrl+f</kbd>, and type *led1BlinkRate*.
 
     ```c
-    static void DeviceTwinHandler(DeviceTwinBinding* DeviceTwinBinding) {
-        switch (DeviceTwinBinding->twinType)
-        {
-        case TYPE_BOOL:
-            if (*(bool*)DeviceTwinBinding->twinState) {
-                GPIO_ON(DeviceTwinBinding->peripheral);
-            }
-            else {
-                GPIO_OFF(DeviceTwinBinding->peripheral);
-            }
-            break;
-        case TYPE_INT:
-            Log_Debug("\nInteger Value '%d'\n", *(int*)DeviceTwinBinding->twinState);
-            // Your implementation goes here - for example change the sensor measure rate
-            break;
-        case TYPE_FLOAT:
-            Log_Debug("\nFloat Value '%f'\n", *(float*)DeviceTwinBinding->twinState);
-            // Your implementation goes here - for example set a threshold
-            break;
-        case TYPE_STRING:
-            Log_Debug("\nString Value '%s'\n", (char*)DeviceTwinBinding->twinState);
-            // Your implementation goes here - for example update display
-            break;
-        default:
-            break;
-        }
-    }
+    static DeviceTwinBinding led1BlinkRate = { .twinProperty = "LedBlinkRate", .twinType = TYPE_INT, .handler = DeviceTwinBlinkRateHandler };
     ```
+
+    This data structure describes the Device Twin. Defined is the Azure IoT Central Device Twin **Property**, the data type, and the **handler** function named **DeviceTwinBlinkRateHandler**.
+
+3. Right mouse click on **DeviceTwinBlinkRateHandler**, and select **Go To Definition**.
+    ![](resources/visual-studio-go-to-definition.png)
+4. This will jump you to the function named **DeviceTwinBlinkRateHandler**. Review the implementation of the handler.
 
 ### Support for Azure IoT Central Commands
 
 1. Again, in the **main.c** file
-2. Scroll up to around line 40. The line reads **static DirectMethodBinding fan**.
-3. This data structure describes a generalized peripheral and what Azure IoT Central Device **Command** this peripheral is associated with.  Azure IoT Central device commands are implemented as Azure IoT Direct Methods.
+2. Navigate to the line that reads **static DirectMethodBinding resetDevice**.
+    * If you have Visual Studio line numbers then scroll down to around line 95. 
+    * You can also use **find**, press <kbd>ctrl+f</kbd>, and type *resetDevice*.
 
     ```c
-    static DirectMethodBinding fan = {
-        .methodName = "fan1",
-        .handler = SetFanSpeedDirectMethod
-    };
+    static DirectMethodBinding resetDevice = { .methodName = "ResetMethod", .handler = ResetDirectMethod };
     ```
 
-4. Again, right mouse click the **SetFanSpeedDirectMethod** handler, and select **Go To Definition**, and review the handler implementation.
-
-    ```c
-    static MethodResponseCode SetFanSpeedDirectMethod(JSON_Object* json, DirectMethodBinding* directMethodBinding) {
-        // Sample implementation - doesn't do anything other than returning a response message and status
-
-        // Allocate and initialize a response message buffer. The calling function is responsible for the freeing memory
-        const size_t responseLen = 40;
-        directMethodBinding->responseMessage = (char*)malloc(responseLen);
-        memset(directMethodBinding->responseMessage, 0, responseLen);
-
-        int speed = (int)json_object_get_number(json, "speed");
-
-        if (speed >= 0 && speed <= 100) {
-            snprintf(directMethodBinding->responseMessage, responseLen, "%s succeeded, speed set to %d", directMethodBinding->methodName, speed);
-            Log_Debug("\nDirect Method Response '%s'\n", directMethodBinding->responseMessage);
-            return METHOD_SUCCEEDED;
-        }
-        else
-        {
-            snprintf(directMethodBinding->responseMessage, responseLen, "%s FAILED, speed out of range %d", directMethodBinding->methodName, speed);
-            Log_Debug("\nDirect Method Response '%s'\n", directMethodBinding->responseMessage);
-            return METHOD_FAILED;
-        }
-    }
-    ```
+4. Again, right mouse click the **ResetDirectMethod** handler, and select **Go To Definition**, and review the handler implementation.
 
 ### Support for IoT Central Properties and Commands
 
@@ -401,17 +344,18 @@ CloseDirectMethodSet();
     ```
 4. In the main.c **InitPeripheralsAndHandlers** function these sets of device twins and direct methods are opened and initialized.
     ```c
-    static int InitPeripheralsAndHandlers(void)
-    {
-        InitializeDevKit();  // Avnet Starter Kit
+    /// <summary>
+    ///  Initialize peripherals, device twins, direct methods, timers.
+    /// </summary>
+    /// <returns>0 on success, or -1 on failure</returns>
+    static int InitPeripheralsAndHandlers(void) {
+        InitializeDevKit();
 
         OpenPeripheralSet(peripherals, NELEMS(peripherals));
         OpenDeviceTwinSet(deviceTwinBindings, NELEMS(deviceTwinBindings));
         OpenDirectMethodSet(directMethodBindings, NELEMS(directMethodBindings));
 
         StartTimerSet(timers, NELEMS(timers));
-
-        StartCloudToDevice();
 
         return 0;
     }
