@@ -1,7 +1,5 @@
 # Lab 3: Control an Azure Sphere with Device Twins and Direct Methods
 
-<!-- ![](resources/azure-sphere-iot-central-banner.png) -->
-
 ---
 
 |Author|[Dave Glover](https://developer.microsoft.com/en-us/advocates/dave-glover?WT.mc_id=github-blog-dglover), Microsoft Cloud Developer Advocate, [@dglover](https://twitter.com/dglover) |
@@ -79,19 +77,23 @@ For more information refer to the [Understand and invoke direct methods from IoT
 
 ---
 
-## Device Twin Bindings
+## Azure IoT Central and Device Twin Bindings
 
-Azure IoT Central uses Properties for device settings. Properties are implemented in Azure IoT Central using Azure IoT Device Twins.
+Azure IoT Central uses properties to set the desired state of device settings. Azure IoT Central Properties are implemented using Azure IoT Device Twins.
 
-### Declaring a Device Twin Binding
+The following outlines how properties are set on a device:
 
-In main.c a **DeviceTwinBinding** variable is declared named **led1BlinkRate**. This variable associates an Azure IoT Central property named **LedBlinkRate**, of type **TYPE_INT**, with a **handler** function named **DeviceTwinBlinkRateHandler**. 
-
-When the device receives a Device Twin message for property **led1BlinkRate**, the **handler** function named **DeviceTwinBlinkRateHandler** will be called.
+1. A user sets the value of a property in Azure IoT Central.
+2. Azure IoT sends a desired property message to the device.
+3. The desired property is applied, in this case, change the LED blink rate.
+4. The device sends a reported property message to Azure IoT.
+5. Azure IoT Central queries and displays the Properties.Reported data.  
 
 ![](resources/device-twin-configuration-pattern.png)
 
-When the Device Property is updated in Azure IoT Central, the handler function will be called and LED1 blink rate will be changed.
+### Declaring a Device Twin Binding
+
+In main.c the variable named **led1BlinkRate** of type **DeviceTwinBinding**  is declared. This variable maps the Azure IoT Central *LedBlinkRate* property with a handler function named **DeviceTwinBlinkRateHandler**.
 
 ```c
 static DeviceTwinBinding led1BlinkRate = { .twinProperty = "LedBlinkRate", .twinType = TYPE_INT, .handler = DeviceTwinBlinkRateHandler };
