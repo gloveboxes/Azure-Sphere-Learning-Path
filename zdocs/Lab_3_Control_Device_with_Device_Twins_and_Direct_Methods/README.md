@@ -161,17 +161,27 @@ Like Peripherals and Timers, Device Twin Bindings can be automatically opened, i
 DeviceTwinBinding* deviceTwinBindings[] = { &led1BlinkRate, &buttonPressed, &relay1DeviceTwin };
 ```
 
+The Direct Method Bindings are initialized in the **InitPeripheralsAndHandlers** function found in **main.c**.
+
+```c
+OpenDeviceTwinSet(deviceTwinBindings, NELEMS(deviceTwinBindings));
+```
+
+The Direct Method Bindings are closed in the **ClosePeripheralsAndHandlers** function found in **main.c**.
+
+```c
+CloseDeviceTwinSet();
+```
+
 ---
 
 ## Direct Method Bindings
 
-Azure IoT Central uses Commands to control devices. Commands are implemented in Azure Iot Central using Azure IoT Direct Methods.
-
-Direct methods represent a request-reply interaction with a device similar to an HTTP call in that they succeed or fail immediately (after a user-specified timeout).
+Azure IoT Central uses Commands to control devices. Commands are implemented in Azure Iot Central using Azure IoT Direct Methods. Direct methods represent a request-reply interaction with a device similar to an HTTP call in that they succeed or fail immediately (after a user-specified timeout).
 
 The following outlines how a commands are sent to a device using Direct Methods:
 
-1. A user invokes an Azure IoT Central Command and a Direct Method message is sent to the device.
+1. A user invokes an Azure IoT Central Command and an Azure IoT Direct Method message is sent to the device.
 2. The handler function associated with the Direct Method is called on the device.
 3. The action is applied.
 4. The device responds with an HTTP status code, and optionally a message.
@@ -229,7 +239,9 @@ static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMetho
 
 ### Mapping Azure IoT Central Interface Command with Direct Method Bindings
 
-This maps to the **ResetMethod** command defined in the Azure IoT Central Device template.
+Azure Iot Central application template interface includes a command capability. The command capability defines a display name, a command named **ResetMethod**, and schema information. The command name maps to the DirectMethodBinding **methodName**.
+
+From your web browser, switch back to the Azure IoT Central application and explore the Azure Sphere Device Template and the Interfaces.
 
 ![](resources/iot-central-device-template-interface-fan1.png)
 
