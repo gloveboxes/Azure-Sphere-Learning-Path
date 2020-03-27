@@ -71,7 +71,7 @@ For more information refer to the [Understand and use device twins in IoT Hub](h
 
 ### Azure IoT Direct Methods
 
-When you invoke a *Direct Method* from Azure, a message is sent to the device. This message includes the name of the direct method and a data payload. The device will action the request and then respond with an HTTP status code to indicate success or failure of an action along with an optional message.
+When you invoke a *Direct Method* from Azure, a message is sent to the device. This message includes the name of the direct method and a data payload. The device will action the request and then respond with an HTTP status code to indicate the success or failure of an action, along with an optional message.
 
 For more information refer to the [Understand and invoke direct methods from IoT Hub](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods?WT.mc_id=github-blog-dglover) article.
 
@@ -153,9 +153,9 @@ To update the Device Twin, call the DeviceTwinReportState function. You must pas
 DeviceTwinReportState(&buttonPressed, "ButtonA");   // TwinType = TYPE_STRING
 ```
 
-### Opening, Dispatching, and Closing with Device Twin Bindings
+### Opening, Dispatching, and Closing Device Twin Bindings
 
-Like Peripherals and Timers, Device Twin Bindings can be automatically opened, dispatched, and closed if they are added to the deviceTwinDevices array. Device Twin Bindings added to the **deviceTwinBindings array** are referred to as a **set** of device twin bindings.
+Like Peripherals and Timers, Device Twin Bindings can be automatically opened, dispatched, and closed if they are added to the deviceTwinDevices array. Device Twin Bindings added to the **deviceTwinBindings array** is referred to as a **set** of device twin bindings.
 
 ```c
 DeviceTwinBinding* deviceTwinBindings[] = { &led1BlinkRate, &buttonPressed, &relay1DeviceTwin };
@@ -187,7 +187,7 @@ CloseDeviceTwinSet();
 
 Azure IoT Central uses Commands to control devices. Commands are implemented in Azure Iot Central using Azure IoT Direct Methods. Direct methods represent a request-reply interaction with a device similar to an HTTP call in that they succeed or fail immediately (after a user-specified timeout).
 
-The following outlines how a commands are sent to a device using Direct Methods:
+The following outlines how commands are sent to a device using Direct Methods:
 
 1. A user invokes an Azure IoT Central Command and an Azure IoT Direct Method message is sent to the device.
 2. The handler function associated with the Direct Method is called on the device.
@@ -198,7 +198,7 @@ The following outlines how a commands are sent to a device using Direct Methods:
 
 ### Declaring a Direct Method Binding
 
-Direct Method Bindings associate Azure IoT Direct Methods with a handler function. In the following example, when the device receives Azure IoT Direct Method named **ResetMethod**, the **ResetDirectMethod** handler function will be called.
+Direct Method Bindings associate Azure IoT Direct Methods with a handler function. In the following example, when the device receives an Azure IoT Direct Method named **ResetMethod**, the **ResetDirectMethod** handler function will be called.
 
 
 
@@ -206,11 +206,9 @@ Direct Method Bindings associate Azure IoT Direct Methods with a handler functio
 static DirectMethodBinding resetDevice = { .methodName = "ResetMethod", .handler = ResetDirectMethod };
 ```
 
-
-
 ### Direct Method Handler Function
 
-The **ResetDirectMethod** handler function found in **main.c** implements the DirectMethodBinding. The function is passed a JSON object *{"reset_timer":5}*, this is deserialized, range checked, a One Shot Timer is set to do the device reset. This leaves enough time for the application to respond to Azure IoT Central with a response message and an HTTP status code before resetting.
+The **ResetDirectMethod** handler function found in **main.c** implements the DirectMethodBinding. The function is passed a JSON object *{"reset_timer":5}*, this is deserialized, range checked, a One-Shot Timer is set to do the device reset. This leaves enough time for the application to respond to Azure IoT Central with a response message and an HTTP status code before resetting.
 
 ![](resources/azure-sphere-method-and-twin.png)
 
@@ -254,7 +252,7 @@ static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMetho
 
 ### Mapping Azure IoT Central Interface Command with Direct Method Bindings
 
-Azure Iot Central application template interface includes a command capability. The command capability defines a display name, a command named **ResetMethod**, and schema information. The command name maps to the DirectMethodBinding **methodName**.
+Azure IoT Central application template interface includes a command capability. The command capability defines a display name, a command named **ResetMethod**, and schema information. The command name maps to the DirectMethodBinding **methodName**.
 
 From your web browser, switch back to the Azure IoT Central application and explore the Azure Sphere Device Template and the Interfaces.
 
@@ -268,7 +266,7 @@ The **ResetMethod** handler function is expecting a JSON payload like this {"res
 
 ![](resources/iot-central-device-template-interface-command-schema.png)
 
-### Opening, Closing, and Dispatching with Direct Method Bindings
+### Opening, Dispatching, and Closing Direct Method Bindings
 
 Like Peripherals, Timers, and Device Twin Bindings, Direct Method Bindings can be automatically opened, dispatched, and closed if they are added to the directMethodBindings array. Direct Method Bindings added to the **directMethodBindings array** are referred to as a **set** of direct method bindings.
 
@@ -331,7 +329,7 @@ CloseDirectMethodSet();
 2. Navigate to the declaration of **static DeviceTwinBinding led1BlinkRate**. 
 
     * If you have Visual Studio line numbers then scroll down to around line 90. 
-    * You can also use **find**, press <kbd>ctrl+f</kbd>, and type *led1BlinkRate*.
+    * You can also use **find**, press <kbd>Ctrl+f</kbd>, and type *led1BlinkRate*.
 
     ```c
     static DeviceTwinBinding led1BlinkRate = { .twinProperty = "LedBlinkRate", .twinType = TYPE_INT, .handler = DeviceTwinBlinkRateHandler };
@@ -348,18 +346,18 @@ CloseDirectMethodSet();
 1. Again, in the **main.c** file
 2. Navigate to the line that reads **static DirectMethodBinding resetDevice**.
     * If you have Visual Studio line numbers then scroll down to around line 95. 
-    * You can also use **find**, press <kbd>ctrl+f</kbd>, and type *resetDevice*.
+    * You can also use **find**, press <kbd>Ctrl+f</kbd>, and type *resetDevice*.
 
     ```c
     static DirectMethodBinding resetDevice = { .methodName = "ResetMethod", .handler = ResetDirectMethod };
     ```
 
-4. Again, right mouse click the **ResetDirectMethod** handler, and select **Go To Definition**, and review the handler implementation.
+4. Again, right mouse click the **ResetDirectMethod** handler and select **Go To Definition**, and review the handler implementation.
 
 ### Support for IoT Central Properties and Commands
 
 1. From **main.c**.
-2. Press <kbd>ctrl+f</kbd>, and search for **deviceTwinBindings**. In this code section, the **deviceTwinBindings** and **directMethodBindings** sets are declared.
+2. Press <kbd>Ctrl+f</kbd>, and search for **deviceTwinBindings**. In this code section, the **deviceTwinBindings** and **directMethodBindings** sets are declared.
 
     ```c
 	DeviceTwinBinding* deviceTwinBindings[] = { &led1BlinkRate, &buttonPressed, &relay1DeviceTwin, &deviceResetUtc };
@@ -461,7 +459,7 @@ The expected behaviour will differ depending on what Azure Sphere device you hav
 
 ## Testing Azure IoT Central Commands
 
-1. From Visual Studio, ensure the Azure Sphere is running the application, and set a breakpoint in the **ResetDirectMethod** handler function.
+1. From Visual Studio, ensure the Azure Sphere is running the application and set a breakpoint in the **ResetDirectMethod** handler function.
 2. Switch to Azure IoT Central in your web browser.
 3. Select the Azure IoT Central **Commands** tab.
 4. Set the **Reset Azure Sphere** time in seconds, then click **Run**.
@@ -472,7 +470,7 @@ The expected behaviour will differ depending on what Azure Sphere device you hav
     ![](resources/iot-central-device-command-view-history.png)
 8. The command history will be similar to the following:
 
-	> Note, you may see a timed out message in the history depending how long it took you to step through the code in Visual Studio.
+	> Note, you may see a timed out message in the history depending on how long it took you to step through the code in Visual Studio.
 
     ![](resources/iot-central-device-commands-view-history.png)
 
