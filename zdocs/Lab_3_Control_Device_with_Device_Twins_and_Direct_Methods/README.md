@@ -441,8 +441,6 @@ Azure IoT Central does not update immediately. It may take a minute or two for t
 
 ## Testing Azure IoT Central Property Updates
 
-
-
 Select the **Properties** tab, update the **Led Blink Rate [0..4]** field, then click **Save**.
 
 ![iot central device settings](resources/iot-central-display-settings.png)
