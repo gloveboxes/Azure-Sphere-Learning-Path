@@ -274,9 +274,11 @@ The following outlines how the **ResetDirectMethod** handler function found in *
 
 3. The current UTC time is reported to Azure IoT using a Device Twin Binding property named **DeviceResetUTC**.
 
-4. The Direct Method responds back with an HTTP status code and a response message and the device is reset.
+4. The Direct Method responds back with an HTTP status code and a response message
 
-5. Azure IoT Central queries and displays the Device Twin reported property **DeviceResetUTC**.
+5. The device is reset.
+
+6. Azure IoT Central queries and displays the Device Twin reported property **DeviceResetUTC**.
 
 ![](resources/azure-sphere-method-and-twin.png)
 
