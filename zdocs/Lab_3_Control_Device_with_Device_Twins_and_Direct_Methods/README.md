@@ -234,7 +234,7 @@ OpenDirectMethodSet(directMethodBindings, NELEMS(directMethodBindings));
 
 #### Dispatching
 
-When a Direct Method message is received the DirectMethodTwinBindings Set is checked for a matching DirectMethodBinding *methodName* name. When a match is found, the DirectMethodBinding handler function is called.
+When a Direct Method message is received the DirectMethodBindings Set is checked for a matching DirectMethodBinding *methodName* name. When a match is found, the DirectMethodBinding handler function is called.
 
 #### Closing
 
@@ -246,9 +246,37 @@ CloseDirectMethodSet();
 
 ---
 
+## Mapping Direct Method Bindings to Azure IoT Central Interface Command
+
+Azure IoT Central application template interface includes a command capability. The command capability defines a display name, a command named **ResetMethod**, and schema information. The command name maps to the DirectMethodBinding **methodName**.
+
+From your web browser, switch back to the Azure IoT Central application and explore the Azure Sphere Device Template and the Interfaces.
+
+![](resources/iot-central-device-template-interface-fan1.png)
+
+#### ResetMethod Object Schema
+
+The **ResetMethod** schema is of type **Object**. Clicking on the **view** button will display the object definition. The Object definition describes the shape of the JSON payload sent when the Direct Method is invoked.
+
+The **ResetMethod** handler function is expecting a JSON payload like this {"reset_timer":5}.
+
+![](resources/iot-central-device-template-interface-command-schema.png)
+
+---
+
 ## Direct Method Handler Function
 
-The **ResetDirectMethod** handler function found in **main.c** implements the DirectMethodBinding. The function is passed a JSON object *{"reset_timer":5}*, this is deserialized, range checked, a One-Shot Timer is set to do the device reset. This leaves enough time for the application to respond to Azure IoT Central with a response message and an HTTP status code before resetting.
+The following outlines how the **ResetDirectMethod** handler function found in **main.c** works:
+
+1. From Azure IoT Central, a user invokes the **Reset Azure Sphere** command. A Direct Method named **ResetMethod** along with a JSON payload is sent to the device. The JSON payload *"reset_timer":5}* specifies how many seconds to wait before resetting the device.
+
+2. When a Direct Method message is received the DirectMethodBindings Set is checked for a matching DirectMethodBinding *methodName* name. When a match is found, the associated DirectMethodBinding handler function is called.
+
+3. The current UTC time is reported to Azure IoT using a Device Twin Binding property named **DeviceResetUTC**.
+
+4. The Direct Method responds back with an HTTP status code and a response message and the device is reset.
+
+5. Azure IoT Central queries and displays the Device Twin report property **DeviceResetUTC**.
 
 ![](resources/azure-sphere-method-and-twin.png)
 
@@ -289,22 +317,6 @@ static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMetho
 	}
 }
 ```
-
-### Mapping Azure IoT Central Interface Command with Direct Method Bindings
-
-Azure IoT Central application template interface includes a command capability. The command capability defines a display name, a command named **ResetMethod**, and schema information. The command name maps to the DirectMethodBinding **methodName**.
-
-From your web browser, switch back to the Azure IoT Central application and explore the Azure Sphere Device Template and the Interfaces.
-
-![](resources/iot-central-device-template-interface-fan1.png)
-
-#### ResetMethod Object Schema
-
-The **ResetMethod** schema is of type **Object**. Clicking on the **view** button will display the object definition. The Object definition describes the shape of the JSON payload sent when the Direct Method is invoked.
-
-The **ResetMethod** handler function is expecting a JSON payload like this {"reset_timer":5}.
-
-![](resources/iot-central-device-template-interface-command-schema.png)
 
 ---
 
