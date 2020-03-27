@@ -101,7 +101,7 @@ Azure IoT Central Properties are implemented using Azure IoT Device Twins.
 * Azure IoT Central uses properties and device twins to set the desired state on a device.
 * Azure IoT Central uses device twins *reported* state to display the last synced state of a property.
 
-### Cloud to Device: Device Twin Binding
+### Device Twin Binding for Cloud to Device updates
 
 In main.c the variable named **led1BlinkRate** of type **DeviceTwinBinding**  is declared. This variable maps the Azure IoT Central *LedBlinkRate* property with a handler function named **DeviceTwinBlinkRateHandler**.
 
@@ -109,7 +109,7 @@ In main.c the variable named **led1BlinkRate** of type **DeviceTwinBinding**  is
 static DeviceTwinBinding led1BlinkRate = { .twinProperty = "LedBlinkRate", .twinType = TYPE_INT, .handler = DeviceTwinBlinkRateHandler };
 ```
 
-### Device to Cloud: Device Twin Bindings
+### Device Twin Bindings for Device to Cloud updates
 
 You can also define a Device to Cloud DeviceTwinBinding. The following example binds the Device Twin property ButtonPressed. Note, there is no handler function registered as this is a one-way device to cloud binding.
 
@@ -122,8 +122,6 @@ To update the Device Twin, call the DeviceTwinReportState function. You must pas
 ```c
 DeviceTwinReportState(&buttonPressed, "ButtonA");   // TwinType = TYPE_STRING
 ```
-
-
 
 ### Opening, Dispatching, and Closing Device Twin Bindings
 
@@ -143,7 +141,7 @@ OpenDeviceTwinSet(deviceTwinBindings, NELEMS(deviceTwinBindings));
 
 #### Dispatching
 
-When a Device Twin message is received the DeviceTwinBindings Set is checked for a matching DeviceTwinBinding *twinProperty* name. When a match is found, the DeviceTwinBinding handler function is called.
+When a Device Twin message is received the DeviceTwinBindings Set is checked for a matching DeviceTwinBinding *twinProperty* name. When a match is found, the corresponding DeviceTwinBinding handler function is called.
 
 #### Closing
 
@@ -152,6 +150,17 @@ The Direct Method Bindings are closed in the **ClosePeripheralsAndHandlers** fun
 ```c
 CloseDeviceTwinSet();
 ```
+
+---
+
+## Mapping Device Twin Bindings to Azure IoT Central Interface Properties
+
+1. From Azure IoT Central, navigate to **Device template**, and select the **Azure Sphere** template.
+2. Click on **Interfaces** to list the interface capabilities.
+3. Scroll down and expand the **LedBlinkRate** capability.
+4. Review the definition of **LedBlinkRate**. The capability type is **Property**, the Schema type is **Integer**, and the property is **Writeable**. Writeable means this property is enabled for Cloud to Device updates.
+
+	![](resources/iot-central-device-template-interface-led1.png)
 
 ---
 
@@ -188,15 +197,6 @@ static void DeviceTwinBlinkRateHandler(DeviceTwinBinding* deviceTwinBinding) {
 	}
 }
 ```
-
-### Mapping Azure IoT Central Interface Properties with Device Twin Bindings
-
-1. From Azure IoT Central, navigate to **Device template**, and select the **Azure Sphere** template.
-2. Click on **Interfaces** to list the interface capabilities.
-3. Scroll down and expand the **LedBlinkRate** capability.
-4. Review the definition of **LedBlinkRate**. The capability type is **Property**, the Schema type is **Integer**, and the property is **Writeable**. Writeable means this property is enabled for Cloud to Device updates.
-
-	![](resources/iot-central-device-template-interface-led1.png)
 
 ---
 
