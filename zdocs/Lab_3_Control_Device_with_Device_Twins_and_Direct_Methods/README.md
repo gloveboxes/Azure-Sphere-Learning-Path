@@ -63,15 +63,15 @@ Both Device Twins and Direct Methods provide a mechanism to invoke functionality
 
 ### Azure IoT Device Twins
 
-When you set a Device Twin property in Azure IoT you are setting the *desired* state of a property. Azure IoT will send a desired state message to the device, the device then applies the action, for example, turn on a light, or change the blink rate of an LED. The device then sends a *reported* state message back to Azure IoT. Azure IoT then stores the *reported* state in the Azure IoT where it can be queried.
+Azure IoT Device Twins enable an application to set the *desired* state of a property on a device and have the device *report* back its new state. The advantage of Device Twins is that you can query and make decisions using the cloud side reported state of a device.
 
-The following outlines how properties are set on a device:
+The following outlines how Azure IoT Central uses Device Twins to set properties on a device:
 
-1. A user sets the value of a property in Azure IoT Central.
-2. Azure IoT sends a desired property message to the device.
-3. The desired property is applied, in this case, change the LED blink rate.
-4. The device sends a reported property message to Azure IoT.
-5. Azure IoT Central queries and displays the Properties.Reported data.  
+1. A user sets the value of a property in Azure IoT Central. For example, turn on a light, or change the blink rate of an LED.
+2. Azure IoT sends a *desired* property message to the device.
+3. The *desired* property is applied on the device, in this case, change the LED blink rate.
+4. The device sends a *reported* property message back to Azure IoT. In this example, the new LED blink rate would be reported.
+5. Azure IoT Central queries and displays the devices *reported* property data.  
 
 ![](resources/device-twin-configuration-pattern.png)
 
@@ -79,14 +79,14 @@ For more information refer to the [Understand and use device twins in IoT Hub](h
 
 ### Azure IoT Direct Methods
 
-When you invoke a *Direct Method* from Azure, a message is sent to the device. This message includes the name of the direct method and a data payload. The device will action the request and then respond with an HTTP status code to indicate the success or failure of an action, along with an optional message.
+Azure IoT Direct Methods can be used to an action on a device.  This message includes the name of the direct method and a data payload. The device will action the request and then respond with an HTTP status code to indicate the success or failure of an action, along with an optional message.
 
-The following outlines how commands are sent to a device using Direct Methods:
+The following outlines how Azure IoT Central Commands uses Direct Methods to invoke an action on a device:
 
-1. A user invokes an Azure IoT Central Command and an Azure IoT Direct Method message is sent to the device.
-2. The handler function associated with the Direct Method is called on the device.
-3. The action is applied.
-4. The device responds with an HTTP status code, and optionally a message.
+1. A user invokes an Azure IoT Central Command and an Azure IoT Direct Method message is sent to the device. For example, reset the device. This message includes the method name, and an optional payload.
+2. The handler function associated with the Direct Method name is called on the device.
+3. The action is invoked.
+4. The device responds with an HTTP status code, and optionally a response message.
 
 ![](resources/azure-direct-method-pattern.png)
 
