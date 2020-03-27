@@ -276,7 +276,7 @@ The following outlines how the **ResetDirectMethod** handler function found in *
 
 4. The Direct Method responds back with an HTTP status code and a response message and the device is reset.
 
-5. Azure IoT Central queries and displays the Device Twin report property **DeviceResetUTC**.
+5. Azure IoT Central queries and displays the Device Twin reported property **DeviceResetUTC**.
 
 ![](resources/azure-sphere-method-and-twin.png)
 
