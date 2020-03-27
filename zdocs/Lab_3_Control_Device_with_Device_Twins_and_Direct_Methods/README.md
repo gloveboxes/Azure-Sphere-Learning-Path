@@ -141,31 +141,39 @@ This maps to the **LedBlinkRate** _property_ of _schema type_ **Integer** define
 
 ### Device to Cloud Device Twin Bindings
 
-You can also define a one-way Device to Cloud update DeviceTwinBinding. The following example binds the Device Twin property ButtonPressed. Note, there is no handler function as this is a one-way binding only.
+You can also define a Device to Cloud update DeviceTwinBinding. The following example binds the Device Twin property ButtonPressed. Note, there is no handler function registered as this is a one-way binding.
 
 ```c
 static DeviceTwinBinding buttonPressed = { .twinProperty = "ButtonPressed", .twinType = TYPE_STRING };
 ```
 
-To update the Device Twin, call the DeviceTwinReportState function. You must pass in a property of the correct type, in this case **TYPE_STRING** (aka char*). This example can be found in the **ButtonPressCheckHandler** handler function. 
+To update the Device Twin, call the DeviceTwinReportState function. You must pass in a property of the correct type, in this case **TYPE_STRING** (aka char*). This example can be found in the **ButtonPressCheckHandler** handler function.
 
 ```c
 DeviceTwinReportState(&buttonPressed, "ButtonA");   // TwinType = TYPE_STRING
 ```
 
-### Initializing Device Twin Bindings
+### Opening, Dispatching, and Closing with Device Twin Bindings
 
-Like Peripherals and Timers, Device Twin Bindings can be automatically opened, initialized, and closed if they are added to the deviceTwinDevices array, also referred to as a **set** of device twin bindings.
+Like Peripherals and Timers, Device Twin Bindings can be automatically opened, dispatched, and closed if they are added to the deviceTwinDevices array. Device Twin Bindings added to the **deviceTwinBindings array** are referred to as a **set** of device twin bindings.
 
 ```c
 DeviceTwinBinding* deviceTwinBindings[] = { &led1BlinkRate, &buttonPressed, &relay1DeviceTwin };
 ```
+
+#### Opening
 
 The Direct Method Bindings are initialized in the **InitPeripheralsAndHandlers** function found in **main.c**.
 
 ```c
 OpenDeviceTwinSet(deviceTwinBindings, NELEMS(deviceTwinBindings));
 ```
+
+#### Dispatching
+
+When a Device Twin message is received the DeviceTwinBindings Set is checked for a matching DeviceTwinBinding *twinProperty* name. When a match is found, the DeviceTwinBinding handler function is called.
+
+#### Closing
 
 The Direct Method Bindings are closed in the **ClosePeripheralsAndHandlers** function found in **main.c**.
 
@@ -223,7 +231,7 @@ static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMetho
 	}
 	int seconds = (int)json_object_get_number(json, propertyName);
 
-	if (seconds > 1 && seconds < 10) {
+	if (seconds > 0 && seconds < 10) {
 
 		// Report Device Reset UTC
 		DeviceTwinReportState(&deviceResetUtc, GetCurrentUtc(msgBuffer, sizeof(msgBuffer)));			// TYPE_STRING
@@ -260,19 +268,27 @@ The **ResetMethod** handler function is expecting a JSON payload like this {"res
 
 ![](resources/iot-central-device-template-interface-command-schema.png)
 
-### Initializing and Closing Direct Method Bindings
+### Opening, Closing, and Dispatching with Direct Method Bindings
 
-Like Peripherals, Timers, and Device Twins, Direct Method Bindings can be automatically initialized and closed if they are added to the directMethodDevices array. An array of direct method bindings is also referred to as a set of direct method bindings.
+Like Peripherals, Timers, and Device Twin Bindings, Direct Method Bindings can be automatically opened, dispatched, and closed if they are added to the directMethodBindings array. Direct Method Bindings added to the **directMethodBindings array** are referred to as a **set** of direct method bindings.
 
 ```c
 DirectMethodBinding* directMethodBindings[] = { &resetDevice };
 ```
+
+#### Opening
 
 The Direct Method Bindings are initialized in the **InitPeripheralsAndHandlers** function found in **main.c**.
 
 ```c
 OpenDirectMethodSet(directMethodBindings, NELEMS(directMethodBindings));
 ```
+
+#### Dispatching
+
+When a Direct Method message is received the DirectMethodTwinBindings Set is checked for a matching DirectMethodBinding *methodName* name. When a match is found, the DirectMethodBinding handler function is called.
+
+#### Closing
 
 The Direct Method Bindings are closed in the **ClosePeripheralsAndHandlers** function found in **main.c**.
 
@@ -342,14 +358,16 @@ CloseDirectMethodSet();
 
 ### Support for IoT Central Properties and Commands
 
-1. Again, in **main.c**.
-2. Scroll up to the line that reads **#pragma region define sets for auto initialization and close**
-3. In this region, there are several arrays that point to the **DeviceTwinBindings** and **DirectMethodBinding** defined above.
+1. From **main.c**.
+2. Press <kbd>ctrl+f</kbd>, and search for **deviceTwinBindings**. In this code section, the **deviceTwinBindings** and **directMethodBindings** sets are declared.
+
     ```c
-    DeviceTwinBinding* deviceTwinBindings[] = { &relay, &light };
-    DirectMethodBinding* directMethodBindings[] = { &fan };
+	DeviceTwinBinding* deviceTwinBindings[] = { &led1BlinkRate, &buttonPressed, &relay1DeviceTwin, &deviceResetUtc };
+	DirectMethodBinding* directMethodBindings[] = { &resetDevice };
     ```
-4. In the main.c **InitPeripheralsAndHandlers** function these sets of device twins and direct methods are opened and initialized.
+
+3. From main.c, navigate to the **InitPeripheralsAndHandlers** function. This is where the device twins and direct methods **sets** are opened.
+
     ```c
     /// <summary>
     ///  Initialize peripherals, device twins, direct methods, timers.
@@ -386,11 +404,48 @@ To start the build, deploy and debug process, either click the Visual Studio **S
 
 ---
 
-## Test Azure IoT Central Property Updates
+## Expected Device Behaviour
 
-Now the application is running on the Azure Sphere switch across to Azure IoT Central, select the **Devices** tab, then the **Azure Sphere** template, then the actual device.
+### Avnet Azure Sphere MT3620 Starter Kit
 
-Select the **Properties** tab and change the **Light** toggle state to **On**, then click **Save**.
+![](resources/avnet-azure-sphere.jpg)
+
+1. The blue LED will start to blink
+2. Press **Button A** on the device to change the blink rate and generate **Button Pressed Events**.
+3. Press **Button B** on the device to generate **Button Pressed Events**.
+
+### Seeed Studio Azure Sphere MT3620 Development Kit
+
+![](resources/seeed-studio-azure-sphere-rdb.jpg)
+
+1. The blue LED will start to blink
+2. Press **Button A** on the device to change the blink rate and generate **Button Pressed Events**.
+3. Press **Button B** on the device to generate **Button Pressed Events**.
+
+### Seeed Studio MT3620 Mini Dev Board
+
+![](resources/seeed-studio-azure-sphere-mini.png)
+
+1. The green LED closest to the USB connector will start to blink
+2. Given no builtin buttons, virtual **Button A** and **Button B** presses will be generated every 5 seconds. The blink rate will change and **Button Pressed Events** will be generated.
+
+---
+
+## Viewing the Device Telemetry in Azure IoT Central
+
+1. Switch to Azure IoT Central in your browser.
+2. Select the **Devices**, then the **Azure Sphere** template, then your device.
+3. Select the **Telemetry** tab.
+
+Azure IoT Central does not update immediately. It may take a minute or two for temperature, humidity, button pressed alerts, and message count to be displayed.
+
+![](resources/iot-central-display-telemetry.png)
+
+## Testing Azure IoT Central Property Updates
+
+
+
+Select the **Properties** tab, update the **Led Blink Rate [0..4]** field, then click **Save**.
 
 ![iot central device settings](resources/iot-central-display-settings.png)
 
@@ -398,23 +453,36 @@ Select the **Properties** tab and change the **Light** toggle state to **On**, t
 
 The expected behaviour will differ depending on what Azure Sphere device you have.
 
-* **Azure Sphere MT3620 Starter Kit**: See that an **Orange** LED lights up on the Azure Sphere.
-* **Seeed Studio Azure Sphere MT3620 Development Kit**: See that a **Red** LED lights up on the Azure Sphere.
-* **Seeed Studio Azure Sphere MT3620 Mini Dev Board**: See that a **Green** LED lights up on the Azure Sphere.
+* **Azure Sphere MT3620 Starter Kit**: See that an **Orange** LED blink rate will change depending on the blink rate you set and saved.
+* **Seeed Studio Azure Sphere MT3620 Development Kit**: See that a **Red** LED blink rate will change depending on the blink rate you set and saved.
+* **Seeed Studio Azure Sphere MT3620 Mini Dev Board**: See that a **Green** LED blink rate will change depending on the blink rate you set and saved.
 
 ---
 
-## Test Azure IoT Central Commands
+## Testing Azure IoT Central Commands
 
-1. With the application still is running on the Azure Sphere, select the Azure IoT Central **Commands** tab.
-2. Set the fan speed to 30 and click **Run**.
+1. From Visual Studio, ensure the Azure Sphere is running the application, and set a breakpoint in the **ResetDirectMethod** handler function.
+2. Switch to Azure IoT Central in your web browser.
+3. Select the Azure IoT Central **Commands** tab.
+4. Set the **Reset Azure Sphere** time in seconds, then click **Run**.
+5. Observer the device rebooting. The LEDs will stop blinking for a few seconds.
     ![](resources/iot-central-device-command-run.png)
-3. Click the **View History** button
+6. Switch back to Visual Studio, the application should have stopped where you set the breakpoint. Step over code <kbd>F10</kbd>, step into code <kbd>F11</kbd>, and continue code execution <kbd>F5</kbd>.
+7. Switch back to Azure IoT Central, and click the **View History** button.
     ![](resources/iot-central-device-command-view-history.png)
-4. The command history will be similar to the following:
+8. The command history will be similar to the following:
+
+	> Note, you may see a timed out message in the history depending how long it took you to step through the code in Visual Studio.
+
     ![](resources/iot-central-device-commands-view-history.png)
-5. Try testing with numbers great that 100, and review the command history.
-6. From Visual Studio, try setting a breakpoint in the **SetFanSpeedDirectMethod** handler and then from Azure IoT Central rerun the command. You should see that the Visual Studio debugger has halted the code execution in the handler.
+
+---
+
+## Viewing Reported Status
+
+The **Status** tab displays the latest reported data from the Azure Sphere device.
+
+![](resources/iot-central-device-report-status.png)
 
 ---
 

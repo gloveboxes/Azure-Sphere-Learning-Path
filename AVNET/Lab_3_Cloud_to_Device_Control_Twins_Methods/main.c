@@ -327,7 +327,7 @@ static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMetho
 	}
 	int seconds = (int)json_object_get_number(json, propertyName);
 
-	if (seconds > 1 && seconds < 10) {
+	if (seconds > 0 && seconds < 10) {
 
 		// Report Device Reset UTC
 		DeviceTwinReportState(&deviceResetUtc, GetCurrentUtc(msgBuffer, sizeof(msgBuffer)));			// TYPE_STRING
