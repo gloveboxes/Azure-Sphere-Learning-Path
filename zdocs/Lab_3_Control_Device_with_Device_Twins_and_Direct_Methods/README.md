@@ -117,7 +117,7 @@ You can also define a Device to Cloud DeviceTwinBinding. The following example b
 static DeviceTwinBinding buttonPressed = { .twinProperty = "ButtonPressed", .twinType = TYPE_STRING };
 ```
 
-To update the Device Twin, call the DeviceTwinReportState function. You must pass in a property of the correct type, in this case **TYPE_STRING** (aka char*). This example can be found in the **ButtonPressCheckHandler** handler function found in **main.c**.
+To update the Device Twin, call the DeviceTwinReportState function. You must pass in a property of the correct type, in this case, **TYPE_STRING** (aka char*). This example can be found in the **ButtonPressCheckHandler** handler function found in **main.c**.
 
 ```c
 DeviceTwinReportState(&buttonPressed, "ButtonA");   // TwinType = TYPE_STRING
