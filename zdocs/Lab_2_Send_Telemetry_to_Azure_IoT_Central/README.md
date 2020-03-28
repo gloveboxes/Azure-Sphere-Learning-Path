@@ -314,7 +314,7 @@ static void SendMsgLed2On(char* message) {
 
 ### Step 1: Start the Azure Sphere Application
 
-To start the build, deploy, debug process, either click the Visual Studio **Start Selected Item** icon, or press **<kbd>F5</kbd>**, or from the main menu of Visual Studio, click **Debug**, then **Start**.
+To start the build, deploy, debug process, either click the Visual Studio **Start Selected Item** icon, or press **<kbd>F5</kbd>**, or from the Visual Studio main menu, click **Debug**, then **Start**.
 
 ![](resources/visual-studio-start-debug.png)
 
@@ -345,6 +345,10 @@ This numeric name is the ID of your Azure Sphere Device. You can check this by r
 1. Switch back to Azure IoT Central in your web browser.
 2. You need to wait a minute or two before your Azure Sphere device is automatically enrolled.
 3. The newly enrolled device will have a numeric name that matches your Azure Sphere Device ID.
+
+    ```bash
+    azsphere device show-attached
+    ```
 
 ---
 
