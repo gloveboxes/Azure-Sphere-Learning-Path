@@ -36,19 +36,21 @@ static int Led1BlinkIntervalIndex = 0;
 static const struct timespec led1BlinkIntervals[] = { {0, 125000000}, {0, 250000000}, {0, 500000000}, {0, 750000000}, {1, 0} };
 static const int led1BlinkIntervalsCount = NELEMS(led1BlinkIntervals);
 
-// GPIO Peripherals
-static Peripheral buttonA = { .fd = -1, .pin = BUTTON_A, .direction = INPUT, .initialise = OpenPeripheral, .name = "buttonA" };
-static Peripheral buttonB = { .fd = -1, .pin = BUTTON_B, .direction = INPUT, .initialise = OpenPeripheral, .name = "buttonB" };
+// GPIO Input Peripherals
+static Peripheral buttonA = { .pin = BUTTON_A, .direction = INPUT, .initialise = OpenPeripheral, .name = "buttonA" };
+static Peripheral buttonB = { .pin = BUTTON_B, .direction = INPUT, .initialise = OpenPeripheral, .name = "buttonB" };
+
+// GPIO Output Peripherals
 static Peripheral led1 = {
-	.fd = -1, .pin = LED1, .direction = OUTPUT, .initialState = GPIO_Value_High, .invertPin = true,
+	.pin = LED1, .direction = OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true,
 	.initialise = OpenPeripheral, .name = "led1"
 };
 static Peripheral led2 = {
-	.fd = -1, .pin = LED2, .direction = OUTPUT, .initialState = GPIO_Value_High, .invertPin = true,
+	.pin = LED2, .direction = OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true,
 	.initialise = OpenPeripheral, .name = "led2"
 };
 static Peripheral networkConnectedLed = {
-	.fd = -1, .pin = NETWORK_CONNECTED_LED, .direction = OUTPUT, .initialState = GPIO_Value_High, .invertPin = true,
+	.pin = NETWORK_CONNECTED_LED, .direction = OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true,
 	.initialise = OpenPeripheral, .name = "networkConnectedLed"
 };
 
@@ -66,7 +68,7 @@ static Timer buttonPressCheckTimer = {
 	.name = "buttonPressCheckTimer", .timerEventHandler = ButtonPressCheckHandler
 };
 static Timer networkConnectionStatusTimer = {
-	.period = { 4, 0 },
+	.period = { 5, 0 },
 	.name = "networkConnectionStatusTimer", .timerEventHandler = NetworkConnectionStatusHandler
 };
 static Timer measureSensorTimer = {
@@ -74,9 +76,9 @@ static Timer measureSensorTimer = {
 	.name = "measureSensorTimer", .timerEventHandler = MeasureSensorHandler
 };
 
-// Initialize peripheral, timer, device twin, and direct method sets
-Peripheral* peripherals[] = { &buttonA, &buttonB, &led1, &led2, &networkConnectedLed };
-Timer* timers[] = { &led1BlinkTimer, &led2BlinkOffOneShotTimer, &buttonPressCheckTimer, &networkConnectionStatusTimer, &measureSensorTimer };
+// Initialize Sets
+Peripheral* peripheralSet[] = { &buttonA, &buttonB, &led1, &led2, &networkConnectedLed };
+Timer* timerSet[] = { &led1BlinkTimer, &led2BlinkOffOneShotTimer, &buttonPressCheckTimer, &networkConnectionStatusTimer, &measureSensorTimer };
 
 
 int main(int argc, char* argv[]) {
@@ -229,9 +231,9 @@ static void Led1BlinkHandler(EventLoopTimer* eventLoopTimer) {
 static int InitPeripheralsAndHandlers(void) {
 	InitializeDevKit();
 
-	OpenPeripheralSet(peripherals, NELEMS(peripherals));
+	OpenPeripheralSet(peripheralSet, NELEMS(peripheralSet));
 
-	StartTimerSet(timers, NELEMS(timers));
+	StartTimerSet(timerSet, NELEMS(timerSet));
 
 	return 0;
 }

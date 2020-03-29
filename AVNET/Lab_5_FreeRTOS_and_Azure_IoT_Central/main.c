@@ -32,17 +32,17 @@ static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 static const char cstrJsonEvent[] = "{\"%s\":\"occurred\"}";
 static const struct timespec led2BlinkPeriod = { 0, 300 * 1000 * 1000 };
 
-// GPIO Peripherals
+// GPIO Output Peripherals
 static Peripheral led2 = {
-	.fd = -1, .pin = LED2, .direction = OUTPUT, .initialState = GPIO_Value_High, .invertPin = true,
+	.pin = LED2, .direction = OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true,
 	.initialise = OpenPeripheral, .name = "led2"
 };
 static Peripheral networkConnectedLed = {
-	.fd = -1, .pin = NETWORK_CONNECTED_LED, .direction = OUTPUT, .initialState = GPIO_Value_High, .invertPin = true,
+	.pin = NETWORK_CONNECTED_LED, .direction = OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true,
 	.initialise = OpenPeripheral, .name = "networkConnectedLed"
 };
 static Peripheral relay1 = {
-	.fd = -1, .pin = RELAY, .direction = OUTPUT, .initialState = GPIO_Value_Low, .invertPin = false,
+	.pin = RELAY, .direction = OUTPUT, .initialState = GPIO_Value_Low, .invertPin = false,
 	.initialise = OpenPeripheral, .name = "relay1"
 };
 
@@ -55,13 +55,13 @@ static Timer networkConnectionStatusTimer = {
 	.period = { 5, 0 },
 	.name = "networkConnectionStatusTimer", .timerEventHandler = NetworkConnectionStatusHandler
 };
-static Timer resetDeviceOneShotTimer = {
-	.period = { 0, 0 },
-	.name = "resetDeviceOneShotTimer", .timerEventHandler = ResetDeviceHandler
-};
 static Timer measureSensorTimer = {
 	.period = { 10, 0 }, 
 	.name = "measureSensorTimer", .timerEventHandler = MeasureSensorHandler
+};
+static Timer resetDeviceOneShotTimer = {
+	.period = { 0, 0 },
+	.name = "resetDeviceOneShotTimer", .timerEventHandler = ResetDeviceHandler
 };
 static Timer realTimeCoreHeatBeatTimer = { 
 	.period = { 30, 0 }, 
@@ -71,15 +71,16 @@ static Timer realTimeCoreHeatBeatTimer = {
 // Azure IoT Device Twins
 static DeviceTwinBinding buttonPressed = { .twinProperty = "ButtonPressed", .twinType = TYPE_STRING };
 static DeviceTwinBinding relay1DeviceTwin = { .twinProperty = "Relay1", .twinType = TYPE_BOOL, .handler = DeviceTwinRelay1RateHandler };
+static DeviceTwinBinding deviceResetUtc = { .twinProperty = "DeviceResetUTC", .twinType = TYPE_STRING };
 
 // Azure IoT Direct Methods
 static DirectMethodBinding resetDevice = { .methodName = "ResetMethod", .handler = ResetDirectMethod };
 
-// Initialize peripheral, timer, device twin, and direct method sets
-DeviceTwinBinding* deviceTwinBindings[] = { &buttonPressed, &relay1DeviceTwin };
-DirectMethodBinding* directMethodBindings[] = { &resetDevice };
-Peripheral* peripherals[] = { &led2, &networkConnectedLed, &relay1 };
-Timer* timers[] = { &led2BlinkOffOneShotTimer, &networkConnectionStatusTimer, &resetDeviceOneShotTimer, &measureSensorTimer, &realTimeCoreHeatBeatTimer };
+// Initialize Sets
+Peripheral* peripheralSet[] = { &led2, &networkConnectedLed, &relay1 };
+Timer* timerSet[] = { &led2BlinkOffOneShotTimer, &networkConnectionStatusTimer, &resetDeviceOneShotTimer, &measureSensorTimer, &realTimeCoreHeatBeatTimer };
+DeviceTwinBinding* deviceTwinBindingSet[] = { &buttonPressed, &relay1DeviceTwin };
+DirectMethodBinding* directMethodBindingSet[] = { &resetDevice };
 
 
 int main(int argc, char* argv[]) {
@@ -208,15 +209,20 @@ static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMetho
 	if (!json_object_has_value_of_type(json, propertyName, JSONNumber)) {
 		return METHOD_FAILED;
 	}
-
 	int seconds = (int)json_object_get_number(json, propertyName);
 
-	if (seconds > 1 && seconds < 10) {
+	if (seconds > 0 && seconds < 10) {
 
+		// Report Device Reset UTC
+		DeviceTwinReportState(&deviceResetUtc, GetCurrentUtc(msgBuffer, sizeof(msgBuffer)));			// TYPE_STRING
+
+		// Create Direct Method Response
+		snprintf(*responseMsg, responseLen, "%s called. Reset in %d seconds", directMethodBinding->methodName, seconds);
+
+		// Set One Shot Timer
 		period = (struct timespec){ .tv_sec = seconds, .tv_nsec = 0 };
 		SetOneShotTimer(&resetDeviceOneShotTimer, &period);
 
-		snprintf(*responseMsg, responseLen, "%s called. Reset in %d seconds", directMethodBinding->methodName, seconds);
 		return METHOD_SUCCEEDED;
 	}
 	else {
@@ -260,11 +266,11 @@ static void RealTimeCoreHeartBeat(EventLoopTimer* eventLoopTimer) {
 static int InitPeripheralsAndHandlers(void) {
 	InitializeDevKit();
 
-	OpenPeripheralSet(peripherals, NELEMS(peripherals));
-	OpenDeviceTwinSet(deviceTwinBindings, NELEMS(deviceTwinBindings));
-	OpenDirectMethodSet(directMethodBindings, NELEMS(directMethodBindings));
+	OpenPeripheralSet(peripheralSet, NELEMS(peripheralSet));
+	OpenDeviceTwinSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
+	OpenDirectMethodSet(directMethodBindingSet, NELEMS(directMethodBindingSet));
 
-	StartTimerSet(timers, NELEMS(timers));
+	StartTimerSet(timerSet, NELEMS(timerSet));
 
 	EnableInterCoreCommunications(rtAppComponentId, InterCoreHandler);  // Initialize Inter Core Communications
 	SendInterCoreMessage("HeartBeat"); // Prime RT Core with Component ID Signature

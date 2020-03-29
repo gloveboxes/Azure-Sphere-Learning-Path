@@ -40,23 +40,25 @@ static int Led1BlinkIntervalIndex = 0;
 static const struct timespec led1BlinkIntervals[] = { {0, 125000000}, {0, 250000000}, {0, 500000000}, {0, 750000000}, {1, 0} };
 static const int led1BlinkIntervalsCount = NELEMS(led1BlinkIntervals);
 
-// GPIO Peripherals
-static Peripheral buttonA = { .fd = -1, .pin = BUTTON_A, .direction = INPUT, .initialise = OpenPeripheral, .name = "buttonA" };
-static Peripheral buttonB = { .fd = -1, .pin = BUTTON_B, .direction = INPUT, .initialise = OpenPeripheral, .name = "buttonB" };
+// GPIO Input Peripherals
+static Peripheral buttonA = { .pin = BUTTON_A, .direction = INPUT, .initialise = OpenPeripheral, .name = "buttonA" };
+static Peripheral buttonB = { .pin = BUTTON_B, .direction = INPUT, .initialise = OpenPeripheral, .name = "buttonB" };
+
+// GPIO Output Peripherals
 static Peripheral led1 = {
-	.fd = -1, .pin = LED1, .direction = OUTPUT, .initialState = GPIO_Value_High, .invertPin = true,
+	.pin = LED1, .direction = OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true,
 	.initialise = OpenPeripheral, .name = "led1"
 };
 static Peripheral led2 = {
-	.fd = -1, .pin = LED2, .direction = OUTPUT, .initialState = GPIO_Value_High, .invertPin = true,
+	.pin = LED2, .direction = OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true,
 	.initialise = OpenPeripheral, .name = "led2"
 };
 static Peripheral networkConnectedLed = {
-	.fd = -1, .pin = NETWORK_CONNECTED_LED, .direction = OUTPUT, .initialState = GPIO_Value_High, .invertPin = true,
+	.pin = NETWORK_CONNECTED_LED, .direction = OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true,
 	.initialise = OpenPeripheral, .name = "networkConnectedLed"
 };
 static Peripheral relay1 = {
-	.fd = -1, .pin = RELAY, .direction = OUTPUT, .initialState = GPIO_Value_Low, .invertPin = false,
+	.pin = RELAY, .direction = OUTPUT, .initialState = GPIO_Value_Low, .invertPin = false,
 	.initialise = OpenPeripheral, .name = "relay1"
 };
 
@@ -77,29 +79,29 @@ static Timer networkConnectionStatusTimer = {
 	.period = { 5, 0 },
 	.name = "networkConnectionStatusTimer", .timerEventHandler = NetworkConnectionStatusHandler
 };
-static Timer resetDeviceOneShotTimer = {
-	.period = { 0, 0 },
-	.name = "resetDeviceOneShotTimer", .timerEventHandler = ResetDeviceHandler
-};
 static Timer measureSensorTimer = {
 	.period = { 10, 0 },
 	.name = "measureSensorTimer", .timerEventHandler = MeasureSensorHandler
 };
+static Timer resetDeviceOneShotTimer = {
+	.period = { 0, 0 },
+	.name = "resetDeviceOneShotTimer", .timerEventHandler = ResetDeviceHandler
+};
 
 // Azure IoT Device Twins
 static DeviceTwinBinding led1BlinkRate = { .twinProperty = "LedBlinkRate", .twinType = TYPE_INT, .handler = DeviceTwinBlinkRateHandler };
-static DeviceTwinBinding buttonPressed = { .twinProperty = "ButtonPressed", .twinType = TYPE_STRING };
 static DeviceTwinBinding relay1DeviceTwin = { .twinProperty = "Relay1", .twinType = TYPE_BOOL, .handler = DeviceTwinRelay1Handler };
+static DeviceTwinBinding buttonPressed = { .twinProperty = "ButtonPressed", .twinType = TYPE_STRING };
 static DeviceTwinBinding deviceResetUtc = { .twinProperty = "DeviceResetUTC", .twinType = TYPE_STRING };
 
 // Azure IoT Direct Methods
 static DirectMethodBinding resetDevice = { .methodName = "ResetMethod", .handler = ResetDirectMethod };
 
-// Initialize peripheral, timer, device twin, and direct method sets
-DeviceTwinBinding* deviceTwinBindings[] = { &led1BlinkRate, &buttonPressed, &relay1DeviceTwin, &deviceResetUtc };
-DirectMethodBinding* directMethodBindings[] = { &resetDevice };
-Peripheral* peripherals[] = { &buttonA, &buttonB, &led1, &led2, &networkConnectedLed, &relay1 };
-Timer* timers[] = { &led1BlinkTimer, &led2BlinkOffOneShotTimer, &buttonPressCheckTimer, &networkConnectionStatusTimer, &resetDeviceOneShotTimer, &measureSensorTimer };
+// Initialize Sets
+Peripheral* peripheralSet[] = { &buttonA, &buttonB, &led1, &led2, &networkConnectedLed, &relay1 };
+Timer* timerSet[] = { &led1BlinkTimer, &led2BlinkOffOneShotTimer, &buttonPressCheckTimer, &networkConnectionStatusTimer, &resetDeviceOneShotTimer, &measureSensorTimer };
+DeviceTwinBinding* deviceTwinBindingSet[] = { &led1BlinkRate, &buttonPressed, &relay1DeviceTwin, &deviceResetUtc };
+DirectMethodBinding* directMethodBindingSet[] = { &resetDevice };
 
 
 int main(int argc, char* argv[]) {
@@ -354,11 +356,11 @@ static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMetho
 static int InitPeripheralsAndHandlers(void) {
 	InitializeDevKit();
 
-	OpenPeripheralSet(peripherals, NELEMS(peripherals));
-	OpenDeviceTwinSet(deviceTwinBindings, NELEMS(deviceTwinBindings));
-	OpenDirectMethodSet(directMethodBindings, NELEMS(directMethodBindings));
+	OpenPeripheralSet(peripheralSet, NELEMS(peripheralSet));
+	OpenDeviceTwinSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
+	OpenDirectMethodSet(directMethodBindingSet, NELEMS(directMethodBindingSet));
 
-	StartTimerSet(timers, NELEMS(timers));
+	StartTimerSet(timerSet, NELEMS(timerSet));
 
 	return 0;
 }
