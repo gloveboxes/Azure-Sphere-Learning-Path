@@ -128,7 +128,7 @@ DeviceTwinReportState(&buttonPressed, "ButtonA");   // TwinType = TYPE_STRING
 Device Twin Bindings can be automatically opened, dispatched, and closed if they are added to the deviceTwinDevices array. Device Twin Bindings added to the **deviceTwinBindings array** is referred to as a **set** of device twin bindings.
 
 ```c
-DeviceTwinBinding* deviceTwinBindings[] = { &led1BlinkRate, &buttonPressed, &relay1DeviceTwin };
+DeviceTwinBinding* deviceTwinBindingSet[] = { &led1BlinkRate, &buttonPressed, &relay1DeviceTwin, &deviceResetUtc };
 ```
 
 #### Opening
@@ -136,7 +136,7 @@ DeviceTwinBinding* deviceTwinBindings[] = { &led1BlinkRate, &buttonPressed, &rel
 The Direct Method Bindings are initialized in the **InitPeripheralsAndHandlers** function found in **main.c**.
 
 ```c
-OpenDeviceTwinSet(deviceTwinBindings, NELEMS(deviceTwinBindings));
+OpenDeviceTwinSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
 ```
 
 #### Dispatching
@@ -221,7 +221,7 @@ static DirectMethodBinding resetDevice = { .methodName = "ResetMethod", .handler
 Like Peripherals, Timers, and Device Twin Bindings, Direct Method Bindings can be automatically opened, dispatched, and closed if they are added to the directMethodBindings array. Direct Method Bindings added to the **directMethodBindings array** are referred to as a **set** of direct method bindings.
 
 ```c
-DirectMethodBinding* directMethodBindings[] = { &resetDevice };
+DirectMethodBinding* directMethodBindingSet[] = { &resetDevice };
 ```
 
 #### Opening
@@ -229,7 +229,7 @@ DirectMethodBinding* directMethodBindings[] = { &resetDevice };
 The Direct Method Bindings are initialized in the **InitPeripheralsAndHandlers** function found in **main.c**.
 
 ```c
-OpenDirectMethodSet(directMethodBindings, NELEMS(directMethodBindings));
+OpenDirectMethodSet(directMethodBindingSet, NELEMS(directMethodBindingSet));
 ```
 
 #### Dispatching
@@ -354,7 +354,7 @@ static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMetho
 1. Open the **main.c** file
 2. Navigate to the declaration of **static DeviceTwinBinding led1BlinkRate**. 
 
-    * If you have Visual Studio line numbers then scroll down to around line 90. 
+    * If you have Visual Studio line numbers enabled then scroll down to around line 90. 
     * You can also use **find**, press <kbd>Ctrl+f</kbd>, and type *led1BlinkRate*.
 
     ```c
@@ -375,10 +375,10 @@ static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMetho
     * You can also use **find**, press <kbd>Ctrl+f</kbd>, and type *resetDevice*.
 
     ```c
-    static DirectMethodBinding resetDevice = { .methodName = "ResetMethod", .handler = ResetDirectMethod };
+	static DirectMethodBinding resetDevice = { .methodName = "ResetMethod", .handler = ResetDirectMethodHandler };
     ```
 
-4. Again, right mouse click the **ResetDirectMethod** handler and select **Go To Definition**, and review the handler implementation.
+4. Again, right mouse click the **ResetDirectMethodHandler** handler and select **Go To Definition**, and review the handler function implementation.
 
 ### Support for IoT Central Properties and Commands
 
@@ -386,28 +386,28 @@ static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMetho
 2. Press <kbd>Ctrl+f</kbd>, and search for **deviceTwinBindings**. In this code section, the **deviceTwinBindings** and **directMethodBindings** sets are declared.
 
     ```c
-	DeviceTwinBinding* deviceTwinBindings[] = { &led1BlinkRate, &buttonPressed, &relay1DeviceTwin, &deviceResetUtc };
-	DirectMethodBinding* directMethodBindings[] = { &resetDevice };
+	DeviceTwinBinding* deviceTwinBindingSet[] = { &led1BlinkRate, &buttonPressed, &relay1DeviceTwin, &deviceResetUtc };
+	DirectMethodBinding* directMethodBindingSet[] = { &resetDevice };
     ```
 
 3. From main.c, navigate to the **InitPeripheralsAndHandlers** function. This is where the device twins and direct methods **sets** are opened.
 
     ```c
-    /// <summary>
-    ///  Initialize peripherals, device twins, direct methods, timers.
-    /// </summary>
-    /// <returns>0 on success, or -1 on failure</returns>
-    static int InitPeripheralsAndHandlers(void) {
-        InitializeDevKit();
+	/// <summary>
+	///  Initialize peripherals, device twins, direct methods, timers.
+	/// </summary>
+	/// <returns>0 on success, or -1 on failure</returns>
+	static int InitPeripheralsAndHandlers(void) {
+		InitializeDevKit();
 
-        OpenPeripheralSet(peripherals, NELEMS(peripherals));
-        OpenDeviceTwinSet(deviceTwinBindings, NELEMS(deviceTwinBindings));
-        OpenDirectMethodSet(directMethodBindings, NELEMS(directMethodBindings));
+		OpenPeripheralSet(peripheralSet, NELEMS(peripheralSet));
+		OpenDeviceTwinSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
+		OpenDirectMethodSet(directMethodBindingSet, NELEMS(directMethodBindingSet));
 
-        StartTimerSet(timers, NELEMS(timers));
+		StartTimerSet(timerSet, NELEMS(timerSet));
 
-        return 0;
-    }
+		return 0;
+	}
     ```
 
 ---

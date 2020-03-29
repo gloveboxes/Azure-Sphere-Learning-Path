@@ -26,7 +26,7 @@ static void NetworkConnectionStatusHandler(EventLoopTimer* eventLoopTimer);
 static void ResetDeviceHandler(EventLoopTimer* eventLoopTimer);
 static void DeviceTwinBlinkRateHandler(DeviceTwinBinding* deviceTwinBinding);
 static void DeviceTwinRelay1Handler(DeviceTwinBinding* deviceTwinBinding);
-static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMethodBinding* directMethodBinding, char** responseMsg);
+static DirectMethodResponseCode ResetDirectMethodHandler(JSON_Object* json, DirectMethodBinding* directMethodBinding, char** responseMsg);
 
 static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 
@@ -95,7 +95,7 @@ static DeviceTwinBinding buttonPressed = { .twinProperty = "ButtonPressed", .twi
 static DeviceTwinBinding deviceResetUtc = { .twinProperty = "DeviceResetUTC", .twinType = TYPE_STRING };
 
 // Azure IoT Direct Methods
-static DirectMethodBinding resetDevice = { .methodName = "ResetMethod", .handler = ResetDirectMethod };
+static DirectMethodBinding resetDevice = { .methodName = "ResetMethod", .handler = ResetDirectMethodHandler };
 
 // Initialize Sets
 Peripheral* peripheralSet[] = { &buttonA, &buttonB, &led1, &led2, &networkConnectedLed, &relay1 };
@@ -316,7 +316,7 @@ static void ResetDeviceHandler(EventLoopTimer* eventLoopTimer) {
 /// <summary>
 /// Start Device Power Restart Direct Method 'ResetMethod' {"reset_timer":5}
 /// </summary>
-static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMethodBinding* directMethodBinding, char** responseMsg) {
+static DirectMethodResponseCode ResetDirectMethodHandler(JSON_Object* json, DirectMethodBinding* directMethodBinding, char** responseMsg) {
 	const char propertyName[] = "reset_timer";
 	const size_t responseLen = 60; // Allocate and initialize a response message buffer. The calling function is responsible for the freeing memory
 	static struct timespec period;
