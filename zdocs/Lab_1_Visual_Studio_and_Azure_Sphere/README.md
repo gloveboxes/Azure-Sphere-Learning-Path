@@ -145,7 +145,7 @@ static Timer led2BlinkOffOneShotTimer = { .period = { 0, 0 }, .name = "led2Blink
 
 In the **Led2On** function, led2 is turned on, then a one shot timer is set to turn off led2.
 
-> The led2BlinkPeriod variable is set to 300,000,000 nanoseconds (300 milliseconds). This means led2 will be turned off 300 milliseconds after it was turned on.
+> The variable led2BlinkPeriod is set to 300,000,000 nanoseconds (300 milliseconds). This means led2 will be turned off 300 milliseconds after it was turned on.
 
 ```c
 /// <summary>
