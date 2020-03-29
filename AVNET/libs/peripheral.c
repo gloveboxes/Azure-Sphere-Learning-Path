@@ -4,7 +4,16 @@ Peripheral** _peripherals = NULL;
 size_t _peripheralCount = 0;
 
 bool OpenPeripheral(Peripheral* peripheral) {
-	if (peripheral == NULL || peripheral->pin < 0) { return false; }
+	if (peripheral == NULL || peripheral->pin < 0 || peripheral->opened) { return false; }
+
+	if (peripheral->invertPin) {
+		if (peripheral->initialState == GPIO_Value_High) {
+			peripheral->initialState = GPIO_Value_Low;
+		}
+		else {
+			peripheral->initialState = GPIO_Value_High;
+		}
+	}
 
 	switch (peripheral->direction) {
 	case OUTPUT:
@@ -31,6 +40,7 @@ bool OpenPeripheral(Peripheral* peripheral) {
 		break;
 	}
 
+	peripheral->opened = true;
 	return true;
 }
 
@@ -54,29 +64,30 @@ void OpenPeripheralSet(Peripheral** peripherals, size_t peripheralCount) {
 /// </summary>
 /// <param name="fd">File descriptor to close</param>
 /// <param name="fdName">File descriptor name to use in error message</param>
-void CloseFdAndPrintError(int fd, const char* fdName) {
-	if (fd >= 0) {
-		int result = close(fd);
+void ClosePeripheral(Peripheral* peripheral) {
+	if (!peripheral->opened || peripheral->fd >= 0) {
+		int result = close(peripheral->fd);
 		if (result != 0) {
-			Log_Debug("ERROR: Could not close peripheral %s: %s (%d).\n", fdName == NULL ? "No name" : fdName, strerror(errno), errno);
+			Log_Debug("ERROR: Could not close peripheral %s: %s (%d).\n", peripheral->name == NULL ? "No name" : peripheral->name, strerror(errno), errno);
 		}
 	}
+	peripheral->opened = false;
 }
 
 void ClosePeripheralSet(void) {
 	for (int i = 0; i < _peripheralCount; i++) {
-		CloseFdAndPrintError(_peripherals[i]->fd, _peripherals[i]->name);
+		ClosePeripheral(_peripherals[i]);
 	}
 }
 
 void Gpio_On(Peripheral* peripheral) {
-	if (peripheral == NULL || peripheral->fd < 0 || peripheral->pin < 0) { return; }
+	if (peripheral == NULL || peripheral->fd < 0 || peripheral->pin < 0 || !peripheral->opened) { return; }
 
 	GPIO_SetValue(peripheral->fd, peripheral->invertPin ? GPIO_Value_Low : GPIO_Value_High);
 }
 
 void Gpio_Off(Peripheral* peripheral) {
-	if (peripheral == NULL || peripheral->fd < 0 || peripheral->pin < 0) { return; }
+	if (peripheral == NULL || peripheral->fd < 0 || peripheral->pin < 0 || !peripheral->opened) { return; }
 
 	GPIO_SetValue(peripheral->fd, peripheral->invertPin ? GPIO_Value_High : GPIO_Value_Low);
 }

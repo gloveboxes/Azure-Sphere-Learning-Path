@@ -55,21 +55,20 @@ Lab 1 introduces two data structures used to greatly simplify and effectively de
 
 ### Input and Output Peripherals
 
-In **main.c** there is a variable named **builtinLed** of type **Peripheral**. Variables of type **Peripheral** declare a generalized GPIO model for **input** and **output** single pin peripherals to support simple peripherals like LEDs, buttons, reed switches, relays and more.
+In **main.c** there are a number of variables declared of type **Peripheral** including LEDs, buttons, and a relay. Variables of type **Peripheral** declare a generalized GPIO model for **input** and **output** single pin peripherals to support simple peripherals like LEDs, buttons, reed switches, relays and more.
 
-This object holds the Operating System file descriptor, the GPIO pin number, the initial state of the pin when it is opened, whether the pin logic needs to be inverted for turning a pin on and off, and the C Function to be called to open and initialize the peripheral.
+This variable holds the GPIO pin number, the initial state of the pin when it is opened, whether the pin logic needs to be inverted when turning a pin on and off, and the C Function to be called to open the peripheral.
 
-The following example declares an LED **OUTPUT** peripheral.
+The following example declares an LED **output** peripheral.
 
 ```c
 static Peripheral led1 = {
-	.fd = -1, // The OS reference to the GPIO pin - always initialize to -1
 	.pin = LED1, // The GPIO pin number
 	.direction = OUTPUT, // for OUTPUT
-	.initialState = GPIO_Value_High, // Set the initial state on the pin when opened
+	.initialState = GPIO_Value_Low, // Set the initial state on the pin when opened
 	.invertPin = true, // Should the switching logic be reverse for on/off, high/low
 	.initialise = OpenPeripheral, // The name of C function to be called to open the Pin.
-	.name = "led1" // An arbitrary name for the perifpheral.
+	.name = "led1" // An arbitrary name for the peripheral.
 };
 ```
 
@@ -77,7 +76,6 @@ The following example declares a button **INPUT** peripheral.
 
 ```c
 static Peripheral buttonA = {
-	.fd = -1,
 	.pin = BUTTON_A,
 	.direction = INPUT, 	// for INPUT
 	.initialise = OpenPeripheral,
@@ -99,9 +97,11 @@ There are two types of timers, **periodic timers**, and **one shot timers**.
 
 #### Periodic Timers
 
-In **main.c** there is variable named **measureSensorTimer** of type **Timer**. Variables of type **Timer** declare a generalized Timer object. This timer object is initialized with a period of 10 seconds **{ 10, 0 }**.
+In **main.c** there is variable named **measureSensorTimer** of type **Timer**. 
 
-In this example, the handler function **MeasureSensorHandler** is called every 10 seconds. There are two values used to initialize the **.period** variable, the first is the number of seconds, followed by the number of nanoseconds.
+This event timer is initialized with a period of 10 seconds **{ 10, 0 }**, when the timer fires, the handler function **MeasureSensorHandler** is called.
+
+> There are two values used to initialize the **.period** variable, the first is the number of seconds, followed by the number of nanoseconds. If you wanted the timer to fire events every half a second (500 milliseconds), you would set the .period to be { 0, 500000000 }.
 
 ```c
 static Timer measureSensorTimer = {
@@ -111,7 +111,7 @@ static Timer measureSensorTimer = {
 };
 ```
 
-The **measureSensorTimer** timer is called every 10 seconds. Telemetry sensor data is read, and Led2On() is called to turn on LED2, the one shot timer is set to turn off LED2 after 300 milliseconds.
+The following is the implementation of the **MeasureSensorHandler** handler function. This functions reads telemetry, then  calls Led2On() to turn on led2.
 
 ```c
 /// <summary>
@@ -129,15 +129,13 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer) {
 }
 ```
 
-If you wanted the timer to fire events every half a second (500 milliseconds), you would set the .period to be { 0, 500000000 }.
-
 #### One Shot Timers
 
 The following code uses a one shot timer to blink an LED once when a button is pushed. The LED is turned on, then a one shot timer is set, when the period expires, a handler function is called to turn off the LED.
 
-The advantage of this event driven pattern is the device can continue to service other events such as checking if a user has pressed a button before turing off the LED.
+The advantage of this event driven pattern is the device can continue to service other events such as checking if a user has pressed a button.
 
-In **main.c** there is variable named **led2BlinkOffOneShotTimer** of type **Timer**. This timer is initialized with a period of { 0, 0 }. Timers initialized with a period of 0 seconds are one shot timers. They will only fire when the period has been set in code. When the period is set and expires the handler function **Led2OffHandler** will be called.
+In **main.c** there is variable named **led2BlinkOffOneShotTimer** of type **Timer**. This timer is initialized with a period of { 0, 0 }. Timers initialized with a period of 0 seconds are one shot timers. The timer is enabled by a call to **SetOneShotTimer**. When the one shot timer period is set and expires the handler function **Led2OffHandler** is called.
 
 ```c
 static Timer led2BlinkOffOneShotTimer = {
@@ -147,13 +145,9 @@ static Timer led2BlinkOffOneShotTimer = {
 };
 ```
 
-The **led2BlinkPeriod** variable is set to 300,000,000 nanoseconds (300 milliseconds).
+In the **Led2On** function, led2 is turned on, then a one shot timer is set to turn off led2.
 
-```c
-static const struct timespec led2BlinkPeriod = { 0, 300 * 1000 * 1000 };
-```
-
-In the **Led2On** function, Led2 is turned on, then the *one shot timer* period is set from the *led2BlinkPeriod* variable.
+> The led2BlinkPeriod variable is set to 300,000,000 nanoseconds (300 milliseconds),so led2 will be turned off 300 milliseconds after it was turned on.
 
 ```c
 /// <summary>
@@ -182,14 +176,12 @@ static void Led2OffHandler(EventLoopTimer* eventLoopTimer) {
 
 ### Automatic Initialization of Peripherals and Timers
 
-The peripherals and timers array variables are initialized with the addresses of the peripheral and timer objects that are declared above.
+Peripherals and timers are added to **Sets**. Peripherals and timers referenced in a set will be automatically opened and closed.
 
 ```c
-Peripheral* peripherals[] = { &builtinLed };
-Timer* timers[] = { &measureSensorTimer };
+Peripheral* peripheralSet[] = { &buttonA, &buttonB, &led1, &led2, &networkConnectedLed };
+Timer* timerSet[] = { &led1BlinkTimer, &led2BlinkOffOneShotTimer, &buttonPressCheckTimer, &networkConnectionStatusTimer, &measureSensorTimer };
 ```
-
-Peripherals and timers are added to their respective arrays are referred to as **sets**. Any peripheral or timer referenced in a set will be automatically opened, initialized, and closed.
 
 These sets are referenced when calling **OpenPeripheralSet**, and **StartTimerSet** from the **InitPeripheralsAndHandlers** function. The sets are also referenced when closing the peripheral and timer sets in the **ClosePeripheralsAndHandlers** function.
 
@@ -198,8 +190,8 @@ static int InitPeripheralsAndHandlers(void)
 {
 	InitializeDevKit();  // Avnet Starter kit
 
-	OpenPeripheralSet(peripherals, NELEMS(peripherals));
-	StartTimerSet(timers, NELEMS(timers));
+	OpenPeripheralSet(peripheralSet, NELEMS(peripheralSet));
+	StartTimerSet(timerSet, NELEMS(timerSet));
 
 	return 0;
 }
@@ -211,10 +203,9 @@ This model makes it easy to declare another peripheral or timer and add them to 
 
 ```c
 static Peripheral fanControl = {
-	.fd = -1, // The OS reference to the GPIO pin
-	.pin = 43, // The GPIO pin number
+	.pin = FAN1, // The GPIO pin number
 	.direction = OUTPUT, // for OUTPUT
-	.initialState = GPIO_Value_High,  // Set the initial state on the pin when opened
+	.initialState = GPIO_Value_Low,  // Set the initial state on the pin when opened
 	.invertPin = true,  // Should the switching logic be reverse for on/off, high/low
 	.initialise = OpenPeripheral,  // The name of C function to be called to open the Pin.
 	.name = "FanControl"  // An arbitrary name for the senor.
@@ -225,7 +216,7 @@ static Peripheral fanControl = {
 Remember to add this new peripheral to the **peripherals** set so it will be automatically opened, initialized, and closed.
 
 ```c
-Peripheral* peripherals[] = { &builtinLed, &fanControl };
+Peripheral* peripherals[] = { &buttonA, &buttonB, &led1, &led2, &networkConnectedLed, &fanControl };
 ```
 
 ---

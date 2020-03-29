@@ -25,6 +25,7 @@ struct _peripheral {
 	bool (*initialise)(struct _peripheral* peripheral);
 	char* name;
 	Direction direction;
+	bool opened;
 };
 
 typedef struct _peripheral Peripheral;
@@ -33,6 +34,6 @@ typedef struct _peripheral Peripheral;
 bool OpenPeripheral(Peripheral* peripheral);
 void OpenPeripheralSet(Peripheral** peripherals, size_t peripheralCount);
 void ClosePeripheralSet(void);
-void CloseFdAndPrintError(int fd, const char* fdName);
+void ClosePeripheral(Peripheral* peripheral);
 void Gpio_On(Peripheral* peripheral);
 void Gpio_Off(Peripheral* peripheral);
