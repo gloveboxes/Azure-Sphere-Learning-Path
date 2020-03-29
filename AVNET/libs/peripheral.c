@@ -44,9 +44,9 @@ bool OpenPeripheral(Peripheral* peripheral) {
 	return true;
 }
 
-void OpenPeripheralSet(Peripheral** peripheralSet, size_t peripheralCount) {
+void OpenPeripheralSet(Peripheral** peripheralSet, size_t peripheralSetCount) {
 	_peripheralSet = peripheralSet;
-	_peripheralSetCount = peripheralCount;
+	_peripheralSetCount = peripheralSetCount;
 
 	for (int i = 0; i < _peripheralSetCount; i++) {
 		_peripheralSet[i]->fd = -1;
