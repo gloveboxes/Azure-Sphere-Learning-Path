@@ -32,7 +32,7 @@ typedef struct _peripheral Peripheral;
 
 
 bool OpenPeripheral(Peripheral* peripheral);
-void OpenPeripheralSet(Peripheral** peripherals, size_t peripheralCount);
+void OpenPeripheralSet(Peripheral** peripheralSet, size_t peripheralSetCount);
 void ClosePeripheralSet(void);
 void ClosePeripheral(Peripheral* peripheral);
 void Gpio_On(Peripheral* peripheral);

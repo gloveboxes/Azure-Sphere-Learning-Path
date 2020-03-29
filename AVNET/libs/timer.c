@@ -51,8 +51,8 @@ void StopTimer(Timer* timer) {
 	}
 }
 
-void StartTimerSet(Timer* timers[], size_t timerCount) {
-	_timers = timers;
+void StartTimerSet(Timer* timerSet[], size_t timerCount) {
+	_timers = timerSet;
 	_timerCount = timerCount;
 
 	for (int i = 0; i < _timerCount; i++) {

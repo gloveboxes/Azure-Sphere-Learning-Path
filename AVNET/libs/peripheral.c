@@ -1,7 +1,7 @@
 #include "peripheral.h"
 
-Peripheral** _peripherals = NULL;
-size_t _peripheralCount = 0;
+Peripheral** _peripheralSet = NULL;
+size_t _peripheralSetCount = 0;
 
 bool OpenPeripheral(Peripheral* peripheral) {
 	if (peripheral == NULL || peripheral->pin < 0 || peripheral->opened) { return false; }
@@ -44,14 +44,14 @@ bool OpenPeripheral(Peripheral* peripheral) {
 	return true;
 }
 
-void OpenPeripheralSet(Peripheral** peripherals, size_t peripheralCount) {
-	_peripherals = peripherals;
-	_peripheralCount = peripheralCount;
+void OpenPeripheralSet(Peripheral** peripheralSet, size_t peripheralCount) {
+	_peripheralSet = peripheralSet;
+	_peripheralSetCount = peripheralCount;
 
-	for (int i = 0; i < _peripheralCount; i++) {
-		_peripherals[i]->fd = -1;
-		if (_peripherals[i]->initialise != NULL) {
-			if (!_peripherals[i]->initialise(_peripherals[i])) {
+	for (int i = 0; i < _peripheralSetCount; i++) {
+		_peripheralSet[i]->fd = -1;
+		if (_peripheralSet[i]->initialise != NULL) {
+			if (!_peripheralSet[i]->initialise(_peripheralSet[i])) {
 				Terminate();
 				break;
 			}
@@ -75,8 +75,8 @@ void ClosePeripheral(Peripheral* peripheral) {
 }
 
 void ClosePeripheralSet(void) {
-	for (int i = 0; i < _peripheralCount; i++) {
-		ClosePeripheral(_peripherals[i]);
+	for (int i = 0; i < _peripheralSetCount; i++) {
+		ClosePeripheral(_peripheralSet[i]);
 	}
 }
 

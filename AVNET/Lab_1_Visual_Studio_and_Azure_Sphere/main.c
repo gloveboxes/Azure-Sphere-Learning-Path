@@ -70,7 +70,7 @@ static Timer measureSensorTimer = {
 	.name = "measureSensorTimer", .timerEventHandler = MeasureSensorHandler
 };
 
-// Initialize peripheral, timer, device twin, and direct method sets
+// Initialize Sets
 Peripheral* peripheralSet[] = { &buttonA, &buttonB, &led1, &led2, &networkConnectedLed };
 Timer* timerSet[] = { &led1BlinkTimer, &led2BlinkOffOneShotTimer, &buttonPressCheckTimer, &networkConnectionStatusTimer, &measureSensorTimer };
 
