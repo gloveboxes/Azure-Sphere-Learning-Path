@@ -32,9 +32,11 @@ static int led1BlinkIntervalIndex = 0;
 static const struct timespec led1BlinkIntervals[] = { {0, 125000000}, {0, 250000000}, {0, 500000000}, {0, 750000000}, {1, 0} };
 static const int led1BlinkIntervalsCount = NELEMS(led1BlinkIntervals);
 
-// GPIO Peripherals
+// GPIO Input Peripherals
 static Peripheral buttonA = { .pin = BUTTON_A, .direction = INPUT, .initialise = OpenPeripheral, .name = "buttonA" };
 static Peripheral buttonB = { .pin = BUTTON_B, .direction = INPUT, .initialise = OpenPeripheral, .name = "buttonB" };
+
+// GPIO Output Peripherals
 static Peripheral led1 = {
 	.pin = LED1, .direction = OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true,
 	.initialise = OpenPeripheral, .name = "led1"
