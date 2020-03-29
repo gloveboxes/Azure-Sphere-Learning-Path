@@ -47,26 +47,11 @@ static Peripheral relay1 = {
 };
 
 // Timers
-static Timer led2BlinkOffOneShotTimer = {
-	.period = { 0, 0 },
-	.name = "led2BlinkOffOneShotTimer", .timerEventHandler = Led2OffHandler
-};
-static Timer networkConnectionStatusTimer = {
-	.period = { 5, 0 },
-	.name = "networkConnectionStatusTimer", .timerEventHandler = NetworkConnectionStatusHandler
-};
-static Timer measureSensorTimer = {
-	.period = { 10, 0 }, 
-	.name = "measureSensorTimer", .timerEventHandler = MeasureSensorHandler
-};
-static Timer resetDeviceOneShotTimer = {
-	.period = { 0, 0 },
-	.name = "resetDeviceOneShotTimer", .timerEventHandler = ResetDeviceHandler
-};
-static Timer realTimeCoreHeatBeatTimer = { 
-	.period = { 30, 0 }, 
-	.name = "rtCoreSend", .timerEventHandler = RealTimeCoreHeartBeat 
-};
+static Timer led2BlinkOffOneShotTimer = {.period = { 0, 0 }, .name = "led2BlinkOffOneShotTimer", .handler = Led2OffHandler };
+static Timer networkConnectionStatusTimer = { .period = { 5, 0 }, .name = "networkConnectionStatusTimer", .handler = NetworkConnectionStatusHandler };
+static Timer measureSensorTimer = { .period = { 10, 0 }, .name = "measureSensorTimer", .handler = MeasureSensorHandler };
+static Timer resetDeviceOneShotTimer = {.period = { 0, 0 }, .name = "resetDeviceOneShotTimer", .handler = ResetDeviceHandler };
+static Timer realTimeCoreHeatBeatTimer = { .period = { 30, 0 }, .name = "rtCoreSend", .handler = RealTimeCoreHeartBeat };
 
 // Azure IoT Device Twins
 static DeviceTwinBinding buttonPressed = { .twinProperty = "ButtonPressed", .twinType = TYPE_STRING };

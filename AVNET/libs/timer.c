@@ -28,13 +28,13 @@ bool StartTimer(Timer* timer) {
 	}
 	else {
 		if (timer->period.tv_nsec == 0 && timer->period.tv_sec == 0) {  // Set up a disabled Timer for oneshot or change timer
-			timer->eventLoopTimer = CreateEventLoopDisarmedTimer(eventLoop, timer->timerEventHandler);
+			timer->eventLoopTimer = CreateEventLoopDisarmedTimer(eventLoop, timer->handler);
 			if (timer->eventLoopTimer == NULL) {
 				return false;
 			}
 		}
 		else {
-			timer->eventLoopTimer = CreateEventLoopPeriodicTimer(eventLoop, timer->timerEventHandler, &timer->period);
+			timer->eventLoopTimer = CreateEventLoopPeriodicTimer(eventLoop, timer->handler, &timer->period);
 			if (timer->eventLoopTimer == NULL) {
 				return false;
 			}

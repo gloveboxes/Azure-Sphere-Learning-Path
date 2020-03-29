@@ -63,30 +63,12 @@ static Peripheral relay1 = {
 };
 
 // Timers
-static Timer led1BlinkTimer = {
-	.period = { 0, 125000000 },
-	.name = "led1BlinkTimer", .timerEventHandler = Led1BlinkHandler
-};
-static Timer led2BlinkOffOneShotTimer = {
-	.period = { 0, 0 },
-	.name = "led2BlinkOffOneShotTimer", .timerEventHandler = Led2OffHandler
-};
-static Timer buttonPressCheckTimer = {
-	.period = { 0, 1000000 },
-	.name = "buttonPressCheckTimer", .timerEventHandler = ButtonPressCheckHandler
-};
-static Timer networkConnectionStatusTimer = {
-	.period = { 5, 0 },
-	.name = "networkConnectionStatusTimer", .timerEventHandler = NetworkConnectionStatusHandler
-};
-static Timer measureSensorTimer = {
-	.period = { 10, 0 },
-	.name = "measureSensorTimer", .timerEventHandler = MeasureSensorHandler
-};
-static Timer resetDeviceOneShotTimer = {
-	.period = { 0, 0 },
-	.name = "resetDeviceOneShotTimer", .timerEventHandler = ResetDeviceHandler
-};
+static Timer led1BlinkTimer = { .period = { 0, 125000000 }, .name = "led1BlinkTimer", .handler = Led1BlinkHandler };
+static Timer led2BlinkOffOneShotTimer = { .period = { 0, 0 }, .name = "led2BlinkOffOneShotTimer", .handler = Led2OffHandler };
+static Timer buttonPressCheckTimer = { .period = { 0, 1000000 }, .name = "buttonPressCheckTimer", .handler = ButtonPressCheckHandler };
+static Timer networkConnectionStatusTimer = { .period = { 5, 0 }, .name = "networkConnectionStatusTimer", .handler = NetworkConnectionStatusHandler };
+static Timer measureSensorTimer = { .period = { 10, 0 }, .name = "measureSensorTimer", .handler = MeasureSensorHandler };
+static Timer resetDeviceOneShotTimer = { .period = { 0, 0 }, .name = "resetDeviceOneShotTimer", .handler = ResetDeviceHandler };
 
 // Azure IoT Device Twins
 static DeviceTwinBinding led1BlinkRate = { .twinProperty = "LedBlinkRate", .twinType = TYPE_INT, .handler = DeviceTwinBlinkRateHandler };
@@ -178,7 +160,7 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer) {
 		Terminate();
 		return;
 	}
-	if (ReadTelemetry(msgBuffer, JSON_MESSAGE_BYTES) > 0) {		
+	if (ReadTelemetry(msgBuffer, JSON_MESSAGE_BYTES) > 0) {
 		SendMsgLed2On(msgBuffer);
 	}
 }

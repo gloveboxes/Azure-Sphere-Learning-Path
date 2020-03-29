@@ -5,7 +5,7 @@
 #include <applibs/eventloop.h>
 
 typedef struct {
-	void (*timerEventHandler)(EventLoopTimer* timer);
+	void (*handler)(EventLoopTimer* timer);
 	struct timespec period;
 	EventLoopTimer* eventLoopTimer;
 	const char* name;

@@ -103,12 +103,14 @@ This event timer is initialized with a period of 10 seconds **{ 10, 0 }**, when 
 
 > There are two values used to initialize the **.period** variable, the first is the number of seconds, followed by the number of nanoseconds. If you wanted the timer to fire events every half a second (500 milliseconds), you would set the .period to be { 0, 500000000 }.
 
-```c
-static Timer measureSensorTimer = {
+<!-- static Timer measureSensorTimer = {
 	.period = { 10, 0 },	// Fire the timer event every 10 seconds + zero nanoseconds.
 	.name = "measureSensorTimer",	// An arbitrary name for the timer, used for error handling
 	.timerEventHandler = MeasureSensorHandler	// The address of the C handler function to be called when the timer fires.
-};
+}; -->
+
+```c
+static Timer measureSensorTimer = { .period = { 10, 0 },.name = "measureSensorTimer", .handler = MeasureSensorHandler };
 ```
 
 The following is the implementation of the **MeasureSensorHandler** handler function. This functions reads telemetry, then  calls Led2On() to turn on led2.
