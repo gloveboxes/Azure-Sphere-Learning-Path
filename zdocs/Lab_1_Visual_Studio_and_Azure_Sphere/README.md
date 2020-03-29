@@ -110,7 +110,7 @@ This event timer is initialized with a period of 10 seconds **{ 10, 0 }**, when 
 }; -->
 
 ```c
-static Timer measureSensorTimer = { .period = { 10, 0 },.name = "measureSensorTimer", .handler = MeasureSensorHandler };
+static Timer measureSensorTimer = { .period = { 10, 0 }, .name = "measureSensorTimer", .handler = MeasureSensorHandler };
 ```
 
 The following is the implementation of the **MeasureSensorHandler** handler function. This functions reads telemetry, then  calls Led2On() to turn on led2.
@@ -140,11 +140,7 @@ The advantage of this event driven pattern is the device can continue to service
 In **main.c** there is variable named **led2BlinkOffOneShotTimer** of type **Timer**. This timer is initialized with a period of { 0, 0 }. Timers initialized with a period of 0 seconds are one shot timers. The timer is enabled by a call to **SetOneShotTimer**. When the one shot timer period is set and expires the handler function **Led2OffHandler** is called.
 
 ```c
-static Timer led2BlinkOffOneShotTimer = {
-	.period = { 0, 0 },
-	.name = "led2BlinkOffOneShotTimer",
-	.timerEventHandler = Led2OffHandler
-};
+static Timer led2BlinkOffOneShotTimer = { .period = { 0, 0 }, .name = "led2BlinkOffOneShotTimer", .handler = Led2OffHandler };
 ```
 
 In the **Led2On** function, led2 is turned on, then a one shot timer is set to turn off led2.
