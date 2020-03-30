@@ -41,7 +41,7 @@ This lab assumes you have completed **Lab 0: Lab set up, installation and config
 
 ## Tutorial Overview
 
-1. Understand Peripheral and Timer concepts.
+1. Understand Peripheral and Event Timer concepts.
 2. Open the lab project with Visual Studio
 3. Review the High-Level (A7) Core application security requirements.
 4. Understand device manufacture pin mappings.
@@ -55,9 +55,9 @@ Lab 1 introduces two variable types used to greatly simplify and describe in cod
 
 ### Input and Output Peripherals
 
-In **main.c** there are several Peripheral variables declared, including LEDs, buttons, and a relay. Variables of type **Peripheral** declare a GPIO model for **input** and **output** of single pin peripherals, such as LEDs, buttons, reed switches, relays, and more.
+In **main.c** there are several Peripheral variables declared, including LEDs, buttons, and a relay. Variables of type **Peripheral** declare a GPIO model for **input** and **output** of single pin peripherals, such as LEDs, buttons, reed switches, and relays.
 
-This variable holds the GPIO pin number, the initial state of the pin when opened, whether the pin logic needs to be inverted, and the function called to open the peripheral.
+A Peripheral variable holds the GPIO pin number, the initial state of the pin when opened, whether the pin logic needs to be inverted, and the function called to open the peripheral.
 
 The following example declares an LED **output** peripheral.
 
@@ -85,7 +85,7 @@ static Peripheral buttonA = {
 
 ### Event Timers
 
-Events Timers create events. For example, you may want to blink an LED every second, or perhaps read data from a sensor every 10 seconds. This is also known as [event-driven programming](https://en.wikipedia.org/wiki/Event-driven_programming), or more specifically, [Time-triggered architecture](https://en.wikipedia.org/wiki/Time-triggered_architecture).
+Event Timers create events. For example, blink an LED every second, or read data from a sensor every 10 seconds. This is also known as [event-driven programming](https://en.wikipedia.org/wiki/Event-driven_programming), or more specifically, [Time-triggered architecture](https://en.wikipedia.org/wiki/Time-triggered_architecture).
 
 Timers generate events, and these events are bound to handler functions. Event-driven programming helps to simplify application design. For example, every 10 seconds, read the temperate sensor, every 20 seconds, check the network connection, every second blink an LED, every 100 milliseconds read the state of a button.
 
@@ -133,7 +133,7 @@ The following code uses a one-shot timer to blink an LED once when a button is p
 
 The advantage of this event-driven pattern is the device can continue to service other events such as checking if a user has pressed a button.
 
-In **main.c** there is a variable named **led2BlinkOffOneShotTimer** of type **Timer**. This timer is initialized with a period of { 0, 0 }. Timers initialized with a period of 0 seconds are one-shot timers. The timer is enabled by calling **SetOneShotTimer**. When the one-shot timer period is set and then triggers, the handler function **Led2OffHandler** is called.
+In **main.c** there is a variable named **led2BlinkOffOneShotTimer** of type **Timer**. This timer is initialized with a period of { 0, 0 }. Timers initialized with a period of 0 seconds are one-shot timers.
 
 ```c
 static Timer led2BlinkOffOneShotTimer = {
@@ -143,7 +143,7 @@ static Timer led2BlinkOffOneShotTimer = {
 };
 ```
 
-In the **Led2On** function, led2 is turned on, then a one-shot timer is set, when it triggers, led2 will be turned off.
+In the **Led2On** function, led2 is turned on, then a one-shot timer is set by calling **SetOneShotTimer**.
 
 > The variable led2BlinkPeriod is set to 300,000,000 nanoseconds (300 milliseconds). This means led2 will be turned off 300 milliseconds after it was turned on.
 
@@ -157,7 +157,7 @@ static void Led2On(void) {
 }
 ```
 
-When the one-shot timer triggers, the **Led2OffHandler** handler function is called and led2 is turned off.
+When the one-shot timer triggers, the handler function **Led2OffHandler** is called to turn off led2.
 
 ```c
 /// <summary>
@@ -174,7 +174,7 @@ static void Led2OffHandler(EventLoopTimer* eventLoopTimer) {
 
 ### Automatic Initialization of Peripherals and Event Timers
 
-Peripherals and timers are added to **Sets**. Peripherals and timers referenced in a set will be automatically opened and closed.
+Peripherals and timers referenced in a **Set** will be automatically opened and closed.
 
 ```c
 Peripheral* peripheralSet[] = { &buttonA, &buttonB, &led1, &led2, &networkConnectedLed };
@@ -211,7 +211,7 @@ static Peripheral fanControl = {
 
 ```
 
-Remember to add this new peripheral to the **peripherals** set so it will be automatically opened, initialized, and closed.
+Remember to add this new peripheral to the **peripherals** set so it will be automatically opened and closed.
 
 ```c
 Peripheral* peripherals[] = { &buttonA, &buttonB, &led1, &led2, &networkConnectedLed, &fanControl };
@@ -249,13 +249,13 @@ From the **Solution Explorer**, open the **main.c** file.
 
 ### Check CMake Cache Builds Correctly
 
-The CMake cache automatically builds when you open a CMake project. But given this is the first lab to be opened, it is a good idea to rerun the **CMake Cache Generator** to check that it is building correctly.
+The CMake cache automatically builds when you open a CMake project. But given this is the first lab to be opened, it is a good idea to rerun the **CMake Cache Generator** to check that it builds correctly.
 
 1. Right mouse click the **CMakeLists.txt** file and select **Generate Cache for AzureSphereIoTCentral**.
 
 	![](resources/visual-studio-cmake-generate.png)
 
-2. Check the **Output** window that the CMake generation was successful. There should be a message to say **CMake generation finished**.
+2. Check the **Output** window to verify the CMake generation was successful. There should be a message to say **CMake generation finished**.
 
 	![](resources/visual-studio-cmake-generate-completed.png)
 
@@ -273,44 +273,27 @@ Application capabilities include what hardware can be accessed, what internet se
 
 From Visual Studio, open the **app_manifest.json** file.
 
-![](resources/visual-studio-application-capabilities.png)
-
 This application can only access the resources listed in the **Capabilities** section.
 
-**Note**, the following example is for the Avnet Azure Sphere device. The resource names and capabilities will differ depending on which Azure Sphere device you are using.
+>**Note**, the following example is for the Avnet Azure Sphere device. The resource names and capabilities will differ depending on which Azure Sphere device you are using.
 
-```json
-  "Capabilities": {
-    "Gpio": [
-      "$BUTTON_A",
-      "$BUTTON_B",
-      "$LED1",
-      "$LED2",
-      "$NETWORK_CONNECTED_LED",
-      "$RELAY"
-    ],
-    "I2cMaster": [ "$AVNET_MT3620_SK_ISU2_I2C" ],
-    "Adc": [ "$AVNET_MT3620_SK_ADC_CONTROLLER0" ],
-    "PowerControls": [ "ForceReboot" ],
-    "AllowedConnections": [ "global.azure-devices-provisioning.net" ],
-    "DeviceAuthentication": "00000000-0000-0000-0000-000000000000",
-    "AllowedApplicationConnections": [ "6583cf17-d321-4d72-8283-0b7c5b56442b" ]
-  },
-```
+![](resources/visual-studio-application-capabilities.png)
 
 ## Understand Pin Mappings
 
-Each Azure Sphere manufacturer maps pins differently. To understand how the pins are mapped for your developer board then follow these steps.
+Each Azure Sphere manufacturer maps pins differently. Follow these steps to understand how the pins are mapped for your developer board.
 
 1. Ensure you have the **main.c** file open. Place the cursor on the line that reads **#include "../oem/board.h"**, then press <kbd>F12</kbd>. Pressing <kbd>F12</kbd> will open the **board.h** header file.
 
 	![](resources/visual-studio-open-board.png)
 
-	Review the pin mappings used for the lab. These will vary depending on what developer kit you are using.
-
 2. From the **board.h** file, place the cursor on the line that includes **azure_sphere_learning_path.h**, then press <kbd>F12</kbd>.
 
 	![](resources/visual-studio-open-azure-sphere-learning-path-pin-mappings.png)
+
+3. Review the pin mappings set up for the Azure Sphere Learning Path using the Avnet Start Kit.
+
+	> Azure Sphere hardware is available from multiple vendors, and each vendor may expose features of the underlying chip in different ways. Azure Sphere applications manage hardware dependencies by using hardware definition files. For further information, review the [Managing target hardware dependencies](https://docs.microsoft.com/en-us/azure-sphere/app-development/manage-hardware-dependencies) article.
 
 	```c
 	/* Copyright (c) Microsoft Corporation. All rights reserved.
@@ -346,24 +329,22 @@ Each Azure Sphere manufacturer maps pins differently. To understand how the pins
 	#define RELAY AVNET_MT3620_SK_GPIO0
 	```
 
-3. Review the pin mappings set up for the Azure Sphere Learning Path.
 
-4. Next, click on the **main.c tab** to bring **main.c** to the foreground.
+
+4. Next, click on the **main.c tab** to bring main.c into focus.
 
 	![](resources/visual-studio-open-main-tab.png)
-
-> Azure Sphere hardware is available from multiple vendors, and each vendor may expose features of the underlying chip in different ways. Azure Sphere applications manage hardware dependencies by using hardware definition files. For further information, review the [Managing target hardware dependencies](https://docs.microsoft.com/en-us/azure-sphere/app-development/manage-hardware-dependencies) article.
 
 ---
 
 ## Deploy the Application to the Azure Sphere
 
-1. Connect the Azure Sphere to your computer via USB
+1. Connect the Azure Sphere to your computer via USB.
 2. Ensure you have [claimed](https://docs.microsoft.com/en-au/azure-sphere/install/claim-device?WT.mc_id=github-blog-dglover), [connected](https://docs.microsoft.com/en-au/azure-sphere/install/configure-wifi?WT.mc_id=github-blog-dglover), and [developer enabled](https://docs.microsoft.com/en-au/azure-sphere/install/qs-blink-application?WT.mc_id=github-blog-dglover) your Azure Sphere.
-3. Ensure you have enabled developer mode on the Azure Sphere
+3. Ensure you have enabled developer mode on the Azure Sphere.
 4. Select **GDB Debugger (HLCore)** from the **Select Startup** dropdown.
-	![](resources/vs-start-application.png)
-5. From Visual Studio, press <kbd>F5</kbd> to build, deploy, start, and attached the remote debugger to the Azure Sphere.
+	![](resources/vs-start-application.png).
+5. From Visual Studio, press <kbd>F5</kbd> to build, deploy, start, and attached the remote debugger to application now running the Azure Sphere device.
 
 ---
 
@@ -387,7 +368,7 @@ Set a debugger breakpoint by clicking in the margin to the left of the line of c
 
 	![](resources/vs-set-breakpoint.png)
 
-3. When the next timer event triggers, the debugger will stop at the line you set the breakpoint.
+3. When the next timer event triggers, the debugger will stop at the line where you set the breakpoint.
 4. You can inspect variable values, step over code <kbd>F10</kbd>, step into code <kbd>F11</kbd>, and continue code execution <kbd>F5</kbd>. 
 5. For more information on debugging then read [First look at the Visual Studio Debugger](https://docs.microsoft.com/en-us/visualstudio/debugger/debugger-feature-tour?view=vs-2019&WT.mc_id=github-blog-dglover)
 
