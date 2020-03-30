@@ -15,7 +15,7 @@ const char* _connectionString = NULL;
 static Timer cloudToDeviceTimer = {
 	.period = { 1, 0 },			// 1 second
 	.name = "DoWork",
-	.timerEventHandler = &AzureCloudToDeviceHandler
+	.handler = &AzureCloudToDeviceHandler
 };
 
 

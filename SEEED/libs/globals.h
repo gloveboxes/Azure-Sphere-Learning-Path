@@ -4,6 +4,7 @@
 #include <signal.h>
 #include <stdbool.h>
 #include <string.h>
+#include <time.h>
 
 #define SCOPEID_LENGTH 20
 #define RT_APP_COMPONENT_LENGTH 36 + 1  // GUID 36 Char + 1 NULL terminate)
@@ -16,5 +17,6 @@ extern char rtAppComponentId[RT_APP_COMPONENT_LENGTH];  //initialized from cmdli
 //extern volatile sig_atomic_t terminationRequired;
 extern bool realTelemetry;		// flag for real or fake telemetry
 void ProcessCmdArgs(int argc, char* argv[]);
+char* GetCurrentUtc(char* buffer, size_t bufferSize);
 
 #endif
