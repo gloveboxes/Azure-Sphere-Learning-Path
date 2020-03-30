@@ -51,7 +51,7 @@ This lab assumes you have completed **Lab 0: Lab set up, installation and config
 
 ## Key Concepts
 
-Lab 1 introduces two variable types used to greatly simplify and describe in code how [GPIO](https://en.wikipedia.org/wiki/General-purpose_input/output) and Event Timers work.
+Lab 1 introduces two variable types used to greatly simplify and describe in code how Peripherals and Event Timers work.
 
 ### Input and Output Peripherals
 
@@ -85,19 +85,15 @@ static Peripheral buttonA = {
 
 ### Event Timers
 
-Event Timers create events. For example, blink an LED every second, or read data from a sensor every 10 seconds. This is also known as [event-driven programming](https://en.wikipedia.org/wiki/Event-driven_programming), or more specifically, [Time-triggered architecture](https://en.wikipedia.org/wiki/Time-triggered_architecture).
-
-Timers generate events, and these events are bound to handler functions. Event-driven programming helps to simplify application design. For example, every 10 seconds, read the temperate sensor, every 20 seconds, check the network connection, every second blink an LED, every 100 milliseconds read the state of a button.
+Event Timers generate events which are bound to handler functions which implement desired actions. For example, blink an LED every second, or read a sensor every 10 seconds. [Event-driven programming](https://en.wikipedia.org/wiki/Event-driven_programming) helps to simplify application design.
 
 ![](resources/timer-events.png)
 
-Event timers are used throughout these labs, and in lots of projects, so there is a generalized model to simplify working with timers. There are two types of timers, **periodic timers**, and **one-shot timers**.
+The labs use event timers extensively, so there is a generalized model to simplify working with timers. There are two types of timers, **periodic timers**, and **one-shot timers**.
 
 #### Periodic Timers
 
-In **main.c** there is a variable named **measureSensorTimer** of type **Timer**.
-
-This event timer is initialized with a period of 10 seconds **{ 10, 0 }**, when the timer triggers, the handler function **MeasureSensorHandler** is called.
+In **main.c** there is a variable named **measureSensorTimer** of type **Timer**. This event timer is initialized with a period of 10 seconds **{ 10, 0 }**. When the event timer triggers, the handler function **MeasureSensorHandler** is called to implement the action.
 
 > There are two values used to initialize the **.period** variable. The first is the number of seconds, followed by the number of nanoseconds. If you wanted the timer to trigger events every half a second (500 milliseconds), you would set the .period to be { 0, 500000000 }.
 
@@ -131,7 +127,7 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer) {
 
 The following code uses a one-shot timer to blink an LED once when a button is pressed. The LED turns on, and then a one-shot timer is set. When the one-shot timer triggers, its handler function is called to turn off the LED.
 
-The advantage of this event-driven pattern is the device can continue to service other events such as checking if a user has pressed a button.
+The advantage of this event-driven pattern is that the device can continue to service other events such as checking if a user has pressed a button.
 
 In **main.c** there is a variable named **led2BlinkOffOneShotTimer** of type **Timer**. This timer is initialized with a period of { 0, 0 }. Timers initialized with a period of 0 seconds are one-shot timers.
 
@@ -211,10 +207,10 @@ static Peripheral fanControl = {
 
 ```
 
-Remember to add this new peripheral to the **peripherals** set so it will be automatically opened and closed.
+Remember to add this new peripheral to the peripheral **set**. Adding the peripheral to the set ensures automatic opening and closing.
 
 ```c
-Peripheral* peripherals[] = { &buttonA, &buttonB, &led1, &led2, &networkConnectedLed, &fanControl };
+Peripheral* peripheralSet[] = { &buttonA, &buttonB, &led1, &led2, &networkConnectedLed, &fanControl };
 ```
 
 ---
@@ -255,7 +251,7 @@ The CMake cache automatically builds when you open a CMake project. But given th
 
 	![](resources/visual-studio-cmake-generate.png)
 
-2. Check the **Output** window to verify the CMake generation was successful. There should be a message to say **CMake generation finished**.
+2. Check the **Output** window to verify that the CMake generation was successful. There should be a message to say **CMake generation finished**.
 
 	![](resources/visual-studio-cmake-generate-completed.png)
 
@@ -344,7 +340,7 @@ Each Azure Sphere manufacturer maps pins differently. Follow these steps to unde
 3. Ensure you have enabled developer mode on the Azure Sphere.
 4. Select **GDB Debugger (HLCore)** from the **Select Startup** dropdown.
 	![](resources/vs-start-application.png).
-5. From Visual Studio, press <kbd>F5</kbd> to build, deploy, start, and attached the remote debugger to application now running the Azure Sphere device.
+5. From Visual Studio, press <kbd>F5</kbd> to build, deploy, start, and attached the remote debugger to the application now running the Azure Sphere device.
 
 ---
 
@@ -360,11 +356,9 @@ You can open the output window by using the Visual Studio <kbd>Ctrl+Alt+O</kbd> 
 
 ## Set a Debugger Breakpoint
 
-Set a debugger breakpoint by clicking in the margin to the left of the line of code you want the debugger to stop at.
+1. In the **main.c** file, scroll down until you find the function named **MeasureSensorHandler**.
 
-1. In the **main.c** file, scroll down until you find the C function named **MeasureSensorHandler**. 
-
-2. Set a breakpoint in the margin of the line that reads **ConsumeEventLoopTimerEvent**.
+2. Set a breakpoint, click in the margin to the left of the line that reads **ConsumeEventLoopTimerEvent**.
 
 	![](resources/vs-set-breakpoint.png)
 
