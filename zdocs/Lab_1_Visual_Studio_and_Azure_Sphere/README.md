@@ -207,7 +207,7 @@ static Peripheral fanControl = {
 
 ```
 
-Remember to add this new peripheral to the peripheral **set**. Adding the peripheral to the set ensures automatic opening and closing.
+Remember to add this new peripheral to the **peripheral set**. Adding the peripheral to the set ensures automatic opening and closing.
 
 ```c
 Peripheral* peripheralSet[] = { &buttonA, &buttonB, &led1, &led2, &networkConnectedLed, &fanControl };
@@ -267,9 +267,7 @@ Application capabilities include what hardware can be accessed, what internet se
 
 ### Open the Application Manifest File
 
-From Visual Studio, open the **app_manifest.json** file.
-
-This application can only access the resources listed in the **Capabilities** section.
+From Visual Studio, open the **app_manifest.json** file. This resources this application can access are limited to those listed in the **Capabilities** section.
 
 >**Note**, the following example is for the Avnet Azure Sphere device. The resource names and capabilities will differ depending on which Azure Sphere device you are using.
 
@@ -288,8 +286,8 @@ Each Azure Sphere manufacturer maps pins differently. Follow these steps to unde
 	![](resources/visual-studio-open-azure-sphere-learning-path-pin-mappings.png)
 
 3. Review the pin mappings set up for the Azure Sphere Learning Path using the Avnet Start Kit.
-
-	> Azure Sphere hardware is available from multiple vendors, and each vendor may expose features of the underlying chip in different ways. Azure Sphere applications manage hardware dependencies by using hardware definition files. For further information, review the [Managing target hardware dependencies](https://docs.microsoft.com/en-us/azure-sphere/app-development/manage-hardware-dependencies) article.
+	
+	>Azure Sphere hardware is available from multiple vendors, and each vendor may expose features of the underlying chip in different ways. Azure Sphere applications manage hardware dependencies by using hardware definition files. For further information, review the [Managing target hardware dependencies](https://docs.microsoft.com/en-us/azure-sphere/app-development/manage-hardware-dependencies) article.
 
 	```c
 	/* Copyright (c) Microsoft Corporation. All rights reserved.
