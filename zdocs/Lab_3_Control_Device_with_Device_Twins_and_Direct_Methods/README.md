@@ -43,7 +43,7 @@ You will need to **copy** and **paste** the Lab 2 **app_manifest.json** you crea
 
 There are three ways that Azure IoT cloud applications can communicate with devices. 
 
-[Direct Methods](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods) for communications that require immediate confirmation of the result. Direct methods are often used for interactive control of devices such as turning on a fan.
+[Direct Methods](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods) for communications that require immediate confirmation of the result. Direct methods are often used for interactive control of devices, such as turning on a fan.
 
 [Device Twins](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins) for long-running commands intended to put the device into a certain desired state. For example, set the telemetry send interval to 30 minutes.
 
@@ -69,7 +69,7 @@ The following outlines how Azure IoT Central uses Device Twins to set properties
 
 1. A user sets the value of a property in Azure IoT Central. For example, turn on a light or change the blink rate of an LED.
 2. Azure IoT sends a *desired* property message to the device.
-3. The *desired* property is applied on the device; in this case, change the LED blink rate.
+3. The *desired* property is applied to the device; in this case, change the LED blink rate.
 4. The device sends a *reported* property message back to Azure IoT. In this example, the new LED blink rate would be reported.
 5. Azure IoT Central queries and displays the devices *reported* property data.  
 
@@ -266,7 +266,7 @@ The **ResetMethod** handler function expects a JSON payload shaped like this {"r
 
 The following outlines how the **ResetDirectMethod** handler function found in **main.c** works:
 
-1. From Azure IoT Central, a user invokes the **Reset Azure Sphere** command. A Direct Method named **ResetMethod** along with a JSON payload is sent to the device. The JSON payload *{"reset_timer":5}* specifies how many seconds to wait before resetting the device.
+1. From Azure IoT Central, a user invokes the **Reset Azure Sphere** command. A Direct Method named **ResetMethod**, along with a JSON payload, is sent to the device. The JSON payload *{"reset_timer":5}* specifies how many seconds to wait before resetting the device.
 
 2. When the device receives a Direct Method message, the DirectMethodBindings Set is checked for a matching DirectMethodBinding *methodName* name. When a match is found, the associated DirectMethodBinding handler function is called.
 
