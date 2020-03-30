@@ -80,9 +80,9 @@ Right mouse click [Azure Sphere Learning Path Azure IoT Central Template](https:
 
 ### Configure the Azure IoT Central Template
 
-1. Name your application
-2. Select the **Free** pricing plan
-3. Complete any required fields
+1. Name your application.
+2. Select the **Free** pricing plan.
+3. Complete any required fields.
 4. Click **Create** to create the Azure IoT Central Application.
 
 ![](resources/iot-central-create-from-template.png)
@@ -114,7 +114,7 @@ After you have completed this step, any device that is claimed by your Azure Sph
 
 ### Upload the tenant CA certificate to Azure IoT Central and generate a verification code
 
-1. In Azure IoT Central, go to Administration > Device Connection > Manage primary certificate
+1. In Azure IoT Central, go to Administration > Device Connection > Manage primary certificate.
 
 2. Click the folder icon next to the Primary box and navigate to the certificate you downloaded. If you don't see the .cer file in the list, make sure that the view filter is set to All files (*). Select the certificate and then click the gear icon next to the Primary box.
 
@@ -164,7 +164,7 @@ This returns the **Device ID** and converts it to lowercase. Azure IoT Central r
 
 ### Create an Azure IoT Central Device
 
-1. Switch back to Azure IoT Central Web Portal
+1. Switch back to Azure IoT Central Web Portal.
 2. Select **Devices** from the side menu.
 3. Select the **Azure Sphere** device template
     ![](resources/iot-central-create-device.png).
@@ -215,11 +215,11 @@ We need the ID of the Azure Sphere Tenant that is now trusted by Azure IoT Centr
 
 ### Step 2: Open the lab project
 
-1. Click **Open a local folder**
-2. Open the Azure-Sphere lab folder
-3. Open the **folder name** that corresponds to the **Azure Sphere board** you are using
-4. Open the **Lab_2_Send_Telemetry_to_Azure_IoT_Central** folder
-5. Click **Select Folder** button to open the project
+1. Click **Open a local folder**.
+2. Open the Azure-Sphere lab folder.
+3. Open the **folder name** that corresponds to your **Azure Sphere board**.
+4. Open the **Lab_2_Send_Telemetry_to_Azure_IoT_Central** folder.
+5. Click **Select Folder** button to open the project.
 
 ### Step 3: Configure the Azure Sphere Application
 
@@ -263,7 +263,7 @@ We need the ID of the Azure Sphere Tenant that is now trusted by Azure IoT Centr
     }
     ```
 
-4. **IMPORTANT**. Copy the contents of the **app_manifest.json** file to **notepad** as you will need this configuration information for the next labs.
+4. **IMPORTANT**. Copy the contents of your **app_manifest.json** file to **notepad** as you will need this configuration information for the next labs.
 
 ---
 
@@ -277,7 +277,7 @@ Before building the application with Visual Studio ensure ARM-Debug and GDB Debu
 
 From **main.c**, scroll down to the **MeasureSensorHandler** function.
 
->Pro Tip: Use the **Function Navigator** dropdown for quick code navigation. Click on the dropdown list, then select and click the function name. You will often see a function name listed twice in the dropdown. The first is the function forward signature, the second is the implementation of the function.
+>Pro Tip. Use the **Function Navigator** dropdown for quick code navigation. Click on the dropdown list, then select and click the function name. You will often see a function name listed twice in the dropdown. The first is the function forward signature, the second is the implementation of the function.
 
 ![](resources/visual-studio-function-navigate-measure-sensor-telemetry.png)
 
@@ -298,7 +298,7 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer) {
 }
 ```
 
-Function **SendMsgLed2On** will turn on LED2, then **SendMsg(message)** is called to send a JSON formatted telemetry message to Azure IoT Central.
+Function **SendMsgLed2On** will turn on LED2, then **SendMsg(message)** is called to send a JSON formatted message to Azure IoT Central.
 
 ```c
 /// <summary>
@@ -323,6 +323,8 @@ To start the build, deploy, debug process, either click the Visual Studio **Star
 Open the **Output** window to view the output from **Log_Debug** statements in the code. You will see the device negotiating security and then it will start sending telemetry to Azure IoT Central.
 
 You can open the output window by using the Visual Studio <kbd>Ctrl+Alt+O</kbd> shortcut or click the **Output** tab found along the bottom/right of Visual Studio.
+
+> Ensure **Device Output** is selected from the **Show output from** dropdown list.
 
 ![](resources/visual-studio-debug-output-view.png)
 
@@ -370,8 +372,8 @@ You need to **Migrate** the newly enrolled device to the **Azure Sphere** templa
 ### Step 5: Display the Azure Sphere device telemetry
 
 1. Click **Devices** on the sidebar.
-2. Select the **Azure Sphere** template
-3. Click on the migrated device
+2. Select the **Azure Sphere** template.
+3. Click on the migrated device.
 4. Select the **Overview** tab to view the device telemetry.
 5. Optionally, you can rename your device. Click the **Rename** button and give your device a friendly name.
 
