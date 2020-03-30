@@ -29,7 +29,7 @@ Each module assumes you have completed the previous module.
 
 ## What you will learn
 
-In this lab you will learn how to secure, build, deploy, and debug your first High-Level (HL) Azure Sphere application onto the Azure Sphere A7 Core.
+In this lab, you will learn how to secure, build, deploy, and debug your first High-Level (HL) Azure Sphere application onto the Azure Sphere A7 Core.
 
 ---
 
@@ -51,13 +51,13 @@ This lab assumes you have completed **Lab 0: Lab set up, installation and config
 
 ## Key Concepts
 
-Lab 1 introduces two data structures used to greatly simplify and effectively describe in code how [GPIO](https://en.wikipedia.org/wiki/General-purpose_input/output) and Event Timers work.
+Lab 1 introduces two variable types used to greatly simplify and describe in code how [GPIO](https://en.wikipedia.org/wiki/General-purpose_input/output) and Event Timers work.
 
 ### Input and Output Peripherals
 
-In **main.c** there are a number of variables declared of type **Peripheral** including LEDs, buttons, and a relay. Variables of type **Peripheral** declare a generalized GPIO model for **input** and **output** single pin peripherals to support simple peripherals like LEDs, buttons, reed switches, relays and more.
+In **main.c** there are several Peripheral variables declared, including LEDs, buttons, and a relay. Variables of type **Peripheral** declare a GPIO model for **input** and **output** of single pin peripherals, such as LEDs, buttons, reed switches, relays, and more.
 
-This variable holds the GPIO pin number, the initial state of the pin when it is opened, whether the pin logic needs to be inverted when turning a pin on and off, and the C Function to be called to open the peripheral.
+This variable holds the GPIO pin number, the initial state of the pin when opened, whether the pin logic needs to be inverted, and the function called to open the peripheral.
 
 The following example declares an LED **output** peripheral.
 
@@ -72,7 +72,7 @@ static Peripheral led1 = {
 };
 ```
 
-The following example declares a button **INPUT** peripheral.
+The following example declares a button **input** peripheral.
 
 ```c
 static Peripheral buttonA = {
@@ -85,32 +85,28 @@ static Peripheral buttonA = {
 
 ### Event Timers
 
-Events Timers generate periodic events. For example, you may want to blink an LED every second, or perhaps read data from a sensor every 10 seconds. This is also known as [event-driven programming](https://en.wikipedia.org/wiki/Event-driven_programming).
+Events Timers create events. For example, you may want to blink an LED every second, or perhaps read data from a sensor every 10 seconds. This is also known as [event-driven programming](https://en.wikipedia.org/wiki/Event-driven_programming), or more specifically, [Time-triggered architecture](https://en.wikipedia.org/wiki/Time-triggered_architecture).
 
-Timers generate events, and the events are bound to handler functions. Event-driven programming helps to simplify application design. For example, every 10 seconds read the temperate, every 20 seconds check the network connection, every 1 second blink an LED so the user knows the device is active, every 100 milliseconds read the state of a button.
+Timers generate events, and these events are bound to handler functions. Event-driven programming helps to simplify application design. For example, every 10 seconds, read the temperate sensor, every 20 seconds, check the network connection, every second blink an LED, every 100 milliseconds read the state of a button.
 
 ![](resources/timer-events.png)
 
-Event timers are used throughout these labs, and in lots of projects, so there is a generalized model to simplify working with timers.
-
-There are two types of timers, **periodic timers**, and **one shot timers**.
+Event timers are used throughout these labs, and in lots of projects, so there is a generalized model to simplify working with timers. There are two types of timers, **periodic timers**, and **one-shot timers**.
 
 #### Periodic Timers
 
-In **main.c** there is variable named **measureSensorTimer** of type **Timer**. 
+In **main.c** there is a variable named **measureSensorTimer** of type **Timer**.
 
-This event timer is initialized with a period of 10 seconds **{ 10, 0 }**, when the timer fires, the handler function **MeasureSensorHandler** is called.
+This event timer is initialized with a period of 10 seconds **{ 10, 0 }**, when the timer triggers, the handler function **MeasureSensorHandler** is called.
 
-> There are two values used to initialize the **.period** variable, the first is the number of seconds, followed by the number of nanoseconds. If you wanted the timer to fire events every half a second (500 milliseconds), you would set the .period to be { 0, 500000000 }.
-
-<!-- static Timer measureSensorTimer = {
-	.period = { 10, 0 },	// Fire the timer event every 10 seconds + zero nanoseconds.
-	.name = "measureSensorTimer",	// An arbitrary name for the timer, used for error handling
-	.timerEventHandler = MeasureSensorHandler	// The address of the C handler function to be called when the timer fires.
-}; -->
+> There are two values used to initialize the **.period** variable. The first is the number of seconds, followed by the number of nanoseconds. If you wanted the timer to trigger events every half a second (500 milliseconds), you would set the .period to be { 0, 500000000 }.
 
 ```c
-static Timer measureSensorTimer = { .period = { 10, 0 }, .name = "measureSensorTimer", .handler = MeasureSensorHandler };
+static Timer measureSensorTimer = {
+	.period = { 10, 0 },	// Fire the timer event every 10 seconds + zero nanoseconds.
+	.name = "measureSensorTimer",	// An arbitrary name for the timer, used for error handling
+	.timerEventHandler = MeasureSensorHandler	// The address of the C handler function to be called when the timer triggers.
+};
 ```
 
 The following is the implementation of the **MeasureSensorHandler** handler function. This functions reads telemetry, then  calls Led2On() to turn on led2.
@@ -131,25 +127,29 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer) {
 }
 ```
 
-#### One Shot Timers
+#### One-Shot Timers
 
-The following code uses a one shot timer to blink an LED once when a button is pushed. The LED is turned on, then a one shot timer is set, when the period expires, a handler function is called to turn off the LED.
+The following code uses a one-shot timer to blink an LED once when a button is pressed. The LED turns on, and then a one-shot timer is set. When the one-shot timer triggers, its handler function is called to turn off the LED.
 
-The advantage of this event driven pattern is the device can continue to service other events such as checking if a user has pressed a button.
+The advantage of this event-driven pattern is the device can continue to service other events such as checking if a user has pressed a button.
 
-In **main.c** there is variable named **led2BlinkOffOneShotTimer** of type **Timer**. This timer is initialized with a period of { 0, 0 }. Timers initialized with a period of 0 seconds are one shot timers. The timer is enabled by a call to **SetOneShotTimer**. When the one shot timer period is set and expires the handler function **Led2OffHandler** is called.
+In **main.c** there is a variable named **led2BlinkOffOneShotTimer** of type **Timer**. This timer is initialized with a period of { 0, 0 }. Timers initialized with a period of 0 seconds are one-shot timers. The timer is enabled by calling **SetOneShotTimer**. When the one-shot timer period is set and then triggers, the handler function **Led2OffHandler** is called.
 
 ```c
-static Timer led2BlinkOffOneShotTimer = { .period = { 0, 0 }, .name = "led2BlinkOffOneShotTimer", .handler = Led2OffHandler };
+static Timer led2BlinkOffOneShotTimer = {
+	.period = { 0, 0 },
+	.name = "led2BlinkOffOneShotTimer",
+	.handler = Led2OffHandler
+};
 ```
 
-In the **Led2On** function, led2 is turned on, then a one shot timer is set to turn off led2.
+In the **Led2On** function, led2 is turned on, then a one-shot timer is set, when it triggers, led2 will be turned off.
 
 > The variable led2BlinkPeriod is set to 300,000,000 nanoseconds (300 milliseconds). This means led2 will be turned off 300 milliseconds after it was turned on.
 
 ```c
 /// <summary>
-/// Turn on LED2 and set a one shot timer to turn LED2 off
+/// Turn on LED2 and set a one-shot timer to turn LED2 off
 /// </summary>
 static void Led2On(void) {
 	Gpio_On(&led2);
@@ -157,7 +157,7 @@ static void Led2On(void) {
 }
 ```
 
-When the one shot timer period expires the **Led2OffHandler** handler function is called and LED2 is turned off.
+When the one-shot timer triggers, the **Led2OffHandler** handler function is called and led2 is turned off.
 
 ```c
 /// <summary>
@@ -172,7 +172,7 @@ static void Led2OffHandler(EventLoopTimer* eventLoopTimer) {
 }
 ```
 
-### Automatic Initialization of Peripherals and Timers
+### Automatic Initialization of Peripherals and Event Timers
 
 Peripherals and timers are added to **Sets**. Peripherals and timers referenced in a set will be automatically opened and closed.
 
@@ -197,7 +197,7 @@ static int InitPeripheralsAndHandlers(void)
 
 ### Easy to Extend
 
-This model makes it easy to declare another peripheral or timer and add them to the **peripherals** or **timers** arrays. The following is an example of adding a GPIO output peripheral.
+This model makes it easy to declare another peripheral or timer and add them to the **peripheral** or **timer** sets. The following is an example of adding a GPIO output peripheral.
 
 ```c
 static Peripheral fanControl = {
@@ -231,11 +231,11 @@ Ensure you have followed all the instructions in the [lab set-up guide](../Lab_0
 
 ### Step 3: Open the lab project
 
-1. Click **Open a local folder**
-2. Open the Azure-Sphere lab folder
-3. Open the **folder name** that corresponds to the **Azure Sphere board** you are using
-4. Open the **Lab_1_Visual_Studio_and_Azure_Sphere** folder
-5. Click **Select Folder** button to open the project
+1. Click **Open a local folder**.
+2. Open the Azure-Sphere lab folder.
+3. Open the **folder name** that corresponds to your **Azure Sphere board**.
+4. Open the **Lab_1_Visual_Studio_and_Azure_Sphere** folder.
+5. Click **Select Folder** button to open the project.
 
 ![](resources/visual-studio-open-project.png)
 
@@ -249,7 +249,7 @@ From the **Solution Explorer**, open the **main.c** file.
 
 ### Check CMake Cache Builds Correctly
 
-The generation of the CMake cache runs automatically when you open a CMake project. But given this is the first lab to be opened it is a good idea to rerun the **CMake Cache Generator** to check that it is building correctly.
+The CMake cache automatically builds when you open a CMake project. But given this is the first lab to be opened, it is a good idea to rerun the **CMake Cache Generator** to check that it is building correctly.
 
 1. Right mouse click the **CMakeLists.txt** file and select **Generate Cache for AzureSphereIoTCentral**.
 
@@ -265,13 +265,13 @@ The generation of the CMake cache runs automatically when you open a CMake proje
 
 ## Understanding Azure Sphere Security
 
-Applications on Azure Sphere are locked down by default and you must grant capabilities to the application. This is key to Azure Sphere security and is also known as the [Principle of least privilege](https://en.wikipedia.org/wiki/Principle_of_least_privilege).
+Applications on Azure Sphere are locked down by default. You must grant capabilities to the application. Granting capabilities is key to Azure Sphere security and is also known as the [Principle of least privilege](https://en.wikipedia.org/wiki/Principle_of_least_privilege).
 
 Application capabilities include what hardware can be accessed, what internet services can be called (including Azure IoT Central and the Azure Device Provisioning Service), and what inter-core communications are allowed.
 
 ### Open the Application Manifest File
 
-From Visual Studio open the **app_manifest.json** file.
+From Visual Studio, open the **app_manifest.json** file.
 
 ![](resources/visual-studio-application-capabilities.png)
 
@@ -300,13 +300,13 @@ This application can only access the resources listed in the **Capabilities** se
 
 ## Understand Pin Mappings
 
-Each Azure Sphere manufacturer maps pins differently.  To understand how the pins are mapped for your developer board then follow these steps.
+Each Azure Sphere manufacturer maps pins differently. To understand how the pins are mapped for your developer board then follow these steps.
 
-1. Ensure you have the **main.c** file open. Place the cursor on the line that reads **#include "../oem/board.h"**, then press <kbd>F12</kbd>. This will open the **board.h** header file.
+1. Ensure you have the **main.c** file open. Place the cursor on the line that reads **#include "../oem/board.h"**, then press <kbd>F12</kbd>. Pressing <kbd>F12</kbd> will open the **board.h** header file.
 
 	![](resources/visual-studio-open-board.png)
 
-	Review the pin mappings that are being used for the lab. These will vary depending on what developer kit you are using.
+	Review the pin mappings used for the lab. These will vary depending on what developer kit you are using.
 
 2. From the **board.h** file, place the cursor on the line that includes **azure_sphere_learning_path.h**, then press <kbd>F12</kbd>.
 
@@ -352,7 +352,7 @@ Each Azure Sphere manufacturer maps pins differently.  To understand how the pin
 
 	![](resources/visual-studio-open-main-tab.png)
 
-> Azure Sphere hardware is available from multiple vendors, and each vendor may expose features of the underlying chip in different ways. Azure Sphere applications manage hardware dependencies by using hardware definition files. For more information review [Managing target hardware dependencies](https://docs.microsoft.com/en-us/azure-sphere/app-development/manage-hardware-dependencies).
+> Azure Sphere hardware is available from multiple vendors, and each vendor may expose features of the underlying chip in different ways. Azure Sphere applications manage hardware dependencies by using hardware definition files. For further information, review the [Managing target hardware dependencies](https://docs.microsoft.com/en-us/azure-sphere/app-development/manage-hardware-dependencies) article.
 
 ---
 
@@ -387,7 +387,7 @@ Set a debugger breakpoint by clicking in the margin to the left of the line of c
 
 	![](resources/vs-set-breakpoint.png)
 
-3. When the next timer event fires, the debugger will stop at the line you set the breakpoint on.
+3. When the next timer event triggers, the debugger will stop at the line you set the breakpoint.
 4. You can inspect variable values, step over code <kbd>F10</kbd>, step into code <kbd>F11</kbd>, and continue code execution <kbd>F5</kbd>. 
 5. For more information on debugging then read [First look at the Visual Studio Debugger](https://docs.microsoft.com/en-us/visualstudio/debugger/debugger-feature-tour?view=vs-2019&WT.mc_id=github-blog-dglover)
 
@@ -409,7 +409,7 @@ Now close **Close Visual Studio**.
 
 ## Finished 完了 fertig finito ख़त्म होना terminado
 
-Congratulations, you secured, built, deployed and debugged your first Azure Sphere application.
+Congratulations, you secured, built, deployed, and debugged your first Azure Sphere application.
 
 ![](resources/finished.jpg)
 
