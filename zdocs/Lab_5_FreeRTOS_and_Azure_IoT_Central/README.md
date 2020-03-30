@@ -29,7 +29,7 @@ Each module assumes you have completed the previous module.
 
 ## Prerequisites
 
-This lab assumes you have completed [Lab 2: Send Telemetry from an Azure Sphere to Azure IoT Central](https://github.com/gloveboxes/Azure-Sphere-Learning-Path/tree/master/Lab%202%20-%20Send%20Telemetry%20from%20an%20Azure%20Sphere%20to%20Azure%20IoT%20Central). You will have created an Azure IoT Central application, connected Azure IoT Central to your Azure Sphere Tenant and you have configured the **app_manifest.json** for the Azure Device Provisioning Service.
+This lab assumes you have completed [Lab 2: Send Telemetry from an Azure Sphere to Azure IoT Central](https://github.com/gloveboxes/Azure-Sphere-Learning-Path/tree/master/Lab%202%20-%20Send%20Telemetry%20from%20an%20Azure%20Sphere%20to%20Azure%20IoT%20Central). You will have created an Azure IoT Central application, connected Azure IoT Central to your Azure Sphere Tenant, and you have configured the **app_manifest.json** for the Azure Device Provisioning Service.
 
 You will need to **copy** and **paste** the Lab 2 **app_manifest.json** you created and copied to Notepad to this lab's **app_manifest.json** file.
 
@@ -43,7 +43,7 @@ You will learn how Azure Sphere **Inter-Core** messaging works.
 
 ## Prerequisites
 
-1. You have completed Lab 4 and the FreeRTOS real-Time application is running the Azure Sphere device.
+1. You have completed Lab 4, and the FreeRTOS real-Time application is running the Azure Sphere device.
 2. You have completed [Lab 2: Send Telemetry from an Azure Sphere to Azure IoT Central](../Lab_2_Send_Telemetry_to_Azure_IoT_Central/README.md). You will need to **copy** and **paste** the Lab 2 **app_manifest.json** you saved to Notepad to this lab's **app_manifest.json** file.
 
 ---
@@ -58,7 +58,7 @@ You will learn how Azure Sphere **Inter-Core** messaging works.
 
 As a reminder, the Azure Sphere has three application cores. The Cortex A7 runs High-Level applications, the two Cortex M4s run Real-Time applications.
 
-In this lab we are going to deploy a High-Level application that will accept event messages from the FreeRTOS Real-Time application and then will forward them on to Azure IoT Central.
+In this lab, we are going to deploy a High-Level application that will accept event messages from the FreeRTOS Real-Time application and then will forward them on to Azure IoT Central.
 
 ![](resources/azure-sphere-application-architecture.png)
 
@@ -108,7 +108,7 @@ In this lab we are going to deploy a High-Level application that will accept eve
 ## Step 4: Set Azure IoT Central Connection Information
 
 1. Open the **app_manifest.json** file.
-2. **DO NOT** replace the contents of the **app_manifest.json** file as you did in previous labs. The GPIO pin allocation is different as some pins have been now been allocated to the FreeRTOS Real-Time application.
+2. **DO NOT** replace the contents of the **app_manifest.json** file as you did in previous labs. The GPIO pin allocation is different as pins have been allocated to the FreeRTOS Real-Time application.
 3. Using the information you saved to **Notepad** property.
 4. Update the **Scope ID** property.
 5. Update the **Azure IoT Central URL** property.
@@ -128,7 +128,7 @@ In this lab we are going to deploy a High-Level application that will accept eve
 
 ## Visual Studio Deployment Settings
 
-Before building the application with Visual Studio ensure ARM-Debug and GDB Debugger (HLCore) options are selected.
+Before building the application with Visual Studio, ensure ARM-Debug and GDB Debugger (HLCore) options are selected.
 
 ![](resources/visual-studio-start-config.png)
 
@@ -136,7 +136,7 @@ Before building the application with Visual Studio ensure ARM-Debug and GDB Debu
 
 ## Build, Deploy and start Debugging
 
-1. To start the build, deploy and debug process, either click the Visual Studio **Start Selected Item** icon or press <kbd>**F5**</kbd>.
+1. To start the build, deploy, and debug process, either click the Visual Studio **Start Selected Item** icon or press <kbd>**F5**</kbd>.
 
     ![](resources/visual-studio-start-debug.png)
 
@@ -144,7 +144,7 @@ Before building the application with Visual Studio ensure ARM-Debug and GDB Debu
 
 1. Generate a **Button Pressed** event from the FreeRTOS application running on the Real-Time core.
 
-    * For the Azure Sphere devices with the built-in buttons, press **Button A** to generate a **ButtonPressed** event.
+    * For Azure Sphere devices with the built-in buttons, press **Button A** to generate a **ButtonPressed** event.
     * For the Seeed Studio MT3620 Mini Dev Board, a **ButtonPressed** event is automatically generated every 10 seconds.
 
 2. Visual Studio will halt execute in the **InterCoreHandler** at the breakpoint.
