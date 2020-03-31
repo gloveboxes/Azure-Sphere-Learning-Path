@@ -322,7 +322,24 @@ static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMetho
 
 ## Azure IoT Central Events
 
+Azure IoT Central can be configured to treat some telemetry as events. You would typically use these for alerts or notifications. For example, an emergency button was pressed.
 
+### Azure IoT Central Interface Events
+
+Defined in the Azure IoT Central Device template, under Interface, ButtonA and ButtonB are configured as **Events**.
+
+![](resources/iot-central-template-interface-events.png)
+
+These events are mapped to the following JSON formatted messages sent from the Azure Sphere:
+
+* { "ButtonA": "occurred" }
+* { "ButtonB": "occurred" }
+
+### Azure IoT Central displaying events
+
+These events are displayed in the Azure Sphere template from under the Telemetry panel.
+
+![](resources/iot-central-display-events.png)
 
 ---
 
@@ -466,6 +483,9 @@ To start the build, deploy, and debug process, either click the Visual Studio **
 1. Switch to Azure IoT Central in your browser.
 2. Select the **Devices**, then the **Azure Sphere** template, then your device.
 3. Select the **Telemetry** tab.
+4. Azure Sphere devices with builtin buttons, press **Button A** and **Button B** repeatedly to generate button alerts. 
+
+	Virtual button press events are generated for Azure Sphere devices that do not have builtin buttons. 
 
 Azure IoT Central does not update immediately. It may take a minute or two for temperature, humidity, button pressed alerts, and message count to be displayed.
 
