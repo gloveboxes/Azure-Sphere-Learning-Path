@@ -31,8 +31,8 @@ static DirectMethodResponseCode ResetDirectMethodHandler(JSON_Object* json, Dire
 static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 
 static const char cstrJsonEvent[] = "{\"%s\":\"occurred\"}";
-static const char cstrEvtButtonB[] = "buttonB";
-static const char cstrEvtButtonA[] = "buttonA";
+static const char cstrEvtButtonB[] = "ButtonB";
+static const char cstrEvtButtonA[] = "ButtonA";
 
 static const struct timespec led2BlinkPeriod = { 0, 300 * 1000 * 1000 };
 
