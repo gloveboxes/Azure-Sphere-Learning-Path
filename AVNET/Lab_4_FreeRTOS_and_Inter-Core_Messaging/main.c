@@ -33,11 +33,11 @@
  * MEDIATEK SOFTWARE AT ISSUE.
  */
 
-/*
-Date: March 2020
-This software has been modified by Dave Glover
-Updated: Added blink and inter-core communications
-*/
+ /*
+ Date: March 2020
+ This software has been modified by Dave Glover
+ Updated: Added blink and inter-core communications
+ */
 
 
 #include <stddef.h>
@@ -56,9 +56,9 @@ Updated: Added blink and inter-core communications
 #include "../oem/Hardware/avnet_mt3620_sk/inc/hw/azure_sphere_learning_path.h"
 
 
-/******************************************************************************/
-/* Configurations */
-/******************************************************************************/
+ /******************************************************************************/
+ /* Configurations */
+ /******************************************************************************/
 
 
 #define UART_PORT_NUM OS_HAL_UART_ISU0
@@ -88,20 +88,17 @@ static uint32_t sharedBufSize = 0;
 /* Application Hooks */
 /******************************************************************************/
 // Hook for "stack over flow".
-void vApplicationStackOverflowHook(TaskHandle_t xTask, char* pcTaskName)
-{
+void vApplicationStackOverflowHook(TaskHandle_t xTask, char* pcTaskName) {
 	printf("%s: %s\n", __func__, pcTaskName);
 }
 
 // Hook for "memory allocation failed".
-void vApplicationMallocFailedHook(void)
-{
+void vApplicationMallocFailedHook(void) {
 	printf("%s\n", __func__);
 }
 
 // Hook for "printf".
-void _putchar(char character)
-{
+void _putchar(char character) {
 	mtk_os_hal_uart_put_char(UART_PORT_NUM, character);
 	if (character == '\n')
 		mtk_os_hal_uart_put_char(UART_PORT_NUM, '\r');
@@ -110,8 +107,7 @@ void _putchar(char character)
 /******************************************************************************/
 /* Functions */
 /******************************************************************************/
-static int gpio_output(u8 gpio_no, u8 level)
-{
+static int gpio_output(u8 gpio_no, u8 level) {
 	int ret;
 
 	ret = mtk_os_hal_gpio_request(gpio_no);
@@ -129,8 +125,7 @@ static int gpio_output(u8 gpio_no, u8 level)
 	return 0;
 }
 
-static int gpio_input(u8 gpio_no, os_hal_gpio_data* pvalue)
-{
+static int gpio_input(u8 gpio_no, os_hal_gpio_data* pvalue) {
 	u8 ret;
 
 	ret = mtk_os_hal_gpio_request(gpio_no);
@@ -152,8 +147,9 @@ static int gpio_input(u8 gpio_no, os_hal_gpio_data* pvalue)
 	return 0;
 }
 
-static void ButtonTask(void* pParameters)
-{
+static void ButtonTask(void* pParameters) {
+	static os_hal_gpio_data oldStateButtonA = OS_HAL_GPIO_DATA_LOW;
+	static os_hal_gpio_data oldStateButtonB = OS_HAL_GPIO_DATA_LOW;
 	os_hal_gpio_data value = 0;
 
 	printf("GPIO Task Started\n");
@@ -161,34 +157,32 @@ static void ButtonTask(void* pParameters)
 
 		// Get Button_A status
 		gpio_input(BUTTON_A, &value);
-
-		if (value == OS_HAL_GPIO_DATA_LOW) {
-			blinkIntervalIndex = (blinkIntervalIndex + 1) % numBlinkIntervals;
+		if ((value != oldStateButtonA) && (value == OS_HAL_GPIO_DATA_LOW)) {
 			buttonA_Pressed = true;
+			blinkIntervalIndex = (blinkIntervalIndex + 1) % numBlinkIntervals;
 		}
+		oldStateButtonA = value;
 
 		// Get Button_B status
 		gpio_input(BUTTON_B, &value);
-
-		if (value == OS_HAL_GPIO_DATA_LOW) {
+		if ((value != oldStateButtonB) && (value == OS_HAL_GPIO_DATA_LOW)) {
 			buttonB_Pressed = true;
 		}
+		oldStateButtonB = value;
 
 		// Delay for 100ms
 		vTaskDelay(pdMS_TO_TICKS(100));
 	}
 }
 
-static void PeriodicTask(void* pParameters)
-{
+static void PeriodicTask(void* pParameters) {
 	while (1) {
 		vTaskDelay(pdMS_TO_TICKS(blinkIntervalsMs[blinkIntervalIndex]));
 		xSemaphoreGive(LEDSemphr);
 	}
 }
 
-static void LedTask(void* pParameters)
-{
+static void LedTask(void* pParameters) {
 	BaseType_t rt;
 
 	while (1) {
@@ -200,8 +194,7 @@ static void LedTask(void* pParameters)
 	}
 }
 
-static void RTCoreMsgTask(void* pParameters)
-{
+static void RTCoreMsgTask(void* pParameters) {
 	bool HLAppReady = false;
 
 	while (1) {
@@ -236,8 +229,7 @@ static void RTCoreMsgTask(void* pParameters)
 	}
 }
 
-_Noreturn void RTCoreMain(void)
-{
+_Noreturn void RTCoreMain(void) {
 	// Setup Vector Table
 	NVIC_SetupVectorTable();
 

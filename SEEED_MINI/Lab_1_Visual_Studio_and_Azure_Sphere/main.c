@@ -33,8 +33,8 @@ static const struct timespec led1BlinkIntervals[] = { {0, 125000000}, {0, 250000
 static const int led1BlinkIntervalsCount = NELEMS(led1BlinkIntervals);
 
 // GPIO Input Peripherals
-static Peripheral buttonA = { .pin = BUTTON_A, .direction = INPUT, .initialise = OpenPeripheral, .name = "buttonA" };
-static Peripheral buttonB = { .pin = BUTTON_B, .direction = INPUT, .initialise = OpenPeripheral, .name = "buttonB" };
+static Peripheral buttonA = { .pin = BUTTON_A, .direction = INPUT, .initialise = OpenPeripheral, .name = "ButtonA" };
+static Peripheral buttonB = { .pin = BUTTON_B, .direction = INPUT, .initialise = OpenPeripheral, .name = "ButtonB" };
 
 // GPIO Output Peripherals
 static Peripheral led1 = {
@@ -52,17 +52,17 @@ static Peripheral networkConnectedLed = {
 
 // Timers
 static Timer led1BlinkTimer = { .period = { 0, 125000000 }, .name = "led1BlinkTimer", .handler = Led1BlinkHandler };
-static Timer led2BlinkOffOneShotTimer = { 
-	.period = { 0, 0 }, 
-	.name = "led2BlinkOffOneShotTimer", 
-	.handler = Led2OffHandler 
+static Timer led2BlinkOffOneShotTimer = {
+	.period = { 0, 0 },
+	.name = "led2BlinkOffOneShotTimer",
+	.handler = Led2OffHandler
 };
 static Timer buttonPressCheckTimer = { .period = { 0, 1000000 }, .name = "buttonPressCheckTimer", .handler = ButtonPressCheckHandler };
 static Timer networkConnectionStatusTimer = { .period = { 5, 0 }, .name = "networkConnectionStatusTimer", .handler = NetworkConnectionStatusHandler };
-static Timer measureSensorTimer = { 
-	.period = { 10, 0 }, 
-	.name = "measureSensorTimer", 
-	.handler = MeasureSensorHandler 
+static Timer measureSensorTimer = {
+	.period = { 10, 0 },
+	.name = "measureSensorTimer",
+	.handler = MeasureSensorHandler
 };
 
 // Initialize Sets
