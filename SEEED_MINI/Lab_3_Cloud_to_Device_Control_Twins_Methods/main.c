@@ -202,17 +202,21 @@ static void ButtonPressCheckHandler(EventLoopTimer* eventLoopTimer) {
 		Led1BlinkIntervalIndex = (Led1BlinkIntervalIndex + 1) % led1BlinkIntervalsCount;
 		ChangeTimer(&led1BlinkTimer, &led1BlinkIntervals[Led1BlinkIntervalIndex]);
 
+		// Report Device Twins Blink Rate and Button Pressed properties
 		DeviceTwinReportState(&led1BlinkRate, &Led1BlinkIntervalIndex);		// TwinType = TYPE_INT
 		DeviceTwinReportState(&buttonPressed, "ButtonA");					// TwinType = TYPE_STRING
 
+		// Send ButtonA Pressed Event
 		if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, cstrJsonEvent, cstrEvtButtonA) > 0) {
 			SendMsgLed2On(msgBuffer);
 		}
 	}
 	if (IsButtonPressed(buttonB, &buttonBState)) {
 
+		// Report Device Twins Button Pressed properties
 		DeviceTwinReportState(&buttonPressed, "ButtonB");					// TwinType = TYPE_STRING
 
+		// Send ButtonB Pressed Event
 		if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, cstrJsonEvent, cstrEvtButtonB) > 0) {
 			SendMsgLed2On(msgBuffer);
 		}
@@ -234,16 +238,20 @@ static void VirtualButtonsHandler(EventLoopTimer* eventLoopTimer) {
 		Led1BlinkIntervalIndex = (Led1BlinkIntervalIndex + 1) % led1BlinkIntervalsCount;
 		ChangeTimer(&led1BlinkTimer, &led1BlinkIntervals[Led1BlinkIntervalIndex]);
 
+		// Report Device Twins Blink Rate and Button Pressed properties
 		DeviceTwinReportState(&led1BlinkRate, &Led1BlinkIntervalIndex);		// TwinType = TYPE_INT
 		DeviceTwinReportState(&buttonPressed, "ButtonA");					// TwinType = TYPE_STRING
 
+		// Send ButtonA Pressed Event
 		if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, cstrJsonEvent, cstrEvtButtonA) > 0) {
 			SendMsgLed2On(msgBuffer);
 		}
 	}
 	else {
+		// Report Device Twins Button Pressed properties
 		DeviceTwinReportState(&buttonPressed, "ButtonB");					// TwinType = TYPE_STRING
 
+		// Send ButtonB Pressed Event
 		if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, cstrJsonEvent, cstrEvtButtonB) > 0) {
 			SendMsgLed2On(msgBuffer);
 		}

@@ -324,18 +324,30 @@ static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMetho
 
 Azure IoT Central can be configured to treat some telemetry as events. You would typically use these for alerts or notifications. For example, an emergency button was pressed.
 
-### Azure IoT Central Interface Events
+### Step 1: Defining Azure IoT Central Interface Events
 
 Defined in the Azure IoT Central Device template, under Interface, ButtonA and ButtonB are configured as **Events**.
 
 ![](resources/iot-central-template-interface-events.png)
+
+### Step 2: Generating Azure IoT Central Events
+
+Review the handler function **ButtonPressCheckHandler**. The following code sends the Button Pressed events to Azure IoT Central.
+
+```c
+// Send ButtonA Pressed Event
+if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, cstrJsonEvent, cstrEvtButtonA) > 0) {
+	SendMsgLed2On(msgBuffer);
+}
+```
+
 
 These events are mapped to the following JSON formatted messages sent from the Azure Sphere:
 
 * { "ButtonA": "occurred" }
 * { "ButtonB": "occurred" }
 
-### Azure IoT Central displaying events
+### Step 3: Displaying Azure IoT Central Events
 
 These events are displayed in the Azure Sphere template from under the Telemetry panel.
 
