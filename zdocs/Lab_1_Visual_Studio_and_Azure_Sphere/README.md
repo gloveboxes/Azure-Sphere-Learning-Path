@@ -336,19 +336,25 @@ Each Azure Sphere manufacturer maps pins differently. Follow these steps to unde
 1. Connect the Azure Sphere to your computer via USB.
 2. Ensure you have [claimed](https://docs.microsoft.com/en-au/azure-sphere/install/claim-device?WT.mc_id=github-blog-dglover), [connected](https://docs.microsoft.com/en-au/azure-sphere/install/configure-wifi?WT.mc_id=github-blog-dglover), and [developer enabled](https://docs.microsoft.com/en-au/azure-sphere/install/qs-blink-application?WT.mc_id=github-blog-dglover) your Azure Sphere.
 3. Ensure you have enabled developer mode on the Azure Sphere.
-4. Select **GDB Debugger (HLCore)** from the **Select Startup** dropdown.
+4. Ensure main.c is open.
+5. Select the **ARM-Debug** from the configuration dropdown menu.
+6. Select **GDB Debugger (HLCore)** from the **Select Startup** dropdown.
 	![](resources/vs-start-application.png).
-5. From Visual Studio, press <kbd>F5</kbd> to build, deploy, start, and attached the remote debugger to the application now running the Azure Sphere device.
+7. From Visual Studio, press <kbd>F5</kbd> to build, deploy, start, and attached the remote debugger to the application now running the Azure Sphere device.
 
 ---
 
 ## View the Debugger Output
 
-Open the **Output** window to view the output from **Log_Debug** statements in the code.
+1. Open the **Output** window to view the output from **Log_Debug** statements in the code.
 
-You can open the output window by using the Visual Studio <kbd>Ctrl+Alt+O</kbd> shortcut or click the **Output** tab found along the bottom/right of Visual Studio.
+	You can open the output window by using the Visual Studio <kbd>Ctrl+Alt+O</kbd> shortcut or click the **Output** tab found along the bottom/right of Visual Studio.
 
-![Visual Studio View Output](resources/vs-view-output.png)
+2. Ensure **Device Output** is selected from the **Show output from** dropdown list.
+
+3. Observe every 10 seconds the output window will be updated with new data. 
+
+	![Visual Studio View Output](resources/vs-view-output.png)
 
 ---
 
