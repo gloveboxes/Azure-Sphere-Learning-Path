@@ -328,17 +328,31 @@ You can open the output window by using the Visual Studio <kbd>Ctrl+Alt+O</kbd> 
 
 ![](resources/visual-studio-debug-output-view.png)
 
-<!-- ---
+---
 
-## Migrate your device to an Azure IoT Central Template
+## Expected Device Behaviour
 
-1. Open the Azure IoT Central Application you created.
-2. Open the **Devices** tab. **You will need to wait a minute or two before the new device listed. It will have a numeric name.**
-This numeric name is the ID of your Azure Sphere Device. You can check this by running the  ```azsphere device show``` command from the *Azure Sphere Command Prompt*.
-4. Select this new device and click **Migrate**
-    ![](resources/iot-central-migrate-device.png)
-5. Migrate the Azure Sphere device to the **Azure Sphere** Template
-    ![](resources/iot-central-migrate-select-template.png) -->
+### Avnet Azure Sphere MT3620 Starter Kit
+
+![](resources/avnet-azure-sphere.jpg)
+
+1. The blue LED will start to blink.
+2. Press **Button A** on the device to change the blink rate.
+
+### Seeed Studio Azure Sphere MT3620 Development Kit
+
+![](resources/seeed-studio-azure-sphere-rdb.jpg)
+
+1. The blue LED will start to blink
+2. Press **Button A** on the device to change the blink rate.
+
+### Seeed Studio MT3620 Mini Dev Board
+
+![](resources/seeed-studio-azure-sphere-mini.png)
+
+1. The green LED closest to the USB connector will start to blink.
+2. Given there are no builtin buttons, virtual **Button A** and **Button B** presses will be generated every 5 seconds.
+3. The virtual button presses will change the blink rate.
 
 ---
 

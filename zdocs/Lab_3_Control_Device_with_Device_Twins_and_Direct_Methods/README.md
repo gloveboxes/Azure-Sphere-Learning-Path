@@ -320,6 +320,12 @@ static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMetho
 
 ---
 
+## Azure IoT Central Events
+
+
+
+---
+
 ## Open Lab 3
 
 ### Step 1: Start Visual Studio 2019
@@ -347,40 +353,42 @@ static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMetho
 
 ---
 
-## Support for Azure IoT Central Properties
+<!-- ## Support for Azure IoT Central Properties
 
-1. Open the **main.c** file.
-2. Navigate to the declaration of **static DeviceTwinBinding led1BlinkRate**. 
+1. Open **main.c**.
+2. Navigate to the C statement **static DeviceTwinBinding led1BlinkRate**. 
 
-    * If you have Visual Studio line numbers enabled, then scroll down to around line 90. 
+    * If you have Visual Studio line numbers enabled, then scroll down to about line 90. 
     * You can also use **find**, press <kbd>Ctrl+f</kbd>, and type *led1BlinkRate*.
 
     ```c
     static DeviceTwinBinding led1BlinkRate = { .twinProperty = "LedBlinkRate", .twinType = TYPE_INT, .handler = DeviceTwinBlinkRateHandler };
     ```
 
-    This data structure describes the Device Twin. Defined is the Azure IoT Central Device Twin **Property**, the data type, and the **handler** function named **DeviceTwinBlinkRateHandler**.
+    This variable describes the Device Twin. Defined is the Azure IoT Central Device Twin **Property**, the data type, and the **handler** function named **DeviceTwinBlinkRateHandler**.
 
 3. Right mouse click on **DeviceTwinBlinkRateHandler**, and select **Go To Definition**.
     ![](resources/visual-studio-go-to-definition.png).
-4. This will jump you to the function named **DeviceTwinBlinkRateHandler**. Review the implementation of the handler.
+4. This will take you to the handler function named **DeviceTwinBlinkRateHandler**.
+5. Review the implementation of the handler.
 
 ### Support for Azure IoT Central Commands
 
-1. Again, in the **main.c** file.
-2. Navigate to the line that reads **static DirectMethodBinding resetDevice**.
-    * If you have Visual Studio line numbers enabled, then scroll down to around line 95. 
+1. Open **main.c**.
+2. Navigate to the C statement **static DirectMethodBinding resetDevice**.
+    * If you have Visual Studio line numbers enabled, then scroll down to about line 95. 
     * You can also use **find**, press <kbd>Ctrl+f</kbd>, and type *resetDevice*.
 
     ```c
 	static DirectMethodBinding resetDevice = { .methodName = "ResetMethod", .handler = ResetDirectMethodHandler };
     ```
 
-4. Again, right mouse click the **ResetDirectMethodHandler** handler and select **Go To Definition**, and review the handler function implementation.
+4. Right mouse click the **ResetDirectMethodHandler** handler and select **Go To Definition**.
+5. Review the handler function implementation.
 
 ### Support for IoT Central Properties and Commands
 
-1. From **main.c**.
+1. Open **main.c**.
 2. Press <kbd>Ctrl+f</kbd>, and search for **deviceTwinBindings**. In this code section, the **deviceTwinBindings** and **directMethodBindings** sets are declared.
 
     ```c
@@ -408,9 +416,9 @@ static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMetho
 	}
     ```
 
----
+--- -->
 
-## Visual Studio Deployment Settings
+### Step 4: Visual Studio Deployment Settings
 
 Before building the application with Visual Studio, ensure ARM-Debug and GDB Debugger (HLCore) options are selected.
 
@@ -418,7 +426,7 @@ Before building the application with Visual Studio, ensure ARM-Debug and GDB Deb
 
 ---
 
-## Build, Deploy and start Debugging
+### Step 5: Build, Deploy and start Debugging
 
 To start the build, deploy, and debug process, either click the Visual Studio **Start Selected Item** icon or press <kbd>**F5**</kbd>. To Build and deploy without attaching the debugger, press <kbd>**Ctrl+F5**</kbd>.
 
@@ -468,14 +476,6 @@ Azure IoT Central does not update immediately. It may take a minute or two for t
 Select the **Properties** tab, update the **Led Blink Rate [0..4]** field, then click **Save**.
 
 ![iot central device settings](resources/iot-central-display-settings.png)
-
-### Expected Behaviour
-
-The expected behaviour will differ depending on what Azure Sphere device you have.
-
-* **Azure Sphere MT3620 Starter Kit**: See that an **Orange** LED blink rate will change depending on the blink rate you set and saved.
-* **Seeed Studio Azure Sphere MT3620 Development Kit**: See that a **Red** LED blink rate will change depending on the blink rate you set and saved.
-* **Seeed Studio Azure Sphere MT3620 Mini Dev Board**: See that a **Green** LED blink rate will change depending on the blink rate you set and saved.
 
 ---
 
