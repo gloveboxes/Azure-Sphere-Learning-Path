@@ -55,11 +55,11 @@ The lab assumes you understand the content from [Lab 1: Secure, Build, Deploy an
 
 Your Azure Sphere device can securely connect and communicate with cloud services. Azure Sphere includes built-in library support for both Azure IoT Hub and Azure IoT Central. This lab focuses on Azure IoT Central.
 
-This project leverages the [Azure IoT Hub Device Provisioning Service (PDS)](https://docs.microsoft.com/en-us/azure-sphere/app-development/use-azure-iot?WT.mc_id=github-blog-dglover) which is included with Azure IoT Central. The Device Provisioning Service (DPS) enables zero-touch, just-in-time, large scale device provisioning.
+This project leverages the [Azure IoT Hub Device Provisioning Service (PDS)](https://docs.microsoft.com/en-us/azure-sphere/app-development/use-azure-iot?WT.mc_id=github-blog-dglover), which is included with Azure IoT Central. The Device Provisioning Service (DPS) enables zero-touch, just-in-time, large scale device provisioning.
 
 ### Azure IoT Central
 
-[Azure IoT Central](https://azure.microsoft.com/en-in/services/iot-central/?WT.mc_id=github-blog-dglover) provides an easy way to connect, monitor and manage your Internet of Things (IoT) assets at scale.
+[Azure IoT Central](https://azure.microsoft.com/en-in/services/iot-central/?WT.mc_id=github-blog-dglover) provides an easy way to connect, monitor, and manage your Internet of Things (IoT) assets at scale.
 
 ![Azure IoT Central](resources/azure-iot-central.jpg)
 
@@ -142,7 +142,7 @@ After you have completed this step, any device that is claimed by your Azure Sph
 
     ![](resources/iot-central-certificate-verified.png)
 
-After you complete these steps, any device that is claimed into your Azure Sphere tenant will automatically be enrolled into your Azure IoT Central application when it first connects.
+After you complete these steps, any device that is claimed into your Azure Sphere tenant will automatically be enrolled in your Azure IoT Central application when it first connects.
 
 ---
 
@@ -314,7 +314,7 @@ These events are mapped to the following JSON formatted messages sent from the A
 
 ## Build, Deploy and Debug the Azure Sphere Application
 
-Before building the application with Visual Studio ensure ARM-Debug and GDB Debugger (HLCore) options are selected.
+Before building the application with Visual Studio, ensure ARM-Debug and GDB Debugger (HLCore) options are selected.
 
 ![](resources/visual-studio-start-config.png)
 
@@ -322,7 +322,7 @@ Before building the application with Visual Studio ensure ARM-Debug and GDB Debu
 
 From **main.c**, scroll down to the **MeasureSensorHandler** function.
 
->Pro Tip. Use the **Function Navigator** dropdown for quick code navigation. Click on the dropdown list, then select and click the function name. You will often see a function name listed twice in the dropdown. The first is the function forward signature, the second is the implementation of the function.
+>Pro Tip. Use the **Function Navigator** dropdown for quick code navigation. Click on the dropdown list, then select and click the function name. You will often see a function name listed twice in the dropdown. The first is the function forward signature, and the second is the implementation of the function.
 
 ![](resources/visual-studio-function-navigate-measure-sensor-telemetry.png)
 
@@ -365,7 +365,7 @@ To start the build, deploy, debug process, either click the Visual Studio **Star
 
 ### Step 2: View debugger output
 
-Open the **Output** window to view the output from **Log_Debug** statements in the code. You will see the device negotiating security and then it will start sending telemetry to Azure IoT Central.
+Open the **Output** window to view the output from **Log_Debug** statements in the code. You will see the device negotiating security, and then it will start sending telemetry to Azure IoT Central.
 
 You can open the output window by using the Visual Studio <kbd>Ctrl+Alt+O</kbd> shortcut or click the **Output** tab found along the bottom/right of Visual Studio.
 
