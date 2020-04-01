@@ -207,6 +207,59 @@ We need the ID of the Azure Sphere Tenant that is now trusted by Azure IoT Centr
 
 ---
 
+## Azure IoT Central Device Templates
+
+A device template is a blueprint that defines the characteristics and behaviors of a type of device that connects to an Azure IoT Central application.
+
+For more information on device templates, review the [Define a new IoT device type in your Azure IoT Central application](https://docs.microsoft.com/en-us/azure/iot-central/core/howto-set-up-template) article. 
+
+
+
+1. From Azure IoT Central, navigate to **Device template**, and select the **Azure Sphere** template.
+2. Click on **Interfaces** to list the interface capabilities.
+3. Explore the IoT Central device template interfaces, properties, and views.
+
+![](resources/iot-central-device-template-display.png)
+
+
+---
+
+## Azure IoT Central Events
+
+Azure IoT Central can be configured to treat some telemetry as events. You would typically use these for alerts or notifications. For example, an emergency button was pressed.
+
+### Step 1: Defining Azure IoT Central Interface Events
+
+Defined in the Azure IoT Central Device template, under Interface, ButtonA and ButtonB are configured as **Events**.
+
+![](resources/iot-central-template-interface-events.png)
+
+### Step 2: Generating Azure IoT Central Events
+
+Review the handler function **ButtonPressCheckHandler**. The following code sends the Button Pressed events to Azure IoT Central.
+
+```c
+// Send ButtonA Pressed Event
+if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, cstrJsonEvent, cstrEvtButtonA) > 0) {
+	SendMsgLed2On(msgBuffer);
+}
+```
+
+
+These events are mapped to the following JSON formatted messages sent from the Azure Sphere:
+
+* { "ButtonA": "occurred" }
+* { "ButtonB": "occurred" }
+
+### Step 3: Displaying Azure IoT Central Events
+
+These events are displayed in the Azure Sphere template from under the Telemetry panel.
+
+![](resources/iot-central-display-events.png)
+
+
+---
+
 ## Open Lab 2
 
 ### Step 1: Start Visual Studio 2019
