@@ -69,10 +69,10 @@ You can use device twins as follows:
 
 1. Cloud to device updates.
 
-	A user sets an Azure IoT Central device property. For example, to set the temperature of a refrigerator. To do this, IoT Central sends a desired property device twin message to the device. The device implements the desire property, and the device responds with a reported property device twin message. Azure IoT Hub stores the reported property. 
+	A user sets an Azure IoT Central device property. For example, to set the temperature of a refrigerator. IoT Central sends a desired property device twin message to the device. The device implements the desire property, and the device responds with a reported property device twin message. Azure IoT Hub stores the reported property. 
 2. Device to cloud updates.
 
-	A device can send a reported property device twin message to Azure. For example, it may report its firmware level on startup.  Azure IoT Hub stores the reported property. 
+	A device can send a reported property device twin message to Azure. For example, a device could report its firmware level on startup.  Azure IoT Hub stores the reported property. 
 
 3. Querying reported properties.
 
@@ -81,9 +81,9 @@ You can use device twins as follows:
 The following outlines how Azure IoT Central uses Device Twins to set properties on a device: 
 
 1. A user sets the value of a property in Azure IoT Central. For example, change the blink rate of a status LED. 
-2. Azure IoT sends a desired property message to the device. 
+2. Azure IoT Hub sends a desired property message to the device. 
 3. The device implements the desired property; in this case, change the LED blink rate. 
-4. The device sends reported property message back to Azure IoT. In this example, the device would report the new LED blink rate. 
+4. The device sends a reported property message back to Azure IoT. In this example, the device would report the new LED blink rate. 
 5. Azure IoT Central queries and displays the devices reported property data. 
 
 ![](resources/device-twin-configuration-pattern.png)
@@ -109,7 +109,7 @@ static DeviceTwinBinding led1BlinkRate = {
 ```
 
 
-The following is the **DeviceTwinBlinkRateHandler** implementation. The handler function is called when the device receives a **LedBlinkRate** desired property message from Azure IoT Central.
+The following is the implementation of the handler function **DeviceTwinBlinkRateHandler**. The handler function is called when the device receives a **LedBlinkRate** desired property message from Azure IoT Central.
 
 ```c
 /// <summary>
@@ -141,40 +141,10 @@ static DeviceTwinBinding buttonPressed = {
 };
 ```
 
-The ButtonPressed property is reported to IoT Central by calling the DeviceTwinReportState function. You must pass a property of the correct type.
+The ButtonPressed reported property message is sent to IoT Central by calling the DeviceTwinReportState function. You must pass a property of the correct type.
 
 ```c
 DeviceTwinReportState(&buttonPressed, "ButtonA");   // TwinType = TYPE_STRING
-```
-
----
-
-## Working with Device Twin Bindings
-
-Device Twin Bindings can be automatically opened, dispatched, and closed if they are added to the deviceTwinDevices **Set**.
-
-```c
-DeviceTwinBinding* deviceTwinBindingSet[] = { &led1BlinkRate, &buttonPressed, &relay1DeviceTwin, &deviceResetUtc };
-```
-
-### Opening
-
-The Direct Method Bindings are initialized in the **InitPeripheralsAndHandlers** function found in **main.c**.
-
-```c
-OpenDeviceTwinSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
-```
-
-### Dispatching
-
-When a Device Twin message is received, the DeviceTwinBindings Set is checked for a matching DeviceTwinBinding *twinProperty* name. When a match is found, the corresponding DeviceTwinBinding handler function is called.
-
-### Closing
-
-The Direct Method Bindings are closed in the **ClosePeripheralsAndHandlers** function found in **main.c**.
-
-```c
-CloseDeviceTwinSet();
 ```
 
 ---
@@ -194,9 +164,9 @@ Azure IoT Central properties are defined in Device templates.
 
 ## Azure IoT Direct Methods
 
-The following outlines how Azure IoT Central Commands uses Direct Methods to invoke an action on a device:
+The following outlines how Azure IoT Central Commands uses Direct Methods to for cloud to device control.
 
-1. A user invokes an Azure IoT Central Command. An Azure IoT sends a Direct Method message to the device. For example, reset the device. This message includes the method name and an optional payload. 
+1. A user invokes an Azure IoT Central Command. An Azure IoT Hub sends a Direct Method message to the device. For example, reset the device. This message includes the method name and an optional payload. 
 2. The device receives the direct method message and calls the associated handler function 
 3. The device implements the direct method; in this case, reset the device. 
 4. The device responds with an HTTP status code, and optionally a response message. 
@@ -209,47 +179,19 @@ For more information, refer to the [Understand and invoke direct methods from Io
 
 ## Direct Method Bindings
 
-Azure IoT Hub Direct Methods are used to implement IoT Central commands. Direct Method Bindings map a direct method with a handler function that implements the action.
+Direct Method Bindings map a direct method with a handler function that implements an action.
 
 ### Cloud to Device Commands
 
 In the following example, when the device receives an Azure IoT Direct Method named **ResetMethod**, the **ResetDirectMethod** handler function will be called.
+
+In main.c the variable named resetDevice of type DirectMethodBinding is declared. This variable maps the Azure IoT Central ResetMethod command property with a handler function named ResetDirectMethod.
 
 ```c
 static DirectMethodBinding resetDevice = { 
 	.methodName = "ResetMethod", 
 	.handler = ResetDirectMethod 
 };
-```
-
----
-
-## Working with Direct Method Bindings
-
-Direct Method Bindings can be automatically opened, dispatched, and closed if they are added to the directMethodBindingSet Set.
-
-```c
-DirectMethodBinding* directMethodBindingSet[] = { &resetDevice };
-```
-
-### Opening
-
-The Direct Method Bindings are initialized in the **InitPeripheralsAndHandlers** function found in **main.c**.
-
-```c
-OpenDirectMethodSet(directMethodBindingSet, NELEMS(directMethodBindingSet));
-```
-
-### Dispatching
-
-When a Direct Method message is received the DirectMethodBindings Set is checked for a matching DirectMethodBinding methodName name. When a match is found, the DirectMethodBinding handler function is called.
-
-### Closing
-
-The Direct Method Bindings are closed in the **ClosePeripheralsAndHandlers** function found in **main.c**.
-
-```c
-CloseDirectMethodSet();
 ```
 
 ---
@@ -326,6 +268,39 @@ static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMetho
 		return METHOD_FAILED;
 	}
 }
+```
+
+---
+
+## Working with Device Twins and Direct Method Binding
+
+Device Twin and Direct Method Bindings can be automatically opened, dispatched, and closed if they are added to the respective **Sets**.
+
+```c
+DeviceTwinBinding* deviceTwinBindingSet[] = { &led1BlinkRate, &buttonPressed, &relay1DeviceTwin, &deviceResetUtc };
+DirectMethodBinding* directMethodBindingSet[] = { &resetDevice };
+```
+
+### Opening
+
+Sets are initialized in the **InitPeripheralsAndHandlers** function found in **main.c**.
+
+```c
+OpenDeviceTwinSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
+OpenDirectMethodSet(directMethodBindingSet, NELEMS(directMethodBindingSet));
+```
+
+### Dispatching
+
+When a Device Twin or Direct Method message is received their respective sets is checked for a matching *twinProperty* or *methodName* name. When a match is found, the associated handler function is called.
+
+### Closing
+
+The Direct Method Bindings are closed in the **ClosePeripheralsAndHandlers** function found in **main.c**.
+
+```c
+CloseDeviceTwinSet();
+CloseDirectMethodSet();
 ```
 
 ---
