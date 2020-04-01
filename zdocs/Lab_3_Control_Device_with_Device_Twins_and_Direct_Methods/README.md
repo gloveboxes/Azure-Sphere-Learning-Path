@@ -59,15 +59,19 @@ In this lab, **DeviceTwinBindings**, and **DirectMethodBindings** are introduced
 
 Both Device Twins and Direct Methods provide a mechanism to invoke functionality on a device from a custom Azure IoT Hub application or from an Azure IoT Central Application. For example, you may want to turn on a light, start a fan, or change the sensor sample rate.
 
-### Azure IoT Device Twins
+---
+
+## Azure IoT Device Twins
 
 Device twins are JSON documents that store device information including metadata, configurations, and conditions. Azure IoT Hub keeps a device twin for each device that you connect to IoT Hub. Azure IoT Central is an application built on Azure IoT Hub and it uses device twins. 
 
 You can use device twins in two ways. 
 
-1. Cloud to device updates. 
+1. Cloud to device updates.
+
 	A user sets an Azure IoT Central device property. For example, to set the temperature of a refrigerator. To do this, IoT Central sends a desired property device twin message to the device. The device implements the desire property, and the device responds with a reported property device twin message. Azure IoT Hub stores the reported property. 
-2. Device to cloud updates. 
+2. Device to cloud updates.
+
 	A device can send a reported property device twin message to Azure. For example, it may report its firmware level on startup.  Azure IoT Hub stores the reported property. 
 
 With reported state stored in Azure it is possible to query the stored device twin properties cloud side. For example, list all devices with a firmware version less than 2.0, as these devices require an updated. Or, list all refrigerators with a temperature setting greater than 3 degrees Celsius. 
@@ -83,8 +87,6 @@ The following outlines how Azure IoT Central uses Device Twins to set properties
 ![](resources/device-twin-configuration-pattern.png)
 
 For more information, refer to the [Understand and use device twins in IoT Hub](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins?WT.mc_id=github-blog-dglover) article.
-
-
 
 ---
 
