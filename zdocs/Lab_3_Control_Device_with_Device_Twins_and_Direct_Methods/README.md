@@ -149,7 +149,7 @@ DeviceTwinReportState(&buttonPressed, "ButtonA");   // TwinType = TYPE_STRING
 
 ---
 
-## Managing Device Twin Bindings
+## Working with Device Twin Bindings
 
 Device Twin Bindings can be automatically opened, dispatched, and closed if they are added to the deviceTwinDevices **Set**.
 
@@ -194,8 +194,6 @@ Azure IoT Central properties are defined in Device templates.
 
 ## Azure IoT Direct Methods
 
-Azure IoT Direct Methods can be used to invoke an action on a device.  A Direct Method message includes the direct method name and a data payload. The device will action the request and then respond with an HTTP status code to indicate the success or failure of an action, along with an optional message.
-
 The following outlines how Azure IoT Central Commands uses Direct Methods to invoke an action on a device:
 
 1. A user invokes an Azure IoT Central Command. An Azure IoT sends a Direct Method message to the device. For example, reset the device. This message includes the method name and an optional payload. 
@@ -226,7 +224,7 @@ static DirectMethodBinding resetDevice = {
 
 ---
 
-## Managing Direct Method Bindings
+## Working with Direct Method Bindings
 
 Direct Method Bindings can be automatically opened, dispatched, and closed if they are added to the directMethodBindingSet Set.
 
