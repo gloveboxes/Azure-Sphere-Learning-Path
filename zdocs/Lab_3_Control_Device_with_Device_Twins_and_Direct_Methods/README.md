@@ -188,7 +188,7 @@ Azure IoT Central properties are defined in Device templates.
 3. Scroll down and expand the **LedBlinkRate** capability.
 4. Review the definition of **LedBlinkRate**. The capability type is **Property**, the Schema type is **Integer**, and the property is **Writeable**. Writeable means this property is enabled for Cloud to Device updates.
 
-	![](resources/iot-central-device-template-interface-led1.png)
+![](resources/iot-central-device-template-interface-led1.png)
 
 ---
 
@@ -266,7 +266,7 @@ Azure IoT Central commands are defined in Device templates.
 4. Review the definition of **ResetMethod**. The capability type is **Command**.
 5. The schema type is **Object**. Click on the **view** button to display the object definition. The Object definition describes the shape of the JSON payload sent with the command. In this example, the shape of the JSON payload is like {"reset_timer":5}.
 
-	![](resources/iot-central-device-template-interface-fan1.png)
+![](resources/iot-central-device-template-interface-fan1.png)
 
 ---
 
