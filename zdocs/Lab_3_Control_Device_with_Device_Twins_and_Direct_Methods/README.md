@@ -190,7 +190,6 @@ Azure IoT Central properties are defined in Device templates.
 
 	![](resources/iot-central-device-template-interface-led1.png)
 
-
 ---
 
 ## Azure IoT Direct Methods
@@ -265,9 +264,7 @@ Azure IoT Central commands are defined in Device templates.
 2. Click on **Interfaces** to list the interface capabilities.
 3. Scroll down and expand the **ResetMethod** capability.
 4. Review the definition of **ResetMethod**. The capability type is **Command**.
-5. The schema type is **Object**. Click on the **view** button to display the object definition. 
-
-	The Object definition describes the shape of the JSON payload sent with the command. In this example, the shape of the JSON payload is like {"reset_timer":5}.
+5. The schema type is **Object**. Click on the **view** button to display the object definition. The Object definition describes the shape of the JSON payload sent with the command. In this example, the shape of the JSON payload is like {"reset_timer":5}.
 
 	![](resources/iot-central-device-template-interface-fan1.png)
 
