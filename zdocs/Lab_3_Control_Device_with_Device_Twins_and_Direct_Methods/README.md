@@ -35,8 +35,6 @@ You will learn how to control an [Azure Sphere](https://azure.microsoft.com/serv
 
 This lab assumes you have completed [Lab 2: Send Telemetry from an Azure Sphere to Azure IoT Central](../Lab_2_Send_Telemetry_to_Azure_IoT_Central/README.md). You will have created an Azure IoT Central application, connected Azure IoT Central to your Azure Sphere Tenant, and you have configured the **app_manifest.json** for Azure IoT Central.
 
-You will need to **copy** and **paste** the Lab 2 **app_manifest.json** you created to this lab's **app_manifest.json** file.
-
 ---
 
 ## Tutorial Overview
@@ -45,7 +43,7 @@ There are three ways that Azure IoT cloud applications can communicate with devi
 
 [Direct Methods](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods) for communications that require immediate confirmation of the result. Direct methods are often used for interactive control of devices, such as turning on a fan.
 
-[Device Twins](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins) for long-running commands intended to put the device into a certain desired state. For example, set the telemetry send interval to 30 minutes.
+[Device Twins](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins) for long-running commands intended to put the device into a certain desired state. For example, set the sample rate for a sensor to every 30 minutes.
 
 [Cloud-to-device](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-messages-c2d) messages for one-way notifications to the device app.
 
@@ -63,11 +61,18 @@ Both Device Twins and Direct Methods provide a mechanism to invoke functionality
 
 ### Azure IoT Device Twins
 
-Azure IoT Device Twins enable an application to set the *desired* state of a property on a device and have the device *report* back its new state. The advantage of Device Twins is that you can query and make decisions using the cloud side reported state of a device.
+Device twins are JSON documents that store device information including metadata, configurations, and conditions. Azure IoT Hub maintains a device twin for each device that you connect to IoT Hub. Azure IoT Central is an application built on Azure IoT Hub and it uses device twins.
+
+Device twins can be used in two ways.
+
+1. A cloud side application such as Azure IoT Central wants to set the temperature of a refrigerator. To do this, a *desired* property device twin message is sent to the device, the action is implemented, and the device responds with a *reported* property device twin message which is stored in Azure.
+2. A device can send a *reported* property device twin message to Azure, for example, it may report its firmware level on start up, this *reported* state is stored in Azure.
+
+With *reported* state stored in Azure it is possible to query the stored device twin properties cloud side. For example, list all devices with a firmware version less than 2.0, as these devices require an updated. Or, list all refrigerators with a temperature setting greater than 3 degrees celsius.
 
 The following outlines how Azure IoT Central uses Device Twins to set properties on a device:
 
-1. A user sets the value of a property in Azure IoT Central. For example, turn on a light or change the blink rate of an LED.
+1. A user sets the value of a property in Azure IoT Central. For example, change the blink rate of a status LED.
 2. Azure IoT sends a *desired* property message to the device.
 3. The *desired* property is applied to the device; in this case, change the LED blink rate.
 4. The device sends a *reported* property message back to Azure IoT. In this example, the new LED blink rate would be reported.
