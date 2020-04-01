@@ -39,13 +39,13 @@ This lab assumes you have completed [Lab 2: Send Telemetry from an Azure Sphere 
 
 ## Tutorial Overview
 
-There are three ways that Azure IoT cloud applications can communicate with devices. 
+There are three options for Azure IoT cloud to device communications: 
 
-[Direct Methods](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods) for communications that require immediate confirmation of the result. Direct methods are often used for interactive control of devices, such as turning on a fan.
+1. [Direct Methods](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods) for communications that require immediate confirmation of the result. Direct methods are often used for interactive control of devices, such as turning on a fan.
 
-[Device Twins](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins) for long-running commands intended to put the device into a certain desired state. For example, set the sample rate for a sensor to every 30 minutes.
+2. [Device Twins](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins) are for long-running commands intended to put the device into a certain desired state. For example, set the sample rate for a sensor to every 30 minutes.
 
-[Cloud-to-device](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-messages-c2d) messages for one-way notifications to the device app.
+3. [Cloud-to-device](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-messages-c2d) messages are for one-way notifications to the device app.
 
 This lab will cover Azure IoT Device Twins and Direct Methods.
 
@@ -63,20 +63,20 @@ Both Device Twins and Direct Methods provide a mechanism to invoke functionality
 
 ## Azure IoT Device Twins
 
-Device twins are JSON documents that store device information including metadata, configurations, and conditions. Azure IoT Hub keeps a device twin for each device that you connect to IoT Hub. Azure IoT Central is an application built on Azure IoT Hub and it uses device twins. 
+Device twins are JSON documents that store device information, including metadata, configurations, and conditions. Azure IoT Hub keeps a device twin for each device that you connect to IoT Hub. Azure IoT Central is an application built on Azure IoT Hub and it uses device twins to manage properties.
 
 You can use device twins as follows: 
 
 1. Cloud to device updates.
 
-	A user sets an Azure IoT Central device property. For example, to set the temperature of a refrigerator. IoT Central sends a desired property device twin message to the device. The device implements the desire property, and the device responds with a reported property device twin message. Azure IoT Hub stores the reported property. 
+	A user sets an Azure IoT Central device property. For example, to set the temperature of a refrigerator. IoT Central sends a desired property device twin message to the device. The device implements the desired property, and then the device responds with a reported property device twin message. Azure IoT Hub stores the reported property. 
 2. Device to cloud updates.
 
 	A device can send a reported property device twin message to Azure. For example, a device could report its firmware level on startup.  Azure IoT Hub stores the reported property. 
 
 3. Querying reported properties.
 
-	With reported state stored in Azure it is possible to query the stored device twin properties cloud side. For example, list all devices with a firmware version less than 2.0, as these devices require an updated. Or, list all refrigerators with a temperature setting greater than 3 degrees Celsius. 
+	With reported state stored in Azure it is possible to query the stored device twin properties cloud side. For example, list all devices with a firmware version less than 2.0, as these devices require an update. Or, list all refrigerators with a temperature setting higher than 3 degrees Celsius. 
 
 The following outlines how Azure IoT Central uses Device Twins to set properties on a device: 
 
@@ -94,7 +94,7 @@ For more information, refer to the [Understand and use device twins in IoT Hub](
 
 ## Device Twin Bindings
 
-Azure IoT Central properties are implemented using device twins. Device Twin Bindings map a device twin with a device property and a handler function that implements the action.
+Azure IoT Central properties are implemented on Azure IoT Hub device twins. Device Twin Bindings map a device twin with a device property and a handler function that implements the action.
 
 ### Cloud to Device Updates
 
@@ -164,9 +164,9 @@ Azure IoT Central properties are defined in Device templates.
 
 ## Azure IoT Direct Methods
 
-The following outlines how Azure IoT Central Commands uses Direct Methods to for cloud to device control.
+The following outlines how Azure IoT Central Commands uses Azure IoT Hub Direct Methods for cloud to device control.
 
-1. A user invokes an Azure IoT Central Command. An Azure IoT Hub sends a Direct Method message to the device. For example, reset the device. This message includes the method name and an optional payload. 
+1. A user invokes an Azure IoT Central Command. Azure IoT Hub sends a Direct Method message to the device. For example, reset the device. This message includes the method name and an optional payload. 
 2. The device receives the direct method message and calls the associated handler function 
 3. The device implements the direct method; in this case, reset the device. 
 4. The device responds with an HTTP status code, and optionally a response message. 
@@ -182,8 +182,6 @@ For more information, refer to the [Understand and invoke direct methods from Io
 Direct Method Bindings map a direct method with a handler function that implements an action.
 
 ### Cloud to Device Commands
-
-In the following example, when the device receives an Azure IoT Direct Method named **ResetMethod**, the **ResetDirectMethod** handler function will be called.
 
 In main.c the variable named resetDevice of type DirectMethodBinding is declared. This variable maps the Azure IoT Central ResetMethod command property with a handler function named ResetDirectMethod.
 
@@ -204,7 +202,7 @@ Azure IoT Central commands are defined in Device templates.
 2. Click on **Interfaces** to list the interface capabilities.
 3. Scroll down and expand the **ResetMethod** capability.
 4. Review the definition of **ResetMethod**. The capability type is **Command**.
-5. The schema type is **Object**. Click on the **view** button to display the object definition. The Object definition describes the shape of the JSON payload sent with the command. In this example, the shape of the JSON payload is like {"reset_timer":5}.
+5. The schema type is **Object**. Click on the **view** button to display the object definition. The Object definition describes the shape of the JSON payload sent with the command. In this example, the shape of the JSON payload will be the same as this example *{"reset_timer":5}*.
 
 ![](resources/iot-central-device-template-interface-fan1.png)
 
@@ -220,9 +218,7 @@ Azure IoT Central commands are defined in Device templates.
 
 	When the device receives a Direct Method message, the DirectMethodBindings Set is checked for a matching DirectMethodBinding *methodName* name. When a match is found, the associated DirectMethodBinding handler function is called.
 
-3. The device reports to IoT Central the current UTC time of the reset.
-
-	The current UTC time is reported to Azure IoT using a Device Twin Binding property named **DeviceResetUTC**.
+3. The current UTC time is reported to Azure IoT using a Device Twin Binding property named **DeviceResetUTC**.
 
 4. The Direct Method responds back with an HTTP status code and a response message
 
@@ -274,7 +270,7 @@ static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMetho
 
 ## Working with Device Twins and Direct Method Binding
 
-Device Twin and Direct Method Bindings can be automatically opened, dispatched, and closed if they are added to the respective **Sets**.
+Device Twin and Direct Method Bindings can be automatically opened, dispatched, and closed if they are added to the respective **sets**.
 
 ```c
 DeviceTwinBinding* deviceTwinBindingSet[] = { &led1BlinkRate, &buttonPressed, &relay1DeviceTwin, &deviceResetUtc };
@@ -292,11 +288,11 @@ OpenDirectMethodSet(directMethodBindingSet, NELEMS(directMethodBindingSet));
 
 ### Dispatching
 
-When a Device Twin or Direct Method message is received their respective sets is checked for a matching *twinProperty* or *methodName* name. When a match is found, the associated handler function is called.
+When a Device Twin or Direct Method message is received, their respective sets are checked for a matching *twinProperty* or *methodName* name. When a match is found, the associated handler function is called.
 
 ### Closing
 
-The Direct Method Bindings are closed in the **ClosePeripheralsAndHandlers** function found in **main.c**.
+Sets are closed in the **ClosePeripheralsAndHandlers** function found in **main.c**.
 
 ```c
 CloseDeviceTwinSet();
@@ -436,7 +432,7 @@ To start the build, deploy, and debug process, either click the Visual Studio **
 ![](resources/seeed-studio-azure-sphere-mini.png)
 
 1. The green LED closest to the USB connector will start to blink
-2. Given no builtin buttons, virtual **Button A** and **Button B** presses will be generated every 5 seconds. The blink rate will change and **Button Pressed Events** will be generated.
+2. Given no builtin buttons, virtual **Button A** and **Button B** presses will be generated every 5 seconds. The blink rate will change, and a **Button Pressed Event** will be generated.
 
 ---
 
@@ -469,7 +465,7 @@ Select the **Properties** tab, update the **Led Blink Rate [0..4]** field, then 
 4. Set the **Reset Azure Sphere** time in seconds, then click **Run**.
 5. Observer the device rebooting. The LEDs will stop blinking for a few seconds.
     ![](resources/iot-central-device-command-run.png)
-6. Switch back to Visual Studio, the application should have stopped where you set the breakpoint. Step over code <kbd>F10</kbd>, step into code <kbd>F11</kbd>, and continue code execution <kbd>F5</kbd>.
+6. Switch back to Visual Studio. The application execution should have stopped where you set the breakpoint. Step over code <kbd>F10</kbd>, step into code <kbd>F11</kbd>, and continue code execution <kbd>F5</kbd>.
 7. Switch back to Azure IoT Central, and click the **View History** button.
     ![](resources/iot-central-device-command-view-history.png)
 8. The command history will be similar to the following:
