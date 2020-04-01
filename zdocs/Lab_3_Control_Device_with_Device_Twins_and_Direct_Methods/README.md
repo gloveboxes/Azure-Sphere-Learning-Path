@@ -259,25 +259,17 @@ CloseDirectMethodSet();
 
 ## Azure IoT Central Commands
 
-Azure IoT Central command are defined in Device templates.
+Azure IoT Central commands are defined in Device templates.
 
 1. From Azure IoT Central, navigate to **Device template**, and select the **Azure Sphere** template.
 2. Click on **Interfaces** to list the interface capabilities.
 3. Scroll down and expand the **ResetMethod** capability.
 4. Review the definition of **ResetMethod**. The capability type is **Command**.
-5. The ResetMethod schema type is **Object**. Clicking on the **view** button will display the object definition. 
+5. The schema type is **Object**. Click on the **view** button to display the object definition. 
 
-	The Object definition describes the shape of the JSON payload sent when the Direct Method is invoked. In this example, the shape of the JSON payload is like {"reset_timer":5}.
+	The Object definition describes the shape of the JSON payload sent with the command. In this example, the shape of the JSON payload is like {"reset_timer":5}.
 
 	![](resources/iot-central-device-template-interface-fan1.png)
-
-<!-- ### ResetMethod Object Schema
-
-The **ResetMethod** schema is of type **Object**. Clicking on the **view** button will display the object definition. The Object definition describes the shape of the JSON payload sent when the Direct Method is invoked.
-
-The **ResetMethod** handler function expects a JSON payload shaped like this {"reset_timer":5}.
-
-![](resources/iot-central-device-template-interface-command-schema.png) -->
 
 ---
 
