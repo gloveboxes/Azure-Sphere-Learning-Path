@@ -269,7 +269,7 @@ Azure IoT Central command are defined in Device templates.
 
 	The Object definition describes the shape of the JSON payload sent when the Direct Method is invoked. In this example, the shape of the JSON payload is like {"reset_timer":5}.
 
-![](resources/iot-central-device-template-interface-fan1.png)
+	![](resources/iot-central-device-template-interface-fan1.png)
 
 <!-- ### ResetMethod Object Schema
 
