@@ -245,18 +245,10 @@ if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, cstrJsonEvent, cstrEvtButtonA) > 0) 
 }
 ```
 
-
 These events are mapped to the following JSON formatted messages sent from the Azure Sphere:
 
 * { "ButtonA": "occurred" }
 * { "ButtonB": "occurred" }
-
-### Step 3: Displaying Azure IoT Central Events
-
-These events are displayed in the Azure Sphere template from under the Telemetry panel.
-
-![](resources/iot-central-display-events.png)
-
 
 ---
 
@@ -436,7 +428,7 @@ You need to **Migrate** the newly enrolled device to the **Azure Sphere** templa
 
 ---
 
-### Step 5: Display the Azure Sphere device telemetry
+## Step 5: Display the Azure Sphere device telemetry
 
 1. Click **Devices** on the sidebar.
 2. Select the **Azure Sphere** template.
@@ -445,6 +437,20 @@ You need to **Migrate** the newly enrolled device to the **Azure Sphere** templa
 5. Optionally, you can rename your device. Click the **Rename** button and give your device a friendly name.
 
 ![](resources/iot-central-display-measurements.png)
+
+---
+
+## Step 6: Displaying Azure IoT Central Events
+
+1. Select the **Devices**, then the **Azure Sphere** template, then your device.
+2. Select the **Telemetry** tab.
+3. For Azure Sphere devices with builtin buttons, press **Button A** and **Button B** repeatedly to generate button alerts. 
+
+	>Virtual button press events are generated for Azure Sphere devices that do not have builtin buttons. 
+
+Azure IoT Central does not update immediately. It may take a minute or two for temperature, humidity, button pressed alerts, and message count to be displayed.
+
+![](resources/iot-central-display-events.png)
 
 ---
 
