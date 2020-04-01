@@ -109,7 +109,7 @@ static DeviceTwinBinding led1BlinkRate = {
 ```
 
 
-The following is the **DeviceTwinBlinkRateHandler** implementation. The handler function is called when the device receives a **LedBlinkRate** device twin desired property message from Azure IoT Central.
+The following is the **DeviceTwinBlinkRateHandler** implementation. The handler function is called when the device receives a **LedBlinkRate** desired property message from Azure IoT Central.
 
 ```c
 /// <summary>
@@ -132,7 +132,7 @@ static void DeviceTwinBlinkRateHandler(DeviceTwinBinding* deviceTwinBinding) {
 
 ### Device to Cloud Updates
 
-You can also define a Device to Cloud DeviceTwinBinding. The following example binds the Device Twin property ButtonPressed. Note, there is no handler function registered as this is a one-way device to cloud binding.
+The following example declares a ButtonPressed device twin property of type string. There is no handler function registered as this is a one-way device to cloud binding.
 
 ```c
 static DeviceTwinBinding buttonPressed = { 
@@ -141,7 +141,7 @@ static DeviceTwinBinding buttonPressed = {
 };
 ```
 
-To update the Device Twin, call the DeviceTwinReportState function. You must pass in a value of the correct type, in this case, **TYPE_STRING** (aka char*). This example can be found in the **ButtonPressCheckHandler** handler function found in **main.c**.
+The ButtonPressed property is reported to IoT Central by calling the DeviceTwinReportState function. You must pass a property of the correct type.
 
 ```c
 DeviceTwinReportState(&buttonPressed, "ButtonA");   // TwinType = TYPE_STRING
@@ -149,7 +149,7 @@ DeviceTwinReportState(&buttonPressed, "ButtonA");   // TwinType = TYPE_STRING
 
 ---
 
-## Device Twin Bindings life cycle
+## Managing Device Twin Bindings
 
 Device Twin Bindings can be automatically opened, dispatched, and closed if they are added to the deviceTwinDevices **Set**.
 
@@ -179,7 +179,9 @@ CloseDeviceTwinSet();
 
 ---
 
-## Azure IoT Central Interface Properties
+## Azure IoT Central Properties
+
+Azure IoT Central properties are defined in Device templates.  
 
 1. From Azure IoT Central, navigate to **Device template**, and select the **Azure Sphere** template.
 2. Click on **Interfaces** to list the interface capabilities.
@@ -210,9 +212,9 @@ For more information, refer to the [Understand and invoke direct methods from Io
 
 ## Direct Method Bindings
 
-Azure IoT Central commands are implemented using direct methods. Direct Method Bindings map a direct method with a handler function that implements the action.
+Azure IoT Hub Direct Methods are used to implement IoT Central commands. Direct Method Bindings map a direct method with a handler function that implements the action.
 
-### Declaring a Direct Method Binding
+### Cloud to Device Commands
 
 In the following example, when the device receives an Azure IoT Direct Method named **ResetMethod**, the **ResetDirectMethod** handler function will be called.
 
@@ -225,9 +227,9 @@ static DirectMethodBinding resetDevice = {
 
 ---
 
-## Opening, Dispatching, and Closing Direct Method Bindings
+## Managing Direct Method Bindings
 
-Like Peripherals, Timers, and Device Twin Bindings, Direct Method Bindings can be automatically opened, dispatched, and closed if they are added to the directMethodBindings array. Direct Method Bindings added to the **directMethodBindings array** are referred to as a **set** of direct method bindings.
+Direct Method Bindings can be automatically opened, dispatched, and closed if they are added to the directMethodBindingSet Set.
 
 ```c
 DirectMethodBinding* directMethodBindingSet[] = { &resetDevice };
@@ -243,7 +245,7 @@ OpenDirectMethodSet(directMethodBindingSet, NELEMS(directMethodBindingSet));
 
 ### Dispatching
 
-When a Direct Method message is received the DirectMethodBindings Set is checked for a matching DirectMethodBinding *methodName* name. When a match is found, the DirectMethodBinding handler function is called.
+When a Direct Method message is received the DirectMethodBindings Set is checked for a matching DirectMethodBinding methodName name. When a match is found, the DirectMethodBinding handler function is called.
 
 ### Closing
 
@@ -255,33 +257,43 @@ CloseDirectMethodSet();
 
 ---
 
-## Mapping Direct Method Bindings to Azure IoT Central Interface Command
+## Azure IoT Central Commands
 
-Azure IoT Central application template interface includes a command capability. The command capability defines a display name, a command named **ResetMethod**, and schema information. The command name maps to the DirectMethodBinding **methodName**.
+Azure IoT Central command are defined in Device templates.
 
-From your web browser, switch back to the Azure IoT Central application and explore the Azure Sphere Device Template and the Interfaces.
+1. From Azure IoT Central, navigate to **Device template**, and select the **Azure Sphere** template.
+2. Click on **Interfaces** to list the interface capabilities.
+3. Scroll down and expand the **ResetMethod** capability.
+4. Review the definition of **ResetMethod**. The capability type is **Command**.
+5. The ResetMethod schema type is **Object**. Clicking on the **view** button will display the object definition. 
+
+	The Object definition describes the shape of the JSON payload sent when the Direct Method is invoked. In this example, the shape of the JSON payload is like {"reset_timer":5}.
 
 ![](resources/iot-central-device-template-interface-fan1.png)
 
-#### ResetMethod Object Schema
+<!-- ### ResetMethod Object Schema
 
 The **ResetMethod** schema is of type **Object**. Clicking on the **view** button will display the object definition. The Object definition describes the shape of the JSON payload sent when the Direct Method is invoked.
 
 The **ResetMethod** handler function expects a JSON payload shaped like this {"reset_timer":5}.
 
-![](resources/iot-central-device-template-interface-command-schema.png)
+![](resources/iot-central-device-template-interface-command-schema.png) -->
 
 ---
 
 ## Direct Method Handler Function
 
-The following outlines how the **ResetDirectMethod** handler function found in **main.c** works:
+1. From Azure IoT Central, a user invokes the **Reset Azure Sphere** command. 
 
-1. From Azure IoT Central, a user invokes the **Reset Azure Sphere** command. A Direct Method named **ResetMethod**, along with a JSON payload, is sent to the device. The JSON payload *{"reset_timer":5}* specifies how many seconds to wait before resetting the device.
+	A Direct Method named **ResetMethod**, along with a JSON payload, is sent to the device. The JSON payload *{"reset_timer":5}* specifies how many seconds to wait before resetting the device.
 
-2. When the device receives a Direct Method message, the DirectMethodBindings Set is checked for a matching DirectMethodBinding *methodName* name. When a match is found, the associated DirectMethodBinding handler function is called.
+2. The ResetDirectMethod function handler is called.
 
-3. The current UTC time is reported to Azure IoT using a Device Twin Binding property named **DeviceResetUTC**.
+	When the device receives a Direct Method message, the DirectMethodBindings Set is checked for a matching DirectMethodBinding *methodName* name. When a match is found, the associated DirectMethodBinding handler function is called.
+
+3. The device reports to IoT Central the current UTC time of the reset.
+
+	The current UTC time is reported to Azure IoT using a Device Twin Binding property named **DeviceResetUTC**.
 
 4. The Direct Method responds back with an HTTP status code and a response message
 
