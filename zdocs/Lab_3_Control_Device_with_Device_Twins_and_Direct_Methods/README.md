@@ -65,7 +65,7 @@ Both Device Twins and Direct Methods provide a mechanism to invoke functionality
 
 Device twins are JSON documents that store device information including metadata, configurations, and conditions. Azure IoT Hub keeps a device twin for each device that you connect to IoT Hub. Azure IoT Central is an application built on Azure IoT Hub and it uses device twins. 
 
-You can use device twins in two ways. 
+You can use device twins as follows: 
 
 1. Cloud to device updates.
 
@@ -74,7 +74,9 @@ You can use device twins in two ways.
 
 	A device can send a reported property device twin message to Azure. For example, it may report its firmware level on startup.  Azure IoT Hub stores the reported property. 
 
-With reported state stored in Azure it is possible to query the stored device twin properties cloud side. For example, list all devices with a firmware version less than 2.0, as these devices require an updated. Or, list all refrigerators with a temperature setting greater than 3 degrees Celsius. 
+3. Querying reported properties.
+
+	With reported state stored in Azure it is possible to query the stored device twin properties cloud side. For example, list all devices with a firmware version less than 2.0, as these devices require an updated. Or, list all refrigerators with a temperature setting greater than 3 degrees Celsius. 
 
 The following outlines how Azure IoT Central uses Device Twins to set properties on a device: 
 
