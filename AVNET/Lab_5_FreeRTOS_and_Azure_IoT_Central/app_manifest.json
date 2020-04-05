@@ -14,7 +14,7 @@
     "Adc": [ "$AVNET_MT3620_SK_ADC_CONTROLLER0" ],
     "PowerControls": [ "ForceReboot" ],
     "AllowedConnections": [ "global.azure-devices-provisioning.net", "<Replace with your Azure IoT Central URI>" ],
-    "DeviceAuthentication": "00000000-0000-0000-0000-000000000000",
+    "DeviceAuthentication": "<Replace with your Azure Sphere Tenant ID>",
     "AllowedApplicationConnections": [ "6583cf17-d321-4d72-8283-0b7c5b56442b" ]
   },
   "ApplicationType": "Default"

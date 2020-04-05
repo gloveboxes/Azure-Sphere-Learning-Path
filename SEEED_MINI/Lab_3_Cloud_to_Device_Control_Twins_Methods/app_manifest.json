@@ -3,7 +3,7 @@
   "Name": "AzureSphereIoTCentral",
   "ComponentId": "25025d2c-66da-4448-bae1-ac26fcdd3627",
   "EntryPoint": "/bin/app",
-  "CmdArgs": [ "<Replace with your ID Scope>", "6583cf17-d321-4d72-8283-0b7c5b56442b" ],
+  "CmdArgs": [ "<Replace with your ID Scope>" ],
   "Capabilities": {
     "Gpio": [
       "$BUTTON_A",
@@ -15,8 +15,7 @@
     ],
     "PowerControls": [ "ForceReboot" ],
     "AllowedConnections": [ "global.azure-devices-provisioning.net", "<Replace with your Azure IoT Central URI>" ],
-    "DeviceAuthentication": "00000000-0000-0000-0000-000000000000",
-    "AllowedApplicationConnections": [ "6583cf17-d321-4d72-8283-0b7c5b56442b" ]
+    "DeviceAuthentication": "<Replace with your Azure Sphere Tenant ID>"
   },
   "ApplicationType": "Default"
 }
