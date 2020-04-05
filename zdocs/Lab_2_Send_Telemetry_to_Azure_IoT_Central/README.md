@@ -279,7 +279,7 @@ These events are mapped to the following JSON formatted messages sent from the A
 3. Update the network endpoint whitelist with your Azure IoT Central Application URL.
     * Update **AllowedConnections** with your **Azure IoT Central Application URL**.
 
-4. **Review** your manifest_app.json file. It should look similar to the following when you have updated it.
+4. **Review** your updated manifest_app.json file. It should look similar to the following.
 
     ```json
     {
@@ -287,7 +287,7 @@ These events are mapped to the following JSON formatted messages sent from the A
         "Name": "AzureSphereIoTCentral",
         "ComponentId": "25025d2c-66da-4448-bae1-ac26fcdd3627",
         "EntryPoint": "/bin/app",
-        "CmdArgs": [ "0ne0099999D", "6583cf17-d321-4d72-8283-0b7c5b56442b" ],
+        "CmdArgs": [ "0ne0099999D" ],
         "Capabilities": {
             "Gpio": [
             "$BUTTON_A",
@@ -301,8 +301,7 @@ These events are mapped to the following JSON formatted messages sent from the A
             "Adc": [ "$AVNET_MT3620_SK_ADC_CONTROLLER0" ],
             "PowerControls": [ "ForceReboot" ],
             "AllowedConnections": [ "global.azure-devices-provisioning.net", "saas-iothub-99999999-f33a-9999-a44a-7c99999900b6.azure-devices.net" ],
-            "DeviceAuthentication": "9d7e79eb-9999-43ce-9999-fa8888888894",
-            "AllowedApplicationConnections": [ "6583cf17-d321-4d72-8283-0b7c5b56442b" ]
+            "DeviceAuthentication": "9d7e79eb-9999-43ce-9999-fa8888888894"
         },
         "ApplicationType": "Default"
     }

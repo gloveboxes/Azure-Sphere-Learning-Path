@@ -89,14 +89,18 @@ In this lab, we are going to deploy a High-Level application that will accept ev
   "Name": "AzureSphereIoTCentral",
   "ComponentId": "25025d2c-66da-4448-bae1-ac26fcdd3627",
   "EntryPoint": "/bin/app",
-  "CmdArgs": [ "Real", "<Relplace with your Scope ID>", "6583cf17-d321-4d72-8283-0b7c5b56442b" ],
+  "CmdArgs": [ "<Replace with your ID Scope>", "6583cf17-d321-4d72-8283-0b7c5b56442b" ],
   "Capabilities": {
-    "Gpio": [ "$AVNET_MT3620_SK_GPIO0", "$AVNET_MT3620_SK_APP_STATUS_LED_YELLOW", "$AVNET_MT3620_SK_WLAN_STATUS_LED_YELLOW" ],
-    "Uart": [],
+    "Gpio": [
+      "$LED2",
+      "$NETWORK_CONNECTED_LED",
+      "$RELAY"
+    ],
     "I2cMaster": [ "$AVNET_MT3620_SK_ISU2_I2C" ],
     "Adc": [ "$AVNET_MT3620_SK_ADC_CONTROLLER0" ],
+    "PowerControls": [ "ForceReboot" ],
     "AllowedConnections": [ "global.azure-devices-provisioning.net", "<Replace with your Azure IoT Central URI>" ],
-    "DeviceAuthentication": "00000000-0000-0000-0000-000000000000",
+    "DeviceAuthentication": "<Replace with your Azure Sphere Tenant ID>",
     "AllowedApplicationConnections": [ "6583cf17-d321-4d72-8283-0b7c5b56442b" ]
   },
   "ApplicationType": "Default"

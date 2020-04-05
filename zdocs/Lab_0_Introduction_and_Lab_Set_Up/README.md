@@ -290,6 +290,24 @@ From the **Azure Sphere Developer Command Prompt**, run
 azsphere device enable-development
 ```
 
+---
+
+### Step 11: Enable Real-Time Core Debugging
+
+Run the **Azure Sphere Developer Command Prompt** as **Administrator**.
+
+1. Press the <kbd>Windows Key</kbd>
+2. Start typing **Azure Sphere Developer Command Prompt**
+3. Select **Run as administrator**
+![](resources/azure-sphere-command-prompt-as-administrator.png)
+4. **Enable Real-Time core debugging**
+
+    ```bash
+    azsphere device enable-development -r
+    ```
+
+5. Exit the command prompt. Type **exit**, and then press return.
+
 <!-- ---
 
 ## Azure Sphere Devices
