@@ -212,23 +212,23 @@ From the **Azure Sphere Developer Command Prompt**:
     azsphere device wifi scan
     ```
 
-
-2. List the existing WiFi network connections. Run
-
-    ```bash
-    azsphere device wifi list
-    ```
-
-3. To add a new WiFi network connection. Run
+2. To add a new WiFi network connection. Run
 
     ```bash
     azsphere device wifi add -s <Your WiFi SSID> -p <Your WiFI Password>
     ```
 
-4. Check WiFi connection status. Run
+3. Check WiFi connection status. Run
 
     ```bash
     azsphere device wifi show-status
+    ```
+
+    
+4. List the existing WiFi network connections. Run
+
+    ```bash
+    azsphere device wifi list
     ```
 
 For more information on networking, visit [Configure the Azure Sphere WiFi Settings](https://docs.microsoft.com/en-au/azure-sphere/install/configure-wifi?WT.mc_id=github-blog-dglover)
