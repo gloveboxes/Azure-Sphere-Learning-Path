@@ -206,19 +206,26 @@ For more information visit [Claim your Azure Sphere device](https://docs.microso
 
 From the **Azure Sphere Developer Command Prompt**:
 
-1. List the existing WiFi network connections. Run
+1. Scan for WiFi Access Points
+
+    ```bash
+    azsphere device wifi scan
+    ```
+
+
+2. List the existing WiFi network connections. Run
 
     ```bash
     azsphere device wifi list
     ```
 
-2. To add a new WiFi network connection. Run
+3. To add a new WiFi network connection. Run
 
     ```bash
     azsphere device wifi add -s <Your WiFi SSID> -p <Your WiFI Password>
     ```
 
-3. Check WiFi connection status. Run
+4. Check WiFi connection status. Run
 
     ```bash
     azsphere device wifi show-status
