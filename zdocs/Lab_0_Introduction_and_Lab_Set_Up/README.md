@@ -237,7 +237,7 @@ For more information on networking, visit [Configure the Azure Sphere WiFi Setti
 
 ## Step 7: Update Azure Sphere OS
 
-As of March 2020, your device should be version **20.03** or better.
+As of April 2020, your device should be version **20.03** or better.
 
 From the **Azure Sphere Developer Command Prompt**:
 
