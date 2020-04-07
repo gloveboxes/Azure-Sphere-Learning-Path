@@ -128,9 +128,19 @@ Lab directories are named by Azure Sphere device manufacturer.
 
 ## Step 4: Set up Azure Sphere Tenant and Login
 
+### Azure Sphere Developer Command Prompt
+
+To start the Azure Sphere Developer Command prompt
+
+1. Press the <kbd>Windows Key</kbd>
+2. Start typing **Azure Sphere Developer Command Prompt**
+3. Select and start the **Azure Sphere Developer Command Prompt**.
+
 ### Create a new Tenant User
 
 **Skip this step if you are using a lab device or you have already claimed your Azure Sphere.**
+
+From the **Azure Sphere Developer Command Prompt**:
 
 ```bash
 azsphere login --newuser <email@address.com>
@@ -139,6 +149,8 @@ azsphere login --newuser <email@address.com>
 ### Create a new Tenant
 
 **Skip this step if you are using a lab device or you have already claimed your Azure Sphere.**
+
+From the **Azure Sphere Developer Command Prompt**:
 
 ```bash
 azsphere tenant create <tenant_name>
@@ -150,11 +162,7 @@ You will need the credentials for the Azure Sphere Tenant your device was claime
 
 If you are using a lab device, then the lab instructor will provide you with the credentials.
 
-1. Start the **Azure Sphere Developer Command Prompt**
-	1. Press the <kbd>Windows Key</kbd>
-	2. Start typing **Azure Sphere Developer Command Prompt**
-	3. Select and start the **Azure Sphere Developer Command Prompt**.
-2. From the **Azure Sphere Developer Command Prompt**, run
+From the **Azure Sphere Developer Command Prompt**:
 
     ```bash
     azsphere login
