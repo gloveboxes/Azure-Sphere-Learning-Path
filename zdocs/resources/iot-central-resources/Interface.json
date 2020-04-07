@@ -88,7 +88,7 @@
       "schema": "string"
     },
     {
-      "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mq:buttonA:2",
+      "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mq:ButtonA:2",
       "@type": [
         "Telemetry",
         "SemanticType/Event"
@@ -96,11 +96,11 @@
       "displayName": {
         "en": "Button A Alert"
       },
-      "name": "buttonA",
+      "name": "ButtonA",
       "schema": "string"
     },
     {
-      "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mq:buttonB:2",
+      "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mq:ButtonB:2",
       "@type": [
         "Telemetry",
         "SemanticType/Event"
@@ -108,7 +108,7 @@
       "displayName": {
         "en": "Button B Alert"
       },
-      "name": "buttonB",
+      "name": "ButtonB",
       "schema": "string"
     },
     {

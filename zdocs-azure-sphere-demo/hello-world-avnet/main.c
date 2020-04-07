@@ -19,23 +19,19 @@
 // Forward signatures
 static void ReadSensorHandler(EventLoopTimer* eventLoopTimer);
 static void SensorSampleRate(DeviceTwinBinding* deviceTwinBinding);
+static void led1ControlHandler(DeviceTwinBinding* deviceTwinBinding);
 
 // Variables
 static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 
-static Peripheral led1 = {
-	.pin = RELAY,
-	.direction = OUTPUT,
-	.initialState = GPIO_Value_Low,
-	.invertPin = true,
-	.initialise = OpenPeripheral,
-	.name = "led1"
-};
+
 
 // Sets
 static Timer* timerSet[] = { };
 static Peripheral* peripheralSet[] = { };
 static DeviceTwinBinding* deviceTwinBindingSet[] = { };
+
+
 
 
 
@@ -45,6 +41,7 @@ static int InitPeripheralsAndHandlers(void) {
 	OpenPeripheralSet(peripheralSet, NELEMS(peripheralSet));
 	OpenDeviceTwinSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
 	StartTimerSet(timerSet, NELEMS(timerSet));
+	StartCloudToDevice();
 
 	return 0;
 }

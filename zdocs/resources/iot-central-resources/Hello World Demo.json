@@ -1,0 +1,80 @@
+{
+  "@id": "urn:HelloWorldDemoDeveloperLearningPath:HelloWorldDemo_4wm:1",
+  "@type": "CapabilityModel",
+  "implements": [
+    {
+      "@id": "urn:HelloWorldDemoDeveloperLearningPath:HelloWorldDemo_4wm:z_8gjxlqe:1",
+      "@type": "InterfaceInstance",
+      "name": "Interface_29k",
+      "schema": {
+        "@id": "urn:HelloWorldDemoDeveloperLearningPath:HelloWorldDemo_7mq:3",
+        "@type": "Interface",
+        "displayName": {
+          "en": "Interface"
+        },
+        "contents": [
+          {
+            "@id": "urn:HelloWorldDemoDeveloperLearningPath:HelloWorldDemo_7mq:Temperature:1",
+            "@type": [
+              "Telemetry",
+              "SemanticType/Temperature"
+            ],
+            "displayName": {
+              "en": "Temperature"
+            },
+            "name": "Temperature",
+            "displayUnit": {
+              "en": "C"
+            },
+            "schema": "float",
+            "unit": "Units/Temperature/celsius"
+          },
+          {
+            "@id": "urn:HelloWorldDemoDeveloperLearningPath:HelloWorldDemo_7mq:Humidity:1",
+            "@type": [
+              "Telemetry",
+              "SemanticType/Humidity"
+            ],
+            "displayName": {
+              "en": "Humidity"
+            },
+            "name": "Humidity",
+            "displayUnit": {
+              "en": "%"
+            },
+            "schema": "float",
+            "unit": "Units/Humidity/percent"
+          },
+          {
+            "@id": "urn:HelloWorldDemoDeveloperLearningPath:HelloWorldDemo_7mq:MsgId:1",
+            "@type": "Telemetry",
+            "displayName": {
+              "en": "Msg Id"
+            },
+            "name": "MsgId",
+            "displayUnit": {
+              "en": "Int"
+            },
+            "schema": "integer"
+          },
+          {
+            "@id": "urn:HelloWorldDemoDeveloperLearningPath:HelloWorldDemo_7mq:relay1:1",
+            "@type": "Property",
+            "displayName": {
+              "en": "Relay1"
+            },
+            "name": "Relay1",
+            "writable": true,
+            "schema": "boolean"
+          }          
+        ]
+      }
+    }
+  ],
+  "displayName": {
+    "en": "Azure Sphere"
+  },
+  "@context": [
+    "http://azureiot.com/v1/contexts/IoTModel.json"
+  ]
+}

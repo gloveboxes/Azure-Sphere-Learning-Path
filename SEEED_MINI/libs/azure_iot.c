@@ -55,6 +55,9 @@ void AzureCloudToDeviceHandler(EventLoopTimer* eventLoopTimer) {
 	if (iothubClientHandle != NULL) {
 		IoTHubDeviceClient_LL_DoWork(iothubClientHandle);
 	}
+	else {
+		ConnectToAzureIot();
+	}
 }
 
 bool SendMsg(const char* msg) {
