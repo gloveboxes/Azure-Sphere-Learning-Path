@@ -153,7 +153,7 @@ azsphere login --newuser <email@address.com>
 From the **Azure Sphere Developer Command Prompt**:
 
 ```bash
-azsphere tenant create <tenant_name>
+azsphere tenant create -n <tenant_name>
 ```
 
 ### Login to your Azure Sphere Tenant
@@ -252,19 +252,19 @@ From the **Azure Sphere Developer Command Prompt**:
 1. Check the device OS version
 
     ```bash
-    azsphere dev show-os-version
+    azsphere device show-os-version
     ```
 
 2. If the device is not up to date, then restart to trigger the update process. Run
 
     ```bash
-    azsphere dev restart
+    azsphere device restart
     ```
 
 3. It will take a few minutes for the update to be applied. Then recheck the OS version.
 
     ```bash
-    azsphere dev show-os-version
+    azsphere device show-os-version
     ```
 
 ---
