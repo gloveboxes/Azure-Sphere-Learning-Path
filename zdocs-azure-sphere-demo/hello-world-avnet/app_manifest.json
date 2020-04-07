@@ -3,14 +3,14 @@
   "Name": "AzureSphereIoTCentral",
   "ComponentId": "25025d2c-66da-4448-bae1-ac26fcdd3627",
   "EntryPoint": "/bin/app",
-  "CmdArgs": [ "0ne000BDC00" ],
+  "CmdArgs": [ "<Replace with your ID Scope>" ],
   "Capabilities": {
     "Gpio": [ "$LED1", "$RELAY" ],
     "I2cMaster": [ "$AVNET_MT3620_SK_ISU2_I2C" ],
     "Adc": [ "$AVNET_MT3620_SK_ADC_CONTROLLER0" ],
     "PowerControls": [ "ForceReboot" ],
-    "AllowedConnections": [ "global.azure-devices-provisioning.net", "iotc-088280bc-3305-4cba-885e-6573fc4cf701.azure-devices.net" ],
-    "DeviceAuthentication": "9d7e79eb-e021-43ce-9f2b-fa944b447494"
+    "AllowedConnections": [ "global.azure-devices-provisioning.net", "<Replace with your Azure IoT Central URI>" ],
+    "DeviceAuthentication": "<Replace with your Azure Sphere Tenant ID>"
   },
   "ApplicationType": "Default"
 }
