@@ -164,9 +164,9 @@ If you are using a lab device, then the lab instructor will provide you with the
 
 From the **Azure Sphere Developer Command Prompt**:
 
-    ```bash
-    azsphere login
-    ```
+```bash
+azsphere login
+```
 
 You will be prompted for the Azure Sphere Tenant credentials.
 
