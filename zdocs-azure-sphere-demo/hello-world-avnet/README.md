@@ -17,6 +17,7 @@ Introduce hello world demo project structure
 
 ## Step 1: Streaming Telemetry
 
+```c
 // Timer
 static Timer readSensorTimer = {
 	.period = { 5, 0 },
@@ -36,9 +37,11 @@ static void ReadSensorHandler(EventLoopTimer* eventLoopTimer) {
 		DeviceTwinReportState(&lastReadUtc_D2C_DeviceTwin, GetCurrentUtc(msgBuffer, sizeof(msgBuffer)));
 	}
 }
+```
 
 ## Step 2: Open Single pin peripheral
 
+```c
 static Peripheral led1 = {
 	.pin = RELAY,
 	.direction = OUTPUT,
@@ -47,9 +50,11 @@ static Peripheral led1 = {
 	.initialise = OpenPeripheral,
 	.name = "led1"
 };
+```
 
 ## Step 3 Device Twins
 
+```c
 // Cloud to Device
 static DeviceTwinBinding led1_C2D_DeviceTwin = {
 	.twinProperty = "Relay1",
@@ -62,9 +67,11 @@ static DeviceTwinBinding lastReadUtc_D2C_DeviceTwin = {
 	.twinProperty = "LastReadUTC",
 	.twinType = TYPE_STRING
 };
+```
 
 ## Step 4: Device Twin - Cloud to Device
 
+```c
 static void led1ControlHandler(DeviceTwinBinding* deviceTwinBinding) {
 
 	if (*(bool*)deviceTwinBinding->twinState) {
@@ -74,14 +81,16 @@ static void led1ControlHandler(DeviceTwinBinding* deviceTwinBinding) {
 		Gpio_Off(&led1);
 	}
 }
+```
 
 ## Step 5: Sets
 
+```c
 // Sets
 static Timer* timerSet[] = { &readSensorTimer };
 static Peripheral* peripheralSet[] = { &led1 };
 static DeviceTwinBinding* deviceTwinBindingSet[] = { &led1_C2D_DeviceTwin, &lastReadUtc_D2C_DeviceTwin };
-
+```
 
 ## Step 6: Build, Deploy, Debug
 
