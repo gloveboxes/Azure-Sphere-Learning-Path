@@ -76,7 +76,7 @@ We are going to create an Azure IoT Central application from an application temp
 
 For this lab, we are going to create an Azure IoT Central Application from a predefined template.
 
-Right mouse click [Azure Sphere Learning Path Azure IoT Central Template](https://apps.azureiotcentral.com/build/new/dba50ef5-fb7d-4260-8a5e-a4592677af4f) to open the link in a new browser tab.
+So the lab instructions are still visible, right mouse click, and **open link in a new window** the following link "[Azure Sphere Learning Path Azure IoT Central Template](https://apps.azureiotcentral.com/build/new/dba50ef5-fb7d-4260-8a5e-a4592677af4f)".
 
 ### Configure the Azure IoT Central Template
 
@@ -93,6 +93,23 @@ Right mouse click [Azure Sphere Learning Path Azure IoT Central Template](https:
 
 <!-- Follow instructions to **[Create an Azure IoT Central Application](resources/azure-iot-central/azure-iot-central.md)** -->
 
+
+---
+
+## Step 2: Explore Azure IoT Central
+
+1. Explore the IoT Central application has been provisioned. This is the default IoT Central Dashboard.
+
+    ![](resources/iot-central-default-view.png)
+
+2. Click the **Expand Side Navigation** button to expand the IoT Central menus. 
+
+    ![](resources/iot-central-default-view-expand-navigation.png)
+
+    The IoT Central dashboard with expanded menus will look like the following.
+
+    ![](resources/iot-central-default-dashboard-expand-navigation.png)
+
 ---
 
 ## Step 2: Trust all devices in your Azure Sphere Tenant
@@ -104,6 +121,7 @@ After you have completed this step, any device that is claimed by your Azure Sph
 ### Download the tenant authentication CA certificate
 
 1. Open an **Azure Sphere Developer Command Prompt**
+2. Be sure to make a note of the current directory, or change to the Azure Sphere Learning path directory. You will need the name of this directory in the next step. 
 2. Download the Certificate Authority (CA) certificate for your Azure Sphere tenant:
 
     ```bash
@@ -116,7 +134,7 @@ After you have completed this step, any device that is claimed by your Azure Sph
 
 1. In Azure IoT Central, go to Administration > Device Connection > Manage primary certificate.
 
-2. Click the folder icon next to the Primary box and navigate to the certificate you downloaded. If you don't see the .cer file in the list, make sure that the view filter is set to All files (*). Select the certificate and then click the gear icon next to the Primary box.
+2. Click the folder icon next to the Primary box and navigate to the directory where you downloaded the certificate. If you don't see the .cer file in the list, make sure that the view filter is set to All files (*). Select the certificate and then click the gear icon next to the Primary box.
 
 3. The Primary Certificate dialog box appears. The Subject and Thumbprint fields contain information about the current Azure Sphere tenant and primary root certificate.
 
@@ -175,7 +193,7 @@ This returns the **Device ID** and converts it to lowercase. Azure IoT Central r
 
     ![](resources/iot-central-create-new-device.png)
 
-### Get the Azure IoT Central Application URL to Whitelist
+### Display the Device Connection information
 
 1. Open the newly created device by clicking on the device name.
     ![](resources/iot-central-open-new-device.png)
@@ -183,15 +201,19 @@ This returns the **Device ID** and converts it to lowercase. Azure IoT Central r
     ![](resources/iot-central-open-connect.png)
 3. The device connection configuration will be displayed.
     ![](resources/iot-central-device-connection-information.png)
-4. **Right mouse click** and open the [Azure IoT Central Application URL](https://azuredps.z23.web.core.windows.net) in a **new browser tab**.
+4. From the Device connection page, copy the ID Scope, Device ID, and Primary Key to Notepad.
 
-5. Copy and paste the **Device Connection** information (Scope, Device Id, and Key) from Azure IoT Central to the **Azure IoT Central Application URL** web page.
+### Get the Azure IoT Central Application URL to Whitelist
 
-6. Click **Get Azure IoT Central Application URL**
+1. **Right mouse click** and open this link "[Azure IoT Central Application URL](https://azuredps.z23.web.core.windows.net)" in a **new browser window**.
+
+2. Copy and paste the **Device Connection** information (ID Scope, Device Id, and Primary Key) from Notepad to the **Azure IoT Central Application URL** web page.
+
+3. Click **Get Azure IoT Central Application URL**
 
     ![](resources/iot-central-generate-connection-string.png)
 
-7. Leave this page open as you will need the Azure IoT Central Application URL soon.
+4. Leave this page open as you will need the Azure IoT Central Application URL soon.
 
 ### Step 4: Get the Azure Sphere Tenant ID
 
