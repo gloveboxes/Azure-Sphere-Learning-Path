@@ -459,7 +459,7 @@ You need to **Migrate** the newly enrolled device to the **Azure Sphere** templa
 2. Select the **Azure Sphere** template.
 3. Click on the migrated device.
 4. Select the **Telemetry** tab to view the device telemetry.
-5. Optionally, you can rename your device. Click the **Rename** button and give your device a friendly name.
+5. Rename your device. Click the **Rename** button and give your device a friendly name.
 
 ![](resources/iot-central-display-measurements.png)
 
