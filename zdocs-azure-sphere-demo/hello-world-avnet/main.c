@@ -18,7 +18,6 @@
 
 // Forward signatures
 static void ReadSensorHandler(EventLoopTimer* eventLoopTimer);
-static void SensorSampleRate(DeviceTwinBinding* deviceTwinBinding);
 static void led1ControlHandler(DeviceTwinBinding* deviceTwinBinding);
 
 // Variables
@@ -27,9 +26,9 @@ static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 
 
 // Sets
-static Timer* timerSet[] = { };
+static Timer* timerSet[] = {  };
 static Peripheral* peripheralSet[] = { };
-static DeviceTwinBinding* deviceTwinBindingSet[] = { };
+static DeviceTwinBinding* deviceTwinBindingSet[] = {  };
 
 
 
