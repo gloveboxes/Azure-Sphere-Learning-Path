@@ -73,7 +73,6 @@ static DeviceTwinBinding lastReadUtc_D2C_DeviceTwin = {
 
 ```c
 static void led1ControlHandler(DeviceTwinBinding* deviceTwinBinding) {
-
 	if (*(bool*)deviceTwinBinding->twinState) {
 		Gpio_On(&led1);
 	}
