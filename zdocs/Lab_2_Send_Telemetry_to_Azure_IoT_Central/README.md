@@ -199,7 +199,7 @@ This returns the **Device ID** and converts it to lowercase. Azure IoT Central r
     ![](resources/iot-central-open-connect.png)
 3. The device connection configuration will be displayed.
     ![](resources/iot-central-device-connection-information.png)
-4. From the Device connection page, copy the ID Scope, Device ID, and Primary Key to Notepad.
+4. **From the Device connection page, copy the ID Scope, Device ID, and Primary Key to Notepad**.
 
 ### Get the Azure IoT Central Application URL to Whitelist
 
