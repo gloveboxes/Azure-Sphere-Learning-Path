@@ -112,7 +112,7 @@ So the lab instructions are still visible, right mouse click, and **open link in
 
 ---
 
-## Step 2: Trust all devices in your Azure Sphere Tenant
+## Step 3: Trust all devices in your Azure Sphere Tenant
 
 We need to tell Azure IoT Central to trust all devices in your Azure Sphere Tenant.
 
@@ -164,11 +164,9 @@ After you complete these steps, any device that is claimed into your Azure Spher
 
 ---
 
-## Step 3: Whitelist the Azure IoT Central Application Endpoint
+## Step 4: Whitelist the Azure IoT Central Application Endpoint
 
-Remember, applications on Azure Sphere are locked down by default, including hardware and network endpoints.
-
-You must whitelist the network endpoint of your Azure IoT Central application otherwise your Azure Sphere Application will not be able to connect to it.
+Remember, applications on Azure Sphere are locked down by default, including hardware and network endpoints. You must whitelist the network endpoint of your Azure IoT Central application otherwise your Azure Sphere Application will not be able to connect to it.
 
 In this step, we are going to create a dummy device and use that device to obtain the Azure IoT Central Application URL that we will whitelist.
 
@@ -205,7 +203,7 @@ This returns the **Device ID** and converts it to lowercase. Azure IoT Central r
 
 ### Get the Azure IoT Central Application URL to Whitelist
 
-1. **Right mouse click** and open this link "[Azure IoT Central Application URL](https://azuredps.z23.web.core.windows.net)" in a **new browser window**.
+1. So the lab instructions are still visible, right mouse click, and **open link in a new window** the following link "[Azure IoT Central Application URL](https://azuredps.z23.web.core.windows.net)".
 
 2. Copy and paste the **Device Connection** information (ID Scope, Device Id, and Primary Key) from Notepad to the **Azure IoT Central Application URL** web page.
 
@@ -215,7 +213,7 @@ This returns the **Device ID** and converts it to lowercase. Azure IoT Central r
 
 4. Leave this page open as you will need the Azure IoT Central Application URL soon.
 
-### Step 4: Get the Azure Sphere Tenant ID
+### Step 5: Get the Azure Sphere Tenant ID
 
 We need the ID of the Azure Sphere Tenant that is now trusted by Azure IoT Central.
 
@@ -252,13 +250,13 @@ Azure IoT Central can be configured to treat some telemetry as events. You would
 
 ### Step 1: Defining Azure IoT Central Interface Events
 
-Defined in the Azure IoT Central Device template, under Interface, ButtonA and ButtonB are configured as **Events**.
+Click the Azure IoT Central Device template and explore the Interface definition for ButtonA and ButtonB. Both of these capabilities are configured as **Events**.
 
 ![](resources/iot-central-template-interface-events.png)
 
 ### Step 2: Generating Azure IoT Central Events
 
-Review the handler function **ButtonPressCheckHandler**. The following code sends the Button Pressed events to Azure IoT Central.
+Review the handler function **ButtonPressCheckHandler** below. The following code sends the Button Pressed events to Azure IoT Central.
 
 ```c
 // Send ButtonA Pressed Event
@@ -335,13 +333,9 @@ These events are mapped to the following JSON formatted messages sent from the A
 
 ## Build, Deploy and Debug the Azure Sphere Application
 
-Before building the application with Visual Studio, ensure ARM-Debug and GDB Debugger (HLCore) options are selected.
-
-![](resources/visual-studio-start-config.png)
-
 ### Sending telemetry to Azure IoT Central
 
-From **main.c**, scroll down to the **MeasureSensorHandler** function.
+Open **main.c**, and scroll down to the **MeasureSensorHandler** function.
 
 >Pro Tip. Use the **Function Navigator** dropdown for quick code navigation. Click on the dropdown list, then select and click the function name. You will often see a function name listed twice in the dropdown. The first is the function forward signature, and the second is the implementation of the function.
 
@@ -378,19 +372,28 @@ static void SendMsgLed2On(char* message) {
 }
 ```
 
-### Step 1: Start the Azure Sphere Application
+### Step 1: Set the build configuration
+
+Before building the application with Visual Studio, ensure ARM-Debug and GDB Debugger (HLCore) options are selected.
+
+![](resources/visual-studio-start-config.png)
+
+### Step 2: Start the Azure Sphere Application
 
 To start the build, deploy, debug process, either click the Visual Studio **Start Selected Item** icon, or press **<kbd>F5</kbd>**, or from the Visual Studio main menu, click **Debug**, then **Start**.
 
 ![](resources/visual-studio-start-debug.png)
 
-### Step 2: View debugger output
+### Step 3: View debugger output
 
 Open the **Output** window to view the output from **Log_Debug** statements in the code. You will see the device negotiating security, and then it will start sending telemetry to Azure IoT Central.
 
 You can open the output window by using the Visual Studio <kbd>Ctrl+Alt+O</kbd> shortcut or click the **Output** tab found along the bottom/right of Visual Studio.
 
-> Ensure **Device Output** is selected from the **Show output from** dropdown list.
+#### Notes
+
+1. Ensure **Device Output** is selected from the **Show output from** dropdown list.
+2. You may see a couple of *ERROR: failure to create IoTHub Handle* messages displayed. These message occur while the connection to IoT Central is being established.
 
 ![](resources/visual-studio-debug-output-view.png)
 
@@ -427,6 +430,7 @@ You can open the output window by using the Visual Studio <kbd>Ctrl+Alt+O</kbd> 
 1. Switch back to Azure IoT Central in your web browser.
 2. You need to wait a minute or two before your Azure Sphere device is automatically enrolled.
 3. The newly enrolled device will have a numeric name that matches your Azure Sphere Device ID.
+4. To display your Azure Sphere Device ID, start the **Azure Sphere Developer Command Prompt** and run the following command.
 
     ```bash
     azsphere device show-attached
@@ -454,7 +458,7 @@ You need to **Migrate** the newly enrolled device to the **Azure Sphere** templa
 1. Click **Devices** on the sidebar.
 2. Select the **Azure Sphere** template.
 3. Click on the migrated device.
-4. Select the **Overview** tab to view the device telemetry.
+4. Select the **Telemetry** tab to view the device telemetry.
 5. Optionally, you can rename your device. Click the **Rename** button and give your device a friendly name.
 
 ![](resources/iot-central-display-measurements.png)
@@ -463,13 +467,12 @@ You need to **Migrate** the newly enrolled device to the **Azure Sphere** templa
 
 ## Step 6: Displaying Azure IoT Central Events
 
-1. Select the **Devices**, then the **Azure Sphere** template, then your device.
-2. Select the **Telemetry** tab.
+1. Ensure the **Telemetry** tab is still displayed.
 3. For Azure Sphere devices with builtin buttons, press **Button A** and **Button B** repeatedly to generate button alerts. 
 
 	>Virtual button press events are generated for Azure Sphere devices that do not have builtin buttons. 
 
-Azure IoT Central does not update immediately. It may take a minute or two for temperature, humidity, button pressed alerts, and message count to be displayed.
+It may take a minute or two for temperature, humidity, button pressed alerts, and message count to be displayed in IoT Central.
 
 ![](resources/iot-central-display-events.png)
 
