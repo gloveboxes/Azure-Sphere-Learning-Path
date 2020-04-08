@@ -98,7 +98,7 @@ So the lab instructions are still visible, right mouse click, and **open link in
 
 ## Step 2: Explore Azure IoT Central
 
-1. Explore the IoT Central application has been provisioned. This is the default IoT Central Dashboard.
+1. Explore the IoT Central application when it has been provisioned. This is the default IoT Central Dashboard.
 
     ![](resources/iot-central-default-view.png)
 
