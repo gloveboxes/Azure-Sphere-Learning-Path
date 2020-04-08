@@ -235,7 +235,7 @@ For more information on device templates, review the [Define a new IoT device ty
 
 
 
-1. From Azure IoT Central, navigate to **Device template**, and select the **Azure Sphere** template.
+1. From Azure IoT Central, navigate to **Device templates**, and select the **Azure Sphere** template.
 2. Click on **Interfaces** to list the interface capabilities.
 3. Explore the IoT Central device template interfaces, properties, and views.
 
@@ -250,7 +250,7 @@ Azure IoT Central can be configured to treat some telemetry as events. You would
 
 ### Step 1: Defining Azure IoT Central Interface Events
 
-Click the Azure IoT Central Device template and explore the Interface definition for ButtonA and ButtonB. Both of these capabilities are configured as **Events**.
+From Azure IoT Central, click **Device templates**, select the **Azure Sphere** template, and explore the Interface capabilities for ButtonA and ButtonB. Both of these capabilities are configured as **Events**.
 
 ![](resources/iot-central-template-interface-events.png)
 
@@ -265,7 +265,7 @@ if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, cstrJsonEvent, cstrEvtButtonA) > 0) 
 }
 ```
 
-These events are mapped to the following JSON formatted messages sent from the Azure Sphere:
+The Azure Sphere will send the following JSON formatted event messages to IoT Central depending on which button is pressed.
 
 * { "ButtonA": "occurred" }
 * { "ButtonB": "occurred" }
@@ -374,7 +374,7 @@ static void SendMsgLed2On(char* message) {
 
 ### Step 1: Set the build configuration
 
-Before building the application with Visual Studio, ensure ARM-Debug and GDB Debugger (HLCore) options are selected.
+Before building the application with Visual Studio, ensure the ARM-Debug and GDB Debugger (HLCore) options are selected.
 
 ![](resources/visual-studio-start-config.png)
 
