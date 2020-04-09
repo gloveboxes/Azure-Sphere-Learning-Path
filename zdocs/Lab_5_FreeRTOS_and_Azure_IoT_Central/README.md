@@ -165,7 +165,7 @@ Before building the application with Visual Studio, ensure ARM-Debug and GDB Deb
 
 ---
 
-## Finished 完了 fertig finito ख़त्म होना terminado
+## Finished 完了 fertig finito समाप्त terminado
 
 Congratulations you have finished lab 5.
 

@@ -254,7 +254,7 @@ Now close **Close Visual Studio**.
 
 ---
 
-## Finished 完了 fertig finito ख़त्म होना terminado
+## Finished 完了 fertig finito समाप्त terminado
 
 ---
 
