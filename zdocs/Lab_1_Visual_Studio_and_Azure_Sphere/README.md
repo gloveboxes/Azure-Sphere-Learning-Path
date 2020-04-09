@@ -51,11 +51,45 @@ This lab assumes you have completed **Lab 0: Lab set up, installation and config
 
 ## Key Concepts
 
-Lab 1 introduces two variable types used to greatly simplify and describe in code how Peripherals and Event Timers work.
+In this lab you will learn about GPIO hardware interfaces, and event driven programming.
+
+---
+
+## Understanding Hardware
+
+Most IoT solutions are designed to interface with hardware and interact with the real world. The most common interfaces on a device are GPIO, PWM, I2C, SPI, ADC, and UART.
+
+### GPIO or General Purpose Input Output
+
+Any GPIO pin can be designated (in software) as an input or output pin and can be used for a wide range of purposes. These labs use single pin GPIO peripherals for input and output so the following is an introduction to GPIO pins.
+
+**GPIO Output**
+
+If a GPIO pin is designated as an *output* pin, then software can set a pin to be either on or off. This equates to 3.3 volts for a pin that has been turned on, and zero volts when turned off. It is important to check that a peripheral connected to the pin is 3.3 volt tolerant otherwise you may destroy the peripheral. Lots of peripherals use single pins such as LEDs, relays, reed switches.
+
+**GPIO Input**
+
+If a GPIO pin is designated as an *input* pin, then software running on the Azure Sphere can read a pin to determine if the voltage has been set to 3.3 volts, or zero volts/ground. It is very important to check that a peripheral will not set a voltage on a pin to anything greater than 3.3 volts **before** you connect it. Be warned, if you set a pin is set to a voltage greater than 3.3 volts it will destroy the Azure Sphere. An example of a GPIO peripheral that uses a single pin is a push button.
+
+### Other Peripheral Interface Types
+
+The following is a list of other common peripheral interfaces found on devices. Right mouse click and open the the link in a new window to learn about them.
+
+* [PWM - Pulse width modulation](https://en.wikipedia.org/wiki/Pulse-width_modulation)
+* [I2C - Inter-Integrated Circuit](https://en.wikipedia.org/wiki/I%C2%B2C)
+* [SPI - Serial Peripheral Interface](https://en.wikipedia.org/wiki/Serial_Peripheral_Interface)
+* [ADC - Analog-to-digital converter](https://en.wikipedia.org/wiki/Analog-to-digital_converter)
+* [UART - Universal asynchronous receiver-transmitter](https://en.wikipedia.org/wiki/Universal_asynchronous_receiver-transmitter)
+
+You will see **ISU** referenced in the Azure Sphere and Mediatec documentation. An ISU is a Serial interface block and is an acronym for "**I**2C, **S**PI, **U**ART.". For more information refer to the [MT3620 Support Status](https://docs.microsoft.com/en-us/azure-sphere/hardware/mt3620-product-status) page.
+
+
+You can read more about the peripheral interfaces supported the Azure Sphere supports from the [MT3620 Support Status](https://docs.microsoft.com/en-us/azure-sphere/hardware/mt3620-product-status) page.
+
 
 ### Input and Output Peripherals
 
-In **main.c** there are several Peripheral variables declared, including LEDs, buttons, and a relay. Variables of type **Peripheral** declare a GPIO model for **input** and **output** of single pin peripherals, such as LEDs, buttons, reed switches, and relays.
+In the Azure Sphere Learning Path labs there are several Peripheral variables declared, including LEDs, buttons, and a relay. Variables of type **Peripheral** declare a GPIO model for **input** and **output** of single pin peripherals, such as LEDs, buttons, reed switches, and relays.
 
 A Peripheral variable holds the GPIO pin number, the initial state of the pin when opened, whether the pin logic needs to be inverted, and the function called to open the peripheral.
 
