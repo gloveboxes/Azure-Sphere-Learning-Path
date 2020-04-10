@@ -68,7 +68,7 @@ This project leverages the [Azure IoT Hub Device Provisioning Service (PDS)](htt
 ## Getting started with Azure IoT Central
 
 We are going to create an Azure IoT Central application from an application template. 
->See [Define a new IoT device type in your Azure IoT Central application](https://docs.microsoft.com/en-us/azure/iot-central/core/howto-set-up-template) for information on creating your own device templates.
+>See [Define a new IoT device type in your Azure IoT Central application](https://docs.microsoft.com/en-us/azure/iot-central/core/howto-set-up-template?WT.mc_id=github-blog-dglover) for information on creating your own device templates.
 
 ---
 
@@ -231,7 +231,7 @@ We need the ID of the Azure Sphere Tenant that is now trusted by Azure IoT Centr
 
 A device template is a blueprint that defines the characteristics and behaviors of a type of device that connects to an Azure IoT Central application.
 
-For more information on device templates, review the [Define a new IoT device type in your Azure IoT Central application](https://docs.microsoft.com/en-us/azure/iot-central/core/howto-set-up-template) article. 
+For more information on device templates, review the [Define a new IoT device type in your Azure IoT Central application](https://docs.microsoft.com/en-us/azure/iot-central/core/howto-set-up-template?WT.mc_id=github-blog-dglover) article. 
 
 
 
