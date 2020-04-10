@@ -58,8 +58,7 @@ You should have completed the set up steps in Lab 0. You should have:
 
 ## Tutorial Overview
 
-1. Enable Real-Time core development
-2. Deploy your first FreeRTOS Application to Azure Sphere.
+1. Deploy your first Real-Time Core FreeRTOS Application to Azure Sphere.
 
 ---
 
