@@ -115,7 +115,7 @@ In this lab, we are going to deploy a High-Level application that will accept ev
 ## Step 5: Set a Breakpoint in the InterCoreHandler Function
 
 1. Open **main.c**
-2. From the **Navigate Functions dropdown**, select the second of the two **InterCoreHandler** items listed. The first is the [forward function declaration](https://en.wikipedia.org/wiki/Forward_declaration), the second is the definition on the function. 
+2. From the **Navigate Functions dropdown**, select the second of the two **InterCoreHandler** items listed. The first is the [function forward declaration](https://en.wikipedia.org/wiki/Forward_declaration), the second is the definition on the function. 
     ![](resources/visual-studio-function-navigate.png)
 3. Set a debugger breakpoint in near the beginning of the InterCoreHandler function.
     ![](resources/visual-studio-breakpoint-inter-core-handler.png)
