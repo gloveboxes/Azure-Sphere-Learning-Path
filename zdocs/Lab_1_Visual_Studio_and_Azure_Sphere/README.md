@@ -87,7 +87,9 @@ You can read more about the peripheral interfaces supported the Azure Sphere sup
 
 ---
 
-## Developer Board Pin Maps
+## Developer Board Peripheral Interfaces
+
+You can find detailed peripheral interface information for each board by clicking on the board image.
 
 |Azure Sphere MT3620 Starter Kit Hardware User Guide|Seeed Studio Azure Sphere MT3620 Development Kit | Seeed Studio Azure Sphere MT3620 Mini Dev Board |
 |-----|----|----|
