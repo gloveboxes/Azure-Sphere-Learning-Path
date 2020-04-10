@@ -16,7 +16,7 @@
 #define JSON_MESSAGE_BYTES 128  // Number of bytes to allocate for the JSON telemetry message for IoT Central
 
 // Forward signatures
-static int InitPeripheralsAndHandlers(void);
+static void InitPeripheralsAndHandlers(void);
 static void ClosePeripheralsAndHandlers(void);
 static void Led1BlinkHandler(EventLoopTimer* eventLoopTimer);
 static void Led2OffHandler(EventLoopTimer* eventLoopTimer);
@@ -73,9 +73,7 @@ Timer* timerSet[] = { &led1BlinkTimer, &led2BlinkOffOneShotTimer, &buttonPressCh
 int main(int argc, char* argv[]) {
 	RegisterTerminationHandler();
 
-	if (InitPeripheralsAndHandlers() != 0) {
-		return ExitCode_Init_Failed;
-	}
+	InitPeripheralsAndHandlers();
 
 	// Main loop
 	while (!IsTerminationRequired()) {
@@ -211,13 +209,11 @@ static void Led1BlinkHandler(EventLoopTimer* eventLoopTimer) {
 ///  Initialize peripherals, device twins, direct methods, timers.
 /// </summary>
 /// <returns>0 on success, or -1 on failure</returns>
-static int InitPeripheralsAndHandlers(void) {
+static void InitPeripheralsAndHandlers(void) {
 	InitializeDevKit();
 
 	OpenPeripheralSet(peripheralSet, NELEMS(peripheralSet));
 	StartTimerSet(timerSet, NELEMS(timerSet));
-
-	return 0;
 }
 
 /// <summary>
