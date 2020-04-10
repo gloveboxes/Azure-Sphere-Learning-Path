@@ -34,15 +34,13 @@ static DeviceTwinBinding* deviceTwinBindingSet[] = {  };
 
 
 
-static int InitPeripheralsAndHandlers(void) {
+static void InitPeripheralsAndHandlers(void) {
 	InitializeDevKit();
 
 	OpenPeripheralSet(peripheralSet, NELEMS(peripheralSet));
 	OpenDeviceTwinSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
 	StartTimerSet(timerSet, NELEMS(timerSet));
 	StartCloudToDevice();
-
-	return 0;
 }
 
 static void ClosePeripheralsAndHandlers(void) {
@@ -68,9 +66,7 @@ int main(int argc, char* argv[]) {
 		return ExitCode_Missing_ID_Scope;
 	}
 
-	if (InitPeripheralsAndHandlers() != 0) {
-		return ExitCode_Init_Failed;
-	}
+	InitPeripheralsAndHandlers();
 
 	// Main loop
 	while (!IsTerminationRequired()) {
