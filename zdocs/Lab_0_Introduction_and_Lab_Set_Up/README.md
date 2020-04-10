@@ -73,7 +73,9 @@ If you are using a shared lab device, then the lab instructor will tell you the 
 
 You can develop applications for Azure Sphere on Windows 10 Anniversary Update or later, or a Linux machine running Ubuntu 18.04 LTS
 
-### Windows 10 Recommended Software
+### Windows 10 Users
+
+Install the following software.
 
 1. [Visual Studio (The free Community Edition or better)](https://visualstudio.microsoft.com/vs/?WT.mc_id=github-blog-dglover).
     * No specific **Workloads** options are required.
@@ -86,7 +88,9 @@ You can develop applications for Azure Sphere on Windows 10 Anniversary Update o
 3. [Git for Windows](https://git-scm.com/downloads)
 4. [Install Azure Sphere drivers for Windows](https://docs.microsoft.com/en-au/azure-sphere/install/install-sdk?WT.mc_id=github-blog-dglover)
 
-### Ubuntu 18.04 Recommended Software
+### Ubuntu 18.04 Users
+
+Install the following software.
 
 1. [Visual Studio Code](https://code.visualstudio.com/?WT.mc_id=github-blog-dglover)
 2. [Azure Sphere Extension for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=ms-vscode.azure-sphere-tools&WT.mc_id=github-blog-dglover).
@@ -280,25 +284,7 @@ azsphere device enable-development
 
 ---
 
-### Step 9: Enable Real-Time Core Debugging
-
-Run the **Azure Sphere Developer Command Prompt** as **Administrator**.
-
-1. Press the <kbd>Windows Key</kbd>
-2. Start typing **Azure Sphere Developer Command Prompt**
-3. Select **Run as administrator**
-![](resources/azure-sphere-command-prompt-as-administrator.png)
-4. **Enable Real-Time core debugging**
-
-    ```bash
-    azsphere device enable-development -r
-    ```
-
-5. Exit the command prompt. Type **exit**, and then press return.
-
----
-
-## Step 10: Clone the Azure Sphere Learning Path
+## Step 9: Clone the Azure Sphere Learning Path
 
 **WARNING**: On Windows, clone the *Azure Sphere Learning Path* to a directory close to the root directory on your computer. For example **c:\lab**. The reason is the Azure Sphere build process uses CMake which does not support Windows 10 long path/folder names.
 
@@ -308,7 +294,7 @@ git clone --depth 1 https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git
 
 ---
 
-## Step 11: Review the Azure Learning Path Directory Layout
+## Step 10: Review the Azure Learning Path Directory Layout
 
 The labs support the three currently available developer kits from Avnet and Seeed Studio.
 
@@ -321,12 +307,6 @@ Lab directories are named by Azure Sphere device manufacturer.
     |- SEEED
     |- SEEED-MINI
 
----
-
-
-### Step 12: Enable the Real-Time Core Floating Point Toolchain
-
-Copy the **AzureSphereRTCoreToolchainVFP.cmake** file found in the **Azure Sphere Learning Path** directory you just cloned to the Azure Sphere SDK CMakeFiles directory. The default destination directory is **C:\Program Files (x86)\Microsoft Azure Sphere SDK\CMakeFiles**.
 
 ---
 

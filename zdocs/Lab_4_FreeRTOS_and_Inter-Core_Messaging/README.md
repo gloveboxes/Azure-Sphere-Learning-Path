@@ -56,6 +56,30 @@ You should have completed the set up steps in Lab 0. You should have:
 
 ---
 
+## Enable Real-Time Core Development
+
+### Step 1: Enable Real-Time Core Debugging
+
+Run the **Azure Sphere Developer Command Prompt** as **Administrator**.
+
+1. Press the <kbd>Windows Key</kbd>
+2. Start typing **Azure Sphere Developer Command Prompt**
+3. Select **Run as administrator**
+![](resources/azure-sphere-command-prompt-as-administrator.png)
+4. **Enable Real-Time core debugging**
+
+    ```bash
+    azsphere device enable-development -r
+    ```
+
+5. Exit the command prompt. Type **exit**, and then press return.
+
+### Step 2: Enable the Real-Time Core Floating Point Toolchain
+
+Copy the **AzureSphereRTCoreToolchainVFP.cmake** file found in the **Azure Sphere Learning Path** directory you just cloned to the Azure Sphere SDK CMakeFiles directory. The default destination directory is **C:\Program Files (x86)\Microsoft Azure Sphere SDK\CMakeFiles**.
+
+---
+
 ## Tutorial Overview
 
 1. Deploy your first Real-Time Core FreeRTOS Application to Azure Sphere.
