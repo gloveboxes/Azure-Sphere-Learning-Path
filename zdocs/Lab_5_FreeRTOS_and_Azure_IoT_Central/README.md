@@ -163,8 +163,8 @@ Congratulations you have finished lab 5.
 
 ![](resources/finished.jpg)
 
-<!-- ---  -->
+---
 
-<!-- **[NEXT](../Lab_6_Mass_Device_Deployment/README.md)** -->
+**[NEXT](../Lab_6_Over-the-air-deployment/README.md)**
 
 ---
