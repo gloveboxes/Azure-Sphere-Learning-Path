@@ -87,14 +87,12 @@ You can read more about the peripheral interfaces supported the Azure Sphere sup
 
 ---
 
-## Developer Board Pinouts
+## Developer Board Pin Maps
 
-* [Azure Sphere MT3620 Starter Kit Hardware User Guide](https://www.avnet.com/opasdata/d120001/medias/docus/196/Azure%20Sphere%20Starter%20Kit%20User%20Guide%20(v1.3).pdf)
-	![](resources/avnet-pinout.jpg)
-* [Seeed Studio Azure Sphere MT3620 Development Kit](http://wiki.seeedstudio.com/Azure_Sphere_MT3620_Development_Kit/)
-	![](https://raw.githubusercontent.com/SeeedDocument/Azure_Sphere_MT3620_Development_Kit/master/img/PinMap.png)
-* [Seeed Studio Azure Sphere MT3620 Mini Dev Board](http://wiki.seeedstudio.com/MT3620_Mini_Dev_Board/)
-	![](https://files.seeedstudio.com/products/102110267/img/MT3620%20Mini%20Dev%20Board%20Pinmap-20200331.jpg)
+|Azure Sphere MT3620 Starter Kit Hardware User Guide|Seeed Studio Azure Sphere MT3620 Development Kit | Seeed Studio Azure Sphere MT3620 Mini Dev Board |
+|-----|----|----|
+| [![](resources/avnet-pinout.jpg)](https://www.avnet.com/opasdata/d120001/medias/docus/196/Azure%20Sphere%20Starter%20Kit%20User%20Guide%20(v1.3).pdf) | [![](resources/seeed-studio-rdb-pinmap.png)](http://wiki.seeedstudio.com/Azure_Sphere_MT3620_Development_Kit/) | [![](resources/seeed-studio-mini-pinmap.jpg)](http://wiki.seeedstudio.com/MT3620_Mini_Dev_Board/) |
+
 
 ---
 
