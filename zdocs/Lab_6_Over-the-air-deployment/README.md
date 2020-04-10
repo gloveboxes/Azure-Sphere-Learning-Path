@@ -29,6 +29,14 @@ Each module assumes you have completed the previous module.
 
 ---
 
----
 
 ## Finished 完了 fertig finito समाप्त terminado
+
+
+Congratulations you have finished lab 6.
+
+![](resources/finished.jpg)
+
+---
+
+[Home](https://github.com/gloveboxes/Azure-Sphere-Learning-Path/blob/master/README.md)

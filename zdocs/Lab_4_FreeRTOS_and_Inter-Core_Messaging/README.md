@@ -256,6 +256,11 @@ Now close **Close Visual Studio**.
 
 ## Finished 完了 fertig finito समाप्त terminado
 
+
+Congratulations you have finished lab 4.
+
+![](resources/finished.jpg)
+
 ---
 
 **[NEXT](../Lab_5_FreeRTOS_and_Azure_IoT_Central/README.md)**
