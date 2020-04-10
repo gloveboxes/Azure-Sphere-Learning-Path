@@ -73,7 +73,7 @@ If a GPIO pin is designated as an *input* pin, then the software running on the 
 
 ### Other Peripheral Interface Types
 
-The following is a list of other common peripheral interfaces found on devices. To learn more about each interface type, right mouse click and open the link in a new browser window.
+The following is a list of other common peripheral interfaces found on devices, including the Azure Sphere. To learn more about each interface type, right mouse click and open the link in a new browser window.
 
 * [PWM - Pulse width modulation](https://en.wikipedia.org/wiki/Pulse-width_modulation)
 * [I2C - Inter-Integrated Circuit](https://en.wikipedia.org/wiki/I%C2%B2C)
@@ -85,7 +85,20 @@ You will see references to **ISU** in the Azure Sphere and Mediatec documentatio
 
 You can read more about the peripheral interfaces supported the Azure Sphere supports from the [MT3620 Support Status](https://docs.microsoft.com/en-us/azure-sphere/hardware/mt3620-product-status) page.
 
-### Input and Output Peripherals
+---
+
+## Developer Board Pinouts
+
+* [Azure Sphere MT3620 Starter Kit Hardware User Guide](https://www.avnet.com/opasdata/d120001/medias/docus/196/Azure%20Sphere%20Starter%20Kit%20User%20Guide%20(v1.3).pdf)
+	![](resources/avnet-pinout.jpg)
+* [Seeed Studio Azure Sphere MT3620 Development Kit](http://wiki.seeedstudio.com/Azure_Sphere_MT3620_Development_Kit/)
+	![](https://raw.githubusercontent.com/SeeedDocument/Azure_Sphere_MT3620_Development_Kit/master/img/PinMap.png)
+* [Seeed Studio Azure Sphere MT3620 Mini Dev Board](http://wiki.seeedstudio.com/MT3620_Mini_Dev_Board/)
+	![](https://files.seeedstudio.com/products/102110267/img/MT3620%20Mini%20Dev%20Board%20Pinmap-20200331.jpg)
+
+---
+
+## Input and Output Peripherals
 
 In the Azure Sphere Learning Path labs there are several Peripheral variables declared, including LEDs, buttons, and a relay. Variables of type **Peripheral** declare a GPIO model for **input** and **output** of single pin peripherals, such as LEDs, buttons, reed switches, and relays.
 
