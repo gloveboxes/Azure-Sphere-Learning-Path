@@ -270,9 +270,7 @@ static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMetho
 
 ## Working with Device Twins and Direct Method Binding
 
-Device Twin and Direct Method Bindings are automatically opened, dispatched, and closed when they are added to their respective **sets**.
-
-It is important to added device twin or direct method bindings to their respective sets. When a device twin or direct method message is received from Azure, the sets are checked for a matching *twinProperty* or *methodName* name. When a match is found, the corresponding handler function is called.
+Device twin and direct method bindings must be added to their respective **sets**. When a device twin or direct method message is received from Azure, these sets are checked for a matching *twinProperty* or *methodName* name. When a match is found, the corresponding handler function is called.
 
 ```c
 DeviceTwinBinding* deviceTwinBindingSet[] = { &led1BlinkRate, &buttonPressed, &relay1DeviceTwin, &deviceResetUtc };

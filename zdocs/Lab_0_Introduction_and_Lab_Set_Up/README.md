@@ -99,34 +99,7 @@ For complete instructions follow the Azure Sphere [Overview of set up procedures
 
 ---
 
-## Step 2: Clone the Azure Sphere Learning Path
-
-**WARNING**: On Windows, do not clone the *Azure Sphere Learning Path* to a directory with a long folder name as CMake can have problems building with long path/folder names.
-
-Ideally clone (or download) to a directory close to the root directory. For example **c:\lab** on Windows, **~/lab** on Linux.
-
-```bash
-git clone --depth 1 https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git Azure-Sphere
-```
-
----
-
-## Step 3: Review the Azure Learning Path Directory Layout
-
-The labs support the three currently available developer kits from Avnet and Seeed Studio.
-
-**Ensure you use the labs that match your hardware.**
-
-Lab directories are named by Azure Sphere device manufacturer.
-
-    Azure-Sphere
-    |- AVNET
-    |- SEEED
-    |- SEEED-MINI
-
----
-
-## Step 4: Set up Azure Sphere Tenant and Login
+## Step 2: Set up Azure Sphere Tenant and Login
 
 ### Azure Sphere Developer Command Prompt
 
@@ -192,7 +165,7 @@ From the **Azure Sphere Developer Command Prompt**:
 
 ---
 
-## Step 5: Claim your Azure Sphere
+## Step 3: Claim your Azure Sphere
 
 **Skip this step if you are using a lab device or you have already claimed your Azure Sphere.**
 
@@ -210,7 +183,7 @@ For more information visit [Claim your Azure Sphere device](https://docs.microso
 
 ---
 
-## Step 6: Configure the Azure Sphere WiFi Network
+## Step 4: Configure the Azure Sphere WiFi Network
 
 From the **Azure Sphere Developer Command Prompt**:
 
@@ -243,7 +216,7 @@ For more information on networking, visit [Configure the Azure Sphere WiFi Setti
 
 ---
 
-## Step 7: Update Azure Sphere OS
+## Step 5: Update Azure Sphere OS
 
 As of April 2020, your device should be version **20.03** or better.
 
@@ -269,7 +242,7 @@ From the **Azure Sphere Developer Command Prompt**:
 
 ---
 
-## Step 8: Check WiFi Network Connection after update
+## Step 6: Check WiFi Network Connection after update
 
 Check that the WiFi network connection is active.
 
@@ -281,7 +254,7 @@ If there is no network connection then repeat step 6.
 
 ---
 
-## Step 9: Delete any existing applications on the Azure Sphere
+## Step 7: Delete any existing applications on the Azure Sphere
 
 1. From the **Azure Sphere Developer Command Prompt**, run
 
@@ -297,7 +270,7 @@ If there is no network connection then repeat step 6.
 
 ---
 
-## Step 10: Enable High Level Core Device Debugging
+## Step 8: Enable High Level Core Device Debugging
 
 From the **Azure Sphere Developer Command Prompt**, run
 
@@ -307,7 +280,7 @@ azsphere device enable-development
 
 ---
 
-### Step 11: Enable Real-Time Core Debugging
+### Step 9: Enable Real-Time Core Debugging
 
 Run the **Azure Sphere Developer Command Prompt** as **Administrator**.
 
@@ -323,20 +296,37 @@ Run the **Azure Sphere Developer Command Prompt** as **Administrator**.
 
 5. Exit the command prompt. Type **exit**, and then press return.
 
-<!-- ---
+---
 
-## Azure Sphere Devices
+## Step 10: Clone the Azure Sphere Learning Path
 
-For simplicity, only the LEDs and sensors built into the Azure Sphere developer boards are used. These labs do not require any expansion boards or extra sensors.
+**WARNING**: On Windows, clone the *Azure Sphere Learning Path* to a directory close to the root directory on your computer. For example **c:\lab**. The reason is the Azure Sphere build process uses CMake which does not support Windows 10 long path/folder names.
 
-The following Azure Sphere developer boards are supported by these labs.
+```bash
+git clone --depth 1 https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git Azure-Sphere
+```
 
-| [Avnet Azure Sphere MT3620 Starter Kit](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-sk-g-3074457345636825680/) | [Seeed Studio Azure Sphere MT3620 Development Kit](https://www.seeedstudio.com/mt3620-for-azure-sphere) | [Seeed Studio Seeed Studio MT3620 Mini Dev Board](https://www.seeedstudio.com/mt3620-for-azure-sphere) |
-| :-------------: | :---------------: | :-----: |
-| [Reference](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-sk-g-3074457345636825680/) | [Reference](http://wiki.seeedstudio.com/Azure_Sphere_MT3620_Development_Kit/) | [Reference](http://wiki.seeedstudio.com/MT3620_Mini_Dev_Board/) |
-| ![](resources/avnet-azure-sphere.jpg) | ![](resources/seeed-studio-azure-sphere-rdb.jpg) | ![](resources/seeed-studio-azure-sphere-mini.png) |
-| [Mikroe Click Boards](https://www.mikroe.com/) and Seeed Grove I2C | [Grove Starter Kit for Azure Sphere MT3620 Development Kit](http://wiki.seeedstudio.com/Grove_Starter_Kit_for_Azure_Sphere_MT3620_Development_Kit/) | [MT3620 Grove Breakout](https://www.seeedstudio.com/MT3620-Grove-Breakout-p-4043.html) |
-| ![](resources/MIKROE-relay2.jpg) | ![](resources/Grove_Starter_Kit_for_Azure_Sphere_MT3620_Development_Kit.jpg)  | ![](resources/mt3620-grove-breakout-preview.png) | -->
+---
+
+## Step 11: Review the Azure Learning Path Directory Layout
+
+The labs support the three currently available developer kits from Avnet and Seeed Studio.
+
+**Ensure you use the labs that match your hardware.**
+
+Lab directories are named by Azure Sphere device manufacturer.
+
+    Azure-Sphere
+    |- AVNET
+    |- SEEED
+    |- SEEED-MINI
+
+---
+
+
+### Step 12: Enable the Real-Time Core Floating Point Toolchain
+
+Copy the **AzureSphereRTCoreToolchainVFP.cmake** file found in the **Azure Sphere Learning Path** directory you just cloned to the Azure Sphere SDK CMakeFiles directory. The default destination directory is **C:\Program Files (x86)\Microsoft Azure Sphere SDK\CMakeFiles**.
 
 ---
 

@@ -49,7 +49,10 @@ For security, applications running on Real-Time cores do not have direct interne
 
 ## Prerequisites
 
-None.
+You should have completed the set up steps in Lab 0. You should have:
+
+1. Enabled the Real-Time Core debugger
+2. Enabled the Real-Time Core Floating Point Toolchain
 
 ---
 
@@ -125,32 +128,6 @@ In the following High-Level **app_manifest.json** file, the **AllowedApplication
 
 ---
 
-## Set up FreeRTOS Real-Time Core Development
-
-### Step 1: Enable Real-Time Core Debugging
-
-Run the **Azure Sphere Developer Command Prompt** as **Administrator**.
-
-1. Press the <kbd>Windows Key</kbd>
-2. Start typing **Azure Sphere Developer Command Prompt**
-3. Select **Run as administrator**
-![](resources/azure-sphere-command-prompt-as-administrator.png)
-4. Run
-
-    ```bash
-    azsphere device enable-development -r
-    ```
-
-5. Exit the command prompt, type **exit**, and press return.
-
-### Step 2: Copy the Floating Point Toolchain
-
-The **AzureSphereRTCoreToolchainVFP.cmake** file is required to build the FreeRTOS application.
-
-Copy the **AzureSphereRTCoreToolchainVFP.cmake** file from **Azure Sphere Learning Path** directory to the system Azure Sphere SDK CMakeFiles directory. The Default destination path is **C:\Program Files (x86)\Microsoft Azure Sphere SDK\CMakeFiles**.
-
----
-
 ## Delete Existing Applications on the Azure Sphere
 
 1. There will be some GPIO pin reassignments between the existing High-Level application that is running on the Azure Sphere and the new Real-Time application that will be deployed to the Azure Sphere in this lab. So delete any existing applications on the Azure Sphere to avoid any clashes.
@@ -206,7 +183,7 @@ Copy the **AzureSphereRTCoreToolchainVFP.cmake** file from **Azure Sphere Learni
 
 ![](resources/seeed-studio-azure-sphere-rdb.jpg)
 
-1. The blue LED will start to blink
+1. The green LED will start to blink
 2. Press **Button A** on the device to change the blink rate.
 
 ### Seeed Studio MT3620 Mini Dev Board

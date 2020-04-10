@@ -27,14 +27,6 @@ Each module assumes you have completed the previous module.
 
 ---
 
-## Prerequisites
-
-This lab assumes you have completed [Lab 2: Send Telemetry from an Azure Sphere to Azure IoT Central](../Lab_2_Send_Telemetry_to_Azure_IoT_Central/README.md). You will have created an Azure IoT Central application, connected Azure IoT Central to your Azure Sphere Tenant, and you have configured the **app_manifest.json** for the Azure Device Provisioning Service.
-
-You will need to **copy** and **paste** the Lab 2 **app_manifest.json** you created and copied to Notepad to this lab's **app_manifest.json** file.
-
----
-
 ## What you will learn
 
 You will learn how Azure Sphere **Inter-Core** messaging works.
@@ -123,9 +115,9 @@ In this lab, we are going to deploy a High-Level application that will accept ev
 ## Step 5: Set a Breakpoint in the InterCoreHandler Function
 
 1. Open **main.c**
-2. From the **Navigate Functions dropdown**, select the second of the two **InterCoreHandler** items listed.
+2. From the **Navigate Functions dropdown**, select the second of the two **InterCoreHandler** items listed. The first is the [forward function declaration](https://en.wikipedia.org/wiki/Forward_declaration), the second is the definition on the function. 
     ![](resources/visual-studio-function-navigate.png)
-3. Set a debugger breakpoint in near the beginning of the function.
+3. Set a debugger breakpoint in near the beginning of the InterCoreHandler function.
     ![](resources/visual-studio-breakpoint-inter-core-handler.png)
 
 ---
