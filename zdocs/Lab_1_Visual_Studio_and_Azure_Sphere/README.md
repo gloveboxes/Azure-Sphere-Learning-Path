@@ -102,7 +102,7 @@ You can find detailed peripheral interface information for each board by clickin
 
 In the Azure Sphere Learning Path labs there are several Peripheral variables declared, including LEDs, buttons, and a relay. Variables of type **Peripheral** declare a GPIO model for **input** and **output** of single pin peripherals, such as LEDs, buttons, reed switches, and relays.
 
-A Peripheral variable holds the GPIO pin number, the initial state of the pin when opened, whether the pin logic needs to be inverted, and the function called to open the peripheral.
+A Peripheral variable holds the GPIO pin number, the initial state of the pin when the program starts, whether the pin logic needs to be inverted, and the function called to open the peripheral.
 
 The following example declares an LED **output** peripheral.
 
@@ -112,7 +112,7 @@ static Peripheral led1 = {
 	.direction = OUTPUT, // for OUTPUT
 	.initialState = GPIO_Value_Low, // Set the initial state on the pin when opened
 	.invertPin = true, // Should the switching logic be reverse for on/off, high/low
-	.initialise = OpenPeripheral, // The name of C function to be called to open the Pin.
+	.initialise = OpenPeripheral, // The function to be called to open the Pin.
 	.name = "led1" // An arbitrary name for the peripheral.
 };
 ```
@@ -138,7 +138,7 @@ The labs use event timers extensively, so there is a generalized model to simpli
 
 #### Periodic Timers
 
-In **main.c** there is a variable named **measureSensorTimer** of type **Timer**. This event timer is initialized with a period of 10 seconds **{ 10, 0 }**. When the event timer triggers, the handler function **MeasureSensorHandler** is called to implement the action.
+The following example is a variable named **measureSensorTimer** of type **Timer**. This event timer is initialized with a period of 10 seconds **{ 10, 0 }**. When the event timer triggers, the handler function **MeasureSensorHandler** is called to implement the action.
 
 > There are two values used to initialize the **.period** variable. The first is the number of seconds, followed by the number of nanoseconds. If you wanted the timer to trigger events every half a second (500 milliseconds), you would set the .period to be { 0, 500000000 }.
 
@@ -146,7 +146,7 @@ In **main.c** there is a variable named **measureSensorTimer** of type **Timer**
 static Timer measureSensorTimer = {
 	.period = { 10, 0 },	// Fire the timer event every 10 seconds + zero nanoseconds.
 	.name = "measureSensorTimer",	// An arbitrary name for the timer, used for error handling
-	.timerEventHandler = MeasureSensorHandler	// The address of the C handler function to be called when the timer triggers.
+	.handler = MeasureSensorHandler	// The function handler called when the timer triggers.
 };
 ```
 
@@ -174,7 +174,7 @@ The following code uses a one-shot timer to blink an LED once when a button is p
 
 The advantage of this event-driven pattern is that the device can continue to service other events such as checking if a user has pressed a button.
 
-In **main.c** there is a variable named **led2BlinkOffOneShotTimer** of type **Timer**. This timer is initialized with a period of { 0, 0 }. Timers initialized with a period of 0 seconds are one-shot timers.
+The following is an example of a one-shot timer. The variable named **led2BlinkOffOneShotTimer** is of type **Timer**. This timer is initialized with a period of { 0, 0 }. Timers initialized with a period of 0 seconds are one-shot timers.
 
 ```c
 static Timer led2BlinkOffOneShotTimer = {
@@ -225,14 +225,12 @@ Timer* timerSet[] = { &led1BlinkTimer, &led2BlinkOffOneShotTimer, &buttonPressCh
 These sets are referenced when calling **OpenPeripheralSet**, and **StartTimerSet** from the **InitPeripheralsAndHandlers** function. The sets are also referenced when closing the peripheral and timer sets in the **ClosePeripheralsAndHandlers** function.
 
 ```c
-static int InitPeripheralsAndHandlers(void)
+static void InitPeripheralsAndHandlers(void)
 {
 	InitializeDevKit();  // Avnet Starter kit
 
 	OpenPeripheralSet(peripheralSet, NELEMS(peripheralSet));
 	StartTimerSet(timerSet, NELEMS(timerSet));
-
-	return 0;
 }
 ```
 
@@ -300,19 +298,19 @@ The CMake cache automatically builds when you open a CMake project. But given th
 
 	![](resources/visual-studio-cmake-generate-completed.png)
 
-	If the CMake Generation fails, then move the labs to a directory closer to the root directory on your local drive.
+	>If the CMake Generation fails, the directory paths may be too long. Move the labs to a directory in the root directory on your local drive. Such as c:\labs
 
 ---
 
 ## Understanding Azure Sphere Security
 
-Applications on Azure Sphere are locked down by default. You must grant capabilities to the application. Granting capabilities is key to Azure Sphere security and is also known as the [Principle of least privilege](https://en.wikipedia.org/wiki/Principle_of_least_privilege).
+Applications on Azure Sphere are locked down by default. You must grant capabilities to the application. Granting capabilities is key to Azure Sphere security and is also known as the [Principle of least privilege](https://en.wikipedia.org/wiki/Principle_of_least_privilege). You should only grant the capabilities the Azure Sphere application needs to run correctly, and no more.
 
 Application capabilities include what hardware can be accessed, what internet services can be called (including Azure IoT Central and the Azure Device Provisioning Service), and what inter-core communications are allowed.
 
 ### Open the Application Manifest File
 
-From Visual Studio, open the **app_manifest.json** file. This resources this application can access are limited to those listed in the **Capabilities** section.
+From Visual Studio, open the **app_manifest.json** file. The resources this application can access are limited to those listed in the **Capabilities** section.
 
 >**Note**, the following example is for the Avnet Azure Sphere device. The resource names and capabilities will differ depending on which Azure Sphere device you are using.
 
@@ -322,7 +320,7 @@ From Visual Studio, open the **app_manifest.json** file. This resources this app
 
 Each Azure Sphere manufacturer maps pins differently. Follow these steps to understand how the pins are mapped for your developer board.
 
-1. Ensure you have the **main.c** file open. Place the cursor on the line that reads **#include "../oem/board.h"**, then press <kbd>F12</kbd>. Pressing <kbd>F12</kbd> will open the **board.h** header file.
+1. Ensure you have the **main.c** file open. Place the cursor on the line that reads **#include "../oem/board.h"**, then press <kbd>F12</kbd> to open the header file.
 
 	![](resources/visual-studio-open-board.png)
 
