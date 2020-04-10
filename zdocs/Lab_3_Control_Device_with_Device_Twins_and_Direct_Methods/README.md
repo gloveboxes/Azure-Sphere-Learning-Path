@@ -98,7 +98,7 @@ Azure IoT Central properties are implemented on Azure IoT Hub device twins. Devi
 
 ### Cloud to Device Updates
 
-In main.c the variable named **led1BlinkRate** of type **DeviceTwinBinding**  is declared. This variable maps the Azure IoT Central *LedBlinkRate* property with a handler function named **DeviceTwinBlinkRateHandler**.
+The following example declares a variable named **led1BlinkRate** of type **DeviceTwinBinding**. This variable maps the Azure IoT Central *LedBlinkRate* property with a handler function named **DeviceTwinBlinkRateHandler**.
 
 ```c
 static DeviceTwinBinding led1BlinkRate = { 
@@ -154,7 +154,7 @@ DeviceTwinReportState(&buttonPressed, "ButtonA");   // TwinType = TYPE_STRING
 Azure IoT Central properties are defined in Device templates.  
 
 1. From Azure IoT Central, navigate to **Device template**, and select the **Azure Sphere** template.
-2. Click on **Interfaces** to list the interface capabilities.
+2. Click on **Interface** to list the interface capabilities.
 3. Scroll down and expand the **LedBlinkRate** capability.
 4. Review the definition of **LedBlinkRate**. The capability type is **Property**, the Schema type is **Integer**, and the property is **Writeable**. Writeable means this property is enabled for Cloud to Device updates.
 
@@ -199,7 +199,7 @@ static DirectMethodBinding resetDevice = {
 Azure IoT Central commands are defined in Device templates.
 
 1. From Azure IoT Central, navigate to **Device template**, and select the **Azure Sphere** template.
-2. Click on **Interfaces** to list the interface capabilities.
+2. Click on **Interface** to list the interface capabilities.
 3. Scroll down and expand the **ResetMethod** capability.
 4. Review the definition of **ResetMethod**. The capability type is **Command**.
 5. The schema type is **Object**. Click on the **view** button to display the object definition. The Object definition describes the shape of the JSON payload sent with the command. In this example, the shape of the JSON payload will be the same as this example *{"reset_timer":5}*.
@@ -270,7 +270,9 @@ static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMetho
 
 ## Working with Device Twins and Direct Method Binding
 
-Device Twin and Direct Method Bindings can be automatically opened, dispatched, and closed if they are added to the respective **sets**.
+Device Twin and Direct Method Bindings are automatically opened, dispatched, and closed when they are added to their respective **sets**.
+
+It is important to added device twin or direct method bindings to their respective sets. When a device twin or direct method message is received from Azure, the sets are checked for a matching *twinProperty* or *methodName* name. When a match is found, the corresponding handler function is called.
 
 ```c
 DeviceTwinBinding* deviceTwinBindingSet[] = { &led1BlinkRate, &buttonPressed, &relay1DeviceTwin, &deviceResetUtc };
@@ -288,7 +290,7 @@ OpenDirectMethodSet(directMethodBindingSet, NELEMS(directMethodBindingSet));
 
 ### Dispatching
 
-When a Device Twin or Direct Method message is received, their respective sets are checked for a matching *twinProperty* or *methodName* name. When a match is found, the associated handler function is called.
+When a Device Twin or Direct Method message is received, their respective sets are checked for a matching *twinProperty* or *methodName* name. When a match is found, the corresponding handler function is called.
 
 ### Closing
 
@@ -324,7 +326,7 @@ CloseDirectMethodSet();
 
     ![](resources/visual-studio-open-app-manifest.png)
 
-3. Update the contents of this **app_manifest.json**.
+3. Paste the contents of the clipboard into **app_manifest.json** and save the file. 
 
 ---
 
@@ -478,7 +480,7 @@ Select the **Properties** tab, update the **Led Blink Rate [0..4]** field, then 
 
 ## Viewing Reported Status
 
-The **Status** tab displays the latest reported data from the Azure Sphere device.
+The **Status** tab displays the latest reported data from the Azure Sphere device. The location map will be blank until you set the longitude and latitude cloud properties in the *Properties* tab.
 
 ![](resources/iot-central-device-report-status.png)
 
