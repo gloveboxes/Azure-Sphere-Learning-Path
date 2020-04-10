@@ -1,3 +1,3 @@
 # Azure Sphere Learning Path
 
-Lab 3: [Control an Azure Sphere with Device Twins and Direct Methods](/docs/Lab_3_Control_Device_with_Device_Twins_and_Direct_Methods/README.md)
+[Lab 2: Send Telemetry from an Azure Sphere to Azure IoT Central](../../zdocs/Lab_2_Send_Telemetry_to_Azure_IoT_Central/README.md)
