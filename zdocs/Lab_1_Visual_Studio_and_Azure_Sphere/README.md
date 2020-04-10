@@ -112,8 +112,8 @@ static Peripheral led1 = {
 	.direction = OUTPUT, // for OUTPUT
 	.initialState = GPIO_Value_Low, // Set the initial state on the pin when opened
 	.invertPin = true, // Should the switching logic be reverse for on/off, high/low
-	.initialise = OpenPeripheral, // The function to be called to open the Pin.
-	.name = "led1" // An arbitrary name for the peripheral.
+	.initialise = OpenPeripheral, // The function to be called to open the GPIO Pin
+	.name = "led1" // An arbitrary name for the peripheral
 };
 ```
 
@@ -244,7 +244,7 @@ static Peripheral fanControl = {
 	.direction = OUTPUT, // for OUTPUT
 	.initialState = GPIO_Value_Low,  // Set the initial state on the pin when opened
 	.invertPin = true,  // Should the switching logic be reverse for on/off, high/low
-	.initialise = OpenPeripheral,  // The name of C function to be called to open the Pin.
+	.initialise = OpenPeripheral,  // The function to be called to open the GPIO Pin
 	.name = "FanControl"  // An arbitrary name for the senor.
 };
 
