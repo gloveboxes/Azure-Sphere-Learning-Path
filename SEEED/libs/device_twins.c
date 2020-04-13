@@ -3,7 +3,6 @@
 void SetDesiredState(JSON_Object* desiredProperties, DeviceTwinBinding* deviceTwinBinding);
 void DeviceTwinsReportStatusCallback(int result, void* context);
 bool DeviceTwinUpdateReportedState(char* reportedPropertiesString);
-bool TwinReportState(DeviceTwinBinding* deviceTwinBinding);
 
 
 DeviceTwinBinding** _deviceTwins = NULL;
@@ -117,7 +116,7 @@ void SetDesiredState(JSON_Object* jsonObject, DeviceTwinBinding* deviceTwinBindi
 			if (deviceTwinBinding->handler != NULL) {
 				deviceTwinBinding->handler(deviceTwinBinding);
 			}
-			TwinReportState(deviceTwinBinding);
+			DeviceTwinReportState(deviceTwinBinding, deviceTwinBinding->twinState);
 		}
 		break;
 	case TYPE_FLOAT:
@@ -127,7 +126,7 @@ void SetDesiredState(JSON_Object* jsonObject, DeviceTwinBinding* deviceTwinBindi
 			if (deviceTwinBinding->handler != NULL) {
 				deviceTwinBinding->handler(deviceTwinBinding);
 			}
-			TwinReportState(deviceTwinBinding);
+			DeviceTwinReportState(deviceTwinBinding, deviceTwinBinding->twinState);
 		}
 		break;
 	case TYPE_BOOL:
@@ -137,7 +136,7 @@ void SetDesiredState(JSON_Object* jsonObject, DeviceTwinBinding* deviceTwinBindi
 			if (deviceTwinBinding->handler != NULL) {
 				deviceTwinBinding->handler(deviceTwinBinding);
 			}
-			TwinReportState(deviceTwinBinding);
+			DeviceTwinReportState(deviceTwinBinding, deviceTwinBinding->twinState);
 		}
 		break;
 	case TYPE_STRING:
@@ -147,7 +146,7 @@ void SetDesiredState(JSON_Object* jsonObject, DeviceTwinBinding* deviceTwinBindi
 			if (deviceTwinBinding->handler != NULL) {
 				deviceTwinBinding->handler(deviceTwinBinding);
 			}
-			TwinReportState(deviceTwinBinding);
+			DeviceTwinReportState(deviceTwinBinding, deviceTwinBinding->twinState);
 			deviceTwinBinding->twinState = NULL;
 		}
 		break;
@@ -158,6 +157,8 @@ void SetDesiredState(JSON_Object* jsonObject, DeviceTwinBinding* deviceTwinBindi
 
 bool DeviceTwinReportState(DeviceTwinBinding* deviceTwinBinding, void* state) {
 	int len = 0;
+	size_t reportLen = 10; // initialize to 10 chars to allow for JSON and NULL termination. This is generous by a couple of bytes
+	bool result = false;
 
 	if (deviceTwinBinding == NULL) {
 		return false;
@@ -167,26 +168,41 @@ bool DeviceTwinReportState(DeviceTwinBinding* deviceTwinBinding, void* state) {
 		return false;
 	}
 
-	static char reportedPropertiesString[DEVICE_TWIN_REPORT_LEN] = { 0 };
+	reportLen += strlen(deviceTwinBinding->twinProperty); // allow for twin property name in JSON response
+
+	if (deviceTwinBinding->twinType == TYPE_STRING) {
+		reportLen += strlen((char*)state);
+	}
+	else {
+		reportLen += 20; // allow 20 chars for Int, float, and boolean serialization
+	}
+
+	char* reportedPropertiesString = (char*)malloc(reportLen);
+	if (reportedPropertiesString == NULL) {
+		return false;
+	}
+
+	memset(reportedPropertiesString, 0, reportLen);
+
 	switch (deviceTwinBinding->twinType) {
 	case TYPE_INT:
 		*(int*)deviceTwinBinding->twinState = *(int*)state;
-		len = snprintf(reportedPropertiesString, DEVICE_TWIN_REPORT_LEN, "{\"%s\":%d}", deviceTwinBinding->twinProperty,
+		len = snprintf(reportedPropertiesString, reportLen, "{\"%s\":%d}", deviceTwinBinding->twinProperty,
 			(*(int*)deviceTwinBinding->twinState));
 		break;
 	case TYPE_FLOAT:
 		*(float*)deviceTwinBinding->twinState = *(float*)state;
-		len = snprintf(reportedPropertiesString, DEVICE_TWIN_REPORT_LEN, "{\"%s\":%f}", deviceTwinBinding->twinProperty,
+		len = snprintf(reportedPropertiesString, reportLen, "{\"%s\":%f}", deviceTwinBinding->twinProperty,
 			(*(float*)deviceTwinBinding->twinState));
 		break;
 	case TYPE_BOOL:
 		*(bool*)deviceTwinBinding->twinState = *(bool*)state;
-		len = snprintf(reportedPropertiesString, DEVICE_TWIN_REPORT_LEN, "{\"%s\":%s}", deviceTwinBinding->twinProperty,
+		len = snprintf(reportedPropertiesString, reportLen, "{\"%s\":%s}", deviceTwinBinding->twinProperty,
 			(*(bool*)deviceTwinBinding->twinState ? "true" : "false"));
 		break;
 	case TYPE_STRING:
 		deviceTwinBinding->twinState = NULL;
-		len = snprintf(reportedPropertiesString, DEVICE_TWIN_REPORT_LEN, "{\"%s\":\"%s\"}", deviceTwinBinding->twinProperty, (char*)state);
+		len = snprintf(reportedPropertiesString, reportLen, "{\"%s\":\"%s\"}", deviceTwinBinding->twinProperty, (char*)state);
 		break;
 	case TYPE_UNKNOWN:
 		Log_Debug("Device Twin Type Unknown");
@@ -195,46 +211,18 @@ bool DeviceTwinReportState(DeviceTwinBinding* deviceTwinBinding, void* state) {
 		break;
 	}
 
-	if (len == 0) { return false; }
-
-	return DeviceTwinUpdateReportedState(reportedPropertiesString);
-}
-
-bool TwinReportState(DeviceTwinBinding* deviceTwinBinding) {
-	int len = 0;
-
-	if (!ConnectToAzureIot()) {
-		return false;
+	if (len > 0) {
+		result = DeviceTwinUpdateReportedState(reportedPropertiesString);
 	}
 
-	static char reportedPropertiesString[DEVICE_TWIN_REPORT_LEN] = { 0 };
-
-	switch (deviceTwinBinding->twinType) {
-	case TYPE_INT:
-		len = snprintf(reportedPropertiesString, DEVICE_TWIN_REPORT_LEN, "{\"%s\":%d}", deviceTwinBinding->twinProperty,
-			(*(int*)deviceTwinBinding->twinState));
-		break;
-	case TYPE_FLOAT:
-		len = snprintf(reportedPropertiesString, DEVICE_TWIN_REPORT_LEN, "{\"%s\":%f}", deviceTwinBinding->twinProperty,
-			(*(float*)deviceTwinBinding->twinState));
-		break;
-	case TYPE_BOOL:
-		len = snprintf(reportedPropertiesString, DEVICE_TWIN_REPORT_LEN, "{\"%s\":%s}", deviceTwinBinding->twinProperty,
-			(*(bool*)deviceTwinBinding->twinState ? "true" : "false"));
-		break;
-	case TYPE_STRING:
-		len = snprintf(reportedPropertiesString, DEVICE_TWIN_REPORT_LEN, "{\"%s\":\"%s\"}", deviceTwinBinding->twinProperty,
-			(deviceTwinBinding->twinState));
-		break;
-	default:
-		break;
+	if (reportedPropertiesString != NULL) {
+		free(reportedPropertiesString);
+		reportedPropertiesString = NULL;
 	}
 
-	if (len == 0) { return false; }
-
-	return DeviceTwinUpdateReportedState(reportedPropertiesString);
-
+	return result;
 }
+
 
 bool DeviceTwinUpdateReportedState(char* reportedPropertiesString) {
 	if (IoTHubDeviceClient_LL_SendReportedState(
@@ -247,6 +235,8 @@ bool DeviceTwinUpdateReportedState(char* reportedPropertiesString) {
 		Log_Debug("INFO: Reported state updated '%s'.\n", reportedPropertiesString);
 		return true;
 	}
+
+	IoTHubDeviceClient_LL_DoWork(GetAzureIotClientHandle());
 }
 
 

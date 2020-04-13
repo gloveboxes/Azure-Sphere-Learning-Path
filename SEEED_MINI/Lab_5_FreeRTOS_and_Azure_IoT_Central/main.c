@@ -254,6 +254,7 @@ static void InitPeripheralsAndHandlers(void) {
 	OpenDirectMethodSet(directMethodBindingSet, NELEMS(directMethodBindingSet));
 
 	StartTimerSet(timerSet, NELEMS(timerSet));
+	StartCloudToDevice();
 
 	EnableInterCoreCommunications(rtAppComponentId, InterCoreHandler);  // Initialize Inter Core Communications
 	SendInterCoreMessage("HeartBeat"); // Prime RT Core with Component ID Signature

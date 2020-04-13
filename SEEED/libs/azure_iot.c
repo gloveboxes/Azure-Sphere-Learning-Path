@@ -1,19 +1,22 @@
 #include "azure_iot.h"
+#include <time.h>
 
 const char* getAzureSphereProvisioningResultString(AZURE_SPHERE_PROV_RETURN_VALUE provisioningResult);
 const char* GetReasonString(IOTHUB_CLIENT_CONNECTION_STATUS_REASON reason);
 void SendMessageCallback(IOTHUB_CLIENT_CONFIRMATION_RESULT, void*);
 bool SetupAzureClient(void);
 void HubConnectionStatusCallback(IOTHUB_CLIENT_CONNECTION_STATUS, IOTHUB_CLIENT_CONNECTION_STATUS_REASON, void*);
-
+void AzureCloudToDeviceHandler(EventLoopTimer*);
 
 IOTHUB_DEVICE_CLIENT_LL_HANDLE iothubClientHandle = NULL;
 bool iothubAuthenticated = false;
 const int keepalivePeriodSeconds = 20;
 const char* _connectionString = NULL;
 
+const int maxPeriodSeconds = 5; // defines the max back off period for DoWork with lost network
+
 static Timer cloudToDeviceTimer = {
-	.period = { 1, 0 },			// 1 second
+	.period = { 0, 0 },			// one-shot timer
 	.name = "DoWork",
 	.handler = &AzureCloudToDeviceHandler
 };
@@ -22,6 +25,7 @@ static Timer cloudToDeviceTimer = {
 void StartCloudToDevice(void) {
 	if (cloudToDeviceTimer.eventLoopTimer == NULL) {
 		StartTimer(&cloudToDeviceTimer);
+		SetOneShotTimer(&cloudToDeviceTimer, &(struct timespec){1, 0});
 	}
 }
 
@@ -45,19 +49,31 @@ void SendMessageCallback(IOTHUB_CLIENT_CONFIRMATION_RESULT result, void* context
 	Log_Debug("INFO: Message received by IoT Hub. Result is: %d\n", result);
 }
 
+
+/// <summary>
+///     Azure IoT Hub DoWork Handler with back off up to 5 seconds for network disconnect
+/// </summary>
 void AzureCloudToDeviceHandler(EventLoopTimer* eventLoopTimer) {
+	static int period = 1; //  initialize period to 1 second
 
 	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
 		Terminate();
 		return;
 	}
 
-	if (iothubClientHandle != NULL) {
+	if (iothubAuthenticated && iothubClientHandle != NULL) {
 		IoTHubDeviceClient_LL_DoWork(iothubClientHandle);
+		period = 1;
 	}
 	else {
-		ConnectToAzureIot();
+		if (ConnectToAzureIot()) {
+			period = 1;
+		}
+		else {
+			if (period < maxPeriodSeconds) { period++; }
+		}
 	}
+	SetOneShotTimer(&cloudToDeviceTimer, &(struct timespec){period, 0});
 }
 
 bool SendMsg(const char* msg) {
@@ -86,6 +102,8 @@ bool SendMsg(const char* msg) {
 	}
 
 	IoTHubMessage_Destroy(messageHandle);
+
+	IoTHubDeviceClient_LL_DoWork(iothubClientHandle);
 
 	return true;
 }
@@ -126,7 +144,6 @@ bool ConnectToAzureIot(void) {
 		}
 		else {
 			if (SetupAzureClient()) {
-				StartCloudToDevice();
 				return true;
 			}
 			else {
@@ -187,9 +204,6 @@ bool SetupAzureClient() {
 /// </summary>
 void HubConnectionStatusCallback(IOTHUB_CLIENT_CONNECTION_STATUS result, IOTHUB_CLIENT_CONNECTION_STATUS_REASON reason, void* userContextCallback) {
 	iothubAuthenticated = (result == IOTHUB_CLIENT_CONNECTION_AUTHENTICATED);
-	if (!iothubAuthenticated) {
-		StopCloudToDevice();
-	}
 	Log_Debug("IoT Hub Authenticated: %s\n", GetReasonString(reason));
 }
 

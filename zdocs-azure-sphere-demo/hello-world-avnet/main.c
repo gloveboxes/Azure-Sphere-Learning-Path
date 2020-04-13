@@ -39,6 +39,7 @@ static void InitPeripheralsAndHandlers(void) {
 
 	OpenPeripheralSet(peripheralSet, NELEMS(peripheralSet));
 	OpenDeviceTwinSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
+
 	StartTimerSet(timerSet, NELEMS(timerSet));
 	StartCloudToDevice();
 }

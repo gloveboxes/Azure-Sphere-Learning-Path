@@ -384,6 +384,7 @@ static void InitPeripheralsAndHandlers(void) {
 	OpenDirectMethodSet(directMethodBindingSet, NELEMS(directMethodBindingSet));
 
 	StartTimerSet(timerSet, NELEMS(timerSet));
+	StartCloudToDevice();
 }
 
 /// <summary>
