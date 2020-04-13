@@ -34,11 +34,11 @@ static const struct timespec led2BlinkPeriod = { 0, 300 * 1000 * 1000 };
 
 // GPIO Output Peripherals
 static Peripheral led2 = {
-	.pin = LED2, .direction = OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true,
+	.pin = LED2, .direction = OUTPUT, .initialState = GPIO_Value_Low, .invertPin = false,
 	.initialise = OpenPeripheral, .name = "led2"
 };
 static Peripheral networkConnectedLed = {
-	.pin = NETWORK_CONNECTED_LED, .direction = OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true,
+	.pin = NETWORK_CONNECTED_LED, .direction = OUTPUT, .initialState = GPIO_Value_Low, .invertPin = false,
 	.initialise = OpenPeripheral, .name = "networkConnectedLed"
 };
 static Peripheral relay1 = {

@@ -406,14 +406,16 @@ You can open the output window by using the Visual Studio <kbd>Ctrl+Alt+O</kbd> 
 ![](resources/avnet-azure-sphere.jpg)
 
 1. The blue LED will start to blink.
-2. Press **Button A** on the device to change the blink rate.
+2. LED3 will turn yellow when connected to Azure. 
+3. Press **Button A** on the device to change the blink rate.
 
 ### Seeed Studio Azure Sphere MT3620 Development Kit
 
 ![](resources/seeed-studio-azure-sphere-rdb.jpg)
 
-1. The blue LED will start to blink
-2. Press **Button A** on the device to change the blink rate.
+1. The green LED will start to blink.
+2. The network LED will turn red when connected to Azure.
+3. Press **Button A** on the device to change the blink rate.
 
 ### Seeed Studio MT3620 Mini Dev Board
 
@@ -472,7 +474,7 @@ You need to **Migrate** the newly enrolled device to the **Azure Sphere** templa
 
 	>Virtual button press events are generated for Azure Sphere devices that do not have builtin buttons. 
 
-It may take a minute or two for temperature, humidity, button pressed alerts, and message count to be displayed in IoT Central.
+It may take a minute or two for temperature, humidity, button pressed alerts, and message count to be displayed in IoT Central. Changing tabs can speed can prompt a data refresh.
 
 ![](resources/iot-central-display-events.png)
 

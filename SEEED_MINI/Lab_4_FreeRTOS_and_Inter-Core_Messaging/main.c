@@ -149,6 +149,34 @@ static int gpio_input(u8 gpio_no, os_hal_gpio_data* pvalue) {
 }
 
 static void ButtonTask(void* pParameters) {
+	static os_hal_gpio_data oldStateButtonA = OS_HAL_GPIO_DATA_LOW;
+	static os_hal_gpio_data oldStateButtonB = OS_HAL_GPIO_DATA_LOW;
+	os_hal_gpio_data value = 0;
+
+	printf("GPIO Task Started\n");
+	while (1) {
+
+		// Get Button_A status
+		gpio_input(BUTTON_A, &value);
+		if ((value != oldStateButtonA) && (value == OS_HAL_GPIO_DATA_LOW)) {
+			buttonA_Pressed = true;
+			blinkIntervalIndex = (blinkIntervalIndex + 1) % numBlinkIntervals;
+		}
+		oldStateButtonA = value;
+
+		// Get Button_B status
+		gpio_input(BUTTON_B, &value);
+		if ((value != oldStateButtonB) && (value == OS_HAL_GPIO_DATA_LOW)) {
+			buttonB_Pressed = true;
+		}
+		oldStateButtonB = value;
+
+		// Delay for 100ms
+		vTaskDelay(pdMS_TO_TICKS(100));
+	}
+}
+
+static void VirtualButtonTask(void* pParameters) {
 	static bool toggle = false;
 	printf("Button Task Started\n");
 
@@ -241,7 +269,8 @@ _Noreturn void RTCoreMain(void) {
 
 	xTaskCreate(PeriodicTask, "Periodic Task", APP_STACK_SIZE_BYTES, NULL, 6, NULL);
 	xTaskCreate(LedTask, "LED Task", APP_STACK_SIZE_BYTES, NULL, 5, NULL);
-	xTaskCreate(ButtonTask, "GPIO Task", APP_STACK_SIZE_BYTES, NULL, 4, NULL);
+	xTaskCreate(ButtonTask, "Button Task", APP_STACK_SIZE_BYTES, NULL, 5, NULL);	
+	xTaskCreate(VirtualButtonTask, "GPIO Task", APP_STACK_SIZE_BYTES, NULL, 4, NULL);
 	xTaskCreate(RTCoreMsgTask, "RTCore Msg Task", APP_STACK_SIZE_BYTES, NULL, 2, NULL);
 	vTaskStartScheduler();
 

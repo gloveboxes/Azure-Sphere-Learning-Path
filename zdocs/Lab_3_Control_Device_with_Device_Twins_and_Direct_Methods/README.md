@@ -416,16 +416,18 @@ To start the build, deploy, and debug process, either click the Visual Studio **
 ![](resources/avnet-azure-sphere.jpg)
 
 1. The blue LED will start to blink
-2. Press **Button A** on the device to change the blink rate and generate **Button Pressed Events**.
-3. Press **Button B** on the device to generate **Button Pressed Events**.
+2. LED3 will turn yellow when connected to Azure. 
+3. Press **Button A** on the device to change the blink rate and generate **Button Pressed Events**.
+4. Press **Button B** on the device to generate **Button Pressed Events**.
 
 ### Seeed Studio Azure Sphere MT3620 Development Kit
 
 ![](resources/seeed-studio-azure-sphere-rdb.jpg)
 
 1. The blue LED will start to blink
-2. Press **Button A** on the device to change the blink rate and generate **Button Pressed Events**.
-3. Press **Button B** on the device to generate **Button Pressed Events**.
+2. The network LED will turn red when connected to Azure.
+3. Press **Button A** on the device to change the blink rate and generate **Button Pressed Events**.
+4. Press **Button B** on the device to generate **Button Pressed Events**.
 
 ### Seeed Studio MT3620 Mini Dev Board
 
