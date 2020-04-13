@@ -21,14 +21,12 @@ static Timer cloudToDeviceTimer = {
 	.handler = &AzureCloudToDeviceHandler
 };
 
-
 void StartCloudToDevice(void) {
 	if (cloudToDeviceTimer.eventLoopTimer == NULL) {
 		StartTimer(&cloudToDeviceTimer);
 		SetOneShotTimer(&cloudToDeviceTimer, &(struct timespec){1, 0});
 	}
 }
-
 
 void StopCloudToDevice(void) {
 	if (cloudToDeviceTimer.eventLoopTimer != NULL) {
@@ -48,7 +46,6 @@ void SetConnectionString(const char* connectionString) {
 void SendMessageCallback(IOTHUB_CLIENT_CONFIRMATION_RESULT result, void* context) {
 	Log_Debug("INFO: Message received by IoT Hub. Result is: %d\n", result);
 }
-
 
 /// <summary>
 ///     Azure IoT Hub DoWork Handler with back off up to 5 seconds for network disconnect
@@ -143,12 +140,7 @@ bool ConnectToAzureIot(void) {
 			return true;
 		}
 		else {
-			if (SetupAzureClient()) {
-				return true;
-			}
-			else {
-				return false;
-			}
+			return SetupAzureClient();
 		}
 	}
 }
@@ -171,6 +163,7 @@ bool SetupAzureClient() {
 		iothubClientHandle = IoTHubDeviceClient_LL_CreateFromConnectionString(_connectionString, protocol);
 		if (iothubClientHandle == NULL) {
 			Log_Debug("Failure to create IoT Hub Client from connection string");
+			return false;
 		}
 	}
 	else {
@@ -181,19 +174,19 @@ bool SetupAzureClient() {
 			return false;
 		}
 	}
-
-	iothubAuthenticated = true;
-
+	   
 	if (IoTHubDeviceClient_LL_SetOption(iothubClientHandle, OPTION_KEEP_ALIVE, &keepalivePeriodSeconds) != IOTHUB_CLIENT_OK) {
 		Log_Debug("ERROR: failure setting option \"%s\"\n", OPTION_KEEP_ALIVE);
 		return false;
 	}
 
-	IoTHubDeviceClient_LL_DoWork(iothubClientHandle);
+	iothubAuthenticated = true;
 
 	IoTHubDeviceClient_LL_SetDeviceTwinCallback(iothubClientHandle, TwinCallback, NULL);
 	IoTHubDeviceClient_LL_SetDeviceMethodCallback(iothubClientHandle, AzureDirectMethodHandler, NULL);
 	IoTHubDeviceClient_LL_SetConnectionStatusCallback(iothubClientHandle, HubConnectionStatusCallback, NULL);
+
+	IoTHubDeviceClient_LL_DoWork(iothubClientHandle);
 
 	return true;
 }
@@ -204,7 +197,7 @@ bool SetupAzureClient() {
 /// </summary>
 void HubConnectionStatusCallback(IOTHUB_CLIENT_CONNECTION_STATUS result, IOTHUB_CLIENT_CONNECTION_STATUS_REASON reason, void* userContextCallback) {
 	iothubAuthenticated = (result == IOTHUB_CLIENT_CONNECTION_AUTHENTICATED);
-	Log_Debug("IoT Hub Authenticated: %s\n", GetReasonString(reason));
+	Log_Debug("IoT Hub Connection Status: %s\n", GetReasonString(reason));
 }
 
 /// <summary>

@@ -227,7 +227,8 @@ bool DeviceTwinReportState(DeviceTwinBinding* deviceTwinBinding, void* state) {
 bool DeviceTwinUpdateReportedState(char* reportedPropertiesString) {
 	if (IoTHubDeviceClient_LL_SendReportedState(
 		GetAzureIotClientHandle(), (unsigned char*)reportedPropertiesString,
-		strlen(reportedPropertiesString), DeviceTwinsReportStatusCallback, 0) != IOTHUB_CLIENT_OK) {
+		strlen(reportedPropertiesString), DeviceTwinsReportStatusCallback, 0) != IOTHUB_CLIENT_OK) 
+	{
 		Log_Debug("ERROR: failed to set reported state for '%s'.\n", reportedPropertiesString);
 		return false;
 	}
