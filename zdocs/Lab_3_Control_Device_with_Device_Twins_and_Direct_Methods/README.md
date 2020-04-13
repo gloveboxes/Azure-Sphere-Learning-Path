@@ -480,7 +480,7 @@ Select the **Properties** tab, update the **Led Blink Rate [0..4]** field, then 
 
 ## Viewing Reported Status
 
-The **Status** tab displays the latest reported data from the Azure Sphere device. The location map will be blank until you set the longitude and latitude cloud properties in the *Properties* tab.
+The **Status** tab displays the latest reported data from the Azure Sphere device. The location map will display the map of the world until you set your device longitude and latitude cloud properties in the *Properties* tab.
 
 ![](resources/iot-central-device-report-status.png)
 
