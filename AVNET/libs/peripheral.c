@@ -4,7 +4,9 @@ Peripheral** _peripheralSet = NULL;
 size_t _peripheralSetCount = 0;
 
 bool OpenPeripheral(Peripheral* peripheral) {
-	if (peripheral == NULL || peripheral->pin < 0 || peripheral->opened) { return false; }
+	if (peripheral == NULL || peripheral->pin < 0) { return false; }
+
+	if (peripheral->opened) { return true; }
 
 	if (peripheral->invertPin) {
 		if (peripheral->initialState == GPIO_Value_High) {
@@ -65,12 +67,13 @@ void OpenPeripheralSet(Peripheral** peripheralSet, size_t peripheralSetCount) {
 /// <param name="fd">File descriptor to close</param>
 /// <param name="fdName">File descriptor name to use in error message</param>
 void ClosePeripheral(Peripheral* peripheral) {
-	if (!peripheral->opened || peripheral->fd >= 0) {
+	if (peripheral->opened && peripheral->fd >= 0) {
 		int result = close(peripheral->fd);
 		if (result != 0) {
 			Log_Debug("ERROR: Could not close peripheral %s: %s (%d).\n", peripheral->name == NULL ? "No name" : peripheral->name, strerror(errno), errno);
 		}
 	}
+	peripheral->fd = -1;
 	peripheral->opened = false;
 }
 
