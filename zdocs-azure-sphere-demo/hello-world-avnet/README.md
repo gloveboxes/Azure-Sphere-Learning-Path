@@ -1,7 +1,4 @@
-# Azure Sphere Learning Path
-
 # Azure Sphere Hello World
-
 
 
 ## Introduction
