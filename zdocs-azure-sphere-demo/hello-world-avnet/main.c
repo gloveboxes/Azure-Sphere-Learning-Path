@@ -25,13 +25,11 @@ static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 
 
 
+
 // Sets
-static Timer* timerSet[] = {  };
+static Timer* timerSet[] = { };
 static Peripheral* peripheralSet[] = { };
 static DeviceTwinBinding* deviceTwinBindingSet[] = {  };
-
-
-
 
 
 static void InitPeripheralsAndHandlers(void) {
