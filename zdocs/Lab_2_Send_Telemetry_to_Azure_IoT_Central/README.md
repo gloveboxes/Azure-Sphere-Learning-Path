@@ -220,7 +220,6 @@ This returns the **Device ID** and converts it to lowercase. Azure IoT Central r
     <br/>
 
     ![](resources/iot-central-generate-connection-string.png)
-
     <br/>
 
 4. Leave this page open as you will need the Azure IoT Central Application URL soon.
