@@ -37,9 +37,9 @@ Demo flow
 
 ```json
 "AllowedConnections": [
-    "global.azure-devices-provisioning.net",
-    "iot-hub-dps-azure-sphere.azure-devices-provisioning.net",
-    "iot-hub-azure-sphere.azure-devices.net"
+    "",
+    "",
+    ""
 ],
 ```
 
