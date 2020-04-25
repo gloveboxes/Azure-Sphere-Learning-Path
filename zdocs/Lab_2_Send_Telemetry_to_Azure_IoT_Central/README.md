@@ -217,6 +217,7 @@ This returns the **Device ID** and converts it to lowercase. Azure IoT Central r
 2. Copy and paste the **Device Connection** information (ID Scope, Device Id, and Primary Key) from Notepad to the **Azure IoT Central Application URL** web page.
 
 3. Click **Get Azure IoT Central Application URL**
+    <br/>
 
     ![](resources/iot-central-generate-connection-string.png)
 
