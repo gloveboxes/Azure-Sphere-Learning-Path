@@ -197,10 +197,16 @@ This returns the **Device ID** and converts it to lowercase. Azure IoT Central r
 ### Display the Device Connection information
 
 1. Open the newly created device by clicking on the device name.
+    <br/>
+
     ![](resources/iot-central-open-new-device.png)
 2. Open the Device Connection information panel by clicking on the **Connect** button.
+    <br/>
+
     ![](resources/iot-central-open-connect.png)
 3. The device connection configuration will be displayed.
+    <br/>
+
     ![](resources/iot-central-device-connection-information.png)
 4. **From the Device connection page, copy the ID Scope, Device ID, and Primary Key to Notepad**.
 
@@ -213,6 +219,8 @@ This returns the **Device ID** and converts it to lowercase. Azure IoT Central r
 3. Click **Get Azure IoT Central Application URL**
 
     ![](resources/iot-central-generate-connection-string.png)
+
+    <br/>
 
 4. Leave this page open as you will need the Azure IoT Central Application URL soon.
 
