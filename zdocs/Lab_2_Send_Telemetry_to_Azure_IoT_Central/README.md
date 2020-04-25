@@ -184,6 +184,7 @@ This returns the **Device ID** and converts it to lowercase. Azure IoT Central r
 2. Select **Devices** from the side menu.
 3. Select the **Azure Sphere** device template
     <br/>
+    
     ![](resources/iot-central-create-device.png).
 4. Click **+ New** to add a new device.
 5. Set the **Device ID** name to _Dummy-Device_, or something similar.
