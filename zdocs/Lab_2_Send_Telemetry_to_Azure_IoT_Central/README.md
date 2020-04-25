@@ -187,8 +187,8 @@ This returns the **Device ID** and converts it to lowercase. Azure IoT Central r
 
     ![](resources/iot-central-create-device.png)
 4. Click **+ New** to add a new device.
-5. Set the **Device ID** name to _Dummy-Device_, or something similar.
-6. Leave the default **Device Name**.
+5. Set the **Device name** name to _Dummy-Device_, or something similar.
+6. Leave the default **Device ID**.
 7. Click **Create** to create the new device.
     <br/>
 
