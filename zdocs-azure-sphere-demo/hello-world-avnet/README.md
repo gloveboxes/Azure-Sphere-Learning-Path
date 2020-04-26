@@ -80,11 +80,8 @@ static Peripheral led1 = {
 	.initialise = OpenPeripheral,
 	.name = "led1"
 };
-```
 
-## Step 3 Device Twins
 
-```c
 // Cloud to Device
 static DeviceTwinBinding led1_C2D_DeviceTwin = {
 	.twinProperty = "Relay1",
