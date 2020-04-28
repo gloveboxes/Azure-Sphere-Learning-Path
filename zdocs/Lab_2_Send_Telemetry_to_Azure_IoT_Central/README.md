@@ -37,6 +37,17 @@ You will learn how to build a High-Level [Azure Sphere](https://azure.microsoft.
 
 The lab assumes you understand the content from [Lab 1: Secure, Build, Deploy and Debug your first Azure Sphere High-Level Application with Visual Studio](../Lab_1_Visual_Studio_and_Azure_Sphere/README.md)
 
+## Supported browsers for Azure IoT Central
+
+We recommend that you use the most up-to-date browser that's compatible with your operating system. The following browsers are supported:
+
+* Microsoft Edge (latest version). This means the **Chromium** version of the Microsoft Edge Browser
+* Safari (latest version, Mac only)
+* Chrome (latest version)
+* Firefox (latest version)
+
+[Supported browsers for Azure IoT Central](https://docs.microsoft.com/en-us/azure/iot-central/core/iot-central-supported-browsers)
+
 ## Tutorial Overview
 
 1. How to create an Azure IoT Central Application from a template.
