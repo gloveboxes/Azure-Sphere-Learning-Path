@@ -118,6 +118,12 @@ Building solutions with pre-certified Azure Sphere modules is the fastest way to
 
 ---
 
+## Youtube Building Secure IoT Solutions with Azure Sphere
+
+Click on the following image to start watching the introduction session to building secure solutions with Azure Sphere.
+
+[![Building Secure Solutions with Azure Sphere](zdocs/resources/youtube-building-secure-iot-solutions-with-azure-sphere.png)](https://www.youtube.com/watch?v=-efcCH5esok)
+
 ## Azure Sphere Architecture
 
 The initial release of the Azure Sphere is built on the Mediatec MT3620. This MCU consists of 5 cores. There is a dedicated communications core, a dedicated Security Subsystem core, and **three** user application cores.
