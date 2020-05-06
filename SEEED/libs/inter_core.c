@@ -27,7 +27,7 @@ bool SendInterCoreMessage(const char* msg) {
 int EnableInterCoreCommunications(const char* rtAppComponentId, void (*interCoreCallback)(char*)) {
 	_interCoreCallback = interCoreCallback;
 	// Open connection to real-time capable application.
-	sockFd = Application_Socket(rtAppComponentId);
+	sockFd = Application_Connect(rtAppComponentId);
 	if (sockFd == -1) {
 		Log_Debug("ERROR: Unable to create socket: %d (%s)\n", errno, strerror(errno));
 		return -1;
