@@ -6,7 +6,6 @@
 
 |Author|[Dave Glover](https://developer.microsoft.com/en-us/advocates/dave-glover?WT.mc_id=github-blog-dglover), Microsoft Cloud Developer Advocate, [@dglover](https://twitter.com/dglover) |
 |:----|:---|
-|Source Code | https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git |
 |Date| March 2020|
 
 ---
@@ -40,6 +39,18 @@ You will learn how Azure Sphere **Inter-Core** messaging works.
 
 ---
 
+## Introduction to the Learning Path Labs
+
+There are a number of Learning Path libraries that support these labs. These Learning Path C functions are prefixed with **lp_**, typedefs and enums are prefixed with **LP_**. 
+
+The Learning Path libraries are open source and contributions are welcome.
+
+The Learning Path libraries are built from the [Azure Sphere Samples](https://github.com/Azure/azure-sphere-samples) and aim to demonstrate best practices.
+
+The Learning Path libraries are **not** part of the official Azure Sphere libraries or samples.
+
+---
+
 ## Tutorial Overview
 
 1. Deploy an **Inter-Core** messaging enabled High-Level application to the Azure Sphere.
@@ -66,11 +77,21 @@ In this lab, we are going to deploy a High-Level application that will accept ev
 
 1. Click **Open a local folder**
 2. Open the Azure-Sphere lab folder
-3. Open the **folder name** that corresponds to the **Azure Sphere board** you are using
-4. Open the **Lab_5_FreeRTOS_and_Azure_IoT_Central** folder
-5. Click **Select Folder** button to open the project
+3. Open the **Lab_5_FreeRTOS_and_Azure_IoT_Central** folder
+4. Click **Select Folder** button to open the project
 
-### Step 3: Review the App Manifest
+### Step 3: Set your developer board configuration
+
+These labs supports developer boards from AVNET and Seeed Studio. You need to set the configuration that matches your developer board.
+
+1. Open CMakeList.txt
+2. The default board configuration is the AVNET board. If you are NOT using this board then add a # at the beginning of the AVNET line to disable.
+2. Uncomment the **set** command that corresponds to your Azure Sphere developer board.
+3. Save the file. This will auto generate the CMake cache.
+
+	![](resources/cmakelist-set-board-configuration.png)
+
+### Step 4: Review the App Manifest
 
 1. Open the **app_manifest.json** file.
 2. Review the contents and note the **AllowedApplicationConnections** property setting that is populated with the Component ID of the FreeRTOS Real-Time application.
@@ -89,7 +110,6 @@ In this lab, we are going to deploy a High-Level application that will accept ev
       "$RELAY"
     ],
     "I2cMaster": [ "$AVNET_MT3620_SK_ISU2_I2C" ],
-    "Adc": [ "$AVNET_MT3620_SK_ADC_CONTROLLER0" ],
     "PowerControls": [ "ForceReboot" ],
     "AllowedConnections": [ "global.azure-devices-provisioning.net", "<Replace with your Azure IoT Central URI>" ],
     "DeviceAuthentication": "<Replace with your Azure Sphere Tenant ID>",
@@ -101,7 +121,7 @@ In this lab, we are going to deploy a High-Level application that will accept ev
 
 ---
 
-## Step 4: Set Azure IoT Central Connection Information
+## Step 5: Set Azure IoT Central Connection Information
 
 1. Open the **app_manifest.json** file.
 2. **DO NOT** replace the contents of the **app_manifest.json** file as you did in previous labs. The GPIO pin allocation is different as pins have been allocated to the FreeRTOS Real-Time application.
@@ -112,7 +132,7 @@ In this lab, we are going to deploy a High-Level application that will accept ev
 
 ---
 
-## Step 5: Set a Breakpoint in the InterCoreHandler Function
+## Step 6: Set a Breakpoint in the InterCoreHandler Function
 
 1. Open **main.c**
 2. From the **Navigate Functions dropdown**, select the second of the two **InterCoreHandler** items listed. The first is the [function forward declaration](https://en.wikipedia.org/wiki/Forward_declaration), the second is the definition on the function. 

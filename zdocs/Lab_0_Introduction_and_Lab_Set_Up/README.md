@@ -2,7 +2,6 @@
 
 |Author|[Dave Glover](https://developer.microsoft.com/en-us/advocates/dave-glover?WT.mc_id=github-blog-dglover), Microsoft Cloud Developer Advocate, [@dglover](https://twitter.com/dglover) |
 |:----|:---|
-|Source Code | https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git |
 |Date| March 2020 |
 
 ---

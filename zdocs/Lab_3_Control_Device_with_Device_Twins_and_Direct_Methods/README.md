@@ -4,7 +4,6 @@
 
 |Author|[Dave Glover](https://developer.microsoft.com/en-us/advocates/dave-glover?WT.mc_id=github-blog-dglover), Microsoft Cloud Developer Advocate, [@dglover](https://twitter.com/dglover) |
 |:----|:---|
-|Source Code | https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git |
 |Date| March 2020|
 
 ---
@@ -34,6 +33,18 @@ You will learn how to control an [Azure Sphere](https://azure.microsoft.com/serv
 ## Prerequisites
 
 This lab assumes you have completed [Lab 2: Send Telemetry from an Azure Sphere to Azure IoT Central](../Lab_2_Send_Telemetry_to_Azure_IoT_Central/README.md). You will have created an Azure IoT Central application, connected Azure IoT Central to your Azure Sphere Tenant, and you have configured the **app_manifest.json** for Azure IoT Central.
+
+---
+
+## Introduction to the Learning Path Labs
+
+There are a number of Learning Path libraries that support these labs. These Learning Path C functions are prefixed with **lp_**, typedefs and enums are prefixed with **LP_**. 
+
+The Learning Path libraries are open source and contributions are welcome.
+
+The Learning Path libraries are built from the [Azure Sphere Samples](https://github.com/Azure/azure-sphere-samples) and aim to demonstrate best practices.
+
+The Learning Path libraries are **not** part of the official Azure Sphere libraries or samples.
 
 ---
 
@@ -98,12 +109,12 @@ Azure IoT Central properties are implemented on Azure IoT Hub device twins. Devi
 
 ### Cloud to Device Updates
 
-The following example declares a variable named **led1BlinkRate** of type **DeviceTwinBinding**. This variable maps the Azure IoT Central *LedBlinkRate* property with a handler function named **DeviceTwinBlinkRateHandler**.
+The following example declares a variable named **led1BlinkRate** of type **LP_DEVICE_TWIN_BINDING**. This variable maps the Azure IoT Central *LedBlinkRate* property with a handler function named **DeviceTwinBlinkRateHandler**.
 
 ```c
 static DeviceTwinBinding led1BlinkRate = { 
 	.twinProperty = "LedBlinkRate", 
-	.twinType = TYPE_INT, 
+	.twinType = LP_TYPE_INT, 
 	.handler = DeviceTwinBlinkRateHandler 
 };
 ```
@@ -115,14 +126,27 @@ The following is the implementation of the handler function **DeviceTwinBlinkRat
 /// <summary>
 /// Set Blink Rate using Device Twin "LedBlinkRate": {"value": 0}
 /// </summary>
-static void DeviceTwinBlinkRateHandler(DeviceTwinBinding* deviceTwinBinding) {
-	switch (deviceTwinBinding->twinType) {
-	case TYPE_INT:
+static void DeviceTwinBlinkRateHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding)
+{
+	switch (deviceTwinBinding->twinType)
+	{
+	case LP_TYPE_INT:
 		Log_Debug("\nInteger Value '%d'\n", *(int*)deviceTwinBinding->twinState);
 
 		Led1BlinkIntervalIndex = *(int*)deviceTwinBinding->twinState % led1BlinkIntervalsCount;
-		ChangeTimer(&led1BlinkTimer, &led1BlinkIntervals[Led1BlinkIntervalIndex]);
+		lp_changeTimer(&led1BlinkTimer, &led1BlinkIntervals[Led1BlinkIntervalIndex]);
 
+		break;
+	case LP_TYPE_BOOL:
+		Log_Debug("\nBoolean Value '%d'\n", *(bool*)deviceTwinBinding->twinState);
+		// Your implementation goes here - for example turn in light
+	case LP_TYPE_FLOAT:
+		Log_Debug("\nFloat Value '%f'\n", *(float*)deviceTwinBinding->twinState);
+		// Your implementation goes here - for example set a threshold
+		break;
+	case LP_TYPE_STRING:
+		Log_Debug("\nString Value '%s'\n", (char*)deviceTwinBinding->twinState);
+		// Your implementation goes here - for example update display
 		break;
 	default:
 		break;
@@ -135,16 +159,16 @@ static void DeviceTwinBlinkRateHandler(DeviceTwinBinding* deviceTwinBinding) {
 The following example declares a ButtonPressed device twin property of type string. There is no handler function registered as this is a one-way device to cloud binding.
 
 ```c
-static DeviceTwinBinding buttonPressed = { 
+static LP_DEVICE_TWIN_BINDING buttonPressed = { 
 	.twinProperty = "ButtonPressed", 
-	.twinType = TYPE_STRING 
+	.twinType = LP_TYPE_STRING 
 };
 ```
 
 The ButtonPressed reported property message is sent to IoT Central by calling the DeviceTwinReportState function. You must pass a property of the correct type.
 
 ```c
-DeviceTwinReportState(&buttonPressed, "ButtonA");   // TwinType = TYPE_STRING
+lp_deviceTwinReportState(&buttonPressed, "ButtonA");   // TwinType = TYPE_STRING
 ```
 
 ---
@@ -186,7 +210,7 @@ Direct Method Bindings map a direct method with a handler function that implemen
 In main.c the variable named resetDevice of type DirectMethodBinding is declared. This variable maps the Azure IoT Central ResetMethod command property with a handler function named ResetDirectMethod.
 
 ```c
-static DirectMethodBinding resetDevice = { 
+static LP_DIRECT_METHOD_BINDING resetDevice = { 
 	.methodName = "ResetMethod", 
 	.handler = ResetDirectMethod 
 };
@@ -232,7 +256,8 @@ Azure IoT Central commands are defined in Device templates.
 /// <summary>
 /// Start Device Power Restart Direct Method 'ResetMethod' {"reset_timer":5}
 /// </summary>
-static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMethodBinding* directMethodBinding, char** responseMsg) {
+static LP_DirectMethodResponseCode ResetDirectMethodHandler(JSON_Object* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg)
+{
 	const char propertyName[] = "reset_timer";
 	const size_t responseLen = 60; // Allocate and initialize a response message buffer. The calling function is responsible for the freeing memory
 	static struct timespec period;
@@ -240,28 +265,30 @@ static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMetho
 	*responseMsg = (char*)malloc(responseLen);
 	memset(*responseMsg, 0, responseLen);
 
-	if (!json_object_has_value_of_type(json, propertyName, JSONNumber)) {
-		return METHOD_FAILED;
+	if (!json_object_has_value_of_type(json, propertyName, JSONNumber))
+	{
+		return LP_METHOD_FAILED;
 	}
 	int seconds = (int)json_object_get_number(json, propertyName);
 
-	if (seconds > 0 && seconds < 10) {
-
+	if (seconds > 0 && seconds < 10)
+	{
 		// Report Device Reset UTC
-		DeviceTwinReportState(&deviceResetUtc, GetCurrentUtc(msgBuffer, sizeof(msgBuffer)));			// TYPE_STRING
+		lp_deviceTwinReportState(&deviceResetUtc, lp_getCurrentUtc(msgBuffer, sizeof(msgBuffer)));			// LP_TYPE_STRING
 
 		// Create Direct Method Response
 		snprintf(*responseMsg, responseLen, "%s called. Reset in %d seconds", directMethodBinding->methodName, seconds);
 
-		// Set One Shot Timer
+		// Set One Shot LP_TIMER
 		period = (struct timespec){ .tv_sec = seconds, .tv_nsec = 0 };
-		SetOneShotTimer(&resetDeviceOneShotTimer, &period);
+		lp_setOneShotTimer(&resetDeviceOneShotTimer, &period);
 
-		return METHOD_SUCCEEDED;
+		return LP_METHOD_SUCCEEDED;
 	}
-	else {
+	else
+	{
 		snprintf(*responseMsg, responseLen, "%s called. Reset Failed. Seconds out of range: %d", directMethodBinding->methodName, seconds);
-		return METHOD_FAILED;
+		return LP_METHOD_FAILED;
 	}
 }
 ```
@@ -273,8 +300,8 @@ static DirectMethodResponseCode ResetDirectMethod(JSON_Object* json, DirectMetho
 Device twin and direct method bindings must be added to their respective **sets**. When a device twin or direct method message is received from Azure, these sets are checked for a matching *twinProperty* or *methodName* name. When a match is found, the corresponding handler function is called.
 
 ```c
-DeviceTwinBinding* deviceTwinBindingSet[] = { &led1BlinkRate, &buttonPressed, &relay1DeviceTwin, &deviceResetUtc };
-DirectMethodBinding* directMethodBindingSet[] = { &resetDevice };
+LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &led1BlinkRate, &buttonPressed, &relay1DeviceTwin, &deviceResetUtc };
+LP_DIRECT_METHOD_BINDING* directMethodBindingSet[] = { &resetDevice };
 ```
 
 ### Opening
@@ -282,8 +309,8 @@ DirectMethodBinding* directMethodBindingSet[] = { &resetDevice };
 Sets are initialized in the **InitPeripheralsAndHandlers** function found in **main.c**.
 
 ```c
-OpenDeviceTwinSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
-OpenDirectMethodSet(directMethodBindingSet, NELEMS(directMethodBindingSet));
+lp_openDeviceTwinSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
+lp_openDirectMethodSet(directMethodBindingSet, NELEMS(directMethodBindingSet));
 ```
 
 ### Dispatching
@@ -295,8 +322,8 @@ When a Device Twin or Direct Method message is received, their respective sets a
 Sets are closed in the **ClosePeripheralsAndHandlers** function found in **main.c**.
 
 ```c
-CloseDeviceTwinSet();
-CloseDirectMethodSet();
+lp_closeDeviceTwinSet();
+lp_closeDirectMethodSet();
 ```
 
 ---
@@ -311,89 +338,34 @@ CloseDirectMethodSet();
 
 1. Click **Open a local folder**.
 2. Open the Azure-Sphere lab folder.
-3. Open the **folder name** that corresponds to your **Azure Sphere board**.
-4. Open the **Lab_3_Cloud_to_Device_Control_Twins_Methods** folder.
-5. Click **Select Folder** button to open the project.
+3. Open the **Lab_3_Cloud_to_Device_Control_Twins_Methods** folder.
+4. Click **Select Folder** button to open the project.
 
     <!-- ![](resources/visual-studio-open-lab3.png) -->
 
-### Step 3: Configure the Azure IoT Central Connection Information
+### Step 3: Set your developer board configuration
+
+These labs supports developer boards from AVNET and Seeed Studio. You need to set the configuration that matches your developer board.
+
+1. Open CMakeList.txt
+2. The default board configuration is the AVNET board. If you are NOT using this board then add a # at the beginning of the AVNET line to disable.
+2. Uncomment the **set** command that corresponds to your Azure Sphere developer board.
+3. Save the file. This will auto generate the CMake cache.
+
+    ![](resources/cmakelist-set-board-configuration.png)
+
+### Step 4: Configure the Azure IoT Central Connection Information
 
 1. Open the **app_manifest.json** file.
 2. You will need to redo the settings for the **app_manifest.json** file. Either copy from **Notepad** if you still have it open or copy from the **app_manifest.json** file you created in lab 2.
 
     ![](resources/visual-studio-open-app-manifest.png)
 
-3. Paste the contents of the clipboard into **app_manifest.json** and save the file. 
+3. Paste the contents of the clipboard into **app_manifest.json** and save the file.
 
 ---
 
-<!-- ## Support for Azure IoT Central Properties
-
-1. Open **main.c**.
-2. Navigate to the C statement **static DeviceTwinBinding led1BlinkRate**. 
-
-    * If you have Visual Studio line numbers enabled, then scroll down to about line 90. 
-    * You can also use **find**, press <kbd>Ctrl+f</kbd>, and type *led1BlinkRate*.
-
-    ```c
-    static DeviceTwinBinding led1BlinkRate = { .twinProperty = "LedBlinkRate", .twinType = TYPE_INT, .handler = DeviceTwinBlinkRateHandler };
-    ```
-
-    This variable describes the Device Twin. Defined is the Azure IoT Central Device Twin **Property**, the data type, and the **handler** function named **DeviceTwinBlinkRateHandler**.
-
-3. Right mouse click on **DeviceTwinBlinkRateHandler**, and select **Go To Definition**.
-    ![](resources/visual-studio-go-to-definition.png).
-4. This will take you to the handler function named **DeviceTwinBlinkRateHandler**.
-5. Review the implementation of the handler.
-
-### Support for Azure IoT Central Commands
-
-1. Open **main.c**.
-2. Navigate to the C statement **static DirectMethodBinding resetDevice**.
-    * If you have Visual Studio line numbers enabled, then scroll down to about line 95. 
-    * You can also use **find**, press <kbd>Ctrl+f</kbd>, and type *resetDevice*.
-
-    ```c
-	static DirectMethodBinding resetDevice = { .methodName = "ResetMethod", .handler = ResetDirectMethodHandler };
-    ```
-
-4. Right mouse click the **ResetDirectMethodHandler** handler and select **Go To Definition**.
-5. Review the handler function implementation.
-
-### Support for IoT Central Properties and Commands
-
-1. Open **main.c**.
-2. Press <kbd>Ctrl+f</kbd>, and search for **deviceTwinBindings**. In this code section, the **deviceTwinBindings** and **directMethodBindings** sets are declared.
-
-    ```c
-	DeviceTwinBinding* deviceTwinBindingSet[] = { &led1BlinkRate, &buttonPressed, &relay1DeviceTwin, &deviceResetUtc };
-	DirectMethodBinding* directMethodBindingSet[] = { &resetDevice };
-    ```
-
-3. From main.c, navigate to the **InitPeripheralsAndHandlers** function. This is where the device twins and direct methods **sets** are opened.
-
-    ```c
-	/// <summary>
-	///  Initialize peripherals, device twins, direct methods, timers.
-	/// </summary>
-	/// <returns>0 on success, or -1 on failure</returns>
-	static int InitPeripheralsAndHandlers(void) {
-		InitializeDevKit();
-
-		OpenPeripheralSet(peripheralSet, NELEMS(peripheralSet));
-		OpenDeviceTwinSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
-		OpenDirectMethodSet(directMethodBindingSet, NELEMS(directMethodBindingSet));
-
-		StartTimerSet(timerSet, NELEMS(timerSet));
-
-		return 0;
-	}
-    ```
-
---- -->
-
-### Step 4: Visual Studio Deployment Settings
+### Step 5: Visual Studio Deployment Settings
 
 Before building the application with Visual Studio, ensure ARM-Debug and GDB Debugger (HLCore) options are selected.
 
@@ -401,7 +373,7 @@ Before building the application with Visual Studio, ensure ARM-Debug and GDB Deb
 
 ---
 
-### Step 5: Build, Deploy and start Debugging
+### Step 6: Build, Deploy and start Debugging
 
 To start the build, deploy, and debug process, either click the Visual Studio **Start Selected Item** icon or press <kbd>**F5**</kbd>. To Build and deploy without attaching the debugger, press <kbd>**Ctrl+F5**</kbd>.
 

@@ -6,7 +6,6 @@
 
 |Author|[Dave Glover](https://developer.microsoft.com/en-us/advocates/dave-glover?WT.mc_id=github-blog-dglover), Microsoft Cloud Developer Advocate, [@dglover](https://twitter.com/dglover) |
 |:----|:---|
-|Source Code | https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git |
 |Date| March 2020|
 
 ---
@@ -110,17 +109,18 @@ In the following FreeRTOS Real-Time **app_manifest.json** file, the **AllowedApp
 
 ```json
 {
-    "SchemaVersion": 1,
-    "Name": "GPIO_RTApp_MT3620_BareMetal",
-    "ComponentId": "6583cf17-d321-4d72-8283-0b7c5b56442b",
-    "EntryPoint": "/bin/app",
-    "CmdArgs": [],
-    "Capabilities": {
-        "Gpio": [ "$AVNET_AESMS_PIN13_GPIO10", "$AVNET_AESMS_PIN14_GPIO12" ],
-        "AllowedApplicationConnections": [ "25025d2c-66da-4448-bae1-ac26fcdd3627" ]
-    },
-    "ApplicationType": "RealTimeCapable"
+  "SchemaVersion": 1,
+  "Name": "GPIO_RTApp_MT3620_BareMetal",
+  "ComponentId": "6583cf17-d321-4d72-8283-0b7c5b56442b",
+  "EntryPoint": "/bin/app",
+  "CmdArgs": [],
+  "Capabilities": {
+    "Gpio": [ "$LED1", "$BUTTON_A", "$BUTTON_B" ],
+    "AllowedApplicationConnections": [ "25025d2c-66da-4448-bae1-ac26fcdd3627" ]
+  },
+  "ApplicationType": "RealTimeCapable"
 }
+
 ```
 
 In the following High-Level **app_manifest.json** file, the **AllowedApplicationConnections** property is set to the Component ID of the FreeRTOS Real-Time application.
@@ -177,12 +177,48 @@ In the following High-Level **app_manifest.json** file, the **AllowedApplication
 ### Step 2: Open the lab project
 
 1. Click **Open a local folder**
-2. Open the Azure-Sphere lab folder
-3. Open the **folder name** that corresponds to the **Azure Sphere board** you are using
-4. Open the **Lab_4_FreeRTOS_and_Inter-Core_Messaging** folder
-5. Click **Select Folder** button to open the project
+2. Open the **folder name** that corresponds to the **Azure Sphere board** you are using
+3. Open the **Lab_4_FreeRTOS_and_Inter-Core_Messaging** folder
+4. Click **Select Folder** button to open the project
 
 ---
+
+### Step 3: Set your developer board configuration
+
+The process for setting the developer configuration is slightly different until the MediaTec sample this lab is built on is updated to Azure Sphere SDK 5+2004.
+
+The default developer board configuration is for the AVENT Azure Sphere Start Kit. If this is the board you have there is no additional configuration required.
+
+If you have one of the Seeed Studio developer boards then follow these steps.
+
+1. Open main.c and scroll down until you find the following lines of code.
+    ```c
+    // Comment out the following line with two slashes if not using the AVNET Azure Sphere Starter Kit
+    #include "../Hardware/avnet_mt3620_sk/inc/hw/azure_sphere_learning_path.h"
+
+    // Uncomment the following include statement if using Seeed Studio Mini Development Board
+    //#include "../Hardware/mt3620_rdb/inc/hw/azure_sphere_learning_path.h"
+
+    // Uncomment the following include statement if using Seeed Studio Mini Development Board
+    //#include "../Hardware/seeed_mt3620_mdb/inc/hw/azure_sphere_learning_path.h"
+    ```
+2. Comment out the AVNET board hardware definition and uncomment the hardware definition for your board.
+3. Save the file.
+4. Double click on the CMakeSettings.json file to open.
+5. Click on the **Edit JSON** file.
+    ![](resources/cmake-edit-json.png)
+6. Find the following lines
+    ```json
+    // Comment out the following line with two slashes if not using the AVNET Azure Sphere Starter Kit
+    "AzureSphereTargetHardwareDefinitionDirectory": "../Hardware/avnet_mt3620_sk",
+
+    // Uncomment the line below by remove the two slashes to enable the Seeed Studio Reference Design Board
+    // "AzureSphereTargetHardwareDefinitionDirectory": "..\\oem\\Hardware\\mt3620_rdb",
+
+    // Uncomment the following include statement if using Seeed Studio Mini Development Board
+    // "AzureSphereTargetHardwareDefinitionDirectory": "..\\oem\\Hardware\\seeed_mt3620_mdb",
+    ```
+7. Comment out the AVNET board hardware definition and uncomment the hardware definition for your board.
 
 ## Deploy the FreeRTOS Application to Azure Sphere
 

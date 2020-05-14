@@ -6,7 +6,6 @@
 
 |Author|[Dave Glover](https://developer.microsoft.com/en-us/advocates/dave-glover?WT.mc_id=github-blog-dglover), Microsoft Cloud Developer Advocate, [@dglover](https://twitter.com/dglover) |
 |:----|:---|
-|Source Code | https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git |
 |Date| March 2020|
 
 ---
@@ -36,6 +35,20 @@ You will learn how to build a High-Level [Azure Sphere](https://azure.microsoft.
 ## Prerequisites
 
 The lab assumes you understand the content from [Lab 1: Secure, Build, Deploy and Debug your first Azure Sphere High-Level Application with Visual Studio](../Lab_1_Visual_Studio_and_Azure_Sphere/README.md)
+
+---
+
+## Introduction to the Learning Path Labs
+
+There are a number of Learning Path libraries that support these labs. These Learning Path C functions are prefixed with **lp_**, typedefs and enums are prefixed with **LP_**. 
+
+The Learning Path libraries are open source and contributions are welcome.
+
+The Learning Path libraries are built from the [Azure Sphere Samples](https://github.com/Azure/azure-sphere-samples) and aim to demonstrate best practices.
+
+The Learning Path libraries are **not** part of the official Azure Sphere libraries or samples.
+
+---
 
 ## Supported browsers for Azure IoT Central
 
@@ -113,7 +126,7 @@ So the lab instructions are still visible, right mouse click, and **open link in
 
     ![](resources/iot-central-default-view.png)
 
-2. Click the **Expand Side Navigation** button to expand the IoT Central menus. 
+2. Click the **Expand Side Navigation** button to expand the IoT Central menus.
 
     ![](resources/iot-central-default-view-expand-navigation.png)
 
@@ -133,7 +146,7 @@ After you have completed this step, any device that is claimed by your Azure Sph
 
 1. Open an **Azure Sphere Developer Command Prompt**
 2. Be sure to make a note of the current directory, or change to the Azure Sphere Learning path directory. You will need the name of this directory in the next step. 
-2. Download the Certificate Authority (CA) certificate for your Azure Sphere tenant:
+3. Download the Certificate Authority (CA) certificate for your Azure Sphere tenant:
 
     ```bash
     azsphere tenant download-CA-certificate --output CAcertificate.cer
@@ -255,14 +268,11 @@ A device template is a blueprint that defines the characteristics and behaviors 
 
 For more information on device templates, review the [Define a new IoT device type in your Azure IoT Central application](https://docs.microsoft.com/en-us/azure/iot-central/core/howto-set-up-template?WT.mc_id=github-blog-dglover) article. 
 
-
-
 1. From Azure IoT Central, navigate to **Device templates**, and select the **Azure Sphere** template.
 2. Click on **Interfaces** to list the interface capabilities.
 3. Explore the IoT Central device template interfaces, properties, and views.
 
 ![](resources/iot-central-device-template-display.png)
-
 
 ---
 
@@ -304,11 +314,21 @@ The Azure Sphere will send the following JSON formatted event messages to IoT Ce
 
 1. Click **Open a local folder**.
 2. Open the Azure-Sphere lab folder.
-3. Open the **folder name** that corresponds to your **Azure Sphere board**.
 4. Open the **Lab_2_Send_Telemetry_to_Azure_IoT_Central** folder.
 5. Click **Select Folder** button to open the project.
 
-### Step 3: Configure the Azure Sphere Application
+### Step 3: Set your developer board configuration
+
+These labs supports developer boards from AVNET and Seeed Studio. You need to set the configuration that matches your developer board.
+
+1. Open CMakeList.txt
+2. The default board configuration is the AVNET board. If you are NOT using this board then add a # at the beginning of the AVNET line to disable.
+2. Uncomment the **set** command that corresponds to your Azure Sphere developer board.
+3. Save the file. This will auto generate the CMake cache.
+
+    ![](resources/cmakelist-set-board-configuration.png)
+
+### Step 4: Configure the Azure Sphere Application
 
 1. Open the **app_manifest.json** file
 
@@ -340,7 +360,6 @@ The Azure Sphere will send the following JSON formatted event messages to IoT Ce
             "$RELAY"
             ],
             "I2cMaster": [ "$AVNET_MT3620_SK_ISU2_I2C" ],
-            "Adc": [ "$AVNET_MT3620_SK_ADC_CONTROLLER0" ],
             "PowerControls": [ "ForceReboot" ],
             "AllowedConnections": [ "global.azure-devices-provisioning.net", "saas-iothub-99999999-f33a-9999-a44a-7c99999900b6.azure-devices.net" ],
             "DeviceAuthentication": "9d7e79eb-9999-43ce-9999-fa8888888894"
@@ -369,12 +388,15 @@ In the **MeasureSensorHandler** function there is a call to **SendMsgLed2On(msgB
 /// <summary>
 /// Read sensor and send to Azure IoT
 /// </summary>
-static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer) {
-	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
-		Terminate();
+static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
+{
+	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
+	{
+		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
 		return;
 	}
-	if (ReadTelemetry(msgBuffer, JSON_MESSAGE_BYTES) > 0) {
+	if (lp_readTelemetry(msgBuffer, JSON_MESSAGE_BYTES) > 0)
+	{
 		SendMsgLed2On(msgBuffer);
 	}
 }
@@ -386,11 +408,12 @@ Function **SendMsgLed2On** will turn on LED2, then **SendMsg(message)** is calle
 /// <summary>
 /// Turn on LED2, send message to Azure IoT and set a one shot timer to turn LED2 off
 /// </summary>
-static void SendMsgLed2On(char* message) {
-	Gpio_On(&led2);
+static void SendMsgLed2On(char* message)
+{
+	lp_gpioOn(&led2);
 	Log_Debug("%s\n", message);
-	SendMsg(message);
-	SetOneShotTimer(&led2BlinkOffOneShotTimer, &led2BlinkPeriod);
+	lp_sendMsg(message);
+	lp_setOneShotTimer(&led2BlinkOffOneShotTimer, &led2BlinkPeriod);
 }
 ```
 
