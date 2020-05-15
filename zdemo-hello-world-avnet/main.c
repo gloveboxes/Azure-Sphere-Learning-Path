@@ -53,18 +53,10 @@
 #include <time.h>
 
 
- // Hardware specific
-
-#ifdef OEM_AVNET
+ // AVNET libraries
 #include "learning_path_libs/AVNET/board.h"
 #include "learning_path_libs/AVNET/imu_temp_pressure.h"
 #include "learning_path_libs/AVNET/light_sensor.h"
-#endif // OEM_AVNET
-
-#ifdef OEM_SEEED_STUDIO
-#include "learning_path_libs/SEEED_STUDIO/board.h"
-#endif // SEEED_STUDIO
-
 
 // Number of bytes to allocate for the JSON telemetry message for IoT Central
 #define JSON_MESSAGE_BYTES 128  
