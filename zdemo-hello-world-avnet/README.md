@@ -21,16 +21,15 @@ Demo flow
 3. Add peripheral
 4. Add device twin
 5. F5 to run
-6. Review telemetry from azure portal shel
+6. Review telemetry from azure portal shell
    * az iot hub monitor-events --hub-name iot-hub-azure-sphere
 
 
 ## Step 0: Whitelist peripherals and network endpoints
 
 ```json
-"Gpio": [ "$RELAY" ],
-"I2cMaster": [ "$AVNET_MT3620_SK_ISU2_I2C" ],
-"Adc": [ "$AVNET_MT3620_SK_ADC_CONTROLLER0" ],
+    "Gpio": [ "$LED1", "$RELAY" ],
+    "I2cMaster": [ "$I2cMaster2" ],
 ```
 
 ### Whitelist Network Endpoints
