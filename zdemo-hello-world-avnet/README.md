@@ -49,7 +49,7 @@ Demo flow
 
 ```json
 "AllowedConnections": [
-    "",
+    "global.azure-devices-provisioning.net",
     "",
     ""
 ],
