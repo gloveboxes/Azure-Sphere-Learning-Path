@@ -38,7 +38,7 @@ Demo flow
 
 ---
 
-## Step 0: Whitelist peripherals and network endpoints
+## Step 1: Whitelist peripherals and network endpoints
 
 ```json
     "Gpio": [ "$LED1", "$RELAY" ],
@@ -61,7 +61,7 @@ Demo flow
 "CmdArgs": [ "ID Scope" ],
 ```
 
-## Step 1: Streaming Telemetry
+## Step 2: Streaming Telemetry
 
 ```c
 // Timer
@@ -89,7 +89,7 @@ static void ReadSensorHandler(EventLoopTimer* eventLoopTimer)
 }
 ```
 
-## Step 2: Open Single pin peripheral
+## Step 3: Open Single pin peripheral
 
 ```c
 static LP_PERIPHERAL_GPIO led1 = {
@@ -123,7 +123,7 @@ static void led1ControlHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding)
 }
 ```
 
-## Step 5: Sets
+## Step 4: Sets
 
 ```c
 // Sets
@@ -132,11 +132,11 @@ static LP_PERIPHERAL_GPIO* peripheralSet[] = { &led1 };
 static LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &led1_C2D_DeviceTwin };
 ```
 
-## Step 6: Build, Deploy, Debug
+## Step 5: Build, Deploy, Debug
 
 <kbd>F5</kbd>
 
-## Step 7: Monitor Telemetry
+## Step 6: Monitor Telemetry
 
 1. From the Azure Sphere Cloud Shell
 2. Run the az monitor events command
@@ -144,7 +144,7 @@ static LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &led1_C2D_DeviceTwin }
 	az iot hub monitor-events --hub-name iot-hub-azure-sphere
 	```
 
-## Step 8: Explorer a Device Twin
+## Step 7: Explorer a Device Twin
 
 1. From IoT Hub Portal
 2. Select IoT Devices
