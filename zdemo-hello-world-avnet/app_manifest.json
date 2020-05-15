@@ -35,7 +35,9 @@
 
 
 
-    "DeviceAuthentication": "9d7e79eb-e021-43ce-9f2b-fa944b447494"
+
+
+    "DeviceAuthentication": "<Azure Sphere Tenant ID>"
   },
   "ApplicationType": "Default"
 }
