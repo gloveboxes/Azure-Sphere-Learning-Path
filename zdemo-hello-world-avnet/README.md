@@ -8,15 +8,27 @@ Introduce hello world demo project structure
 1. Avnet Start Kit, But works with Seeed Studio Boards too
 2. Azure DPS and IoT Hub
 3. app_manifest.json
-4. Underlying libraries
+4. Learning Path underlying libraries
 5. [Azure Sphere Developer Learning Path](http://aka.ms/azure-sphere-developer-learning-path)
 
+---
+
+## Set up
+
+1. Open Azure Portal
+2. Start Azure Portal Command Shell
+3. Start IoT Hub monitor
+	```bash
+	az iot hub monitor-events --hub-name iot-hub-azure-sphere
+	```
+---
 
 Demo flow
 
 1. app_manifest.json
+   1. ID Scope
    2. whitelist peripherals
-   2. whitelist network endpoints
+   3. whitelist network endpoints
 2. Set up event timer and handler
 3. Add peripheral
 4. Add device twin
@@ -24,6 +36,7 @@ Demo flow
 6. Review telemetry from azure portal shell
    * az iot hub monitor-events --hub-name iot-hub-azure-sphere
 
+---
 
 ## Step 0: Whitelist peripherals and network endpoints
 
@@ -145,4 +158,4 @@ static LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &led1_C2D_DeviceTwin }
 	```
 6. Set breakpoint in device twin handler
 7. Back in the portal save the device twin
-8. sawp back to Visual Studio - the code should have halted at the breakpoint
+8. swap back to Visual Studio - the code should have halted at the breakpoint
