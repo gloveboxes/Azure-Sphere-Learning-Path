@@ -185,40 +185,33 @@ In the following High-Level **app_manifest.json** file, the **AllowedApplication
 
 ### Step 3: Set your developer board configuration
 
-The process for setting the developer configuration is slightly different until the MediaTec sample this lab is built on is updated to Azure Sphere SDK 5+2004.
+The process for setting the developer board configuration is different for this lab.
 
-The default developer board configuration is for the AVENT Azure Sphere Start Kit. If this is the board you have there is no additional configuration required.
+The default developer board configuration is for the AVENT Azure Sphere Start Kit. If you have this board, there is no additional configuration required.
 
-If you have one of the Seeed Studio developer boards then follow these steps.
+If you have one of the Seeed Studio developer boards, then follow these steps.
 
-1. Open main.c and scroll down until you find the following lines of code.
-    ```c
-    // Comment out the following line with two slashes if not using the AVNET Azure Sphere Starter Kit
-    #include "../Hardware/avnet_mt3620_sk/inc/hw/azure_sphere_learning_path.h"
-
-    // Uncomment the following include statement if using Seeed Studio Mini Development Board
-    //#include "../Hardware/mt3620_rdb/inc/hw/azure_sphere_learning_path.h"
-
-    // Uncomment the following include statement if using Seeed Studio Mini Development Board
-    //#include "../Hardware/seeed_mt3620_mdb/inc/hw/azure_sphere_learning_path.h"
-    ```
-2. Comment out the AVNET board hardware definition and uncomment the hardware definition for your board.
-3. Save the file.
-4. Double click on the CMakeSettings.json file to open.
-5. Click on the **Edit JSON** file.
+1. Open CMakeList.txt
+2. The default board configuration is the AVNET board. If you are NOT using this board then add a # at the beginning of the AVNET line to disable.
+3. Uncomment the **set** command that corresponds to your Azure Sphere developer board.
+4. Save the file. This will auto generate the CMake cache.
+	![](resources/cmakelist-set-board-configuration.png)
+5. Double click on the CMakeSettings.json file to open.
+6. Click on the **Edit JSON** file.
     ![](resources/cmake-edit-json.png)
-6. Find the following lines
+7. Find the following lines
     ```json
     // Comment out the following line with two slashes if not using the AVNET Azure Sphere Starter Kit
     "AzureSphereTargetHardwareDefinitionDirectory": "../Hardware/avnet_mt3620_sk",
 
     // Uncomment the line below by remove the two slashes to enable the Seeed Studio Reference Design Board
-    // "AzureSphereTargetHardwareDefinitionDirectory": "..\\oem\\Hardware\\mt3620_rdb",
+    // "AzureSphereTargetHardwareDefinitionDirectory": "../Hardware/mt3620_rdb",
 
     // Uncomment the following include statement if using Seeed Studio Mini Development Board
-    // "AzureSphereTargetHardwareDefinitionDirectory": "..\\oem\\Hardware\\seeed_mt3620_mdb",
+    // "AzureSphereTargetHardwareDefinitionDirectory": "../Hardware/seeed_mt3620_mdb",
     ```
-7. Comment out the AVNET board hardware definition and uncomment the hardware definition for your board.
+8. Comment out the AVNET board hardware definition and uncomment the hardware definition for your board.
+9. Save the file. This will auto generate the CMake cache.
 
 ## Deploy the FreeRTOS Application to Azure Sphere
 
