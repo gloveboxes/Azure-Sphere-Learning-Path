@@ -5,6 +5,35 @@
 
 #  Copyright (c) Microsoft Corporation. All rights reserved.
 #  Licensed under the MIT License.
+
+###################################################################################################################
+
+# Select your developer board by removing the # tag from the beginning of the line
+
+# The default board selected is the AVNET Starter Kit.
+
+# If you are NOT using the AVNET board be sure to comment out the AVNET board
+
+set(AVNET TRUE "AVNET Azure Sphere Starter Kit")                
+# set(SEEED_STUDIO_RDB TRUE "Seeed Studio Azure Sphere MT3620 Development Kit (aka Reference Design Board or rdb)")
+# set(SEEED_STUDIO_MINI TRUE "Seeed Studio Azure Sphere MT3620 Mini Dev Board")
+
+###################################################################################################################
+
+if(AVNET)
+    add_definitions( -DOEM_AVNET=TRUE )
+endif(AVNET)
+
+if(SEEED_STUDIO_RDB)
+    add_definitions( -DOEM_SEEED_STUDIO=TRUE )
+endif(SEEED_STUDIO_RDB)
+
+if(SEEED_STUDIO_MINI)
+    add_definitions( -DOEM_SEEED_STUDIO_MINI=TRUE )
+endif(SEEED_STUDIO_MINI)
+
+
+
 CMAKE_MINIMUM_REQUIRED(VERSION 3.11)
 
 # Configurations

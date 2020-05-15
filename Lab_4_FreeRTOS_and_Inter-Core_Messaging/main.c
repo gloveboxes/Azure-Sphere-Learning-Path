@@ -54,14 +54,17 @@
 
 #include "semphr.h"
 
-// Comment out the following line with two slashes if not using the AVNET Azure Sphere Starter Kit
+#ifdef OEM_AVNET
 #include "../Hardware/avnet_mt3620_sk/inc/hw/azure_sphere_learning_path.h"
+#endif
 
-// Uncomment the following include statement if using Seeed Studio Mini Development Board
-//#include "../Hardware/mt3620_rdb/inc/hw/azure_sphere_learning_path.h"
+#ifdef OEM_SEEED_STUDIO
+#include "../Hardware/mt3620_rdb/inc/hw/azure_sphere_learning_path.h"
+#endif
 
-// Uncomment the following include statement if using Seeed Studio Mini Development Board
-//#include "../Hardware/seeed_mt3620_mdb/inc/hw/azure_sphere_learning_path.h"
+#ifdef OEM_SEEED_STUDIO_MINI
+#include "../Hardware/seeed_mt3620_mdb/inc/hw/azure_sphere_learning_path.h"
+#endif
 
  /******************************************************************************/
  /* Configurations */
@@ -195,6 +198,31 @@ static void ButtonTask(void* pParameters)
 	}
 }
 
+#ifdef OEM_SEEED_STUDIO_MINI
+static void VirtualButtonTask(void* pParameters)
+{
+	static bool toggle = false;
+	printf("Button Task Started\n");
+
+	while (1)
+	{
+		if (toggle)
+		{
+			blinkIntervalIndex = (blinkIntervalIndex + 1) % numBlinkIntervals;
+			buttonA_Pressed = true;
+		}
+		else
+		{
+			buttonB_Pressed = true;
+		}
+
+		toggle = !toggle;
+
+		vTaskDelay(pdMS_TO_TICKS(10000));	// 10 seconds
+	}
+}
+#endif
+
 static void PeriodicTask(void* pParameters)
 {
 	while (1)
@@ -283,6 +311,11 @@ _Noreturn void RTCoreMain(void)
 	xTaskCreate(PeriodicTask, "Periodic Task", APP_STACK_SIZE_BYTES, NULL, 6, NULL);
 	xTaskCreate(LedTask, "LED Task", APP_STACK_SIZE_BYTES, NULL, 5, NULL);
 	xTaskCreate(ButtonTask, "GPIO Task", APP_STACK_SIZE_BYTES, NULL, 4, NULL);
+
+	#ifdef OEM_SEEED_STUDIO_MINI
+	xTaskCreate(VirtualButtonTask, "GPIO Task", APP_STACK_SIZE_BYTES, NULL, 4, NULL);
+	#endif
+
 	xTaskCreate(RTCoreMsgTask, "RTCore Msg Task", APP_STACK_SIZE_BYTES, NULL, 2, NULL);
 	vTaskStartScheduler();
 
