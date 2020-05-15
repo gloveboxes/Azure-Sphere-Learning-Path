@@ -10,13 +10,13 @@
 |Target Platform | Azure Sphere MT3620 |
 |Target Service | [Azure IoT Central](https://azure.microsoft.com/services/iot-central/?WT.mc_id=github-blog-dglover) |
 |Developer Platform | Windows 10 or Ubuntu 18.04 |
-|Azure SDK | Azure Sphere SDK 20.01 or better |
+|Azure SDK | Azure Sphere SDK 20.04 or better |
 |Developer Tools| [Visual Studio (The free Community Edition or better)](https://visualstudio.microsoft.com/vs/?WT.mc_id=github-blog-dglover) or [Visual Studio Code (Free OSS)](https://code.visualstudio.com?WT.mc_id=github-blog-dglover)|
 |Supported Hardware | [Avnet Azure Sphere MT3620 Starter Kit](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-sk-g-3074457345636825680) [Seeed Studio Azure Sphere MT3620 Development Kit](https://www.seeedstudio.com/Azure-Sphere-MT3620-Development-Kit-US-Version-p-3052.html) and the [Seeed Studio MT3620 Mini Dev Board](https://www.seeedstudio.com/MT3620-Mini-Dev-Board-p-2919.html) |
 |Source Code | [https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git](https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git) |
 |Language| C|
 |Licence | [Review full MIT Licence](LICENSE). In summary. You are free to use, modify, and contribute back to the code in this project. No liability accepted.
-|Date| March  2020|
+|Date| May 2020 |
 
 ---
 
