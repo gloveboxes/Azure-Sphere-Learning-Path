@@ -35,9 +35,14 @@ add_executable(${PROJECT_NAME}
                main.c
                mt3620-intercore.c
                mt3620-uart-poll.c
+               lsm6dso_reg.c 
+               lsm6dso_driver.c 
+               i2c.c
                ./OS_HAL/src/os_hal_gpio.c
                ./OS_HAL/src/os_hal_uart.c
-               ./OS_HAL/src/os_hal_dma.c)
+               ./OS_HAL/src/os_hal_dma.c
+               ./OS_HAL/src/os_hal_i2c.c               
+               )
 
 # Include Folders
 include_directories(${PROJECT_NAME} PUBLIC

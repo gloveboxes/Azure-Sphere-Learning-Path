@@ -54,6 +54,10 @@
 
 #include "semphr.h"
 
+#include "lsm6dso_driver.h"
+#include "lsm6dso_reg.h"
+#include "i2c.h"
+
 #include "hw/azure_sphere_learning_path.h"
 
 
@@ -61,6 +65,25 @@
  /******************************************************************************/
  /* Configurations */
  /******************************************************************************/
+
+enum LP_INTER_CORE_CMD
+{
+	LP_IC_UNKNOWN,
+	LP_IC_HEARTBEAT,
+	LP_IC_TEMPERATURE_HUMIDITY,
+	LP_IC_EVENT_BUTTON_A,
+	LP_IC_EVENT_BUTTON_B,
+};
+
+typedef struct LP_INTER_CORE_BLOCK
+{
+	enum LP_INTER_CORE_CMD cmd;
+	float	temperature;
+	float	pressure;
+
+} LP_INTER_CORE_BLOCK;
+
+LP_INTER_CORE_BLOCK ic_control_block;
 
 
 #define UART_PORT_NUM OS_HAL_UART_ISU0
@@ -80,10 +103,10 @@ static bool BuiltInLedOn = false;
 static const size_t payloadStart = 20;
 static uint8_t buf[256];
 static uint32_t dataSize;
-static bool buttonA_Pressed = false;
-static bool buttonB_Pressed = false;
 static BufferHeader* outbound, * inbound;
 static uint32_t sharedBufSize = 0;
+
+bool HLAppReady = false;
 
 
 /******************************************************************************/
@@ -158,6 +181,17 @@ static int gpio_input(u8 gpio_no, os_hal_gpio_data* pvalue)
 	return 0;
 }
 
+void send_inter_core_msg(void)
+{
+	if (HLAppReady)
+	{
+		memcpy((void*)&buf[payloadStart], (void*)&ic_control_block, sizeof(ic_control_block));
+		dataSize = payloadStart + sizeof(ic_control_block);
+
+		EnqueueData(inbound, outbound, sharedBufSize, buf, dataSize);
+	}
+}
+
 static void ButtonTask(void* pParameters)
 {
 	static os_hal_gpio_data oldStateButtonA = OS_HAL_GPIO_DATA_LOW;
@@ -167,13 +201,14 @@ static void ButtonTask(void* pParameters)
 	printf("GPIO Task Started\n");
 	while (1)
 	{
-
 		// Get Button_A status
 		gpio_input(BUTTON_A, &value);
 		if ((value != oldStateButtonA) && (value == OS_HAL_GPIO_DATA_LOW))
 		{
-			buttonA_Pressed = true;
 			blinkIntervalIndex = (blinkIntervalIndex + 1) % numBlinkIntervals;
+
+			ic_control_block.cmd = LP_IC_EVENT_BUTTON_A;
+			send_inter_core_msg();
 		}
 		oldStateButtonA = value;
 
@@ -181,7 +216,8 @@ static void ButtonTask(void* pParameters)
 		gpio_input(BUTTON_B, &value);
 		if ((value != oldStateButtonB) && (value == OS_HAL_GPIO_DATA_LOW))
 		{
-			buttonB_Pressed = true;
+			ic_control_block.cmd = LP_IC_EVENT_BUTTON_B;
+			send_inter_core_msg();
 		}
 		oldStateButtonB = value;
 
@@ -214,39 +250,45 @@ static void LedTask(void* pParameters)
 	}
 }
 
+
+
 static void RTCoreMsgTask(void* pParameters)
 {
-	bool HLAppReady = false;
+	mtk_os_hal_i2c_ctrl_init(i2c_port_num);		// Initialize MT3620 I2C bus
+
+	i2c_enum();									// Enumerate I2C Bus
+
+	i2c_init();
+
+	lsm6dso_init(i2c_write, i2c_read);
 
 	while (1)
 	{
 		dataSize = sizeof(buf);
 		int r = DequeueData(outbound, inbound, sharedBufSize, buf, &dataSize);
 
-		//if (!(r == -1 || dataSize < payloadStart)) {
 		if (r == 0 && dataSize > payloadStart)
 		{
 			HLAppReady = true;
-		}
 
-		if (buttonA_Pressed && HLAppReady)
-		{
-			const char msg[] = "ButtonA";
-			strncpy((char*)buf + payloadStart, msg, sizeof buf - payloadStart);
-			dataSize = payloadStart + sizeof msg - 1;
+			// load inter core control block
+			memcpy(&ic_control_block, &buf[payloadStart], sizeof(ic_control_block));
 
-			EnqueueData(inbound, outbound, sharedBufSize, buf, dataSize);
-			buttonA_Pressed = false;
-		}
+			switch (ic_control_block.cmd)
+			{
+			case LP_IC_HEARTBEAT:
+				break;
+			case LP_IC_TEMPERATURE_HUMIDITY:
 
-		if (buttonB_Pressed && HLAppReady)
-		{
-			const char msg[] = "ButtonB";
-			strncpy((char*)buf + payloadStart, msg, sizeof buf - payloadStart);
-			dataSize = payloadStart + sizeof msg - 1;
+				ic_control_block.cmd = LP_IC_TEMPERATURE_HUMIDITY;
+				ic_control_block.temperature = get_temperature();
+				ic_control_block.pressure = 1020.0;
+				send_inter_core_msg();
 
-			EnqueueData(inbound, outbound, sharedBufSize, buf, dataSize);
-			buttonB_Pressed = false;
+				break;
+			default:
+				break;
+			}
 		}
 
 		// Delay for 100ms
@@ -272,6 +314,9 @@ _Noreturn void RTCoreMain(void)
 			// empty.
 		}
 	}
+
+
+
 
 	LEDSemphr = xSemaphoreCreateBinary();
 
