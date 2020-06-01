@@ -1,0 +1,43 @@
+﻿{
+  "SchemaVersion": 1,
+  "Name": "AzureSphereIoTCentral",
+  "ComponentId": "25025d2c-66da-4448-bae1-ac26fcdd3627",
+  "EntryPoint": "/bin/app",
+  "CmdArgs": [ "<ID Scope>" ],
+  "Capabilities": {
+    "Gpio": [ "$LED1", "$RELAY" ],
+    "I2cMaster": [ "$I2cMaster2" ],
+    "PowerControls": [ "ForceReboot" ],
+    "AllowedConnections": [
+      "global.azure-devices-provisioning.net",
+      "<IoT Hub Endpoint>",
+      "<Device Provisioning Endpoint>"
+    ],
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    "DeviceAuthentication": "<Azure Sphere Tenant ID>"
+  },
+  "ApplicationType": "Default"
+}

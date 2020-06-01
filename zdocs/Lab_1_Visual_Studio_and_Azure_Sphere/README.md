@@ -290,12 +290,14 @@ Ensure you have followed all the instructions in the [lab set-up guide](../Lab_0
 
 ### Step 4: Set your developer board configuration
 
-These labs supports developer boards from AVNET and Seeed Studio. You need to set the configuration that matches your developer board.
+These labs support developer boards from AVNET and Seeed Studio. You need to set the configuration that matches your developer board.
+
+The default developer board configuration is for the AVENT Azure Sphere Start Kit. If you have this board, there is no additional configuration required.
 
 1. Open CMakeList.txt
-2. The default board configuration is the AVNET board. If you are NOT using this board then add a # at the beginning of the AVNET line to disable.
-2. Uncomment the **set** command that corresponds to your Azure Sphere developer board.
-3. Save the file. This will auto generate the CMake cache.
+2. Add a # at the beginning of the set AVNET line to disable it.
+3. Uncomment the **set** command that corresponds to your Azure Sphere developer board.
+4. Save the file. This will auto-generate the CMake cache.
 
 	![](resources/cmakelist-set-board-configuration.png)
 
