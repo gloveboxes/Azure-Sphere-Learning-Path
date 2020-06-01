@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -750,6 +750,10 @@ typedef	struct i2s_ul_cfg i2s_ul_cfg;
  * @}
  */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void mtk_hdl_i2s_gbl_cfg(void __iomem *base_address,
 			 struct i2s_gbl_cfg *i2s_gbl_cfg);
 
@@ -793,5 +797,9 @@ void mtk_hdl_i2s_cfg_init_setting(enum_i2s_initial_type initial_type,
 				  struct i2s_gbl_cfg *i2s_gbl_cfg,
 				  struct i2s_dl_cfg *i2s_dl_cfg,
 				  struct i2s_ul_cfg *i2s_ul_cfg);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* #ifndef __HDL_I2S_H__ */

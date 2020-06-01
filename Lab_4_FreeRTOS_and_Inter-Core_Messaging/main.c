@@ -54,14 +54,9 @@
 
 #include "semphr.h"
 
-// Comment out the following line with two slashes if not using the AVNET Azure Sphere Starter Kit
-#include "../Hardware/avnet_mt3620_sk/inc/hw/azure_sphere_learning_path.h"
+#include "hw/azure_sphere_learning_path.h"
 
-// Uncomment the following include statement if using Seeed Studio Mini Development Board
-//#include "../Hardware/mt3620_rdb/inc/hw/azure_sphere_learning_path.h"
 
-// Uncomment the following include statement if using Seeed Studio Mini Development Board
-//#include "../Hardware/seeed_mt3620_mdb/inc/hw/azure_sphere_learning_path.h"
 
  /******************************************************************************/
  /* Configurations */

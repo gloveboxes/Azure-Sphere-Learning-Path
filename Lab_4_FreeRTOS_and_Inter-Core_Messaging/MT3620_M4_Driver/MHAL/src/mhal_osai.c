@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -63,7 +63,14 @@ void osai_delay_us(u32 us)
 	}
 }
 
-#ifdef OSAI_BARE_METAL
+#ifdef OSAI_FREERTOS
+#include "FreeRTOS.h"
+#include "task.h"
+void osai_delay_ms(u32 ms)
+{
+	vTaskDelay(pdMS_TO_TICKS(ms));
+}
+#else
 void osai_delay_ms(u32 ms)
 {
 	extern volatile u32 sys_tick_in_ms;
@@ -81,15 +88,6 @@ void osai_delay_ms(u32 ms)
 		while (sys_tick_in_ms < target_ms)
 			;
 	}
-}
-#endif
-
-#ifdef OSAI_FREERTOS
-#include "FreeRTOS.h"
-#include "task.h"
-void osai_delay_ms(u32 ms)
-{
-	vTaskDelay(pdMS_TO_TICKS(ms));
 }
 #endif
 
@@ -123,7 +121,7 @@ void osai_invalid_cache(void *vir_addr, u32 len)
 
 int osai_dma_allocate_chan(u8 chn)
 {
-	return mtk_os_hal_dma_alloc_chan(chn);
+	return mtk_os_hal_dma_alloc_chan((enum dma_channel) chn);
 }
 
 int osai_dma_config(u8 chn, struct osai_dma_config *cfg_params)
@@ -143,19 +141,19 @@ int osai_dma_config(u8 chn, struct osai_dma_config *cfg_params)
 	settings.vfifo.timeout_cnt = cfg_params->vfifo_timeout_cnt;
 	settings.ctrl_mode.transize = cfg_params->transize;
 	if (cfg_params->interrupt_flag & OSAI_DMA_INT_COMPLETION) {
-		ret = mtk_os_hal_dma_register_isr(chn,
+		ret = mtk_os_hal_dma_register_isr((enum dma_channel) chn,
 					cfg_params->done_callback,
 					cfg_params->done_callback_data,
 					DMA_INT_COMPLETION);
 	}
 	if (cfg_params->interrupt_flag & OSAI_DMA_INT_VFIFO_THRESHOLD) {
-		ret = mtk_os_hal_dma_register_isr(chn,
+		ret = mtk_os_hal_dma_register_isr((enum dma_channel) chn,
 					cfg_params->done_callback,
 					cfg_params->done_callback_data,
 					DMA_INT_VFIFO_THRESHOLD);
 	}
 	if (cfg_params->interrupt_flag & OSAI_DMA_INT_VFIFO_TIMEOUT) {
-		ret = mtk_os_hal_dma_register_isr(chn,
+		ret = mtk_os_hal_dma_register_isr((enum dma_channel) chn,
 					cfg_params->excep_callback,
 					cfg_params->excep_callback_data,
 					DMA_INT_VFIFO_TIMEOUT);
@@ -164,60 +162,61 @@ int osai_dma_config(u8 chn, struct osai_dma_config *cfg_params)
 	if (ret < 0)
 		return -1;
 
-	return mtk_os_hal_dma_config(chn, &settings);
+	return mtk_os_hal_dma_config((enum dma_channel) chn, &settings);
 }
 
 int osai_dma_start(u8 chn)
 {
-	return mtk_os_hal_dma_start(chn);
+	return mtk_os_hal_dma_start((enum dma_channel) chn);
 }
 
 int osai_dma_stop(u8 chn)
 {
-	return mtk_os_hal_dma_stop(chn);
+	return mtk_os_hal_dma_stop((enum dma_channel) chn);
 }
 
 int osai_dma_set_param(u8 chn, enum osai_dma_param_type param_type,
 		       u32 value)
 {
-	return mtk_os_hal_dma_set_param(chn,
+	return mtk_os_hal_dma_set_param((enum dma_channel) chn,
 					(enum dma_param_type)param_type, value);
 }
 int osai_dma_get_param(u8 chn, enum osai_dma_param_type param_type)
 {
 
-	return mtk_os_hal_dma_get_param(chn,
+	return mtk_os_hal_dma_get_param((enum dma_channel) chn,
 					(enum dma_param_type)param_type);
 }
 
 int osai_dma_release_chan(u8 chn)
 {
-	return mtk_os_hal_dma_release_chan(chn);
+	return mtk_os_hal_dma_release_chan((enum dma_channel) chn);
 }
 
 int osai_dma_get_status(u8 chn)
 {
-	return mtk_os_hal_dma_get_status(chn);
+	return mtk_os_hal_dma_get_status((enum dma_channel) chn);
 }
 
 int osai_dma_update_vfifo_swptr(u8 chn, u32 length_byte)
 {
-	return mtk_os_hal_dma_update_swptr(chn, length_byte);
+	return mtk_os_hal_dma_update_swptr((enum dma_channel) chn, length_byte);
 }
 
 int osai_dma_vff_read_data(u8 chn, u8 *buffer, u32 length)
 {
-	return mtk_os_hal_dma_vff_read_data(chn, buffer, length);
+	return mtk_os_hal_dma_vff_read_data((enum dma_channel) chn,
+					    buffer, length);
 }
 
 int osai_dma_reset(u8 chn)
 {
-	return mtk_os_hal_dma_reset(chn);
+	return mtk_os_hal_dma_reset((enum dma_channel) chn);
 }
 
 int osai_dma_clr_dreq(u8 chn)
 {
-	return mtk_os_hal_dma_clr_dreq(chn);
+	return mtk_os_hal_dma_clr_dreq((enum dma_channel) chn);
 }
 #else
 void osai_clean_cache(void *vir_addr, u32 len)

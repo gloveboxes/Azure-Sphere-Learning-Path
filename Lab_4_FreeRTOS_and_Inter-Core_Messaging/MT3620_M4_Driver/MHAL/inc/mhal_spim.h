@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -67,50 +67,40 @@
  */
 
 /**
-* @addtogroup M-HAL
-* @{
-* @addtogroup SPIM
-* @{
-* - \b Support \b transaction \b format. \n
-*    SPIM driver's user can use struct mtk_spi_transfer to
-*    judge either the transfer is half-duplex or full-duplex.
-*
-*  - Half-duplex transaction:
-*    There is only one valid transaction at a time on a single direction:
-*    either Send or Receive.
-*    - Send: Device driver should provide mtk_spi_transfer->tx_buf,
-*	mtk_spi_transfer->len and set mtk_spi_transfer->rx_buf = NULL.
-*    - Receive: Device driver should provide mtk_spi_transfer->rx_buf,
-*	mtk_spi_transfer->len and set mtk_spi_transfer->tx_buf = NULL.
-*
-*  - Full-duplex transaction:
-*    There are two valid mutually inclusive transactions: Send and Receive.
-*    - Device driver should provide mtk_spi_transfer->len,
-*      mtk_spi_transfer->tx_buf and set mtk_spi_transfer->rx_buf
-*      at the same time.
-*
-* @}
-* @}
-*/
-
-/**
-* @addtogroup M-HAL
-* @{
-* @addtogroup SPIM
-* @{
-* - \b Note \n
-* SPIM HW has some requirements that the device driver needs to satisfy them.
-* The transfer data format should be as belows:
-*  - \b Half-duplex \n
-*   tx: tx_buf should be opcode[1byte] + data [1~32bytes].\n
-*   rx: rx_buf should be opcode[1byte] + data [1~32bytes].
-*  - \b Full-duplex \n
-*   tx_buf should be opcode[1byte] + data [1~16bytes].\n
-*   rx_buf should be dummy[1byte] + data [1~16bytes].
-*
-* @}
-* @}
-*/
+ * @addtogroup M-HAL
+ * @{
+ * @addtogroup SPIM
+ * @{
+ * - \b Support \b transaction \b format. \n
+ *    SPIM driver's user can use struct mtk_spi_transfer to
+ *    judge either the transfer is half-duplex or full-duplex.
+ *
+ *  - Half-duplex transaction:
+ *    There is only one valid transaction at a time on a single direction:
+ *    either Send or Receive.
+ *    - Send: Device driver should provide mtk_spi_transfer->opcode,
+ *       mtk_spi_transfer->opcode_len, mtk_spi_transfer->tx_buf,
+ *	mtk_spi_transfer->len and set mtk_spi_transfer->rx_buf = NULL.\n
+ *       mtk_spi_transfer->opcode_len should be 1~4bytes,
+ *       mtk_spi_transfer->len should be 0~32bytes.
+ *    - Receive: Device driver should provide mtk_spi_transfer->opcode,
+ *       mtk_spi_transfer->opcode_len, mtk_spi_transfer->rx_buf,
+ *	mtk_spi_transfer->len and set mtk_spi_transfer->tx_buf = NULL.\n
+ *       mtk_spi_transfer->opcode_len should be 0~4bytes,
+ *       mtk_spi_transfer->len should be 1~32bytes.
+ *
+ *  - Full-duplex transaction:
+ *    There are two valid mutually inclusive transactions: Send and Receive.
+ *    - Device driver should provide mtk_spi_transfer->len,
+ *      mtk_spi_transfer->opcode, mtk_spi_transfer->opcode_len,
+ *      mtk_spi_transfer->tx_buf and set mtk_spi_transfer->rx_buf
+ *      at the same time.
+ *    - mtk_spi_transfer->opcode_len should be 1~4bytes,
+ *      mtk_spi_transfer->len should be 1~16bytes.
+ *
+ * @}
+ * @}
+ */
 
 /**
  * @addtogroup M-HAL
@@ -129,359 +119,8 @@
  *  that should be used by the SPI slave.
  *
  * - \b The \b OS-HAL \b freeRTos \b driver\n
- * \b sample \b code \b is \b as \b follows:\n
- *  - sample code (freeRTos doesn't have SPI framework,
- * so this sample code provides APIs to User Application):
- *    @code
- *
- *	typedef enum {
- *		OS_HAL_SPIM_ISU0 = 0,
- *		OS_HAL_SPIM_ISU1 = 1,
- *		OS_HAL_SPIM_ISU2 = 2,
- *		OS_HAL_SPIM_ISU3 = 3,
- *		OS_HAL_SPIM_ISU4 = 4,
- *		OS_HAL_SPIM_ISU_MAX
- *	} spim_num;
- *
- *	#define ISU0_SPIM_BASE			0x38070300
- *	#define ISU1_SPIM_BASE			0x38080300
- *	#define ISU2_SPIM_BASE			0x38090300
- *	#define ISU3_SPIM_BASE			0x380a0300
- *	#define ISU4_SPIM_BASE			0x380b0300
- *
- *	static unsigned long spim_base_addr[OS_HAL_SPIM_ISU_MAX] = {
- *		ISU0_SPIM_BASE,
- *		ISU1_SPIM_BASE,
- *		ISU2_SPIM_BASE,
- *		ISU3_SPIM_BASE,
- *		ISU4_SPIM_BASE,
- *	};
- *
- *	// [0]:tx, [1]:rx
- *	static int spim_dma_chan[OS_HAL_SPIM_ISU_MAX][2] = {
- *		{DMA_ISU0_TX_CH0, DMA_ISU0_RX_CH1},
- *		{DMA_ISU1_TX_CH2, DMA_ISU1_RX_CH3},
- *		{DMA_ISU2_TX_CH4, DMA_ISU2_RX_CH5},
- *		{DMA_ISU3_TX_CH6, DMA_ISU3_RX_CH7},
- *		{DMA_ISU4_TX_CH8, DMA_ISU4_RX_CH9},
- *	};
- *
- *	#define ISU0_CG_BASE	0x38070000
- *	#define ISU1_CG_BASE	0x38080000
- *	#define ISU2_CG_BASE	0x38090000
- *	#define ISU3_CG_BASE	0x380a0000
- *	#define ISU4_CG_BASE	0x380b0000
- *
- *	static unsigned long cg_base_addr[OS_HAL_SPIM_ISU_MAX] = {
- *		ISU0_CG_BASE,
- *		ISU1_CG_BASE,
- *		ISU2_CG_BASE,
- *		ISU3_CG_BASE,
- *		ISU4_CG_BASE,
- *	};
- *
- *	 // this os special spi structure, need mapping it to mtk_spi_controller
- *
- *	struct mtk_spi_controller_rtos {
- *		struct mtk_spi_controller *ctlr;
- *
- *		// the type based on OS
- *		QueueHandle_t xfer_completion;
- *	};
- *
- *	 static struct mtk_spi_controller_rtos
- *		g_spim_ctlr_rtos[OS_HAL_SPIM_ISU_MAX];
- *	 static struct mtk_spi_controller g_spim_ctlr[OS_HAL_SPIM_ISU_MAX];
- *	 static struct mtk_spi_private g_spim_mdata[OS_HAL_SPIM_ISU_MAX];
- *
- *	 static unsigned char
- *		 tmp_tx_buffer[OS_HAL_SPIM_ISU_MAX][MTK_SPIM_DMA_BUFFER_BYTES];
- *	 static unsigned char
- *		 tmp_rx_buffer[OS_HAL_SPIM_ISU_MAX][MTK_SPIM_DMA_BUFFER_BYTES];
- *
- *	static struct mtk_spi_controller_rtos
- *		*_mtk_os_hal_spim_get_ctlr(spim_num bus_num)
- *	{
- *		if (bus_num > OS_HAL_SPIM_ISU_MAX - 1) {
- *			printf("invalid, bus_num should be 0~%d\n",
- *				OS_HAL_SPIM_ISU_MAX - 1);
- *			return NULL;
- *		}
- *
- *		return &g_spi_ctlr_rtos[bus_num];
- *	}
- *
- *	int mtk_os_hal_spim_dump_reg(spim_num bus_num)
- *	{
- *		struct mtk_spi_controller_rtos *ctlr_rtos;
- *		struct mtk_spi_controller *ctlr;
- *
- *		ctlr_rtos = _mtk_os_hal_spim_get_ctlr(bus_num);
- *		if (!ctlr_rtos)
- *			return -1;
- *
- *		ctlr = ctlr_rtos->ctlr;
- *
- *		mtk_mhal_spim_enable_clk(ctlr);
- *		mtk_mhal_spim_dump_reg(ctlr);
- *		mtk_mhal_spim_disable_clk(ctlr);
- *
- *		return 0;
- *	}
- *
- *	static void _mtk_os_hal_spim_irq_handler(spim_num bus_num)
- *	{
- *		struct mtk_spi_controller_rtos *ctlr_rtos =
- *		    _mtk_os_hal_spim_get_ctlr(bus_num);
- *		struct mtk_spi_controller *ctlr = ctlr_rtos->ctlr;
- *		struct mtk_spi_transfer *curr_xfer = ctlr->current_xfer;
- *		BaseType_t x_higher_priority_task_woken = pdFALSE;
- *
- *		printf("now in spim%d_irq_handler\n", bus_num);
- *
- *		mtk_mhal_spim_clear_irq_status(ctlr);
- *
- *		// 1. FIFO mode: return completion done in SPI irq handler
- *		// 2. DMA mode: return completion done in DMA irq handler
- *		if (!curr_xfer->use_dma) {
- *			mtk_mhal_spim_fifo_handle_rx(ctlr, curr_xfer);
- *			xSemaphoreGiveFromISR(ctlr_rtos->xfer_completion,
- *					      &x_higher_priority_task_woken);
- *			portYIELD_FROM_ISR(x_higher_priority_task_woken);
- *		}
- *	}
- *
- *	static void _mtk_os_hal_spim0_irq_event(void)
- *	{
- *		_mtk_os_hal_spim_irq_handler(0);
- *	}
- *
- *	static void _mtk_os_hal_spim1_irq_event(void)
- *	{
- *		_mtk_os_hal_spim_irq_handler(1);
- *	}
- *
- *	static void _mtk_os_hal_spim2_irq_event(void)
- *	{
- *		_mtk_os_hal_spim_irq_handler(2);
- *	}
- *
- *	static void _mtk_os_hal_spim3_irq_event(void)
- *	{
- *		_mtk_os_hal_spim_irq_handler(3);
- *	}
- *
- *	static void _mtk_os_hal_spim4_irq_event(void)
- *	{
- *		_mtk_os_hal_spim_irq_handler(4);
- *	}
- *
- *	static void _mtk_os_hal_spim_request_irq(int bus_num)
- *	{
- *		switch (bus_num) {
- *		case 0:
- *			CM4_Install_NVIC(CM4_IRQ_ISU_G0_SPIM, DEFAULT_PRI,
- *				 IRQ_LEVEL_TRIGGER, _mtk_os_hal_spim0_irq_event,
- *				 TRUE);
- *			break;
- *		case 1:
- *			CM4_Install_NVIC(CM4_IRQ_ISU_G1_SPIM, DEFAULT_PRI,
- *				 IRQ_LEVEL_TRIGGER, _mtk_os_hal_spim1_irq_event,
- *				 TRUE);
- *			break;
- *		case 2:
- *			CM4_Install_NVIC(CM4_IRQ_ISU_G2_SPIM, DEFAULT_PRI,
- *				 IRQ_LEVEL_TRIGGER, _mtk_os_hal_spim2_irq_event,
- *				 TRUE);
- *			break;
- *		case 3:
- *			CM4_Install_NVIC(CM4_IRQ_ISU_G3_SPIM, DEFAULT_PRI,
- *				 IRQ_LEVEL_TRIGGER, _mtk_os_hal_spim3_irq_event,
- *				 TRUE);
- *			break;
- *		case 4:
- *			CM4_Install_NVIC(CM4_IRQ_ISU_G4_SPIM, DEFAULT_PRI,
- *				 IRQ_LEVEL_TRIGGER, _mtk_os_hal_spim4_irq_event,
- *				 TRUE);
- *			break;
- *		}
- *	}
- *
- *	static void _mtk_os_hal_spim_free_irq(int bus_num)
- *	{
- *		switch (bus_num) {
- *		case 0:
- *			NVIC_DisableIRQ(CM4_IRQ_ISU_G0_SPIM);
- *			break;
- *		case 1:
- *			NVIC_DisableIRQ(CM4_IRQ_ISU_G1_SPIM);
- *			break;
- *		case 2:
- *			NVIC_DisableIRQ(CM4_IRQ_ISU_G2_SPIM);
- *			break;
- *		case 3:
- *			NVIC_DisableIRQ(CM4_IRQ_ISU_G3_SPIM);
- *			break;
- *		case 4:
- *			NVIC_DisableIRQ(CM4_IRQ_ISU_G4_SPIM);
- *			break;
- *		}
- *	}
- *
- *	static int _mtk_os_hal_spim_dma_done_callback(void *data)
- *	{
- *		BaseType_t x_higher_priority_task_woken = pdFALSE;
- *		struct mtk_spi_controller_rtos *ctlr_rtos = data;
- *
- *		// while using DMA mode, release semaphore in this callback
- *		xSemaphoreGiveFromISR(ctlr_rtos->xfer_completion,
- *				      &x_higher_priority_task_woken);
- *		portYIELD_FROM_ISR(x_higher_priority_task_woken);
- *
- *		return 0;
- *	}
- *
- *	 int mtk_os_hal_spim_ctlr_init(spim_num bus_num)
- *	 {
- *		 struct mtk_spi_controller_rtos *ctlr_rtos;
- *		 struct mtk_spi_controller *ctlr;
- *
- *		 ctlr_rtos = _mtk_os_hal_spim_get_ctlr(bus_num);
- *		 if (!ctlr_rtos)
- *			 return -1;
- *
- *		 // Must init first here
- *		 ctlr_rtos->ctlr = &g_spim_ctlr[bus_num];
- *		 ctlr = ctlr_rtos->ctlr;
- *		 ctlr->mdata = &g_spim_mdata[bus_num];
- *
- *		 ctlr->dma_tmp_tx_buf = tmp_tx_buffer[bus_num];
- *		 ctlr->dma_tmp_rx_buf = tmp_rx_buffer[bus_num];
- *
- *		 ctlr->base = (void __iomem *)spim_base_addr[bus_num];
- *		 ctlr->cg_base = (void __iomem *)cg_base_addr[bus_num];
- *
- *		ctlr->dma_tx_chan = spim_dma_chan[bus_num][0];
- *		ctlr->dma_rx_chan = spim_dma_chan[bus_num][1];
- *
- *		if (!ctlr_rtos->xfer_completion)
- *			ctlr_rtos->xfer_completion = xSemaphoreCreateBinary();
- *
- *		mtk_mhal_spim_dma_done_callback_register(ctlr,
- *					 _mtk_os_hal_spim_dma_done_callback,
- *					 (void *)ctlr_rtos);
- *
- *		mtk_mhal_spim_allocate_dma_chan(ctlr);
- *
- *		_mtk_os_hal_spim_request_irq(bus_num);
-  *
- *		return 0;
- *	}
- *
- *	int mtk_os_hal_spim_ctlr_deinit(spim_num bus_num)
- *	{
- *		struct mtk_spi_controller_rtos *ctlr_rtos =
- *		    _mtk_os_hal_spim_get_ctlr(bus_num);
- *		struct mtk_spi_controller *ctlr = ctlr_rtos->ctlr;
- *
- *		_mtk_os_hal_spim_free_irq(bus_num);
- *		mtk_mhal_spim_release_dma_chan(ctlr);
- *
- *		return 0;
- *	}
- *
- *	static int _mtk_os_hal_spim_wait_for_completion_timeout(
- *					struct mtk_spi_controller_rtos
- *					*ctlr_rtos, int time_ms)
- *	{
- *		if (pdTRUE != xSemaphoreTake(ctlr_rtos->xfer_completion,
- *					     time_ms / portTICK_RATE_MS))
- *			return -1;
- *
- *		return 0;
- *	}
- *
- *	int mtk_os_hal_spim_transfer(spim_num bus_num,
- *				     struct mtk_spi_config *config,
- *				     struct mtk_spi_transfer *xfer)
- *	{
- *		struct mtk_spi_controller_rtos *ctlr_rtos;
- *		struct mtk_spi_controller *ctlr;
- *		int ret;
- *
- *		ctlr_rtos = _mtk_os_hal_spim_get_ctlr(bus_num);
- *		if (!ctlr_rtos)
- *			return -1;
- *
- *		ctlr = ctlr_rtos->ctlr;
- *
- *		mtk_mhal_spim_enable_clk(ctlr);
- *
- *		mtk_mhal_spim_prepare_hw(ctlr, config);
- *		mtk_mhal_spim_prepare_transfer(ctlr, xfer);
- *
- *		if (xfer->use_dma)
- *			ret = mtk_mhal_spim_dma_transfer_one(ctlr, xfer);
- *		else
- *			ret = mtk_mhal_spim_fifo_transfer_one(ctlr, xfer);
- *
- *		if (ret) {
- *			printf("spi master transfer one fail.\n");
- *			goto err_xfer_fail;
- *		}
- *
- *		ret = _mtk_os_hal_spim_wait_for_completion_timeout(ctlr_rtos,
- *								   1000);
- *		if (ret)
- *			printf("Take spi master Semaphore timeout!\n");
- *
- *	err_xfer_fail:
- *		mtk_mhal_spim_disable_clk(ctlr);
- *
- *		return ret;
- *	}
- *
- *    @endcode
- *
- *
- * - \b Device \b driver \b sample \b code \b is \b as \b follows: \n
- *  - sample code (this is the user application sample code on freeRTos):
- *    @code
- *	// first call this function to initialize SPIM HW
- *	mtk_os_hal_spim_ctlr_init(bus_num);
- *
- *	static struct mtk_spi_config spi_default_config = {
- *		.cpol = SPI_CPOL_0,
- *		.cpha = SPI_CPHA_0,
- *		.rx_mlsb = SPI_MSB,
- *		.tx_mlsb = SPI_MSB,
- *		 .slave_sel = SPI_SELECT_DEVICE_0,
- *	};
- *
- *	char spim_tx_buffer[10];
- *	char spim_rx_buffer[10];
- *
- *	xfer.use_dma = 0;//0: use FIFO mode
- *	//xfer.use_dma = 1;//1: use DMA mode
- *
- *	xfer.speed_khz = khz;
- *	xfer.tx_buf = spim_tx_buffer;
- *	xfer.rx_buf = spim_rx_buffer;
- *	xfer.len = 10;
- *
- *	for (i = 1; i < xfer.len; i++)
- *		*((char *)xfer.tx_buf + i) = 0x11 + i;
- *
- *	for (i = 1; i < xfer.len; i++)
- *		*((char *)xfer.rx_buf + i) = 0xcc;
- *
- *	// Then, call this function to perform the transmitting,
- *	// and this function will be returned
- *	// while the transmitting is finished.
- *	mtk_os_hal_spim_transfer(bus_num, &spi_default_config, &xfer);
- *
- *    @endcode
- *
+ * \b sample \b code \b is \b as \b follows: \n
+ * <a href="https://github.com/MediaTek-Labs/mt3620_m4_software/blob/master/MT3620_M4_Sample_Code/FreeRTOS/OS_HAL/src/os_hal_spim.c"> freeRTos SPIM sample code on github </a>
  *
  * @}
  * @}
@@ -634,11 +273,26 @@ struct mtk_spi_transfer {
 	/** size of rx and tx buffers (in bytes) */
 	u32 len;
 
+	/** opcode data to be written (on MOSI pin) */
+	u32 opcode;
+
+	/** size of opcode length (in bytes)\n
+	 * Note on MT3620:\n
+	 * half duplex:\n
+	 * TX only: it should be 1~4.
+	 * RX only: it should be 0~4.\n
+	 * full duplex: it should be 1~4.
+	 */
+	u32 opcode_len;
+
 	/** spi support FIFO & DMA mode, 0:FIFO, 1: DMA */
 	u32 use_dma;
 
-	/** config SPIM HW SCK speed that talk with device for this transfer,
-	 * if speed_khz=0, SPIM HW use default 1Mhz.
+	/** config SPIM HW SCK speed that talk with device for this transfer.
+	 * The maximum CLK freq is 40Mhz and the suggestion value of speed_khz
+	 * is 250 (250Khz),500(500Khz),1000(1Mhz),2000(2Mhz),4000(4Mhz),
+	 * 6000(6Mhz),8000(8Mhz),10000(10Mhz),40000(40Mhz).\n
+	 * If speed_khz=0, SPIM HW use default 1Mhz.
 	 */
 	u32 speed_khz;
 };
@@ -650,8 +304,6 @@ struct mtk_spi_transfer {
 struct mtk_spi_private {
 	/** used for tx temp buf */
 	u8 *tx_buf;
-	/** used for rx temp buf  */
-	u8 *rx_buf;
 
 	/** temp tx DMA physical addr,
 	 * it's the PA of mtk_spi_transfer->tx_buf
@@ -688,10 +340,6 @@ struct mtk_spi_controller {
 	* should be MTK_SPIM_DMA_BUFFER_BYTES
 	*/
 	u8 *dma_tmp_tx_buf;
-	/** used for DMA rx temp buf, the size of rx buffer
-	* should be MTK_SPIM_DMA_BUFFER_BYTES
-	*/
-	u8 *dma_tmp_rx_buf;
 
 	/** TX DMA channel */
 	int dma_tx_chan;
@@ -714,6 +362,10 @@ struct mtk_spi_controller {
   * This section provides Fixed APIs(defined as Common Interface)
   * to fully control the MediaTek SPIM HW.
   */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  *@brief This function is used to dump spi register for debugging.
@@ -831,7 +483,7 @@ int mtk_mhal_spim_prepare_transfer(struct mtk_spi_controller *ctlr,
  *@return
  * Return "0" if the transfer is in progress.\n
  * Return -#SPIM_EPTR if ctlr or xfer is NULL.\n
- * Return -#SPIM_ELENGTH if xfer len is not supported,
+ * Return -#SPIM_ELENGTH if xfer opcode_len/len is not supported.
  * see Note in @ref MHAL_SPIM_Features_Chapter for details.
  */
 int mtk_mhal_spim_fifo_transfer_one(struct mtk_spi_controller *ctlr,
@@ -872,6 +524,7 @@ int mtk_mhal_spim_dma_done_callback_register(struct mtk_spi_controller *ctlr,
  *@return
  * Return "0" if the transfer is in progress.\n
  * Return -#SPIM_EPTR if ctlr or xfer is NULL.\n
+ * Return -#SPIM_ELENGTH if xfer opcode_len/len is not supported.
  * Return -#SPIM_ENOMEM if allocate temp buffer fail.
  */
 int mtk_mhal_spim_dma_transfer_one(struct mtk_spi_controller *ctlr,
@@ -923,6 +576,10 @@ int mtk_mhal_spim_enable_clk(struct mtk_spi_controller *ctlr);
  * Return -#SPIM_EPTR if ctlr is NULL.
  */
 int mtk_mhal_spim_disable_clk(struct mtk_spi_controller *ctlr);
+
+#ifdef __cplusplus
+}
+#endif
 
 /**
   * @}

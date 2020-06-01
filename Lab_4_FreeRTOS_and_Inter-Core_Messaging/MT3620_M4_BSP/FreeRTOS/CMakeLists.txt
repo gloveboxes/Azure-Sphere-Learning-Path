@@ -14,6 +14,6 @@ ADD_LIBRARY(MT3620_M4_FreeRTOS
             ./portable/port.c)
 
 TARGET_INCLUDE_DIRECTORIES(MT3620_M4_FreeRTOS PUBLIC
-                           ./include
-                           ./portable)
+                           ./portable
+                           ./include)
 

@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -261,6 +261,10 @@ enum spis_direction_cmd {
   * @{
   * This section introduces the typedef that SPIS M-HAL used.
   */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /** @brief	This defines the callback function prototype.
  * It's used for DMA mode transaction.\n
@@ -728,6 +732,9 @@ int mtk_mhal_spis_enable_clk(struct mtk_spis_controller *ctlr);
  */
 int mtk_mhal_spis_disable_clk(struct mtk_spis_controller *ctlr);
 
+#ifdef __cplusplus
+}
+#endif
 
 /**
   * @}

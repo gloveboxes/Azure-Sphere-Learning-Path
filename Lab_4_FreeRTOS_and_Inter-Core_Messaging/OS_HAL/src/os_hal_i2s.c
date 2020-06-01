@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -123,9 +123,14 @@ int mtk_os_hal_request_i2s(i2s_no i2s_port)
 		i2s_ctrl_cfg->i2s_ctrl.mdata = &i2s1_mdata;
 	}
 	i2s_ctrl_cfg->i2s_ctrl.base = (void __iomem *)i2s_base_addr[i2s_port];
-	i2s_ctrl_cfg->i2s_ctrl.i2s_no = i2s_port;
+	i2s_ctrl_cfg->i2s_ctrl.i2s_port = i2s_port;
 	i2s_ctrl_cfg->i2s_ctrl.i2s_txdma_chnum = i2s_dma_ch_num[i2s_port][0];
 	i2s_ctrl_cfg->i2s_ctrl.i2s_rxdma_chnum = i2s_dma_ch_num[i2s_port][1];
+	result = mtk_mhal_i2s_reset(&i2s_ctrl_cfg->i2s_ctrl);
+	if (result != 0) {
+		printf("i2s reset fail :\n");
+		return -I2S_EPTR;
+	}
 	result = mtk_mhal_i2s_alloc_vfifo_ch(&i2s_ctrl_cfg->i2s_ctrl);
 	if (result != 0) {
 		printf("i2s allocate DMA fail :\n");/* error handle */
@@ -176,7 +181,7 @@ int mtk_os_hal_config_i2s(i2s_no i2s_port, audio_parameter *parameter)
 		i2s_ctrl_cfg->i2s_ctrl.mdata = &i2s1_mdata;
 	}
 	i2s_ctrl_cfg->i2s_ctrl.base = (void __iomem *)i2s_base_addr[i2s_port];
-	i2s_ctrl_cfg->i2s_ctrl.i2s_no = i2s_port;
+	i2s_ctrl_cfg->i2s_ctrl.i2s_port = i2s_port;
 	i2s_ctrl_cfg->i2s_ctrl.i2s_txdma_chnum = i2s_dma_ch_num[i2s_port][0];
 	i2s_ctrl_cfg->i2s_ctrl.i2s_rxdma_chnum = i2s_dma_ch_num[i2s_port][1];
 	i2s_ctrl_cfg->i2s_ctrl.i2s_tx_fifo_port =
@@ -293,7 +298,7 @@ int mtk_os_hal_enable_i2s(i2s_no i2s_port)
 		i2s_ctrl_cfg->i2s_ctrl.mdata = &i2s1_mdata;
 	}
 	i2s_ctrl_cfg->i2s_ctrl.base = (void __iomem *)i2s_base_addr[i2s_port];
-	i2s_ctrl_cfg->i2s_ctrl.i2s_no = i2s_port;
+	i2s_ctrl_cfg->i2s_ctrl.i2s_port = i2s_port;
 
 	result = mtk_mhal_i2s_enable_audio_top(&i2s_ctrl_cfg->i2s_ctrl);
 	if (result != 0) {
@@ -331,7 +336,7 @@ int mtk_os_hal_disable_i2s(i2s_no i2s_port)
 		i2s_ctrl_cfg->i2s_ctrl.mdata = &i2s1_mdata;
 	}
 	i2s_ctrl_cfg->i2s_ctrl.base = (void __iomem *)i2s_base_addr[i2s_port];
-	i2s_ctrl_cfg->i2s_ctrl.i2s_no = i2s_port;
+	i2s_ctrl_cfg->i2s_ctrl.i2s_port = i2s_port;
 	result = mtk_mhal_i2s_stop_tx_vfifo(&i2s_ctrl_cfg->i2s_ctrl);
 	if (result != 0) {
 		printf("i2s tx dma stop fail :\n");

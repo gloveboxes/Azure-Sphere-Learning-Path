@@ -2,19 +2,7 @@
   "environments": [
     {
       "environment": "AzureSphere",
-
-      "AzureSphereTargetApiSet": "5+Beta2004",
-
-      // Comment out the following line with two slashes if not using the AVNET Azure Sphere Starter Kit
-      "AzureSphereTargetHardwareDefinitionDirectory": "../Hardware/avnet_mt3620_sk",
-
-      // Uncomment the line below by remove the two slashes to enable the Seeed Studio Reference Design Board
-      // "AzureSphereTargetHardwareDefinitionDirectory": "..\\oem\\Hardware\\mt3620_rdb",
-
-      // Uncomment the following include statement if using Seeed Studio Mini Development Board
-      // "AzureSphereTargetHardwareDefinitionDirectory": "..\\oem\\Hardware\\seeed_mt3620_mdb",
-
-      "AzureSphereTargetHardwareDefinition": "azure_sphere_learning_path.json"
+      "BuildAllBuildsAllRoots": "true"
     }
   ],
   "configurations": [
@@ -25,31 +13,23 @@
       "inheritEnvironments": [
         "AzureSphere"
       ],
-      "buildRoot": "${projectDir}\\out\\${name}-${env.AzureSphereTargetApiSet}",
-      "installRoot": "${projectDir}\\install\\${name}-${env.AzureSphereTargetApiSet}",
-      "cmakeCommandArgs": "--no-warn-unused-cli",
+      "buildRoot": "${projectDir}\\out\\${name}",
+      "installRoot": "${projectDir}\\install\\${name}",
+      "cmakeToolchain": "${projectDir}\\AzureSphereRTCoreToolchainMTK.cmake",
       "buildCommandArgs": "-v",
       "ctestCommandArgs": "",
       "variables": [
         {
-          "name": "CMAKE_TOOLCHAIN_FILE",
-          "value": "${env.AzureSphereDefaultSDKDir}CMakeFiles\\AzureSphereRTCoreToolchainVFP.cmake"
-        },
-        {
           "name": "AZURE_SPHERE_TARGET_API_SET",
-          "value": "${env.AzureSphereTargetApiSet}"
+          "value": "latest-beta"
         },
         {
           "name": "ARM_GNU_PATH",
           "value": "${env.DefaultArmToolsetPath}"
         },
         {
-          "name": "AZURE_SPHERE_TARGET_HARDWARE_DEFINITION_DIRECTORY",
-          "value": "${env.AzureSphereTargetHardwareDefinitionDirectory}"
-        },
-        {
-          "name": "AZURE_SPHERE_TARGET_HARDWARE_DEFINITION",
-          "value": "${env.AzureSphereTargetHardwareDefinition}"
+          "name": "AZURE_SPHERE_DEFAULT_CMAKE_PATH",
+          "value": "${env.AzureSphereDefaultSDKDir}CMakeFiles\\"
         }
       ]
     },
@@ -60,31 +40,23 @@
       "inheritEnvironments": [
         "AzureSphere"
       ],
-      "buildRoot": "${projectDir}\\out\\${name}-${env.AzureSphereTargetApiSet}",
-      "installRoot": "${projectDir}\\install\\${name}-${env.AzureSphereTargetApiSet}",
-      "cmakeCommandArgs": "--no-warn-unused-cli",
+      "buildRoot": "${projectDir}\\out\\${name}",
+      "installRoot": "${projectDir}\\install\\${name}",
+      "cmakeToolchain": "${projectDir}\\AzureSphereRTCoreToolchainMTK.cmake",
       "buildCommandArgs": "-v",
       "ctestCommandArgs": "",
       "variables": [
         {
-          "name": "CMAKE_TOOLCHAIN_FILE",
-          "value": "${env.AzureSphereDefaultSDKDir}CMakeFiles\\AzureSphereRTCoreToolchainVFP.cmake"
-        },
-        {
           "name": "AZURE_SPHERE_TARGET_API_SET",
-          "value": "${env.AzureSphereTargetApiSet}"
+          "value": "latest-beta"
         },
         {
           "name": "ARM_GNU_PATH",
           "value": "${env.DefaultArmToolsetPath}"
         },
         {
-          "name": "AZURE_SPHERE_TARGET_HARDWARE_DEFINITION_DIRECTORY",
-          "value": "${env.AzureSphereTargetHardwareDefinitionDirectory}"
-        },
-        {
-          "name": "AZURE_SPHERE_TARGET_HARDWARE_DEFINITION",
-          "value": "${env.AzureSphereTargetHardwareDefinition}"
+          "name": "AZURE_SPHERE_DEFAULT_CMAKE_PATH",
+          "value": "${env.AzureSphereDefaultSDKDir}CMakeFiles\\"
         }
       ]
     }

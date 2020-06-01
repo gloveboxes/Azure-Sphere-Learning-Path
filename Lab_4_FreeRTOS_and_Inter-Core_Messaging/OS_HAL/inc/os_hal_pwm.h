@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -37,16 +37,178 @@
 #define __OS_HAL_PWM_H__
 
 #include "mhal_pwm.h"
-
 /**
- * @addtogroup HAL
+ * @addtogroup OS-HAL
  * @{
- * @addtogroup PWM
+ * @addtogroup pwm
  * @{
- * This section describes the programming interfaces of the pwm hal
+ * This section introduces the Pulse-Width Modulation (PWM) APIs
+ * including terms and acronyms, supported features,
+ * details on how to use this driver, enums, structures and functions.
+ *
+ * @section OS_HAL_PWM_Terms_Chapter Terms and Acronyms
+ *
+ * |Terms  |Details					|
+ * |------------|----------------------------|
+ * |\b PWM | Pulse-Width Modulation.	|
+ *
+ * @section OS_HAL_PWM_Features_Chapter Supported Features
+ * See @ref MHAL_PWM_Features_Chapter for the details of  Supported Features.
+ *
+ * @}
+ * @}
  */
 
+/**
+ * @addtogroup OS-HAL
+ * @{
+ * @addtogroup pwm
+ * @{
+ * @section OS_HAL_PWM_Driver_Usage_Chapter How to use this driver
+ *
+ * - \b Device \b driver \b sample \b code \b is \b as \b follows: \n
+ *  - sample code (this is the user application sample code on freeRTos):
+ *	  @code
+ *
+ *
+ *      -PWM normal mode:
+ *
+ *        -Initialize the PWM module.
+ *            - Call mtk_os_hal_pwm_ctlr_init(pwm_groups group_num,
+ *            u32 channel_bit_map)
+ *
+ *        -Select PWM global kick, IO ctrl, polarity setting.
+ *            - Call mtk_os_hal_pwm_feature_enable(pwm_groups group_num,
+ *            pwm_channels pwm_num,
+ *            bool global_kick_enable,
+ *            bool io_ctrl_sel,
+ *            bool polarity_set)
+ *
+ *        -Config normal mode freq & duty.
+ *            - Call mtk_os_hal_pwm_config_freq_duty_normal(
+ *            pwm_groups group_num, pwm_channels pwm_num,
+ *            u32	frequency, u32	duty_cycle)
+ *
+ *        -Enable pwm waveform output.
+ *            - Call mtk_os_hal_pwm_start_normal(pwm_groups group_num,
+ *            pwm_channels pwm_num)
+ *
+ *        -Disabe pwm waveform output.
+ *            - Call mtk_os_hal_pwm_stop_normal(pwm_groups group_num,
+ *            pwm_channels pwm_num)
+ *
+ *        -Release the PWM module back to its original state.
+ *            - Call mtk_os_hal_pwm_ctlr_deinit(pwm_groups group_num,
+ *            u32 channel_bit_map)
+ *
+ *
+ *      - PWM 2-state mode:
+ *
+ *        -Initialize the PWM module.
+ *            - Call mtk_os_hal_pwm_ctlr_init(pwm_groups group_num,
+ *            u32 channel_bit_map)
+ *
+ *        -Select PWM global kick, IO ctrl, polarity setting.
+ *            - Call mtk_os_hal_pwm_feature_enable(pwm_groups group_num,
+ *            pwm_channels pwm_num,
+ *            bool global_kick_enable,
+ *            bool io_ctrl_sel,
+ *            bool polarity_set)
+ *
+ *        -Set PWM  frequency and duty cycle of S0 stage in 2-state mode.
+ *            - Call mtk_os_hal_pwm_config_freq_duty_2_state(
+ *            pwm_groups group_num,
+ *            pwm_channels pwm_num,
+ *            struct mtk_com_pwm_data state_config)
+ *
+ *        -Set PWM  frequency and duty cycle of S1 stage in 2-state mode.
+ *            - Call mtk_os_hal_pwm_config_freq_duty_2_state(
+ *            pwm_groups group_num,
+ *            pwm_channels pwm_num,
+ *            struct mtk_com_pwm_data state_config)
+ *
+ *        -set PWM stay cycles of S0 & S1 in 2-state mode.
+ *            - Call mtk_os_hal_pwm_config_stay_cycle_2_state(
+ *            pwm_groups group_num,
+ *            pwm_channels pwm_num,
+ *            struct mtk_com_pwm_data state_config)
+ *
+ *        -Disabe pwm waveform output.
+ *            - Call mtk_os_hal_pwm_stop_normal(pwm_groups group_num,
+ *            pwm_channels pwm_num)
+ *
+ *        -Release the PWM module back to its original state.
+ *            - Call mtk_os_hal_pwm_ctlr_deinit(pwm_groups group_num,
+ *            u32 channel_bit_map)
+ *
+ *
+ *      - PWM differential mode:
+ *
+ *        -Initialize the PWM module.
+ *            - Call mtk_os_hal_pwm_ctlr_init(pwm_groups group_num,
+ *            u32 channel_bit_map)
+ *
+ *        -Select PWM global kick, IO ctrl, polarity setting.
+ *            - Call mtk_os_hal_pwm_feature_enable(pwm_groups group_num,
+ *            pwm_channels pwm_num,
+ *            bool global_kick_enable,
+ *            bool io_ctrl_sel,
+ *            bool polarity_set)
+ *
+ *        -Config normal mode freq & duty.
+ *            - Call mtk_os_hal_pwm_config_freq_duty_normal(
+ *            pwm_groups group_num, pwm_channels pwm_num,
+ *            u32	frequency, u32	duty_cycle)
+ *        -Set PWM channel to differential mode.
+ *            - Call mtk_os_hal_pwm_config_dpsel(pwm_groups group_num,
+ *            pwm_channels pwm_num,
+ *            pwm_differential_select mode)
+ *
+ *        -Enable pwm waveform output.
+ *            - Call mtk_os_hal_pwm_start_normal(pwm_groups group_num,
+ *            pwm_channels pwm_num)
+ *
+ *        -Disabe pwm waveform output.
+ *            - Call mtk_os_hal_pwm_stop_normal(pwm_groups group_num,
+ *            pwm_channels pwm_num)
+ *
+ *        -Release the PWM module back to its original state.
+ *            - Call mtk_os_hal_pwm_ctlr_deinit(pwm_groups group_num,
+ *            u32 channel_bit_map)
+ *
+ *	@endcode
+ *
+ * @}
+ * @}
+ */
+
+/**
+ * @addtogroup OS-HAL
+ * @{
+ * @addtogroup pwm
+ * @{
+ */
+
+/** @defgroup os_hal_pwm_define Define
+* @{
+* This section introduces the Macro definition
+* which is used as PWM channel number.
+*/
+
 #define MAX_CHANNEL_NUM 4
+/**< Max channel number */
+
+/**
+  * @}
+  */
+
+/** @defgroup os_hal_pwm_enum Enum
+  * @{
+  *	OS-HAL PWM enumeration value list information, including
+  *	define of  the PWM group number enumeration, the PWM
+  *	channel number enumeration and	define of the PWM
+  *	running status enumeration.
+  */
 
 /** @brief Defines the PWM group number */
 typedef enum {
@@ -73,6 +235,22 @@ typedef enum {
 	OS_HAL_PWM_MAP_MAX
 	/**< PWM max channel  bit map<invalid>*/
 }	pwms_bit_map;
+/**
+  * @}
+  */
+
+/** @defgroup os_hal_pwm_function Function
+  * @{
+  *	OS-HAL PWM API list information, including
+  *	PWM hardware initializing and de-initializing,
+  *	setting PWM  frequency and duty cycle,
+  *	enabling and disabling PWM hardware output,
+  *	feature enabling.
+  */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @brief  Init PWM controller.
@@ -85,8 +263,8 @@ typedef enum {
  *	channel_bit_map = OS_HAL_PWM_0 | OS_HAL_PWM_1
  * @return
  *	If return value is 0, it means success.\n
- *	If return value is -#EPTR , it means ctlr is NULL.\n
- *	If return value is -#ECLK , it means clock select invalid.
+ *	If return value is -#PWM_EPTR , it means ctlr is NULL.\n
+ *	If return value is -#PWM_ECLK , it means clock select invalid.
  */
 int mtk_os_hal_pwm_ctlr_init(pwm_groups group_num, u32 channel_bit_map);
 /**
@@ -101,8 +279,8 @@ int mtk_os_hal_pwm_ctlr_init(pwm_groups group_num, u32 channel_bit_map);
  *
  * @return
  *	If return value is 0, it means success.\n
- *	If return value is -#EPTR , it means ctlr is NULL.\n
- *	If return value is -#EPARAMETER , it means pwm_num is invalid.
+ *	If return value is -#PWM_EPTR , it means ctlr is NULL.\n
+ *	If return value is -#PWM_EPARAMETER , it means pwm_num is invalid.
  */
 int mtk_os_hal_pwm_ctlr_deinit(pwm_groups group_num, u32 channel_bit_map);
 /**
@@ -110,15 +288,17 @@ int mtk_os_hal_pwm_ctlr_deinit(pwm_groups group_num, u32 channel_bit_map);
  *
  *  @param group_num : PWM group number, 0 is group0 , 1 is group1, 2 is group2
  *  @param pwm_num : PWM number, 0 is pwm0 , 1 is pwm1, 2 is pwm2, 3 is pwm3
- *  @param frequency : PWM frequency select, unit in HZ, if set 1000,
- *	waveform frequency is 1000HZ.
+ *  @param frequency : PWM frequency select, unit is Hz. if set 1000,
+ *	waveform frequency is 1000Hz.  The maxinum supported frequency is
+ *	the half of source clock frequency. When using the 26MHz Xtal as clock
+ *	source, the maxinum supported frequency is 13MHz.
  *  @param duty_cycle : PWM duty_cycle ,resolution is 0.1, ex: duty is 50%,
  *	duty_cycle = (50/0.1) = 500
  *
  * @return
  *	If return value is 0, it means success.\n
- *	If return value is -#EPTR , it means ctlr is NULL.\n
- *	If return value is -#EPARAMETER , it means pwm_num is invalid.
+ *	If return value is -#PWM_EPTR , it means ctlr is NULL.\n
+ *	If return value is -#PWM_EPARAMETER , it means pwm_num is invalid.
  */
 int mtk_os_hal_pwm_config_freq_duty_normal(pwm_groups group_num,
 	pwm_channels pwm_num, u32  frequency, u32  duty_cycle);
@@ -139,8 +319,8 @@ int mtk_os_hal_pwm_config_freq_duty_normal(pwm_groups group_num,
  *
  * @return
  *	If return value is 0, it means success.\n
- *	If return value is -#EPTR , it means ctlr is NULL.\n
- *	If return value is -#EPARAMETER , it means pwm_num is invalid.
+ *	If return value is -#PWM_EPTR , it means ctlr is NULL.\n
+ *	If return value is -#PWM_EPARAMETER , it means pwm_num is invalid.
  */
 int mtk_os_hal_pwm_feature_enable(pwm_groups group_num,
 	pwm_channels pwm_num,
@@ -158,8 +338,8 @@ int mtk_os_hal_pwm_feature_enable(pwm_groups group_num,
  *
  * @return
  *	If return value is 0, it means success.\n
- *	If return value is -#EPTR , it means ctlr is NULL.\n
- *	If return value is -#EPARAMETER , it means pwm_num is invalid.
+ *	If return value is -#PWM_EPTR , it means ctlr is NULL.\n
+ *	If return value is -#PWM_EPARAMETER , it means pwm_num is invalid.
  */
 int mtk_os_hal_pwm_config_freq_duty_2_state(pwm_groups group_num,
 		pwm_channels pwm_num,
@@ -174,13 +354,12 @@ int mtk_os_hal_pwm_config_freq_duty_2_state(pwm_groups group_num,
  *
  * @return
  *	If return value is 0, it means success.\n
- *	If return value is -#EPTR , it means ctlr is NULL.\n
- *	If return value is -#EPARAMETER , it means pwm_num is invalid.
+ *	If return value is -#PWM_EPTR , it means ctlr is NULL.\n
+ *	If return value is -#PWM_EPARAMETER , it means pwm_num is invalid.
 */
 int mtk_os_hal_pwm_config_stay_cycle_2_state(pwm_groups group_num,
 		pwm_channels pwm_num,
 		struct mtk_com_pwm_data state_config);
-
 /**
  * @brief  Config dpsel.
  *
@@ -190,8 +369,8 @@ int mtk_os_hal_pwm_config_stay_cycle_2_state(pwm_groups group_num,
  *
  * @return
  *	If return value is 0, it means success.\n
- *	If return value is -#EPTR , it means ctlr is NULL.\n
- *	If return value is -#EPARAMETER , it means pwm_num is invalid.
+ *	If return value is -#PWM_EPTR , it means ctlr is NULL.\n
+ *	If return value is -#PWM_EPARAMETER , it means pwm_num is invalid.
  */
 int mtk_os_hal_pwm_config_dpsel(pwm_groups group_num,
 		pwm_channels pwm_num,
@@ -204,8 +383,8 @@ int mtk_os_hal_pwm_config_dpsel(pwm_groups group_num,
  *
  * @return
  *	If return value is 0, it means success.\n
- *	If return value is -#EPTR , it means ctlr is NULL.\n
- *	If return value is -#EPARAMETER , it means pwm_num is invalid.
+ *	If return value is -#PWM_EPTR , it means ctlr is NULL.\n
+ *	If return value is -#PWM_EPARAMETER , it means pwm_num is invalid.
  */
 int mtk_os_hal_pwm_start_normal(pwm_groups group_num,
 		pwm_channels pwm_num);
@@ -217,11 +396,24 @@ int mtk_os_hal_pwm_start_normal(pwm_groups group_num,
  *
  * @return
  *	If return value is 0, it means success.\n
- *	If return value is -#EPTR , it means ctlr is NULL.\n
- *	If return value is -#EPARAMETER , it means pwm_num is invalid.
+ *	If return value is -#PWM_EPTR , it means ctlr is NULL.\n
+ *	If return value is -#PWM_EPARAMETER , it means pwm_num is invalid.
  */
 int mtk_os_hal_pwm_stop_normal(pwm_groups group_num,
 		pwm_channels pwm_num);
+
+#ifdef __cplusplus
+}
+#endif
+
+/**
+  * @}
+  */
+
+/**
+  * @}
+  * @}
+  */
 
 #endif
 

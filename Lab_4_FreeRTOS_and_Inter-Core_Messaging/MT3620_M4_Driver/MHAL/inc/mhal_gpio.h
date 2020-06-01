@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -74,7 +74,6 @@
  * @}
  */
 
-
 /**
  * @addtogroup M-HAL
  * @{
@@ -90,135 +89,8 @@
  *	an OS-related GPIO driver.\n
  *
  * - \b The \b OS-HAL \b freeRTos \b driver \b sample \b code \b is
- *    \b as \b follows:\n
- *	- sample code (freeRTos doesn't have GPIO and pinctrl framework,
- * so this sample code provides APIs for User Application):
- * @par       Example
- * @code
- *
- *
- *#include "os_hal_gpio.h"
- *
- *#define CA7_GPIO_BASE				0x30020000
- *#define CM4_ADC_BASE				0x38000000
- *#define CM4_GPIO_PWM_GRP0_BASE	0x38010000
- *#define CM4_GPIO_PWM_GRP1_BASE	0x38020000
- *#define CM4_GPIO_PWM_GRP2_BASE	0x38030000
- *#define CM4_GPIO_PWM_GRP3_BASE	0x38040000
- *#define CM4_GPIO_PWM_GRP4_BASE	0x38050000
- *#define CM4_GPIO_PWM_GRP5_BASE	0x38060000
- *
- *#define CM4_ISU0_I2C_BASE			0x38070000
- *#define CM4_ISU1_I2C_BASE			0x38080000
- *#define CM4_ISU2_I2C_BASE			0x38090000
- *#define CM4_ISU3_I2C_BASE			0x380A0000
- *#define CM4_ISU4_I2C_BASE			0x380B0000
- *
- *#define CM4_I2S0_BASE				0x380D0000
- *#define CM4_I2S1_BASE				0x380E0000
- *#define PINMUX_BASE				0x30010000
- *
- *#define   GPIO_MODE_BITS	4
- *#define  MAX_GPIO_MODE_PER_REG	8
- *#define PORT_SHF	2
- *#define PORT_MASK	0xf
- *#define PINMUX_OFFSET	0x20
- *
- *static unsigned long gpio_base_addr[MHAL_GPIO_REG_BASE_MAX] = {
- *	CM4_GPIO_PWM_GRP0_BASE,
- *	CM4_GPIO_PWM_GRP1_BASE,
- *	CM4_GPIO_PWM_GRP2_BASE,
- *	CM4_GPIO_PWM_GRP3_BASE,
- *	CM4_GPIO_PWM_GRP4_BASE,
- *	CM4_GPIO_PWM_GRP5_BASE,
- *	CM4_ISU0_I2C_BASE,
- *	CM4_ISU1_I2C_BASE,
- *	CM4_ISU2_I2C_BASE,
- *	CM4_ISU3_I2C_BASE,
- *	CM4_ISU4_I2C_BASE,
- *	CM4_ADC_BASE,
- *	CA7_GPIO_BASE,
- *	CM4_I2S0_BASE,
- *	CM4_I2S1_BASE,
- *	PINMUX_BASE,
- *};
- *
- *static struct mtk_pinctrl_controller pctl;
- *
- *int mtk_os_hal_gpio_request(u32 pin)
- *{
- *	return mtk_mhal_gpio_request(&pctl, pin);
- *}
- *
- *int mtk_os_hal_gpio_free(u32 pin)
- *{
- *	 return mtk_mhal_gpio_free(&pctl, pin);
- *}
- *
- *int mtk_os_hal_gpio_get_input(u32 pin, u32 *pvalue)
- *{
- *	return mtk_mhal_gpio_get_input(&pctl, pin, pvalue);
- *}
- *
- *int mtk_os_hal_gpio_set_output(
- *	u32 pin, u32 out_val)
- *{
- *	return mtk_mhal_gpio_set_output(&pctl, pin, out_val);
- *}
- *
- *int mtk_os_hal_gpio_get_output(u32 pin, u32 *pvalue)
- *{
- *	return mtk_mhal_gpio_get_output(&pctl, pin, pvalue);
- *}
- *
- *int mtk_os_hal_gpio_set_direction(
- *	u32 pin, u32 dir)
- *{
- *	return mtk_mhal_gpio_set_direction(&pctl, pin, dir);
- *}
- *
- *int mtk_os_hal_gpio_get_direction(u32 pin, u32 *pvalue)
- *{
- *	return mtk_mhal_gpio_get_direction(&pctl, pin, pvalue);
- *}
- *
- *int mtk_os_hal_gpio_set_pullen_pullsel(
- *	u32 pin, bool enable, bool isup)
- *{
- *	return mtk_mhal_gpio_set_pullen_pullsel(&pctl, pin, enable, isup);
- *}
- *
- *
- * @endcode
- * - \b How \b to \b develop \b user \b application \b by \b using
- *    \b OS-HAL \b API: \n
- *  - sample code (this is the user application sample code on freeRTos):
- *    @code
- *
- *    - Set GPIO output high/low:
- *      -Call mtk_os_hal_gpio_request(pin) to get gpio request resource.
- *      -Call mtk_os_hal_gpio_set_direction(pin, OS_HAL_GPIO_DIR_OUTPUT)
- *        to set gpio direction as output mode.
- *      -Call mtk_os_hal_gpio_set_output(pin, OS_HAL_GPIO_DATA_HIGH)
- *        to set gpio output high.
- *      -Call mtk_os_hal_gpio_set_output(pin, OS_HAL_GPIO_DATA_LOW)
- *        to set gpio output low.
- *      -Call mtk_os_hal_gpio_free(pin) to free gpio request resource.
- *
- *    - Set GPIO input mode:
- *      -Call mtk_os_hal_gpio_request(pin) to get gpio request resource.
- *      -Call mtk_os_hal_gpio_set_direction(pin, OS_HAL_GPIO_DIR_INPUT)
- *        to set gpio direction as input mode.
- *      -Call mtk_os_hal_gpio_set_pullen_pullsel(pin, false, false)
- *        to disable gpio pull-up and pull-down state.
- *      -Call mtk_os_hal_gpio_set_pullen_pullsel(pin, ture, false)
- *        to set gpio as pull-down state.
- *      -Call mtk_os_hal_gpio_set_pullen_pullsel(pin, ture, ture)
- *        to set gpio as pull-up state.
- *      -Call mtk_os_hal_gpio_get_input(pin, pvalue) to get gpio input value.
- *      -Call mtk_os_hal_gpio_free(pin) to free gpio request resource.
- *
- *    @endcode
+ *    \b as \b follows: \n
+ * <a href="https://github.com/MediaTek-Labs/mt3620_m4_software/blob/master/MT3620_M4_Sample_Code/FreeRTOS/OS_HAL/src/os_hal_gpio.c"> freeRTos GPIO sample code on github </a>
  *
  * @}
  * @}
@@ -486,6 +358,10 @@ struct mtk_pinctrl_controller {
   * to fully control the MediaTek GPIO HW.
   */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @brief     This function is used to request the target GPIO.
  * @brief Usage: OS-HAL driver should call it before other GPIO function
@@ -535,7 +411,7 @@ int mtk_mhal_gpio_free(struct mtk_pinctrl_controller *pctl, u32 pin);
  *    If the return value is 0, it means success.\n
  */
 int mtk_mhal_gpio_get_input(struct mtk_pinctrl_controller *pctl,
-	u32 pin, u32 *pvalue);
+	u32 pin, mhal_gpio_data *pvalue);
 
 /**
  * @brief     This function is used to set output data of the target GPIO.
@@ -577,7 +453,7 @@ int mtk_mhal_gpio_set_output(struct mtk_pinctrl_controller *pctl,
  *    If the return value is 0, it means success.\n
  */
 int mtk_mhal_gpio_get_output(struct mtk_pinctrl_controller *pctl,
-	u32 pin, u32 *pvalue);
+	u32 pin, mhal_gpio_data *pvalue);
 
 /**
  * @brief This function is used to set the direction of the target GPIO.
@@ -619,7 +495,7 @@ int mtk_mhal_gpio_set_direction(
  *    If the return value is 0, it means success.\n
  */
 int mtk_mhal_gpio_get_direction(struct mtk_pinctrl_controller *pctl,
-	u32 pin, u32 *pvalue);
+	u32 pin, mhal_gpio_direction *pvalue);
 
 /**
  * @brief This function is used to set the target GPIO to
@@ -693,6 +569,10 @@ int mtk_mhal_gpio_pmx_set_mode(
   */
 int mtk_mhal_gpio_pmx_get_mode(struct mtk_pinctrl_controller *pctl,
 	u32 pin, u32 *pvalue);
+
+#ifdef __cplusplus
+}
+#endif
 
  /**
  * @}

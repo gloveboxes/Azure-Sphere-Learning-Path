@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -401,7 +401,7 @@ int mtk_mhal_gpio_free(struct mtk_pinctrl_controller *pctl, u32 pin)
 }
 
 int mtk_mhal_gpio_get_input(struct mtk_pinctrl_controller *pctl,
-	u32 pin, u32 *pvalue)
+	u32 pin, mhal_gpio_data *pvalue)
 {
 	u32 i;
 
@@ -420,7 +420,7 @@ int mtk_mhal_gpio_get_input(struct mtk_pinctrl_controller *pctl,
 		return -EPIN;
 
 	/* DIN + 0x04*/
-	*pvalue = _mtk_mhal_gpio_reg_map(pctl, 0x04, pin, 0x0);
+	*pvalue = (mhal_gpio_data)_mtk_mhal_gpio_reg_map(pctl, 0x04, pin, 0x0);
 
 	gpio_debug("GPIO%d input value = 0x%x\n", pin, *pvalue);
 
@@ -457,7 +457,7 @@ int mtk_mhal_gpio_set_output(struct mtk_pinctrl_controller *pctl,
 }
 
 int mtk_mhal_gpio_get_output(struct mtk_pinctrl_controller *pctl,
-	u32 pin, u32 *pvalue)
+	u32 pin, mhal_gpio_data *pvalue)
 {
 	u32 i;
 
@@ -476,7 +476,7 @@ int mtk_mhal_gpio_get_output(struct mtk_pinctrl_controller *pctl,
 		return -EPIN;
 
 	/* DOUT + 0x10 */
-	*pvalue = _mtk_mhal_gpio_reg_map(pctl, 0x10, pin, 0x0);
+	*pvalue = (mhal_gpio_data)_mtk_mhal_gpio_reg_map(pctl, 0x10, pin, 0x0);
 	gpio_debug("GPIO%d get ouput value = 0x%x\n", pin, *pvalue);
 
 	return 0;
@@ -520,7 +520,7 @@ int mtk_mhal_gpio_set_direction(
 }
 
 int mtk_mhal_gpio_get_direction(struct mtk_pinctrl_controller *pctl,
-	u32 pin, u32 *pvalue)
+	u32 pin, mhal_gpio_direction *pvalue)
 {
 	u32 i;
 
@@ -539,7 +539,8 @@ int mtk_mhal_gpio_get_direction(struct mtk_pinctrl_controller *pctl,
 		return -EPIN;
 
 	/* OE + 0x20 */
-	*pvalue = _mtk_mhal_gpio_reg_map(pctl, 0x20, pin, 0x0);
+	*pvalue = (mhal_gpio_direction)_mtk_mhal_gpio_reg_map(pctl,
+			0x20, pin, 0x0);
 
 	gpio_debug("GPIO%d dir = 0x%x\n", pin, *pvalue);
 	return 0;

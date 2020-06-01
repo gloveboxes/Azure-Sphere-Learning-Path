@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -84,406 +84,10 @@
  *	This section describes the definition of APIs and provides
  *	an example on FreeRTOS to show how to use these APIs to develop
  *	an OS-related driver.\n
- * - \b The \b OS-HAL \b FreeRTOS \b driver\n
- * \b sample \b code \b is \b as \b follows:\n
- *	- sample code (FreeRTOS doesn't have ADC framework,
- * so this sample code provides APIs to user application):
- *	  @code
- *	#define CM4_ADC_BASE					 0x38000000
- *	#define CM4_ADC_TOPCFGAON_CLK_RG		 0x30030208
  *
- *	struct mtk_adc_controller_rtos {
- *		struct mtk_adc_controller *	ctlr;
- *		QueueHandle_t rx_completion;
- *	};
- *	static struct adc_fsm_param adc_fsm_parameter;
- *
- *	static struct mtk_adc_controller adc_controller;
- *
- *	static struct mtk_adc_controller_rtos g_adc_ctlr_rtos;
- *
- *	static struct mtk_adc_controller_rtos *	_mtk_os_hal_adc_get_ctlr(void)
- *	{
- *			return &g_adc_ctlr_rtos;
- *	}
- *
- *
- *	static int _mtk_os_hal_adc_irq_handler(struct mtk_adc_controller *
- *		ctlr)
- *	{
- *		if (!ctlr)
- *			  return -EPTR;
- *
- *		if (ctlr->adc_fsm_parameter->fifo_mode != ADC_FIFO_DIRECT)
- *			  return -EPARAMETER;
- *
- *		mtk_mhal_adc_fifo_handle_rx(ctlr);
- *
- *		return 0;
- *	}
- *
- *	static void _mtk_os_hal_adc_irq_event(void)
- *	{
- *		struct mtk_adc_controller_rtos *	ctlr_rtos =
- *			  _mtk_os_hal_adc_get_ctlr();
- *		struct mtk_adc_controller *	ctlr;
- *
- *		ctlr = ctlr_rtos->ctlr;
- *		_mtk_os_hal_adc_irq_handler(ctlr);
- *
- *	}
- *
- *	static int _mtk_os_hal_adc_request_irq(struct mtk_adc_controller *
- *			ctlr)
- *	{
- *		if (!ctlr)
- *			  return -EPTR;
- *
- *		CM4_Install_NVIC(CM4_IRQ_ADC, CM4_ADC_PRI, IRQ_LEVEL_TRIGGER,
- *			  _mtk_os_hal_adc_irq_event, TRUE);
- *
- *		return 0;
- *	}
- *
- *	static int _mtk_os_hal_adc_wait_for_completion_timeout(
- *					  struct mtk_adc_controller_rtos
- *					  *	ctlr_rtos, int time_ms)
- *	{
- *		if (pdTRUE != xSemaphoreTake(ctlr_rtos->rx_completion,
- *						   time_ms / portTICK_RATE_MS))
- *			  return -1;
- *
- *		return 0;
- *	}
- *
- *	static int _mtk_os_hal_adc_rx_done_callback(void *	data)
- *	{
- *		BaseType_t x_higher_priority_task_woken = pdFALSE;
- *		struct mtk_adc_controller_rtos *	ctlr_rtos = data;
- *
- *		xSemaphoreGiveFromISR(ctlr_rtos->rx_completion,
- *						&x_higher_priority_task_woken);
- *		portYIELD_FROM_ISR(x_higher_priority_task_woken);
- *
- *		return 0;
- *	}
- *
- *	int mtk_os_hal_adc_ctlr_init(adc_pmode pmode, adc_fifo_mode fifo_mode,
- *		u16 bit_map)
- *	{
- *		struct mtk_adc_controller_rtos *	ctlr_rtos;
- *		struct mtk_adc_controller *	ctlr;
- *		u32 channel_index = 0;
- *		int ret = 0;
- *
- *		ctlr_rtos = _mtk_os_hal_adc_get_ctlr();
- *		if (!ctlr_rtos)
- *			  return -EPTR;
- *
- *		if ((pmode != ADC_PMODE_ONE_TIME) &&
- *			(pmode != ADC_PMODE_PERIODIC))
- *			  return -EPARAMETER;
- *
- *		if ((fifo_mode != ADC_FIFO_DIRECT) &&
- *			(fifo_mode != ADC_FIFO_DMA))
- *			return -EPARAMETER;
- *
- *		ctlr_rtos->ctlr = &adc_controller;
- *
- *		if (!ctlr_rtos->ctlr)
- *			  return -EPTR;
- *
- *		ctlr = ctlr_rtos->ctlr;
- *
- *		ctlr->adc_fsm_parameter = &adc_fsm_parameter;
- *
- *		ctlr->base = (void __iomem *	)CM4_ADC_BASE;
- *		ctlr->cg_base = (void __iomem *	)CM4_ADC_TOPCFGAON_CLK_RG;
- *
- *		ret = mtk_mhal_adc_enable_clk(ctlr);
- *		if (ret)
- *			  return ret;
- *
- *		ctlr->adc_fsm_parameter->pmode = pmode;
- *		ctlr->adc_fsm_parameter->avg_mode = ADC_AVG_32_SAMPLE;
- *		ctlr->adc_fsm_parameter->channel_map = bit_map;
- *		ctlr->adc_fsm_parameter->period = PMODE_PERIOD;
- *		ctlr->adc_fsm_parameter->fifo_mode = fifo_mode;
- *		ctlr->adc_fsm_parameter->ier_mode = ADC_FIFO_IER_RXFULL;
- *		if (ctlr->adc_fsm_parameter->fifo_mode == ADC_FIFO_DMA) {
- *			  ctlr->adc_fsm_parameter->dma_vfifo_len =
- *			  ADC_DMA_BUF_WORD_SIZE;
- *
- *			  ctlr->dma_channel = VDMA_ADC_RX_CH29;
- *			  ctlr->use_dma = 1;
- *			  printf("dma_vfifo_len == %d\n",
- *				  ctlr->adc_fsm_parameter->dma_vfifo_len);
- *			  printf("dma_vfifo_addr == %p\n",
- *				  ctlr->adc_fsm_parameter->dma_vfifo_addr);
- *		}
- *		printf("mtk os_hal_adc_ctlr_init ctlr->rx_buf == %p\n",
- *			  ctlr->rx_buf);
- *
- *		for (channel_index = 0; channel_index < ADC_CHANNEL_MAX;
- *				  channel_index++) {
- *			  ctlr->current_xfer[channel_index].count = 0;
- *			  ctlr->current_xfer[channel_index].write_point = 0;
- *			  ctlr->current_xfer[channel_index].read_point = 0;
- *		}
- *
- *		ret = mtk_mhal_adc_init(ctlr);
- *		if (ret)
- *			  return ret;
- *
- *		if (fifo_mode == ADC_FIFO_DIRECT) {
- *			  ctlr->use_dma = 0;
- *			  ret = _mtk_os_hal_adc_request_irq(ctlr);
- *			  if (ret)
- *				  return ret;
- *		}
- *		if (!ctlr_rtos->rx_completion)
- *			  ctlr_rtos->rx_completion = xSemaphoreCreateBinary();
- *
- *		ret = mtk_mhal_adc_rx_notify_callback_register(ctlr,
- *				_mtk_os_hal_adc_rx_done_callback,
- *				(void *	)ctlr_rtos);
- *		if (ret)
- *			  return ret;
- *
- *		ret = mtk_mhal_adc_fsm_param_set(ctlr, ctlr->adc_fsm_parameter);
- *		if (ret)
- *			  return ret;
- *
- *		if (ctlr->adc_fsm_parameter->pmode == ADC_PMODE_ONE_TIME) {
- *			  ret = mtk_mhal_adc_start_ch(ctlr_rtos->ctlr,
- *				  ctlr->adc_fsm_parameter->channel_map);
- *			  if (ret)
- *				  return ret;
- *		}
- *		printf("mtk os_hal_adc_ctlr_init success\n");
- *
- *		return ret;
- *	}
- *
- *	int mtk_os_hal_adc_start(void)
- *	{
- *		struct mtk_adc_controller_rtos *	ctlr_rtos =
- *			  _mtk_os_hal_adc_get_ctlr();
- *
- *		if (!ctlr_rtos)
- *			  return -EPTR;
- *
- *		return mtk_mhal_adc_start(ctlr_rtos->ctlr);
- *	}
- *
- *	int mtk_os_hal_adc_start_ch(u16 ch_bit_map)
- *	{
- *		struct mtk_adc_controller_rtos *	ctlr_rtos =
- *			  _mtk_os_hal_adc_get_ctlr();
- *
- *		if (!ctlr_rtos)
- *			  return -EPTR;
- *
- *		 return mtk_mhal_adc_start_ch(ctlr_rtos->ctlr, ch_bit_map);
- *	}
- *
- *	int mtk_os_hal_adc_ctlr_deinit(void)
- *	{
- *		int ret = 0;
- *		struct mtk_adc_controller_rtos *	ctlr_rtos =
- *			  _mtk_os_hal_adc_get_ctlr();
- *
- *		if (!ctlr_rtos)
- *			  return -EPTR;
- *
- *		if (!ctlr_rtos->ctlr)
- *			  return -EPTR;
- *
- *		if (ctlr_rtos->ctlr->adc_fsm_parameter->fifo_mode ==
- *			ADC_FIFO_DIRECT) {
- *			  NVIC_DisableIRQ((IRQn_Type)CM4_IRQ_ADC);
- *		}
- *		ret = mtk_mhal_adc_stop(ctlr_rtos->ctlr);
- *		if (ret)
- *			  return ret;
- *
- *		ret = mtk_mhal_adc_deinit(ctlr_rtos->ctlr);
- *		if (ret)
- *			  return ret;
- *
- *		ret = mtk_mhal_adc_disable_clk(ctlr_rtos->ctlr);
- *		if (ret)
- *			  return ret;
- *
- *		return 0;
- *	}
- *
- *	int mtk_os_hal_adc_fsm_param_set(struct adc_fsm_param *
- *		adc_fsm_parameter)
- *	{
- *		struct mtk_adc_controller_rtos *	ctlr_rtos;
- *		struct mtk_adc_controller *	ctlr;
- *		u32 channel_index = 0;
- *		int ret = 0;
- *
- *		ctlr_rtos = _mtk_os_hal_adc_get_ctlr();
- *		if (!ctlr_rtos)
- *			  return -EPTR;
- *
- *		ctlr = ctlr_rtos->ctlr;
- *
- *		ctlr->adc_fsm_parameter->pmode = adc_fsm_parameter->pmode;
- *		ctlr->adc_fsm_parameter->avg_mode = adc_fsm_parameter->avg_mode;
- *		ctlr->adc_fsm_parameter->channel_map =
- *			adc_fsm_parameter->channel_map;
- *		ctlr->adc_fsm_parameter->period = adc_fsm_parameter->period;
- *		ctlr->adc_fsm_parameter->fifo_mode =
- *			adc_fsm_parameter->fifo_mode;
- *		ctlr->adc_fsm_parameter->ier_mode = adc_fsm_parameter->ier_mode;
- *
- *		if (ctlr->adc_fsm_parameter->fifo_mode == ADC_FIFO_DMA) {
- *			  ctlr->adc_fsm_parameter->dma_vfifo_len =
- *			  ADC_DMA_BUF_WORD_SIZE;
- *			  printf("dma_vfifo_len == %d\n",
- *				  ctlr->adc_fsm_parameter->dma_vfifo_len);
- *			  printf("dma_vfifo_addr == %p\n",
- *				  ctlr->adc_fsm_parameter->dma_vfifo_addr);
- *		}
- *
- *		for (channel_index = 0; channel_index < ADC_CHANNEL_MAX;
- *			  channel_index++) {
- *			  ctlr->current_xfer[channel_index].count = 0;
- *			  ctlr->current_xfer[channel_index].write_point = 0;
- *			  ctlr->current_xfer[channel_index].read_point = 0;
- *		}
- *
- *		ret = mtk_mhal_adc_fsm_param_set(ctlr, adc_fsm_parameter);
- *		if (ret)
- *			  return ret;
- *
- *		return 0;
- *	}
- *
- *	int mtk_os_hal_adc_one_shot_get_data(adc_channel sample_channel,
- *		u32 *	data)
- *	{
- *		struct mtk_adc_controller_rtos *	ctlr_rtos;
- *		struct mtk_adc_controller *	ctlr;
- *		int ret = 0;
- *
- *		ctlr_rtos = _mtk_os_hal_adc_get_ctlr();
- *		if (!ctlr_rtos)
- *			  return -EPTR;
- *
- *		ctlr = ctlr_rtos->ctlr;
- *
- *		if ((ctlr == NULL) || (ctlr->adc_fsm_parameter == NULL))
- *			return -EPTR;
- *
- *		if (sample_channel > ADC_CHANNEL_7)
- *			return -EPARAMETER;
- *
- *		if ((ctlr->adc_fsm_parameter->pmode != ADC_PMODE_ONE_TIME) ||
- *			(ctlr->adc_fsm_parameter->fifo_mode != ADC_FIFO_DIRECT))
- *			return -EPARAMETER;
- *
- *		printf("sample_channel->%d data point:%p\n",
- *			sample_channel, data);
- *
- *		ret = _mtk_os_hal_adc_wait_for_completion_timeout(ctlr_rtos,
- *			1000);
- *		if (ret)
- *			printf("Take adc master Semaphore timeout!\n");
- *
- *		ret = mtk_mhal_adc_one_shot_get_data(ctlr_rtos->ctlr,
- *		sample_channel, data);
- *		if (ret)
- *			return ret;
- *
- *		printf("one_shot_get_data sample_channel:->%d, data:%d\n",
- *			sample_channel, *	data);
- *
- *		return 0;
- *	}
- *
- *	int mtk_os_hal_adc_period_get_data(adc_channel sample_channel)
- *	{
- *		struct mtk_adc_controller_rtos *	ctlr_rtos;
- *		struct mtk_adc_controller *	ctlr;
- *		int ret = 0;
- *
- *		ctlr_rtos = _mtk_os_hal_adc_get_ctlr();
- *		if (!ctlr_rtos)
- *			return -EPTR;
- *
- *		ctlr = ctlr_rtos->ctlr;
- *		if ((ctlr == NULL) || (ctlr->adc_fsm_parameter == NULL))
- *			return -EPTR;
- *
- *		ret = mtk_mhal_adc_start(ctlr_rtos->ctlr);
- *		if (ret)
- *			return ret;
- *
- *		ret = _mtk_os_hal_adc_wait_for_completion_timeout(ctlr_rtos,
- *			1000);
- *		if (ret)
- *			printf("Take adc master Semaphore timeout!\n");
- *
- *		ret = mtk_mhal_adc_period_get_data(ctlr, sample_channel);
- *		if (ret)
- *			return ret;
- *
- *		ret = mtk_mhal_adc_stop(ctlr);
- *		if (ret)
- *			return ret;
- *
- *		if (ctlr->adc_fsm_parameter->fifo_mode == ADC_FIFO_DMA) {
- *			ret = mtk_mhal_adc_stop_dma(ctlr);
- *			if (ret)
- *				return ret;
- *		}
- *
- *		return 0;
- *	}
- *	@endcode
- *
- * - \b How \b to \b develop \b user \b application \b by \b using
- *    \b OS-HAL \b API: \n
- *  - sample code (this is the user application sample code on freeRTos):
- *	  @code
- *
- *    - ADC one shot mode:
- *      -Call mtk_os_hal_adc_ctlr_init() to initialize the ADC module.
- *      -Call mtk_os_hal_adc_fsm_param_set() to set one shot state
- *        machine parameters.
- *      -Call mtk_os_hal_adc_start() or mtk_os_hal_adc_start_ch() to start
- *        the ADC module.
- *      -Call mtk_os_hal_adc_one_shot_get_data() to retrieve
- *        sample data for a channel.
- *      -ADC hw is no longer in use, call mtk_os_hal_adc_ctlr_deinit() to return
- *        the ADC module back to its original state.
- *
- *    - ADC fifo mode:
- *      -Call mtk_os_hal_adc_ctlr_init() to initialize the ADC module.
- *      -Call mtk_os_hal_adc_fsm_param_set() to set fifo state
- *        machine parameters.
- *      -Call mtk_os_hal_adc_start() or mtk_os_hal_adc_start_ch() to start
- *        the ADC module.
- *      -Call mtk_os_hal_adc_period_get_data() to retrieve
- *        sample data for a channel.
- *      -Call mtk_os_hal_adc_stop() to stop ADC HW.
- *      -ADC hw is no longer in use, call mtk_os_hal_adc_ctlr_deinit() to return
- *        the ADC module back to its original state.
- *
- *    - ADC dma mode:
- *      -Call mtk_os_hal_adc_ctlr_init() to initialize the ADC module.
- *      -Call mtk_os_hal_adc_fsm_param_set() to set dma state
- *        machine parameters.
- *      -Call mtk_os_hal_adc_period_get_data() to retrieve
- *        sample data for a channel.
- *      -ADC hw is no longer in use, call mtk_os_hal_adc_ctlr_deinit() to return
- *        the ADC module back to its original state.
- *	@endcode
+ * - \b The \b OS-HAL \b freeRTos \b driver\n
+ *    \b sample \b code \b is \b as \b follows: \n
+ * <a href="https://github.com/MediaTek-Labs/mt3620_m4_software/blob/master/MT3620_M4_Sample_Code/FreeRTOS/OS_HAL/src/os_hal_adc.c"> freeRTos ADC sample code on github </a>
  *
  * @}
  * @}
@@ -658,7 +262,7 @@ typedef enum {
  *	by #mtk_mhal_adc_rx_notify_callback_register().
  * @return
  *	If return value is 0 , the callback API registers successfully.\n
- *	If return value is -#EPTR , it means ctlr is NULL.
+ *	If return value is -#ADC_EPTR , it means ctlr is NULL.
  */
 typedef int (*adc_rx_done_callback) (void *callback_param);
 
@@ -688,7 +292,7 @@ struct adc_fsm_param {
 	/**< ADC clock cycle count period, unit as clock cycle*/
 	adc_fifo_mode fifo_mode;
 	/**< ADC operation mode: FIFO or DMA mode*/
-	u32 dma_vfifo_addr[ADC_DMA_BUF_WORD_SIZE];
+	u32 *dma_vfifo_addr;
 	/**< ADC DMA Virtual FIFO address*/
 	u32 dma_vfifo_len;
 	/**< ADC DMA Virtual FIFO length*/
@@ -756,12 +360,16 @@ adc_rx_done_callback rx_done_callback;
   *	ADC controller allocating and releasing,
   *	ADC hardware initializing and de-initializing,
   *	setting and getting ADC state machine,
-  *	enabling and disabling PWM hardware output,
+  *	enabling and disabling ADC hardware output,
   *	gets ADC sample data using FIFO mode,
   *	gets ADC sample data using DMA mode,
   *	registers OS-HAL callback API to M-HAL,
   *	enabling and disabling clock.
   */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
   * @brief  This function is used to initialize an ADC hardware controller.
@@ -771,7 +379,7 @@ adc_rx_done_callback rx_done_callback;
   * @param [in] ctlr : Abstract an ADC controller.
   * @return
   *  If return value is 0, it means success.\n
-  *  If return value is -#EPTR , it means ctlr is NULL.
+  *  If return value is -#ADC_EPTR , it means ctlr is NULL.
   */
 int mtk_mhal_adc_init(struct mtk_adc_controller *ctlr);
 
@@ -783,7 +391,7 @@ int mtk_mhal_adc_init(struct mtk_adc_controller *ctlr);
   * @param [in] ctlr : Abstract an ADC controller.
   * @return
   *  If return value is 0, it means success.\n
-  *  If return value is -#EPTR , it means ctlr is NULL.
+  *  If return value is -#ADC_EPTR , it means ctlr is NULL.
   */
 int mtk_mhal_adc_deinit(struct mtk_adc_controller *ctlr);
 /**
@@ -795,8 +403,8 @@ int mtk_mhal_adc_deinit(struct mtk_adc_controller *ctlr);
   * @param [in] adc_fsm_parameter : ADC parameter information.
   * @return
   *  If return value is 0, it means success.\n
-  *  If return value is -#EPTR , it means ctlr is NULL.\n
-  *  If return value is -#EPARAMETER , it means parameter invalid.
+  *  If return value is -#ADC_EPTR , it means ctlr is NULL.\n
+  *  If return value is -#ADC_EPARAMETER , it means parameter invalid.
   */
 
 int mtk_mhal_adc_fsm_param_set(struct mtk_adc_controller *ctlr,
@@ -811,21 +419,22 @@ int mtk_mhal_adc_fsm_param_set(struct mtk_adc_controller *ctlr,
   *  information.
   * @return
   *  If return value is 0, it means success.\n
-  *  If return value is -#EPTR , it means ctlr is NULL.
+  *  If return value is -#ADC_EPTR , it means ctlr is NULL.
   */
 
 int mtk_mhal_adc_fsm_param_get(struct mtk_adc_controller *ctlr,
 		struct adc_fsm_param *adc_fsm_parameter);
 
 /**
-  * @brief  This function is used to start all channels of ADC controller
-  *  in one group.
+  * @brief This function is used to start the predefined channels by ADC
+  *  parameter configre API, please refer to the structure
+  *  channel_map for detail info.
   * @brief Usage: OS-HAL calls this API to start ADC hardware,
   *  and this function should be called after setting ADC parameters.
   * @param [in] ctlr : Abstract an ADC controller.
   * @return
   *  If return value is 0, it means success.\n
-  *  If return value is -#EPTR , it means ctlr is NULL.
+  *  If return value is -#ADC_EPTR , it means ctlr is NULL.
   */
 int mtk_mhal_adc_start(struct mtk_adc_controller *ctlr);
 /**
@@ -838,8 +447,8 @@ int mtk_mhal_adc_start(struct mtk_adc_controller *ctlr);
   * @param [in] ch_bit_map : ADC channel bit map information.
   * @return
   *  If return value is 0, it means success.\n
-  *  If return value is -#EPTR , it means ctlr is NULL.\n
-  *  If return value is -#EPARAMETER , it means parameter invalid.
+  *  If return value is -#ADC_EPTR , it means ctlr is NULL.\n
+  *  If return value is -#ADC_EPARAMETER , it means parameter invalid.
   */
 
 int  mtk_mhal_adc_start_ch(struct mtk_adc_controller *ctlr,
@@ -852,7 +461,7 @@ int  mtk_mhal_adc_start_ch(struct mtk_adc_controller *ctlr,
   * @param [in] ctlr : Abstract an ADC controller.
   * @return
   *  If return value is 0, it means success.\n
-  *  If return value is -#EPTR , it means ctlr is NULL.
+  *  If return value is -#ADC_EPTR , it means ctlr is NULL.
   */
 int mtk_mhal_adc_stop(struct mtk_adc_controller *ctlr);
 
@@ -864,8 +473,8 @@ int mtk_mhal_adc_stop(struct mtk_adc_controller *ctlr);
   * @param [out] data : ADC sample data.
   * @return
   *  If return value is 0, it means success.\n
-  *  If return value is -#EPTR , it means ctlr is NULL.\n
-  *  If return value is -#EPARAMETER , it means parameter invalid.
+  *  If return value is -#ADC_EPTR , it means ctlr is NULL.\n
+  *  If return value is -#ADC_EPARAMETER , it means parameter invalid.
   */
 
 int mtk_mhal_adc_one_shot_get_data(struct mtk_adc_controller *ctlr,
@@ -875,14 +484,16 @@ int mtk_mhal_adc_one_shot_get_data(struct mtk_adc_controller *ctlr,
   * @brief  This function is used to sample ADC channel voltage
   *  using period mode.
   * @param [in] ctlr : Abstract an ADC controller.
-  * @param [in] sample_channel : Sample channel number.
+  * @param [in] channel : ADC channel number.
+  * @param [out] data : Sampled data.
+  * @param [out] length : Length of sample data.
   * @return
   *  If return value is 0, it means success.\n
-  *  If return value is -#EPTR , it means ctlr is NULL.
+  *  If return value is -#ADC_EPTR , it means ctlr is NULL.
   */
 
 int mtk_mhal_adc_period_get_data(struct mtk_adc_controller *ctlr,
-		adc_channel channel);
+		adc_channel channel, u32 *data, u32 *length);
 
 /**
  *@brief	 This function is used to register user's callback to M-HAL.
@@ -896,8 +507,8 @@ int mtk_mhal_adc_period_get_data(struct mtk_adc_controller *ctlr,
  *	be passed to user when the callback function is called.
  * @return
  *	If return value is 0, it means success.\n
- *	If return value is -#EPTR , it means ctlr is NULL.\n
- *	If return value is -#EPARAMETER , it means parameter invalid.
+ *	If return value is -#ADC_EPTR , it means ctlr is NULL.\n
+ *	If return value is -#ADC_EPARAMETER , it means parameter invalid.
  */
 int mtk_mhal_adc_rx_notify_callback_register(struct mtk_adc_controller *ctlr,
 						adc_rx_done_callback callback,
@@ -912,7 +523,7 @@ int mtk_mhal_adc_rx_notify_callback_register(struct mtk_adc_controller *ctlr,
  * @param [in] ctlr :  Abstract an ADC controller.
  * @return
  *	If return value is 0, it means success.\n
- *	If return value is -#EPTR , it means ctlr is NULL.
+ *	If return value is -#ADC_EPTR , it means ctlr is NULL.
  */
 int mtk_mhal_adc_enable_clk(struct mtk_adc_controller *ctlr);
 
@@ -922,7 +533,7 @@ int mtk_mhal_adc_enable_clk(struct mtk_adc_controller *ctlr);
   * @param [in] ctlr :  Abstract an ADC controller.
   * @return
   *  If return value is 0, it means success.\n
-  *  If return value is -#EPTR , it means ctlr is NULL.
+  *  If return value is -#ADC_EPTR , it means ctlr is NULL.
  */
 int mtk_mhal_adc_disable_clk(struct mtk_adc_controller *ctlr);
 /**
@@ -931,7 +542,7 @@ int mtk_mhal_adc_disable_clk(struct mtk_adc_controller *ctlr);
   * @param [in] ctlr :  Abstract an ADC controller.
   * @return
   *  If return value is 0, it means success.\n
-  *  If return value is -#EPTR , it means ctlr is NULL.
+  *  If return value is -#ADC_EPTR , it means ctlr is NULL.
  */
 int mtk_mhal_adc_fifo_handle_rx(struct mtk_adc_controller *ctlr);
 /**
@@ -940,9 +551,13 @@ int mtk_mhal_adc_fifo_handle_rx(struct mtk_adc_controller *ctlr);
   * @param [in] ctlr :  Abstract an ADC controller.
   * @return
   *  If return value is 0, it means success.\n
-  *  If return value is -#EPTR , it means ctlr is NULL.
+  *  If return value is -#ADC_EPTR , it means ctlr is NULL.
  */
 int mtk_mhal_adc_stop_dma(struct mtk_adc_controller *ctlr);
+
+#ifdef __cplusplus
+}
+#endif
 
 /**
   * @}

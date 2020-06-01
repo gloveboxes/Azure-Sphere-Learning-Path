@@ -5,37 +5,66 @@
 
 #  Copyright (c) Microsoft Corporation. All rights reserved.
 #  Licensed under the MIT License.
-CMAKE_MINIMUM_REQUIRED(VERSION 3.11)
+
+###################################################################################################################
+
+# Select your developer board by removing the # tag from the beginning of the line
+
+# The default board selected is the AVNET Starter Kit.
+
+# If you are NOT using the AVNET board be sure to comment out the AVNET board
+
+set(AVNET TRUE "AVNET Azure Sphere Starter Kit")                
+# set(SEEED_STUDIO_RDB TRUE "Seeed Studio Azure Sphere MT3620 Development Kit (aka Reference Design Board or rdb)")
+# set(SEEED_STUDIO_MINI TRUE "Seeed Studio Azure Sphere MT3620 Mini Dev Board")
+
+###################################################################################################################
+
+cmake_minimum_required(VERSION 3.10)
 
 # Configurations
-PROJECT(Azure_Sphere_RTcore_FreeRTOS_GPIO C)
-ADD_COMPILE_DEFINITIONS(OSAI_FREERTOS)
-ADD_LINK_OPTIONS(-specs=nano.specs -specs=nosys.specs)
+project(FreeRTOS_RTcore_GPIO C)
+azsphere_configure_tools(TOOLS_REVISION "20.04")
+azsphere_configure_api(TARGET_API_SET "5+Beta2004")
+add_compile_definitions(OSAI_FREERTOS)
+add_compile_definitions(OSAI_ENABLE_DMA)
+add_link_options(-specs=nano.specs -specs=nosys.specs)
 
 # Executable
-ADD_EXECUTABLE(${PROJECT_NAME}
+add_executable(${PROJECT_NAME}
                main.c
                mt3620-intercore.c
                mt3620-uart-poll.c
-               MT3620_M4_BSP/printf/printf.c
-               OS_HAL/src/os_hal_gpio.c
-               OS_HAL/src/os_hal_uart.c)
+               ./OS_HAL/src/os_hal_gpio.c
+               ./OS_HAL/src/os_hal_uart.c
+               ./OS_HAL/src/os_hal_dma.c)
 
 # Include Folders
-TARGET_INCLUDE_DIRECTORIES(${PROJECT_NAME} PUBLIC
-                           OS_HAL/inc
+include_directories(${PROJECT_NAME} PUBLIC
+                    ./)
+target_include_directories(${PROJECT_NAME} PUBLIC
+                           ./OS_HAL/inc
                            ./)
 
 # Libraries
 set(OSAI_FREERTOS 1)
-ADD_SUBDIRECTORY(MT3620_M4_Driver ./lib/MT3620_M4_Driver)
-ADD_SUBDIRECTORY(MT3620_M4_BSP ./lib/MT3620_M4_BSP)
-ADD_SUBDIRECTORY(MT3620_M4_BSP/FreeRTOS ./lib/MT3620_M4_FreeRTOS)
-TARGET_LINK_LIBRARIES(${PROJECT_NAME}
-                      MT3620_M4_Driver
-                      MT3620_M4_FreeRTOS
-                      MT3620_M4_BSP)
+add_subdirectory(./MT3620_M4_Driver ./lib/MT3620_M4_Driver)
+target_link_libraries(${PROJECT_NAME} MT3620_M4_Driver)
 
 # Linker, Image
-SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_DEPENDS ${CMAKE_SOURCE_DIR}/linker.ld)
-INCLUDE("${AZURE_SPHERE_MAKE_IMAGE_FILE}")
+set_target_properties(${PROJECT_NAME} PROPERTIES LINK_DEPENDS ${CMAKE_SOURCE_DIR}/linker.ld)
+
+if(AVNET)
+    azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../Hardware/avnet_mt3620_sk" TARGET_DEFINITION "azure_sphere_learning_path.json")
+endif(AVNET)
+
+if (SEEED_STUDIO_RDB)
+    azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../Hardware/mt3620_rdb" TARGET_DEFINITION "azure_sphere_learning_path.json")
+endif()
+
+if (SEEED_STUDIO_MINI)
+    azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../Hardware/seeed_mt3620_mdb" TARGET_DEFINITION "azure_sphere_learning_path.json")
+endif(SEEED_STUDIO_MINI)
+
+
+azsphere_target_add_image_package(${PROJECT_NAME})
