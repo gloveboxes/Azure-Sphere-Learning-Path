@@ -27,6 +27,9 @@
         {"Name": "RELAY", "Type": "Gpio", "Mapping": "MT3620_RDB_HEADER1_PIN4_GPIO", "Comment": "MT3620 RDB: Grove Relay"},
         {"Name": "UART0", "Type": "Uart", "Mapping": "MT3620_ISU0_UART", "Comment": "MT3620 RDB: UART for Seeed Studio Grove Board"},
         {"Name": "I2cMaster2", "Type": "I2cMaster", "Mapping": "MT3620_RDB_HEADER2_ISU0_I2C", "Comment": "AVNET Start Kit Definition"},
-        {"Name": "Adc", "Type": "Adc", "Mapping": "MT3620_ADC_CONTROLLER0", "Comment": "AVNET Start Kit Definition"}
+        {"Name": "Adc", "Type": "Adc", "Mapping": "MT3620_ADC_CONTROLLER0", "Comment": "AVNET Start Kit Definition"},
+        {"Name": "LED_RED", "Type": "Gpio", "Mapping": "MT3620_RDB_LED1_RED", "Comment": "MT3620 RDB: LED 1"},
+        {"Name": "LED_GREEN", "Type": "Gpio", "Mapping": "MT3620_RDB_LED1_GREEN", "Comment": "MT3620 RDB: LED 1"},
+        {"Name": "LED_BLUE", "Type": "Gpio", "Mapping": "MT3620_RDB_LED1_BLUE", "Comment": "MT3620 RDB: LED 1"}
     ]
 }

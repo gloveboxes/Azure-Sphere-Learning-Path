@@ -92,14 +92,12 @@ typedef struct LP_INTER_CORE_BLOCK
 
 static LP_INTER_CORE_BLOCK ic_control_block;
 
-
 #define UART_PORT_NUM OS_HAL_UART_ISU0
-
 #define APP_STACK_SIZE_BYTES (1024 / 4)
 
 
-static const int blinkIntervalsMs[] = { 500, 1000 };
-static int blinkIntervalIndex = 0;
+static const int blinkIntervalsMs[] = { 250, 500, 1000 };
+static int blinkIntervalIndex = 1;
 static const int numBlinkIntervals = sizeof(blinkIntervalsMs) / sizeof(blinkIntervalsMs[0]);
 static SemaphoreHandle_t LEDSemphr;
 static bool BuiltInLedOn = false;
@@ -116,6 +114,17 @@ static uint32_t sharedBufSize = 0;
 bool HLAppReady = false;
 int desired_temperature = 0.0;
 int last_temperature = 0;
+
+enum LEDS
+{
+	RED,
+	GREEN,
+	BLUE
+};
+
+static enum LEDS current_led = RED;
+static int leds[] = { LED_RED, LED_GREEN, LED_BLUE };
+static bool led_state[] = { false, false, false };
 
 
 /******************************************************************************/
@@ -234,8 +243,13 @@ static void ButtonTask(void* pParameters)
 	}
 }
 
-static void PeriodicTask(void* pParameters)
+static void SetLedBlinkRateTask(void* pParameters)
 {
+	// ensure LEDs are turned off
+	gpio_output(LED_RED, true);
+	gpio_output(LED_GREEN, true);
+	gpio_output(LED_BLUE, true);
+
 	while (1)
 	{
 		vTaskDelay(pdMS_TO_TICKS(blinkIntervalsMs[blinkIntervalIndex]));
@@ -246,40 +260,42 @@ static void PeriodicTask(void* pParameters)
 static void LedTask(void* pParameters)
 {
 	BaseType_t rt;
+	static enum LEDS previous_led = RED;
 
 	while (1)
 	{
 		rt = xSemaphoreTake(LEDSemphr, portMAX_DELAY);
 		if (rt == pdPASS)
 		{
-			BuiltInLedOn = !BuiltInLedOn;
-			gpio_output(LED2, BuiltInLedOn);
+			if (previous_led != current_led)
+			{
+				gpio_output(leds[(int)previous_led], true); // turn off old current colour
+				previous_led = current_led;
+			}
+
+			led_state[(int)current_led] = !led_state[(int)current_led];
+			gpio_output(leds[(int)current_led], led_state[(int)current_led]);
 		}
 	}
 }
 
 void SetTemperatureStatus(int temperature)
 {
-	gpio_output(LED_RED, 1);
-	gpio_output(LED_GREEN, 1);
-	gpio_output(LED_BLUE, 1);
-
 	if (temperature == desired_temperature)
 	{
-		gpio_output(LED_GREEN, 0);
+		current_led = GREEN;
 	}
 
 	if (temperature < desired_temperature)
 	{
-		gpio_output(LED_BLUE, 0);
+		current_led = BLUE;
 	}
 
 	if (temperature > desired_temperature)
 	{
-		gpio_output(LED_RED, 0);
+		current_led = RED;
 	}
 }
-
 
 static void RTCoreMsgTask(void* pParameters)
 {
@@ -359,12 +375,9 @@ _Noreturn void RTCoreMain(void)
 		}
 	}
 
-
-
-
 	LEDSemphr = xSemaphoreCreateBinary();
 
-	xTaskCreate(PeriodicTask, "Periodic Task", APP_STACK_SIZE_BYTES, NULL, 6, NULL);
+	xTaskCreate(SetLedBlinkRateTask, "Periodic Task", APP_STACK_SIZE_BYTES, NULL, 6, NULL);
 	xTaskCreate(LedTask, "LED Task", APP_STACK_SIZE_BYTES, NULL, 5, NULL);
 	xTaskCreate(ButtonTask, "GPIO Task", APP_STACK_SIZE_BYTES, NULL, 4, NULL);
 	xTaskCreate(RTCoreMsgTask, "RTCore Msg Task", APP_STACK_SIZE_BYTES, NULL, 2, NULL);
