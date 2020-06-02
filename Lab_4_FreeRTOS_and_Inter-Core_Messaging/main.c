@@ -43,6 +43,9 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <time.h>
+#include <stdlib.h>
+#include <math.h>
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -54,12 +57,15 @@
 
 #include "semphr.h"
 
+
+#ifdef OEM_AVNET
 #include "lsm6dso_driver.h"
 #include "lsm6dso_reg.h"
 #include "i2c.h"
+#endif // OEM_AVNET
+
 
 #include "hw/azure_sphere_learning_path.h"
-
 
 
  /******************************************************************************/
@@ -73,6 +79,7 @@ enum LP_INTER_CORE_CMD
 	LP_IC_TEMPERATURE_HUMIDITY,
 	LP_IC_EVENT_BUTTON_A,
 	LP_IC_EVENT_BUTTON_B,
+	LP_IC_SET_DESIRED_TEMPERATURE
 };
 
 typedef struct LP_INTER_CORE_BLOCK
@@ -83,7 +90,7 @@ typedef struct LP_INTER_CORE_BLOCK
 
 } LP_INTER_CORE_BLOCK;
 
-LP_INTER_CORE_BLOCK ic_control_block;
+static LP_INTER_CORE_BLOCK ic_control_block;
 
 
 #define UART_PORT_NUM OS_HAL_UART_ISU0
@@ -91,7 +98,7 @@ LP_INTER_CORE_BLOCK ic_control_block;
 #define APP_STACK_SIZE_BYTES (1024 / 4)
 
 
-static const int blinkIntervalsMs[] = { 75, 125, 250, 500, 1000, 2000 };
+static const int blinkIntervalsMs[] = { 500, 1000 };
 static int blinkIntervalIndex = 0;
 static const int numBlinkIntervals = sizeof(blinkIntervalsMs) / sizeof(blinkIntervalsMs[0]);
 static SemaphoreHandle_t LEDSemphr;
@@ -107,6 +114,8 @@ static BufferHeader* outbound, * inbound;
 static uint32_t sharedBufSize = 0;
 
 bool HLAppReady = false;
+int desired_temperature = 0.0;
+int last_temperature = 0;
 
 
 /******************************************************************************/
@@ -198,7 +207,6 @@ static void ButtonTask(void* pParameters)
 	static os_hal_gpio_data oldStateButtonB = OS_HAL_GPIO_DATA_LOW;
 	os_hal_gpio_data value = 0;
 
-	printf("GPIO Task Started\n");
 	while (1)
 	{
 		// Get Button_A status
@@ -245,22 +253,43 @@ static void LedTask(void* pParameters)
 		if (rt == pdPASS)
 		{
 			BuiltInLedOn = !BuiltInLedOn;
-			gpio_output(LED1, BuiltInLedOn);
+			gpio_output(LED2, BuiltInLedOn);
 		}
 	}
 }
 
+void SetTemperatureStatus(int temperature)
+{
+	gpio_output(LED_RED, 1);
+	gpio_output(LED_GREEN, 1);
+	gpio_output(LED_BLUE, 1);
+
+	if (temperature == desired_temperature)
+	{
+		gpio_output(LED_GREEN, 0);
+	}
+
+	if (temperature < desired_temperature)
+	{
+		gpio_output(LED_BLUE, 0);
+	}
+
+	if (temperature > desired_temperature)
+	{
+		gpio_output(LED_RED, 0);
+	}
+}
 
 
 static void RTCoreMsgTask(void* pParameters)
 {
+
+#ifdef OEM_AVNET
 	mtk_os_hal_i2c_ctrl_init(i2c_port_num);		// Initialize MT3620 I2C bus
-
 	i2c_enum();									// Enumerate I2C Bus
-
 	i2c_init();
-
 	lsm6dso_init(i2c_write, i2c_read);
+#endif // OEM_AVNET
 
 	while (1)
 	{
@@ -271,19 +300,34 @@ static void RTCoreMsgTask(void* pParameters)
 		{
 			HLAppReady = true;
 
-			// load inter core control block
-			memcpy(&ic_control_block, &buf[payloadStart], sizeof(ic_control_block));
+			memcpy((void*)&ic_control_block, (void*)&buf[payloadStart], sizeof(ic_control_block));
 
 			switch (ic_control_block.cmd)
 			{
 			case LP_IC_HEARTBEAT:
 				break;
+			case LP_IC_SET_DESIRED_TEMPERATURE:
+				desired_temperature = round(ic_control_block.temperature);
+				SetTemperatureStatus(last_temperature);
+				break;
 			case LP_IC_TEMPERATURE_HUMIDITY:
 
+#ifdef OEM_AVNET
 				ic_control_block.cmd = LP_IC_TEMPERATURE_HUMIDITY;
 				ic_control_block.temperature = get_temperature();
 				ic_control_block.pressure = 1020.0;
+#endif // OEM_AVNET
+
+#ifdef OEM_SEEED_STUDIO
+				ic_control_block.cmd = LP_IC_TEMPERATURE_HUMIDITY;
+				ic_control_block.temperature = 22;
+				ic_control_block.pressure = 1019;
+#endif // OEM_SEEED_STUDIO
+
 				send_inter_core_msg();
+
+				last_temperature = round(ic_control_block.temperature);
+				SetTemperatureStatus(last_temperature);
 
 				break;
 			default:

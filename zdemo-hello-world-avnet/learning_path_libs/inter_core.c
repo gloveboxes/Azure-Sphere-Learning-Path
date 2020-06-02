@@ -2,21 +2,23 @@
 
 void SocketEventHandler(EventLoop* el, int fd, EventLoop_IoEvents events, void* context);
 bool ProcessMsg(void);
-void (*_interCoreCallback)(char*);
+void (*_interCoreCallback)(struct LP_INTER_CORE_BLOCK*);
 int sockFd = -1;
-
 static EventRegistration* socketEventReg = NULL;
 
 
-bool lp_sendInterCoreMessage(const char* msg) {
+bool lp_sendInterCoreMessage(LP_INTER_CORE_BLOCK* control_block, size_t len)
+{
 
-	if (sockFd == -1) {
+	if (sockFd == -1)
+	{
 		Log_Debug("Socket not initialized");
 		return false;
 	}
 
-	int bytesSent = send(sockFd, msg, strlen(msg), 0);
-	if (bytesSent == -1) {
+	int bytesSent = send(sockFd, (void*)control_block, len, 0);
+	if (bytesSent == -1)
+	{
 		Log_Debug("ERROR: Unable to send message: %d (%s)\n", errno, strerror(errno));
 		return false;
 	}
@@ -24,11 +26,14 @@ bool lp_sendInterCoreMessage(const char* msg) {
 	return true;
 }
 
-int lp_enableInterCoreCommunications(const char* rtAppComponentId, void (*interCoreCallback)(char*)) {
+
+int lp_enableInterCoreCommunications(const char* rtAppComponentId, void (*interCoreCallback)(LP_INTER_CORE_BLOCK*))
+{
 	_interCoreCallback = interCoreCallback;
 	// Open connection to real-time capable application.
 	sockFd = Application_Connect(rtAppComponentId);
-	if (sockFd == -1) {
+	if (sockFd == -1)
+	{
 		Log_Debug("ERROR: Unable to create socket: %d (%s)\n", errno, strerror(errno));
 		return -1;
 	}
@@ -36,7 +41,8 @@ int lp_enableInterCoreCommunications(const char* rtAppComponentId, void (*interC
 	// Set timeout, to handle case where real-time capable application does not respond.
 	static const struct timeval recvTimeout = { .tv_sec = 5, .tv_usec = 0 };
 	int result = setsockopt(sockFd, SOL_SOCKET, SO_RCVTIMEO, &recvTimeout, sizeof(recvTimeout));
-	if (result == -1) {
+	if (result == -1)
+	{
 		Log_Debug("ERROR: Unable to set socket timeout: %d (%s)\n", errno, strerror(errno));
 		return -1;
 	}
@@ -44,7 +50,8 @@ int lp_enableInterCoreCommunications(const char* rtAppComponentId, void (*interC
 	// Register handler for incoming messages from real-time capable application.
 	socketEventReg = EventLoop_RegisterIo(lp_getTimerEventLoop(), sockFd, EventLoop_Input, SocketEventHandler,
 		/* context */ NULL);
-	if (socketEventReg == NULL) {
+	if (socketEventReg == NULL)
+	{
 		Log_Debug("ERROR: Unable to register socket event: %d (%s)\n", errno, strerror(errno));
 		return -1;
 	}
@@ -56,34 +63,31 @@ int lp_enableInterCoreCommunications(const char* rtAppComponentId, void (*interC
 /// <summary>
 ///     Handle socket event by reading incoming data from real-time capable application.
 /// </summary>
-void SocketEventHandler(EventLoop* el, int fd, EventLoop_IoEvents events, void* context) {
-	if (!ProcessMsg()) {
+void SocketEventHandler(EventLoop* el, int fd, EventLoop_IoEvents events, void* context)
+{
+	if (!ProcessMsg())
+	{
 		lp_terminate(ExitCode_InterCoreHandler);
 	}
 }
 
+
 /// <summary>
 ///     Handle socket event by reading incoming data from real-time capable application.
 /// </summary>
-bool ProcessMsg() {
-	char rxBuf[32];
-	char msg[32];
-	memset(msg, 0, sizeof msg);
+bool ProcessMsg()
+{
+	LP_INTER_CORE_BLOCK ic_control_block;
 
-	int bytesReceived = recv(sockFd, rxBuf, sizeof(rxBuf), 0);
+	int bytesReceived = recv(sockFd, (void*)&ic_control_block, sizeof(ic_control_block), 0);
 
-	if (bytesReceived == -1) {
-		//Log_Debug("ERROR: Unable to receive message: %d (%s)\n", errno, strerror(errno));
+	if (bytesReceived == -1)
+	{
+		lp_terminate(ExitCode_InterCoreReceiveFailed);
 		return false;
 	}
 
-	//Log_Debug("Received %d bytes: ", bytesReceived);
-	for (int i = 0; i < bytesReceived; ++i) {
-		msg[i] = isprint(rxBuf[i]) ? rxBuf[i] : '.';
-	}
-	Log_Debug("\n%s\n\n",msg);
-
-	_interCoreCallback(msg);
+	_interCoreCallback(&ic_control_block);
 
 	return true;
 }

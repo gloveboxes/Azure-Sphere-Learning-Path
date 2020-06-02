@@ -17,6 +17,7 @@ typedef enum {
 	ExitCode_InterCoreHandler = 13,
 	ExitCode_ConsumeEventLoopTimeEvent = 14,
 	ExitCode_Gpio_Read = 15,
+	ExitCode_InterCoreReceiveFailed = 16,
 
 	ExitCode_IsButtonPressed = 20,
 	ExitCode_ButtonPressCheckHandler = 21,

@@ -73,11 +73,13 @@ static void Led2OffHandler(EventLoopTimer* eventLoopTimer);
 static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer);
 static void NetworkConnectionStatusHandler(EventLoopTimer* eventLoopTimer);
 static void InterCoreHandler(LP_INTER_CORE_BLOCK* ic_message_block);
+static void DeviceTwinSetTemperatureHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding);
 
 static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 static const char cstrJsonEvent[] = "{\"%s\":\"occurred\"}";
 static const struct timespec led2BlinkPeriod = { 0, 300 * 1000 * 1000 };
 LP_INTER_CORE_BLOCK ic_control_block;
+
 
 // GPIO Output PeripheralGpios
 static LP_PERIPHERAL_GPIO led2 = { .pin = LED2, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true,
@@ -93,12 +95,13 @@ static LP_TIMER measureSensorTimer = { .period = { 10, 0 }, .name = "measureSens
 
 // Azure IoT Device Twins
 static LP_DEVICE_TWIN_BINDING buttonPressed = { .twinProperty = "ButtonPressed", .twinType = LP_TYPE_STRING };
+static LP_DEVICE_TWIN_BINDING desiredTemperature = { .twinProperty = "DesiredTemperature", .twinType = LP_TYPE_FLOAT, .handler = DeviceTwinSetTemperatureHandler };
 
 
 // Initialize Sets
-LP_PERIPHERAL_GPIO* peripheralGpioSet[] = { &led2, &networkConnectedLed };
+LP_PERIPHERAL_GPIO* peripheralGpioSet[] = { &networkConnectedLed, &led2 };
 LP_TIMER* timerSet[] = { &led2BlinkOffOneShotTimer, &networkConnectionStatusTimer, &measureSensorTimer };
-LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &buttonPressed };
+LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &buttonPressed, &desiredTemperature };
 
 
 
@@ -121,6 +124,13 @@ static void NetworkConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
 	{
 		lp_gpioOff(&networkConnectedLed);
 	}
+}
+
+static void DeviceTwinSetTemperatureHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding)
+{
+	ic_control_block.cmd = LP_IC_SET_DESIRED_TEMPERATURE;
+	ic_control_block.temperature = *(float*)deviceTwinBinding->twinState;
+	lp_sendInterCoreMessage(&ic_control_block, sizeof(ic_control_block));
 }
 
 /// <summary>
@@ -160,8 +170,9 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 
 	// send request to Real-Time core app to read temperature and pressure
 	ic_control_block.cmd = LP_IC_TEMPERATURE_HUMIDITY;
-	lp_sendInterCoreMessage(&ic_control_block);
+	lp_sendInterCoreMessage(&ic_control_block, sizeof(ic_control_block));
 }
+
 
 /// <summary>
 /// Callback handler for Inter-Core Messaging - Does Device Twin Update, and Event Message
@@ -210,7 +221,7 @@ static void InitPeripheralGpiosAndHandlers(void)
 	lp_enableInterCoreCommunications(rtAppComponentId, InterCoreHandler);  // Initialize Inter Core Communications
 
 	ic_control_block.cmd = LP_IC_HEARTBEAT;		// Prime RT Core with Component ID Signature
-	lp_sendInterCoreMessage(&ic_control_block);
+	lp_sendInterCoreMessage(&ic_control_block, sizeof(ic_control_block));
 }
 
 /// <summary>

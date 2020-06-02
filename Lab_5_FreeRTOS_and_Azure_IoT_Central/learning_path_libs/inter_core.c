@@ -7,7 +7,7 @@ int sockFd = -1;
 static EventRegistration* socketEventReg = NULL;
 
 
-bool lp_sendInterCoreMessage(LP_INTER_CORE_BLOCK* control_block)
+bool lp_sendInterCoreMessage(LP_INTER_CORE_BLOCK* control_block, size_t len)
 {
 
 	if (sockFd == -1)
@@ -16,7 +16,7 @@ bool lp_sendInterCoreMessage(LP_INTER_CORE_BLOCK* control_block)
 		return false;
 	}
 
-	int bytesSent = send(sockFd, (void*)control_block, sizeof(control_block), 0);
+	int bytesSent = send(sockFd, (void*)control_block, len, 0);
 	if (bytesSent == -1)
 	{
 		Log_Debug("ERROR: Unable to send message: %d (%s)\n", errno, strerror(errno));

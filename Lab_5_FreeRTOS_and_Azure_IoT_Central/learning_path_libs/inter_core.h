@@ -22,6 +22,7 @@ enum LP_INTER_CORE_CMD
 	LP_IC_TEMPERATURE_HUMIDITY,
 	LP_IC_EVENT_BUTTON_A,
 	LP_IC_EVENT_BUTTON_B,
+	LP_IC_SET_DESIRED_TEMPERATURE
 };
 
 typedef struct LP_INTER_CORE_BLOCK
@@ -33,5 +34,5 @@ typedef struct LP_INTER_CORE_BLOCK
 } LP_INTER_CORE_BLOCK;
 
 
-bool lp_sendInterCoreMessage(LP_INTER_CORE_BLOCK* control_block);
+bool lp_sendInterCoreMessage(LP_INTER_CORE_BLOCK* control_block, size_t len);
 int lp_enableInterCoreCommunications(const char* rtAppComponentId, void (*interCoreCallback)(LP_INTER_CORE_BLOCK*));

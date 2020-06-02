@@ -8,7 +8,6 @@
     "Gpio": [
       "$LED2",
       "$NETWORK_CONNECTED_LED",
-      "$RELAY"
     ],
     "PowerControls": [ "ForceReboot" ],
     "AllowedConnections": [ "global.azure-devices-provisioning.net", "<Replace with your Azure IoT Central URL>" ],
