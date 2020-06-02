@@ -77,7 +77,7 @@ static void DeviceTwinSetTemperatureHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBi
 
 static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 static const char cstrJsonEvent[] = "{\"%s\":\"occurred\"}";
-static const struct timespec led2BlinkPeriod = { 0, 300 * 1000 * 1000 };
+static const struct timespec led2BlinkPeriod = { 0, 500 * 1000 * 1000 };
 LP_INTER_CORE_BLOCK ic_control_block;
 
 
