@@ -97,12 +97,10 @@ static LP_TIMER measureSensorTimer = { .period = { 10, 0 }, .name = "measureSens
 static LP_DEVICE_TWIN_BINDING buttonPressed = { .twinProperty = "ButtonPressed", .twinType = LP_TYPE_STRING };
 static LP_DEVICE_TWIN_BINDING desiredTemperature = { .twinProperty = "DesiredTemperature", .twinType = LP_TYPE_FLOAT, .handler = DeviceTwinSetTemperatureHandler };
 
-
 // Initialize Sets
 LP_PERIPHERAL_GPIO* peripheralGpioSet[] = { &networkConnectedLed, &led2 };
 LP_TIMER* timerSet[] = { &led2BlinkOffOneShotTimer, &networkConnectionStatusTimer, &measureSensorTimer };
 LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &buttonPressed, &desiredTemperature };
-
 
 
 /// <summary>
@@ -126,6 +124,9 @@ static void NetworkConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
 	}
 }
 
+/// <summary>
+/// Device Twin Handler to set the desired temperature value on the Real-Time Core
+/// </summary>
 static void DeviceTwinSetTemperatureHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding)
 {
 	ic_control_block.cmd = LP_IC_SET_DESIRED_TEMPERATURE;
@@ -172,7 +173,6 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 	ic_control_block.cmd = LP_IC_TEMPERATURE_HUMIDITY;
 	lp_sendInterCoreMessage(&ic_control_block, sizeof(ic_control_block));
 }
-
 
 /// <summary>
 /// Callback handler for Inter-Core Messaging - Does Device Twin Update, and Event Message
@@ -236,8 +236,6 @@ static void ClosePeripheralGpiosAndHandlers(void)
 
 	lp_closePeripheralGpioSet();
 	lp_closeDeviceTwinSet();
-
-	lp_closeDevKit();
 
 	lp_stopTimerEventLoop();
 }
