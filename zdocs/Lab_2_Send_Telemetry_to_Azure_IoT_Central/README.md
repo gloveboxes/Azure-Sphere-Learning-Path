@@ -197,7 +197,7 @@ Remember, applications on Azure Sphere are locked down by default, including har
 Follow these steps:
 
 1. Open the **Azure Sphere Developer Command Prompt**.
-2. Navigate to the AzureIoT/Tools directory.
+2. Navigate to the Samples -> AzureIoT -> Tools directory. You cloned the Azure Sphere samples repository in the first lab.
     * On Windows, navigate to the Samples\AzureIoT\Tools\win-x64 directory.
     * On Linux, navigate to the Samples\AzureIoT\Tools\linux-x64 directory. On Linux, you may need to explicitly set execution permissions for the ShowIoTCentralConfig tool. From a terminal, run `chmod +x ShowIoTCentralConfig` to add execution permissions for the tool.
 

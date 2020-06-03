@@ -306,8 +306,17 @@ Lab directories are named by Azure Sphere device manufacturer.
     |- SEEED
     |- SEEED-MINI
 
-
 ---
+
+## Step 11: Clone the Azure Sphere Samples
+
+The Azure Sphere samples repository includes a tool required for whitelisting IoT Central network endpoint URLs.
+
+Clone this repository into the same directory you cloned the Azure Sphere Developer Learning Path into.
+
+```bash
+git clone https://github.com/Azure/azure-sphere-samples.git
+```
 
 **[NEXT](../Lab_1_Visual_Studio_and_Azure_Sphere/README.md)**
 
