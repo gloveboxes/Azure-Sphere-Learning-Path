@@ -192,7 +192,7 @@ After you complete these steps, any device that is claimed into your Azure Spher
 
 ## Step 4: Whitelist the Azure IoT Central Application Endpoint URLs
 
-Remember, applications on Azure Sphere are locked down by default, including hardware and network endpoints. You must whitelist the network endpoint of your Azure IoT Central application otherwise your Azure Sphere Application will not be able to connect to it.
+Remember, applications on Azure Sphere are locked down by default, including hardware and network endpoints. You must whitelist the network endpoints of your Azure IoT Central application otherwise your Azure Sphere Application will not be able to connect to it.
 
 Follow these steps:
 
