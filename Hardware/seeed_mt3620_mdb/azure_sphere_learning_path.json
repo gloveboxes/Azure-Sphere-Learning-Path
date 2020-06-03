@@ -19,14 +19,15 @@
     },
     "Imports" : [ {"Path": "seeed_mt3620_mdb.json"} ],
     "Peripherals": [
-        {"Name": "BUTTON_A", "Type": "Gpio", "Mapping": "AILINK_WFM620RSC1_PIN3_GPIO6", "Comment": "Button A"},
-        {"Name": "BUTTON_B", "Type": "Gpio", "Mapping": "AILINK_WFM620RSC1_PIN7_GPIO10", "Comment": "Button B"},
-        {"Name": "LED1", "Type": "Gpio", "Mapping": "AILINK_WFM620RSC1_PIN4_GPIO7", "Comment": "LED 1"},
-        {"Name": "LED2", "Type": "Gpio", "Mapping": "AILINK_WFM620RSC1_PIN15_GPIO33", "Comment": "LED 2"},
-        {"Name": "NETWORK_CONNECTED_LED", "Type": "Gpio", "Mapping": "AILINK_WFM620RSC1_PIN16_GPIO35", "Comment": "Network Connected"},
-        {"Name": "RELAY", "Type": "Gpio", "Mapping": "AILINK_WFM620RSC1_PIN14_GPIO31", "Comment": "MT3620 RDB: Grove Relay"},
-        {"Name": "I2cMaster2", "Type": "I2cMaster", "Mapping": "AILINK_WFM620RSC1_ISU1_I2C", "Comment": "AVNET Start Kit Definition"},
-        {"Name": "Adc0", "Type": "Adc", "Mapping": "AILINK_WFM620RSC1_ADC_CONTROLLER0", "Comment": "AVNET Start Kit Definition"},
-        {"Name": "OEM_SEEED_STUDIO", "Type": "Gpio", "Mapping": "AILINK_WFM620RSC1_PIN3_GPIO6", "Comment": "AVNET Start Kit Definition"}
+        {"Name": "BUTTON_A", "Type": "Gpio", "Mapping": "SEEED_MT3620_MDB_J1_PIN3_GPIO6", "Comment": "Button A"},
+        {"Name": "BUTTON_B", "Type": "Gpio", "Mapping": "SEEED_MT3620_MDB_J1_PIN2_GPIO42", "Comment": "Button B"},
+        {"Name": "LED1", "Type": "Gpio", "Mapping": "SEEED_MT3620_MDB_J2_PIN14_GPIO33", "Comment": "LED 1"},
+        {"Name": "LED2", "Type": "Gpio", "Mapping": "SEEED_MT3620_MDB_USER_LED", "Comment": "LED 2 User LED"},
+        {"Name": "NETWORK_CONNECTED_LED", "Type": "Gpio", "Mapping": "AILINK_WFM620RSC1_PIN14_GPIO31", "Comment": "Network Connected"},
+        {"Name": "RELAY", "Type": "Gpio", "Mapping": "SEEED_MT3620_MDB_J2_PIN13_GPIO31", "Comment": "Grove Relay"},
+        {"Name": "I2cMaster2", "Type": "I2cMaster", "Mapping": "SEEED_MT3620_MDB_J1J2_ISU1_I2C", "Comment": "I2C Master Bus"},
+        {"Name": "LED_RED", "Type": "Gpio", "Mapping": "SEEED_MT3620_MDB_J2_PIN14_GPIO33", "Comment": "MT3620 RDB: LED RED"},
+        {"Name": "LED_GREEN", "Type": "Gpio", "Mapping": "SEEED_MT3620_MDB_J2_PIN15_GPIO35", "Comment": "MT3620 RDB: LED GREEN"},
+        {"Name": "LED_BLUE", "Type": "Gpio", "Mapping": "SEEED_MT3620_MDB_J2_PIN13_GPIO31", "Comment": "MT3620 RDB: LED BLUE"}
     ]
 }

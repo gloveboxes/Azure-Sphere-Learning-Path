@@ -1,0 +1,192 @@
+{
+  "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_4ww:1",
+  "@type": "CapabilityModel",
+  "implements": [
+    {
+      "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_4ww:z_8hhxlqe:1",
+      "@type": "InterfaceInstance",
+      "name": "Interface_29k",
+      "schema": {
+        "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:3",
+        "@type": "Interface",
+        "displayName": {
+          "en": "Interface"
+        },
+        "contents": [
+          {
+            "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:Temperature:1",
+            "@type": [
+              "Telemetry",
+              "SemanticType/Temperature"
+            ],
+            "displayName": {
+              "en": "Temperature"
+            },
+            "name": "Temperature",
+            "displayUnit": {
+              "en": "C"
+            },
+            "schema": "float",
+            "unit": "Units/Temperature/celsius"
+          },
+          {
+            "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:Humidity:1",
+            "@type": [
+              "Telemetry",
+              "SemanticType/Humidity"
+            ],
+            "displayName": {
+              "en": "Humidity"
+            },
+            "name": "Humidity",
+            "displayUnit": {
+              "en": "%"
+            },
+            "schema": "float",
+            "unit": "Units/Humidity/percent"
+          },
+          {
+            "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:Pressure:1",
+            "@type": [
+              "Telemetry",
+              "SemanticType/Pressure"
+            ],
+            "displayName": {
+              "en": "Pressure"
+            },
+            "name": "Pressure",
+            "displayUnit": {
+              "en": "hPa"
+            },
+            "schema": "float"
+          },
+          {
+            "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:MsgId:1",
+            "@type": "Telemetry",
+            "displayName": {
+              "en": "Msg Id"
+            },
+            "name": "MsgId",
+            "displayUnit": {
+              "en": "Int"
+            },
+            "schema": "integer"
+          },
+          {
+            "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:relay1:1",
+            "@type": "Property",
+            "displayName": {
+              "en": "Relay1"
+            },
+            "name": "Relay1",
+            "writable": true,
+            "schema": "boolean"
+          },
+          {
+            "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:LedBlinkRate:2",
+            "@type": "Property",
+            "displayName": {
+              "en": "Led Blink Rate"
+            },
+            "name": "LedBlinkRate",
+            "writable": true,
+            "schema": "integer"
+          },
+          {
+            "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:DesiredTemperature:1",
+            "@type": "Property",
+            "displayName": {
+              "en": "Set Desired Temperature"
+            },
+            "name": "DesiredTemperature",
+            "writable": true,
+            "schema": "float"
+          },
+          {
+            "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:ButtonPressed:2",
+            "@type": "Property",
+            "displayName": {
+              "en": "Button Pressed"
+            },
+            "name": "ButtonPressed",
+            "schema": "string"
+          },
+          {
+            "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:DeviceResetUTC:2",
+            "@type": "Property",
+            "displayName": {
+              "en": "Device Reset UTC"
+            },
+            "name": "DeviceResetUTC",
+            "schema": "string"
+          },
+          {
+            "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:ButtonA:2",
+            "@type": [
+              "Telemetry",
+              "SemanticType/Event"
+            ],
+            "displayName": {
+              "en": "Button A Alert"
+            },
+            "name": "ButtonA",
+            "schema": "string"
+          },
+          {
+            "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:ButtonB:2",
+            "@type": [
+              "Telemetry",
+              "SemanticType/Event"
+            ],
+            "displayName": {
+              "en": "Button B Alert"
+            },
+            "name": "ButtonB",
+            "schema": "string"
+          },
+          {
+            "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:ResetMethod:3",
+            "@type": "Command",
+            "commandType": "synchronous",
+            "request": {
+              "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:ResetMethod:ResetMethod:3",
+              "@type": "SchemaField",
+              "displayName": {
+                "en": "Reset Device"
+              },
+              "name": "ResetMethod",
+              "schema": {
+                "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:ResetMethod:ResetMethod:7cdrl0fku:3",
+                "@type": "Object",
+                "displayName": {
+                  "en": "Object"
+                },
+                "fields": [
+                  {
+                    "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:ResetMethod:ResetMethod:7cdrl0fku:reset_timer:3",
+                    "@type": "SchemaField",
+                    "displayName": {
+                      "en": "Reset Azure Sphere in [1..9] seconds"
+                    },
+                    "name": "reset_timer",
+                    "schema": "integer"
+                  }
+                ]
+              }
+            },
+            "displayName": {
+              "en": "Reset Device"
+            },
+            "name": "ResetMethod"
+          }
+        ]
+      }
+    }
+  ],
+  "displayName": {
+    "en": "Azure Sphere"
+  },
+  "@context": [
+    "http://azureiot.com/v1/contexts/IoTModel.json"
+  ]
+}

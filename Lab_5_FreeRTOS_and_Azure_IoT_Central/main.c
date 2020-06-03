@@ -169,8 +169,8 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 		return;
 	}
 
-	// send request to Real-Time core app to read temperature and pressure
-	ic_control_block.cmd = LP_IC_TEMPERATURE_HUMIDITY;
+	// send request to Real-Time core app to read temperature, pressure, and humidity
+	ic_control_block.cmd = LP_IC_TEMPERATURE_PRESSURE_HUMIDITY;
 	lp_sendInterCoreMessage(&ic_control_block, sizeof(ic_control_block));
 }
 
@@ -179,8 +179,8 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 /// </summary>
 static void InterCoreHandler(LP_INTER_CORE_BLOCK* ic_message_block)
 {
-	static const char* msgTemplate = "{ \"Temperature\": \"%3.2f\", \"Pressure\":\"%3.1f\", \"MsgId\":%d }";
-	static msgId = 0;
+	static const char* msgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"Light\":%d, \"MsgId\":%d }";
+	static int msgId = 0;
 	int len = 0;
 
 	switch (ic_message_block->cmd)
@@ -193,8 +193,8 @@ static void InterCoreHandler(LP_INTER_CORE_BLOCK* ic_message_block)
 		len = snprintf(msgBuffer, JSON_MESSAGE_BYTES, cstrJsonEvent, "ButtonB");
 		lp_deviceTwinReportState(&buttonPressed, "ButtonB");					// TwinType = TYPE_STRING
 		break;
-	case LP_IC_TEMPERATURE_HUMIDITY:
-		len = snprintf(msgBuffer, JSON_MESSAGE_BYTES, msgTemplate, ic_message_block->temperature, ic_message_block->pressure, msgId++);
+	case LP_IC_TEMPERATURE_PRESSURE_HUMIDITY:
+		len = snprintf(msgBuffer, JSON_MESSAGE_BYTES, msgTemplate, ic_message_block->temperature, ic_message_block->humidity, ic_message_block->pressure, 0, msgId++);
 		break;
 	default:
 		break;
