@@ -362,13 +362,14 @@ static void RTCoreMsgTask(void* pParameters)
 
 #ifdef OEM_AVNET
 
-				ic_control_block.cmd = LP_IC_TEMPERATURE_HUMIDITY;
+				ic_control_block.cmd = LP_IC_TEMPERATURE_PRESSURE_HUMIDITY;
 				ic_control_block.temperature = get_temperature();
 				ic_control_block.pressure = 1020.0;
 
 #endif // OEM_AVNET
 
-#ifdef OEM_SEEED_STUDIO
+// The Seeed Studio Developer boards do not include any sensors so create some fake telemetry
+#if defined(OEM_SEEED_STUDIO) || defined (OEM_SEEED_STUDIO_MINI)
 
 				ic_control_block.cmd = LP_IC_TEMPERATURE_PRESSURE_HUMIDITY;
 
@@ -397,6 +398,34 @@ static void RTCoreMsgTask(void* pParameters)
 	}
 }
 
+#ifdef OEM_SEEED_STUDIO_MINI
+static void VirtualButtonTask(void* pParameters)
+{
+	static bool toggle = false;
+	printf("Button Task Started\n");
+
+	while (1)
+	{
+		if (toggle)
+		{
+			blinkIntervalIndex = (blinkIntervalIndex + 1) % numBlinkIntervals;
+			ic_control_block.cmd = LP_IC_EVENT_BUTTON_A;
+			send_inter_core_msg();
+		}
+		else
+		{
+			ic_control_block.cmd = LP_IC_EVENT_BUTTON_B;
+			send_inter_core_msg();
+		}
+
+		toggle = !toggle;
+
+		vTaskDelay(pdMS_TO_TICKS(10000));	// 10 seconds
+	}
+}
+#endif
+
+
 _Noreturn void RTCoreMain(void)
 {
 	// Setup Vector Table
@@ -421,6 +450,9 @@ _Noreturn void RTCoreMain(void)
 	xTaskCreate(SetLedBlinkRateTask, "Periodic Task", APP_STACK_SIZE_BYTES, NULL, 6, NULL);
 	xTaskCreate(LedTask, "LED Task", APP_STACK_SIZE_BYTES, NULL, 5, NULL);
 	xTaskCreate(ButtonTask, "GPIO Task", APP_STACK_SIZE_BYTES, NULL, 4, NULL);
+#ifdef OEM_SEEED_STUDIO_MINI
+	xTaskCreate(VirtualButtonTask, "GPIO Task", APP_STACK_SIZE_BYTES, NULL, 4, NULL);
+#endif
 	xTaskCreate(RTCoreMsgTask, "RTCore Msg Task", APP_STACK_SIZE_BYTES, NULL, 2, NULL);
 	vTaskStartScheduler();
 

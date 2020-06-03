@@ -190,67 +190,45 @@ After you complete these steps, any device that is claimed into your Azure Spher
 
 ---
 
-## Step 4: Whitelist the Azure IoT Central Application Endpoint
+## Step 4: Whitelist the Azure IoT Central Application Endpoint URLs
 
 Remember, applications on Azure Sphere are locked down by default, including hardware and network endpoints. You must whitelist the network endpoint of your Azure IoT Central application otherwise your Azure Sphere Application will not be able to connect to it.
 
-In this step, we are going to create a dummy device and use that device to obtain the Azure IoT Central Application URL that we will whitelist.
+Follow these steps:
 
-<!-- ### Create an Azure Sphere Device
+1. Open the **Azure Sphere Developer Command Prompt**.
+2. Navigate to the AzureIoT/Tools directory.
+    * On Windows, navigate to the Samples\AzureIoT\Tools\win-x64 directory.
+    * On Linux, navigate to the Samples\AzureIoT\Tools\linux-x64 directory. On Linux, you may need to explicitly set execution permissions for the ShowIoTCentralConfig tool. From a terminal, run `chmod +x ShowIoTCentralConfig` to add execution permissions for the tool.
 
-1. Start the **Azure Sphere Developer Command Prompt**
-2. Run the **```azsphere device show-attached```** command. This returns the Azure Sphere Device Id.
-3. Next, run **```powershell -Command ((azsphere device show-attached)[0] -split ': ')[1].ToLower()```**.
-This returns the **Device ID** and converts it to lowercase. Azure IoT Central requires device IDs to be lowercase.
-4. **Copy** the **Device ID** to the clipboard. -->
+3. When you run the **ShowIoTCentralConfig** tool, you will be prompted for input data. The following table outlines what information you will be prompted for and where to obtain the required data.
 
-### Create an Azure IoT Central Device
+    | Input data | From |
+    |------------|----------|
+    | **Are you using a legacy (2018) IoT Central application (Y/N)** | Respond **N** |
+    | **IoT&nbsp;Central&nbsp;App&nbsp;URL** |  This can be found in your browser address bar. For Example https://myiotcentralapp.azureiotcentral.com/ |
+    | **API token** | This can be generated from your IoT Central application. In the Azure IoT Central application select **Administration**, select **API Tokens**, select **Generate Token**, provide a name for the token (for example, "AzureSphereSample"), select **Administrator** as the role, and click **Generate**. Copy the token to the clipboard. The token starts with **SharedAccessSignature**. |
+    | **ID Scope** | In the Azure IoT Central application, select **Administration** > **Device Connection** and then copy the **ID Scope** |
+4. Run the **ShowIoTCentralConfig** tool.
+    Now follow the prompts that the tool provides, and copy the information from the output into the app_manifest.json file in Visual Studio.
 
-1. Switch back to Azure IoT Central Web Portal.
-2. Select **Devices** from the side menu.
-3. Select the **Azure Sphere** device template
-    <br/>
+    > **Note**: Your organization might require consent for the ShowIoTCentralConfig tool to access your Azure IoT Central data in the same way that the Azure API requires such consent. In some organizations, [enterprise application permissions](https://docs.microsoft.com/azure-sphere/install/admin-consent) must be granted by an IT administrator.
+5. Review the output from the **ShowIoTCentralConfig** tool. It will look similar to the following text.
 
-    ![](resources/iot-central-create-device.png)
-4. Click **+ New** to add a new device.
-5. Set the **Device name** name to _Dummy-Device_, or something similar.
-6. Leave the default **Device ID**.
-7. Click **Create** to create the new device.
-    <br/>
+    ```text
+    Find and modify the CmdArgs, AllowedConnections and DeviceAuthentication lines in your app_manifest.json so each includes the content from the below:
+    "CmdArgs": [ "0ne000BDC00" ],
+    "Capabilities": {
+        "AllowedConnections": [ "global.azure-devices-provisioning.net", "iotc-9999bc-3305-99ba-885e-6573fc4cf701.azure-devices.net", "iotc-789999fa-8306-4994-b70a-399c46501044.azure-devices.net", "iotc-7a099966-a8c1-4f33-b803-bf29998713787.azure-devices.net", "iotc-97299997-05ab-4988-8142-e299995acdb7.azure-devices.net", "iotc-d099995-7fec-460c-b717-e99999bf4551.azure-devices.net", "iotc-789999dd-3bf5-49d7-9e12-f6999991df8c.azure-devices.net", "iotc-29999917-7344-49e4-9344-5e0cc9999d9b.azure-devices.net", "iotc-99999e59-df2a-41d8-bacd-ebb9999143ab.azure-devices.net", "iotc-c0a9999b-d256-4aaf-aa06-e90e999902b3.azure-devices.net", "iotc-f9199991-ceb1-4f38-9f1c-13199992570e.azure-devices.net" ],
+        "DeviceAuthentication": "--- YOUR AZURE SPHERE TENANT ID---",
+    }
+    ```
 
-    ![](resources/iot-central-create-new-device.png)
+6. **Copy** the output from the ShowIoTCentralConfig tool to **_Notepad_** as you will need this information soon.
 
-### Display the Device Connection information
+---
 
-1. Open the newly created device by clicking on the device name.
-    <br/>
-
-    ![](resources/iot-central-open-new-device.png)
-2. Open the Device Connection information panel by clicking on the **Connect** button.
-    <br/>
-
-    ![](resources/iot-central-open-connect.png)
-3. The device connection configuration will be displayed.
-    <br/>
-
-    ![](resources/iot-central-device-connection-information.png)
-4. **From the Device connection page, copy the ID Scope, Device ID, and Primary Key to Notepad**.
-
-### Get the Azure IoT Central Application URL to Whitelist
-
-1. So the lab instructions are still visible, right mouse click, and **open link in a new window** the following link "[Azure IoT Central Application URL](https://azuredps.z23.web.core.windows.net)".
-
-2. Copy and paste the **Device Connection** information (ID Scope, Device Id, and Primary Key) from Notepad to the **Azure IoT Central Application URL** web page.
-
-3. Click **Get Azure IoT Central Application URL**
-    <br/>
-
-    ![](resources/iot-central-generate-connection-string.png)
-    <br/>
-
-4. **Leave this page open as you will need the Azure IoT Central Application URL soon**.
-
-### Step 5: Get the Azure Sphere Tenant ID
+## Step 5: Get the Azure Sphere Tenant ID
 
 We need the ID of the Azure Sphere Tenant that is now trusted by Azure IoT Central.
 
@@ -339,11 +317,11 @@ The default developer board configuration is for the AVENT Azure Sphere Start Ki
     ![](resources/visual-studio-open-app-manifest.png)
 
 2. Update the Azure IoT Central Application connection properties.
-    * Update **CmdArgs** with your Azure IoT Central **ID Scope**.
+    * Update **CmdArgs** with your Azure IoT Central **ID Scope**. 
     * Update **DeviceAuthentication** with your **Azure Sphere Tenant ID**. Remember, this was the numeric value output from the ```azsphere tenant show-selected``` command that you copied to Notepad.
 
-3. Update the network endpoint whitelist with your Azure IoT Central Application URL.
-    * Update **AllowedConnections** with your **Azure IoT Central Application URL**.
+3. Update the network endpoints whitelist with your Azure IoT Central Application URL. You copied these URLs into _Notepad_.
+    * Update **AllowedConnections** with your **Azure IoT Central Application URLs**. 
 
 4. **Review** your updated manifest_app.json file. It should look similar to the following.
 
@@ -365,7 +343,7 @@ The default developer board configuration is for the AVENT Azure Sphere Start Ki
             ],
             "I2cMaster": [ "$AVNET_MT3620_SK_ISU2_I2C" ],
             "PowerControls": [ "ForceReboot" ],
-            "AllowedConnections": [ "global.azure-devices-provisioning.net", "saas-iothub-99999999-f33a-9999-a44a-7c99999900b6.azure-devices.net" ],
+            "AllowedConnections": [ "global.azure-devices-provisioning.net", "iotc-9999bc-3305-99ba-885e-6573fc4cf701.azure-devices.net", "iotc-789999fa-8306-4994-b70a-399c46501044.azure-devices.net", "iotc-7a099966-a8c1-4f33-b803-bf29998713787.azure-devices.net", "iotc-97299997-05ab-4988-8142-e299995acdb7.azure-devices.net", "iotc-d099995-7fec-460c-b717-e99999bf4551.azure-devices.net", "iotc-789999dd-3bf5-49d7-9e12-f6999991df8c.azure-devices.net", "iotc-29999917-7344-49e4-9344-5e0cc9999d9b.azure-devices.net", "iotc-99999e59-df2a-41d8-bacd-ebb9999143ab.azure-devices.net", "iotc-c0a9999b-d256-4aaf-aa06-e90e999902b3.azure-devices.net", "iotc-f9199991-ceb1-4f38-9f1c-13199992570e.azure-devices.net" ],
             "DeviceAuthentication": "9d7e79eb-9999-43ce-9999-fa8888888894"
         },
         "ApplicationType": "Default"
@@ -442,7 +420,7 @@ You can open the output window by using the Visual Studio <kbd>Ctrl+Alt+O</kbd> 
 #### Notes
 
 1. Ensure **Device Output** is selected from the **Show output from** dropdown list.
-2. You may see a couple of *ERROR: failure to create IoTHub Handle* messages displayed. These message occur while the connection to IoT Central is being established.
+2. You may see a couple of *ERROR: failure to create IoTHub Handle* messages displayed. These messages occur while the connection to IoT Central is being established.
 
 ![](resources/visual-studio-debug-output-view.png)
 
@@ -472,7 +450,7 @@ You can open the output window by using the Visual Studio <kbd>Ctrl+Alt+O</kbd> 
 
 1. The green LED closest to the USB connector will start to blink.
 2. Given there are no builtin buttons, virtual **Button A** and **Button B** presses will be generated every 5 seconds.
-3. The virtual button presses will change the blink rate.
+3. The virtual button presses will also change the blink rate.
 
 ---
 

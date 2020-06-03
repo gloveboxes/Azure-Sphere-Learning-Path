@@ -51,8 +51,6 @@ if(AVNET)
     )
     source_group("Oem" FILES ${Oem})
 
-    add_definitions( -DOEM_AVNET=TRUE )
-
 endif(AVNET)
 
 if(SEEED_STUDIO_RDB OR SEEED_STUDIO_MINI)
@@ -60,8 +58,6 @@ if(SEEED_STUDIO_RDB OR SEEED_STUDIO_MINI)
     set(Oem
     )
     source_group("Oem" FILES ${Oem})
-
-    add_definitions( -DOEM_SEEED_STUDIO=TRUE )
 
 endif(SEEED_STUDIO_RDB OR SEEED_STUDIO_MINI)
 
@@ -87,14 +83,17 @@ set_target_properties(${PROJECT_NAME} PROPERTIES LINK_DEPENDS ${CMAKE_SOURCE_DIR
 
 if(AVNET)
     azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../Hardware/avnet_mt3620_sk" TARGET_DEFINITION "azure_sphere_learning_path.json")
+    add_definitions( -DOEM_AVNET=TRUE )
 endif(AVNET)
 
 if (SEEED_STUDIO_RDB)
     azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../Hardware/mt3620_rdb" TARGET_DEFINITION "azure_sphere_learning_path.json")
+    add_definitions( -DOEM_SEEED_STUDIO=TRUE )
 endif()
 
 if (SEEED_STUDIO_MINI)
     azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../Hardware/seeed_mt3620_mdb" TARGET_DEFINITION "azure_sphere_learning_path.json")
+    add_definitions( -DOEM_SEEED_STUDIO_MINI=TRUE )    
 endif(SEEED_STUDIO_MINI)
 
 azsphere_target_add_image_package(${PROJECT_NAME})
