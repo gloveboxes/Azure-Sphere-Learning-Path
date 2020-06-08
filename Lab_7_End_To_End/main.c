@@ -164,7 +164,7 @@ static void DeviceTwinRelay1Handler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding)
 static void DeviceTwinBlinkRateHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding)
 {
 	// send request to Real-Time core app to change blink rate
-	ic_control_block.cmd = LP_IC_SET_BLINK_RATE;
+	ic_control_block.cmd = LP_IC_BLINK_RATE;
 	ic_control_block.blinkRate = *(int*)deviceTwinBinding->twinState;
 	lp_sendInterCoreMessage(&ic_control_block, sizeof(ic_control_block));
 }
@@ -230,6 +230,9 @@ static void InterCoreHandler(LP_INTER_CORE_BLOCK* ic_message_block)
 		break;
 	case LP_IC_TEMPERATURE_PRESSURE_HUMIDITY:
 		len = snprintf(msgBuffer, JSON_MESSAGE_BYTES, msgTemplate, ic_message_block->temperature, ic_message_block->humidity, ic_message_block->pressure, 0, msgId++);
+		break;
+	case LP_IC_BLINK_RATE:
+		lp_deviceTwinReportState(&led1BlinkRate, &ic_message_block->blinkRate);
 		break;
 	default:
 		break;
