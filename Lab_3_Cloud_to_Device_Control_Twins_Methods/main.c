@@ -391,7 +391,8 @@ static LP_DirectMethodResponseCode ResetDirectMethodHandler(JSON_Object* json, L
 	}
 	int seconds = (int)json_object_get_number(json, propertyName);
 
-	if (seconds > 0 && seconds < 10)
+	// leave enough time for the device twin deviceResetUtc to update before restarting the device
+	if (seconds > 2 && seconds < 10)
 	{
 		// Report Device Reset UTC
 		lp_deviceTwinReportState(&deviceResetUtc, lp_getCurrentUtc(msgBuffer, sizeof(msgBuffer)));			// LP_TYPE_STRING

@@ -22,7 +22,8 @@ enum LP_INTER_CORE_CMD
 	LP_IC_TEMPERATURE_PRESSURE_HUMIDITY,
 	LP_IC_EVENT_BUTTON_A,
 	LP_IC_EVENT_BUTTON_B,
-	LP_IC_SET_DESIRED_TEMPERATURE
+	LP_IC_SET_DESIRED_TEMPERATURE,
+	LP_IC_SET_BLINK_RATE
 };
 
 typedef struct LP_INTER_CORE_BLOCK
@@ -31,6 +32,7 @@ typedef struct LP_INTER_CORE_BLOCK
 	float	temperature;
 	float	pressure;
 	float	humidity;
+	int		blinkRate;
 
 } LP_INTER_CORE_BLOCK;
 

@@ -1,0 +1,6 @@
+﻿# Ignore output directories
+/out/
+/out-*/
+/install/
+/install-*/
+.vs

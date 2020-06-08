@@ -1,0 +1,65 @@
+﻿{
+  "environments": [
+    {
+      "environment": "AzureSphere",
+
+      "AzureSphereTargetApiSet": "5+Beta2004"
+    }
+  ],
+  "configurations": [
+    {
+      "name": "ARM-Debug",
+      "generator": "Ninja",
+      "configurationType": "Debug",
+      "inheritEnvironments": [
+        "AzureSphere"
+      ],
+      "buildRoot": "${projectDir}\\..\\out\\mt3620_lib\\${name}",
+      "installRoot": "${projectDir}\\..\\install\\mt3620_lib\\${name}",
+      "cmakeCommandArgs": "--no-warn-unused-cli",
+      "buildCommandArgs": "-v",
+      "ctestCommandArgs": "",
+      "variables": [
+        {
+          "name": "CMAKE_TOOLCHAIN_FILE",
+          "value": "${env.AzureSphereDefaultSDKDir}CMakeFiles\\AzureSphereRTCoreToolchain.cmake"
+        },
+        {
+          "name": "AZURE_SPHERE_TARGET_API_SET",
+          "value": "${env.AzureSphereTargetApiSet}"
+        },
+        {
+          "name": "ARM_GNU_PATH",
+          "value": "${env.DefaultArmToolsetPath}"
+        }
+      ]
+    },
+    {
+      "name": "ARM-Release",
+      "generator": "Ninja",
+      "configurationType": "Release",
+      "inheritEnvironments": [
+        "AzureSphere"
+      ],
+      "buildRoot": "${projectDir}\\..\\out\\mt3620_lib\\${name}",
+      "installRoot": "${projectDir}\\..\\install\\mt3620_lib\\${name}",
+      "cmakeCommandArgs": "--no-warn-unused-cli",
+      "buildCommandArgs": "-v",
+      "ctestCommandArgs": "",
+      "variables": [
+        {
+          "name": "CMAKE_TOOLCHAIN_FILE",
+          "value": "${env.AzureSphereDefaultSDKDir}CMakeFiles\\AzureSphereRTCoreToolchain.cmake"
+        },
+        {
+          "name": "AZURE_SPHERE_TARGET_API_SET",
+          "value": "${env.AzureSphereTargetApiSet}"
+        },
+        {
+          "name": "ARM_GNU_PATH",
+          "value": "${env.DefaultArmToolsetPath}"
+        }
+      ]
+    }
+  ]
+}
