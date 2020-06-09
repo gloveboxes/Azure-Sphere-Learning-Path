@@ -1,9 +1,9 @@
 {
-  "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_4ww:1",
+  "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_4dg:1",
   "@type": "CapabilityModel",
   "implements": [
     {
-      "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_4ww:z_8hhxlqe:1",
+      "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_4dg:z_8hhxlqe:1",
       "@type": "InterfaceInstance",
       "name": "Interface_29k",
       "schema": {
@@ -71,16 +71,6 @@
               "en": "Int"
             },
             "schema": "integer"
-          },
-          {
-            "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:relay1:1",
-            "@type": "Property",
-            "displayName": {
-              "en": "Relay1"
-            },
-            "name": "Relay1",
-            "writable": true,
-            "schema": "boolean"
           },
           {
             "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:LedBlinkRate:2",
@@ -166,7 +156,7 @@
                     "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:ResetMethod:ResetMethod:7cdrl0fku:reset_timer:3",
                     "@type": "SchemaField",
                     "displayName": {
-                      "en": "Reset Azure Sphere in [1..9] seconds"
+                      "en": "Reset Azure Sphere in [3..9] seconds"
                     },
                     "name": "reset_timer",
                     "schema": "integer"

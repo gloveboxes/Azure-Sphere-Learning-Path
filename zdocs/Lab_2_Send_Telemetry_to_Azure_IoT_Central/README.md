@@ -91,58 +91,116 @@ Take a moment to read [Your IoT journey: simplified and secure with Azure IoT Ce
 
 ---
 
-## Getting started with Azure IoT Central
+### Create a new IoT Central Application
 
-We are going to create an Azure IoT Central application from an application template. 
+1. So the lab instructions are still visible, right mouse click, and open this link "[Azure IoT Central](https://azure.microsoft.com/en-au/services/iot-central/?WT.mc_id=pycon-blog-dglover)" in a new window.
+
+2. Click **Build a solution**.
+
+3. Next, you will need to sign with your Microsoft Personal, or Work, or School account. If you do not have a Microsoft account, then you can create one for free using the **Create one!** link.
+
+    ![iot central](resources/iot-central-login.png)
+
+4. Expand the sidebar menu by clicking on the **burger Menu** icon.
+
+    ![](resources/iot-central-burger-menu.png)
+
+5. Click **+ New application** to create a new Azure IoT Central application. 
+
+6. Select **Custom app**
+
+    ![](resources/iot-central-custom-app.png)
+
+### Create a new application
+
+1. Specify the **Application name**, the **URL**, select the **Free** pricing plan, and complete the registration form. 
+
+    ![](resources/iot-central-new-application.png)
+
+2. Then click **Create**.
+
+### Create a new device template
+
+1. Click **Device templates**, then **+ New**.
+    ![](resources/iot-central-template-new.png)
+
+2. Click the **IoT device** template type
+
+    ![](resources/iot-central-new-iot-device-template.png)
+
+3. Create an **IoT Device** Template
+
+    1. Select **IoT device**,
+    2. Click **Next:Customise**,
+    3. Name your template **Azure Sphere**,
+    4. Click **Next: Review**,
+    5. Click **Create**.
+
+### Import a Capability Model
+
+1. Click **Import capability model**
+    ![](resources/iot-central-import-capability-model.png)
+2. Navigate to the folder you cloned the Azure Sphere Developer Learning Path into.
+3. Navigate to the **iot_central** folder.
+4. Select **Azure_Sphere_Developer_Learning_Path.json** and open
+
+### Create a device visualization view
+
+1. Click **Views**
+    ![](resources/iot-central-create-a-view.png)
+2. Select **Visualizing the device**
+    ![](resources/iot-central-add-tile-status.png)
+3. Select **Humidity**, **Pressure**, and **Temperature** telemetry items.
+    ![](resources/iot-central-add-tile-environment.png)
+4. Click **Add Tile**
+
+    <!-- ![](resources/iot-central-tiles-align.png) -->
+5. Select **Button A Alert**, and **Button B Alert** telemetry items.
+    ![](resources/iot-central-add-tile-events.png)
+6. Click **Add Tile**
+7. Scroll down to the **Properties** section and select all of the listed properties.
+
+    ![](resources/iot-central-add-tile-properties.png)
+8. Click **Add Tile**
+9. Drag the **Properties** tile so that it lines up with the existing tiles.
+
+    ![](resources/iot-central-tiles-align.png)
+10. **Save** the view
+    ![](resources/iot-central-tiles-view-save.png)
+    <br/>
+
+### Create a properties form
+
+1. Click **Views**, then click **Editing device and cloud data**.
+    ![](resources/iot-central-view-properties-create.png)
+2. Expand the **Properties** section.
+2. Select **Led Blink Rate** and **Set Desired Temperature**.
+
+    ![](resources/iot-central-add-tile-form.png)
+3. Click **Add Section**
+4. **Save** the form
+    ![](resources/iot-central-add-section-save.png)
+
+### Publish the device template
+
+1. Click **Publish** to publish the template. Publishing the template makes it available for devices.
+    <br/>
+    ![](resources/iot-central-template-publish.png)
+
+2. Confirm and click **Publish**
+    <br/>
+
+    ![](resources/iot-central-template-publish-confirm.png)
+
 >See [Define a new IoT device type in your Azure IoT Central application](https://docs.microsoft.com/en-us/azure/iot-central/core/howto-set-up-template?WT.mc_id=github-blog-dglover) for information on creating your own device templates.
 
 ---
 
-## Step 1: Create an Azure IoT Central Application
+## Step 3: Link your Azure Sphere Tenant to IoT Central
 
-For this lab, we are going to create an Azure IoT Central Application from a predefined template.
+We need set up a trust relationship between your Azure Sphere tenant and your IoT Central application.
 
-So the lab instructions are still visible, right mouse click, and **open link in a new window** the following link "[Azure Sphere Learning Path Azure IoT Central Template](https://apps.azureiotcentral.com/build/new/6b8e17bc-023e-42c2-a790-15160e886ced)".
-
-### Configure the Azure IoT Central Template
-
-1. Name your application.
-2. Select the **Free** pricing plan.
-3. Complete any required fields.
-4. Click **Create** to create the Azure IoT Central Application.
-
-![](resources/iot-central-create-from-template.png)
-
-<!-- When you have connected your Azure Sphere to Azure IoT Central you will be able to visualize the device telemetry.
-
-![](resources/iot-central-azure-sphere-dashboad.png) -->
-
-<!-- Follow instructions to **[Create an Azure IoT Central Application](resources/azure-iot-central/azure-iot-central.md)** -->
-
-
----
-
-## Step 2: Explore Azure IoT Central
-
-1. Explore the IoT Central application when it has been provisioned. This is the default IoT Central Dashboard.
-
-    ![](resources/iot-central-default-view.png)
-
-2. Click the **Expand Side Navigation** button to expand the IoT Central menus.
-
-    ![](resources/iot-central-default-view-expand-navigation.png)
-
-    The IoT Central dashboard with expanded menus will look like the following.
-
-    ![](resources/iot-central-default-dashboard-expand-navigation.png)
-
----
-
-## Step 3: Trust all devices in your Azure Sphere Tenant
-
-We need to tell Azure IoT Central to trust all devices in your Azure Sphere Tenant.
-
-After you have completed this step, any device that is claimed by your Azure Sphere tenant will be automatically enrolled when it first connects to your Azure IoT Central application.
+After you have completed this step, any device that is claimed by your Azure Sphere tenant will be automatically enrolled when it first connects to your IoT Central application.
 
 ### Download the tenant authentication CA certificate
 
