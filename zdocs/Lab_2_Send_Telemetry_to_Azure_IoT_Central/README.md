@@ -550,7 +550,7 @@ You need to **Migrate** the newly enrolled device to the **Azure Sphere** templa
 1. Click **Devices** on the sidebar.
 2. Select the **Azure Sphere** template.
 3. Click on the migrated device.
-4. Select the **Telemetry** tab to view the device telemetry.
+4. Select the **View** tab to view the device telemetry.
 5. Rename your device. Click the **Rename** button and give your device a friendly name.
 
 ![](resources/iot-central-display-measurements.png)
@@ -559,7 +559,7 @@ You need to **Migrate** the newly enrolled device to the **Azure Sphere** templa
 
 ## Step 6: Displaying Azure IoT Central Events
 
-1. Ensure the **Telemetry** tab is still displayed.
+1. Ensure the **View** tab is still displayed.
 3. For Azure Sphere devices with builtin buttons, press **Button A** and **Button B** repeatedly to generate button alerts. 
 
 	>Virtual button press events are generated for Azure Sphere devices that do not have builtin buttons. 
