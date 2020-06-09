@@ -319,34 +319,6 @@ For more information on device templates, review the [Define a new IoT device ty
 
 ---
 
-## Understanding Azure IoT Central Events
-
-Azure IoT Central can be configured to treat some telemetry as events. You would typically use these for alerts or notifications. For example, an emergency button was pressed.
-
-### Step 1: Defining Azure IoT Central Interface Events
-
-From Azure IoT Central, click **Device templates**, select the **Azure Sphere** template, and explore the Interface capabilities for ButtonA and ButtonB. Both of these capabilities are configured as **Events**.
-
-![](resources/iot-central-template-interface-events.png)
-
-### Step 2: Generating Azure IoT Central Events
-
-Review the handler function **ButtonPressCheckHandler** below. The following code sends the Button Pressed events to Azure IoT Central.
-
-```c
-// Send ButtonA Pressed Event
-if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, cstrJsonEvent, cstrEvtButtonA) > 0) {
-	SendMsgLed2On(msgBuffer);
-}
-```
-
-The Azure Sphere will send the following JSON formatted event messages to IoT Central depending on which button is pressed.
-
-* { "ButtonA": "occurred" }
-* { "ButtonB": "occurred" }
-
----
-
 ## Open Lab 2
 
 ### Step 1: Start Visual Studio 2019
@@ -417,7 +389,7 @@ The default developer board configuration is for the AVENT Azure Sphere Start Ki
 
 ---
 
-## Build, Deploy and Debug the Azure Sphere Application
+## Understanding the Azure Sphere Application
 
 ### Sending telemetry to Azure IoT Central
 
@@ -461,6 +433,34 @@ static void SendMsgLed2On(char* message)
 	lp_setOneShotTimer(&led2BlinkOffOneShotTimer, &led2BlinkPeriod);
 }
 ```
+
+---
+
+### Sending Events to Azure IoT Central
+
+Azure IoT Central can be configured to treat some telemetry as events. You would typically use these for alerts or notifications. For example, an emergency button was pressed.
+
+If you review the Azure Sphere Device template Interface in IoT Central you will see that ButtonA and ButtonB are both configured as **Events**.
+
+![](resources/iot-central-template-interface-events.png)
+
+Review the handler function **ButtonPressCheckHandler**. The following code sends the Button Pressed events to Azure IoT Central.
+
+```c
+// Send ButtonA Pressed Event
+if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, cstrJsonEvent, cstrEvtButtonA) > 0) {
+	SendMsgLed2On(msgBuffer);
+}
+```
+
+The Azure Sphere will send the following JSON formatted event messages to IoT Central depending on which button is pressed.
+
+* { "ButtonA": "occurred" }
+* { "ButtonB": "occurred" }
+
+---
+
+## Deploying the Application to Azure Sphere
 
 ### Step 1: Set the build configuration
 
