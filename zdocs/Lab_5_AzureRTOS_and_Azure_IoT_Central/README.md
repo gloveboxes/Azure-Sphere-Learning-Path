@@ -1,4 +1,4 @@
-﻿# Lab 5: Integrating FreeRTOS with Azure IoT Central
+﻿# Lab 5: Integrating Azure RTOS with Azure IoT Central
 
 <!-- ![](resources/azure-sphere-iot-central-banner.png) -->
 
@@ -61,7 +61,7 @@ The Learning Path libraries are **not** part of the official Azure Sphere librar
 
 As a reminder, the Azure Sphere has three application cores. The Cortex A7 runs High-Level applications, the two Cortex M4s run Real-Time applications.
 
-In this lab, we are going to deploy a High-Level application that will accept event messages from the FreeRTOS Real-Time application and then will forward them on to Azure IoT Central.
+In this lab, we are going to deploy a High-Level application that will accept event messages from the Azure RTOS Real-Time application and then will forward them on to Azure IoT Central.
 
 ![](resources/azure-sphere-application-architecture.png)
 
@@ -77,7 +77,7 @@ In this lab, we are going to deploy a High-Level application that will accept ev
 
 1. Click **Open a local folder**
 2. Open the Azure-Sphere lab folder
-3. Open the **Lab_5_FreeRTOS_and_Azure_IoT_Central** folder
+3. Open the **Lab_5_AzureRTOS_Integration** folder
 4. Click **Select Folder** button to open the project
 
 ### Step 3: Set your developer board configuration
@@ -96,7 +96,7 @@ The default developer board configuration is for the AVENT Azure Sphere Start Ki
 ### Step 4: Review the App Manifest
 
 1. Open the **app_manifest.json** file.
-2. Review the contents and note the **AllowedApplicationConnections** property setting that is populated with the Component ID of the FreeRTOS Real-Time application.
+2. Review the contents and note the **AllowedApplicationConnections** property setting that is populated with the Component ID of the Azure RTOS Real-Time application.
 
 ```json
 {
@@ -126,7 +126,7 @@ The default developer board configuration is for the AVENT Azure Sphere Start Ki
 ## Step 5: Set Azure IoT Central Connection Information
 
 1. Open the **app_manifest.json** file.
-2. **DO NOT** replace the contents of the **app_manifest.json** file as you did in previous labs. The GPIO pin allocation is different as pins have been allocated to the FreeRTOS Real-Time application.
+2. **DO NOT** replace the contents of the **app_manifest.json** file as you did in previous labs. The GPIO pin allocation is different as pins have been allocated to the Azure RTOS Real-Time application.
 3. Using the information you saved to **Notepad** property.
 4. Update the **Scope ID** property.
 5. Update the **Azure IoT Central URL** property.
@@ -160,7 +160,7 @@ Before building the application with Visual Studio, ensure ARM-Debug and GDB Deb
 
 ## Expected Behaviour
 
-1. Generate a **Button Pressed** event from the FreeRTOS application running on the Real-Time core.
+1. Generate a **Button Pressed** event from the Azure RTOS application running on the Real-Time core.
 
     * For Azure Sphere devices with the built-in buttons, press **Button A** to generate a **ButtonPressed** event.
     * For the Seeed Studio MT3620 Mini Dev Board, a **ButtonPressed** event is automatically generated every 10 seconds.
