@@ -93,7 +93,7 @@ Take a moment to read [Your IoT journey: simplified and secure with Azure IoT Ce
 
 ---
 
-### Create a new IoT Central Application
+## Step 1: Create a new IoT Central Application
 
 1. So the lab instructions are still visible, right mouse click, and open this link "[Azure IoT Central](https://azure.microsoft.com/en-au/services/iot-central/?WT.mc_id=pycon-blog-dglover)" in a new window.
 
@@ -103,7 +103,7 @@ Take a moment to read [Your IoT journey: simplified and secure with Azure IoT Ce
 
     ![iot central](resources/iot-central-login.png)
 
-4. Expand the sidebar menu by clicking on the **burger Menu** icon.
+4. Expand the sidebar menu by clicking on the **Burger menu** icon.
 
     ![](resources/iot-central-burger-menu.png)
 
@@ -123,14 +123,18 @@ Take a moment to read [Your IoT journey: simplified and secure with Azure IoT Ce
 
 ### Create a new device template
 
+A device template is a blueprint that defines the characteristics and behaviors of a type of device that connects to an Azure IoT Central application.
+
+For more information on device templates, review the [Define a new IoT device type in your Azure IoT Central application](https://docs.microsoft.com/en-us/azure/iot-central/core/howto-set-up-template?WT.mc_id=github-blog-dglover) article. 
+
 1. Click **Device templates**, then **+ New**.
     ![](resources/iot-central-template-new.png)
 
-2. Click the **IoT device** template type
+2. Click the **IoT device** template type.
 
     ![](resources/iot-central-new-iot-device-template.png)
 
-3. Create an **IoT Device** Template
+3. Create an **IoT Device** Template.
 
     1. Select **IoT device**,
     2. Click **Next:Customise**,
@@ -148,39 +152,38 @@ Take a moment to read [Your IoT journey: simplified and secure with Azure IoT Ce
 
 ### Create a device visualization view
 
-1. Click **Views**
+1. Click **Views**.
     ![](resources/iot-central-create-a-view.png)
-2. Select **Visualizing the device**
+2. Select **Visualizing the device**.
     ![](resources/iot-central-add-tile-status.png)
 3. Select **Humidity**, **Pressure**, and **Temperature** telemetry items.
     ![](resources/iot-central-add-tile-environment.png)
-4. Click **Add Tile**
+4. Click **Add Tile**.
 
     <!-- ![](resources/iot-central-tiles-align.png) -->
 5. Select **Button A Alert**, and **Button B Alert** telemetry items.
     ![](resources/iot-central-add-tile-events.png)
-6. Click **Add Tile**
+6. Click **Add Tile**.
 7. Scroll down to the **Properties** section and select all of the listed properties.
 
     ![](resources/iot-central-add-tile-properties.png)
-8. Click **Add Tile**
+8. Click **Add Tile**.
 9. Drag the **Properties** tile so that it lines up with the existing tiles.
 
     ![](resources/iot-central-tiles-align.png)
-10. **Save** the view
+10. Click **Save** to save the view.
     ![](resources/iot-central-tiles-view-save.png)
-    <br/>
 
 ### Create a properties form
 
-1. Click **Views**, then click **Editing device and cloud data**.
+1. Click **Views**.
+2. Click the **Editing device and cloud data** option.
     ![](resources/iot-central-view-properties-create.png)
-2. Expand the **Properties** section.
-2. Select **Led Blink Rate** and **Set Desired Temperature**.
-
+3. Expand the **Properties** section.
+4. Select **Led Blink Rate** and **Set Desired Temperature**.
     ![](resources/iot-central-add-tile-form.png)
-3. Click **Add Section**
-4. **Save** the form
+5. Click **Add Section**.
+6. Click **Save** to save the form.
     ![](resources/iot-central-add-section-save.png)
 
 ### Publish the device template
@@ -198,7 +201,7 @@ Take a moment to read [Your IoT journey: simplified and secure with Azure IoT Ce
 
 ---
 
-## Step 3: Link your Azure Sphere Tenant to IoT Central
+## Step 2: Link your Azure Sphere Tenant to IoT Central
 
 We need set up a trust relationship between your Azure Sphere tenant and your IoT Central application.
 
@@ -250,7 +253,7 @@ After you complete these steps, any device that is claimed into your Azure Spher
 
 ---
 
-## Step 4: Whitelist the Azure IoT Central Application Endpoint URLs
+## Step 3: Whitelist the Azure IoT Central Application Endpoint URLs
 
 Remember, applications on Azure Sphere are locked down by default, including hardware and network endpoints. You must whitelist the network endpoints of your Azure IoT Central application otherwise your Azure Sphere Application will not be able to connect to it.
 
@@ -288,7 +291,7 @@ Follow these steps:
 
 ---
 
-## Step 5: Get the Azure Sphere Tenant ID
+## Step 4: Get the Azure Sphere Tenant ID
 
 We need the ID of the Azure Sphere Tenant that is now trusted by Azure IoT Central.
 
@@ -300,7 +303,7 @@ We need the ID of the Azure Sphere Tenant that is now trusted by Azure IoT Centr
     * The **Tenant ID** is the numeric value inside the parentheses.
 2. **Copy the Tenant ID to _Notepad_** as you will need it soon.
 
----
+<!-- ---
 
 ## Azure IoT Central Device Templates
 
@@ -312,11 +315,11 @@ For more information on device templates, review the [Define a new IoT device ty
 2. Click on **Interfaces** to list the interface capabilities.
 3. Explore the IoT Central device template interfaces, properties, and views.
 
-![](resources/iot-central-device-template-display.png)
+![](resources/iot-central-device-template-display.png) -->
 
 ---
 
-## Azure IoT Central Events
+## Understanding Azure IoT Central Events
 
 Azure IoT Central can be configured to treat some telemetry as events. You would typically use these for alerts or notifications. For example, an emergency button was pressed.
 
