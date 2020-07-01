@@ -4,7 +4,7 @@
 
 ---
 
-|Author|[Dave Glover](https://developer.microsoft.com/en-us/advocates/dave-glover?WT.mc_id=github-blog-dglover), Microsoft Cloud Developer Advocate, [@dglover](https://twitter.com/dglover) |
+|Author|[Dave Glover](https://developer.microsoft.com/en-us/advocates/dave-glover?WT.mc_id=julyot-azd-dglover), Microsoft Cloud Developer Advocate, [@dglover](https://twitter.com/dglover) |
 |:----|:---|
 |Date| May 2020|
 
@@ -36,7 +36,7 @@ This lab builds on the [MediaTek MT3620 M4 Driver & Real-Time Application Sample
 
 ## What you will learn
 
-You will learn how to deploy a [Azure RTOS](https://azure.microsoft.com/en-us/services/rtos/) application to an Azure Sphere Cortex M4 Real-Time core.
+You will learn how to deploy a [Azure RTOS](https://azure.microsoft.com/en-us/services/rtos/?WT.mc_id=julyot-azd-dglover) application to an Azure Sphere Cortex M4 Real-Time core.
 
 You can run Bare Metal applications or applications built on Real-Time frameworks such as FreeRTOS and Azure RTOS on the Azure Sphere Real-Time cores.
 
@@ -236,7 +236,7 @@ You can Debug the Azure RTOS application running on Azure Sphere Cortex M4 Real-
 
 1. From Visual Studio, open the Azure RTOS application **main.c** file.
 2. Scroll down to the C function named **LedTask**.
-3. Set a [Visual Studio Breakpoint](https://docs.microsoft.com/en-us/visualstudio/debugger/using-breakpoints?view=vs-2019&WT.mc_id=github-blog-dglover) in the **LedTask** function on the line that reads **rt = xSemaphoreTake(LEDSemphr, portMAX_DELAY);**
+3. Set a [Visual Studio Breakpoint](https://docs.microsoft.com/en-us/visualstudio/debugger/using-breakpoints?view=vs-2019&WT.mc_id=julyot-azd-dglover) in the **LedTask** function on the line that reads **rt = xSemaphoreTake(LEDSemphr, portMAX_DELAY);**
 
     ![](resources/visual-studio-debug-led-task.png)
 4. The code will stop executing at the breakpoint

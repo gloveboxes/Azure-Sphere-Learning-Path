@@ -2,7 +2,7 @@
 
 ---
 
-|Author|[Dave Glover](https://developer.microsoft.com/en-us/advocates/dave-glover?WT.mc_id=github-blog-dglover), Microsoft Cloud Developer Advocate, [@dglover](https://twitter.com/dglover) |
+|Author|[Dave Glover](https://developer.microsoft.com/en-us/advocates/dave-glover?WT.mc_id=julyot-azd-dglover), Microsoft Cloud Developer Advocate, [@dglover](https://twitter.com/dglover) |
 |:----|:---|
 |Date| June 2020|
 
@@ -28,7 +28,7 @@ Each module assumes you have completed the previous module.
 
 ## What you will learn
 
-You will learn how to build a High-Level [Azure Sphere](https://azure.microsoft.com/services/azure-sphere/?WT.mc_id=github-blog-dglover) application that connects and sends telemetry to [Azure IoT Hub](https://azure.microsoft.com/en-ca/services/iot-hub/).
+You will learn how to build a High-Level [Azure Sphere](https://azure.microsoft.com/services/azure-sphere/?WT.mc_id=julyot-azd-dglover) application that connects and sends telemetry to [Azure IoT Hub](https://azure.microsoft.com/en-ca/services/iot-hub/?WT.mc_id=julyot-azd-dglover).
 
 ---
 
@@ -67,17 +67,17 @@ Your Azure Sphere device can securely connect and communicate with cloud service
 
 ### Azure IoT Hub
 
-[Azure IoT Hub](https://azure.microsoft.com/en-ca/services/iot-hub/) enables highly secure and reliable communication between your IoT application and the devices it manages. Azure IoT Hub provides a cloud-hosted solution back-end to connect virtually any device. Extend your solution from the cloud to the edge with per-device authentication, built-in device management, and scaled provisioning
+[Azure IoT Hub](https://azure.microsoft.com/en-ca/services/iot-hub/?WT.mc_id=julyot-azd-dglover) enables highly secure and reliable communication between your IoT application and the devices it manages. Azure IoT Hub provides a cloud-hosted solution back-end to connect virtually any device. Extend your solution from the cloud to the edge with per-device authentication, built-in device management, and scaled provisioning
 
 ### Device Provisioning Service
 
-This project leverages the [Azure IoT Hub Device Provisioning Service (PDS)](https://docs.microsoft.com/en-us/azure-sphere/app-development/use-azure-iot?WT.mc_id=github-blog-dglover). The Device Provisioning Service (DPS) enables zero-touch, just-in-time, large scale device provisioning.
+This project leverages the [Azure IoT Hub Device Provisioning Service (PDS)](https://docs.microsoft.com/en-us/azure-sphere/app-development/use-azure-iot?WT.mc_id=julyot-azd-dglover). The Device Provisioning Service (DPS) enables zero-touch, just-in-time, large scale device provisioning.
 
 ---
 
 ## Step 1: Create an Azure Subscription
 
-If you do not have an Azure Subscription then [create an Azure Subscription](https://azure.microsoft.com/en-us/free/). Students can sign up for a free [Azure for Students](https://azure.microsoft.com/en-us/free/students/) subscription that does not require credit card verification.
+If you do not have an Azure Subscription then [create an Azure Subscription](https://azure.microsoft.com/en-us/free/?WT.mc_id=julyot-azd-dglover). Students can sign up for a free [Azure for Students](https://azure.microsoft.com/en-us/free/students/?WT.mc_id=julyot-azd-dglover) subscription that does not require credit card verification.
 
 ---
 
@@ -87,7 +87,7 @@ You can prepare Azure cloud resources with the Azure CLI, the Azure Portal Web i
 
 [![Deploy to Azure](https://azuredeploy.net/deploybutton.png)](https://azuredeploy.net/?repository=https://github.com/MicrosoftDocs/Azure-Sphere-Developer-Learning-Path/blob/master/zdocs-vs-code-iot-hub/Lab_2_Send_Telemetry_to_Azure_IoT_Central/setup) 
 
-1. Select or create a new resource group, choose the site located closest to you, and select the IoT Hub Tier. The default IoT Hub tier is the free **F1** tier. You can only have one free IoT Hub per subscription. If you already have a free IoT Hub then either select S1 ([pricing](https://azure.microsoft.com/en-us/pricing/details/iot-hub/)) or delete your existing free IoT Hub before proceeding.
+1. Select or create a new resource group, choose the site located closest to you, and select the IoT Hub Tier. The default IoT Hub tier is the free **F1** tier. You can only have one free IoT Hub per subscription. If you already have a free IoT Hub then either select S1 ([pricing](https://azure.microsoft.com/en-us/pricing/details/iot-hub/?WT.mc_id=julyot-azd-dglover)) or delete your existing free IoT Hub before proceeding.
 
     ![](resources/azure-deployment-settings.png)
 
@@ -402,7 +402,7 @@ static void SendMsgLedOn(char* message)
 1. You will need to know the name of the Azure IoT Hub you created. You can get the name from the Azure web portal.
     ![](resources/azure-iot-resources.png)
 2. Open the Azure Cloud shell at [https://shell.azure.com](https://shell.azure.com).
-3. In the Cloud Shell, run the [az extension add](https://docs.microsoft.com/cli/azure/extension?view=azure-cli-latest#az-extension-add) command to add the Microsoft Azure IoT Extension to your CLI shell. The IoT Extension adds IoT Hub, IoT Edge, and IoT Device Provisioning Service (DPS) specific commands to Azure CLI.
+3. In the Cloud Shell, run the [az extension add](https://docs.microsoft.com/cli/azure/extension?view=azure-cli-latest&WT.mc_id=julyot-azd-dglover) command to add the Microsoft Azure IoT Extension to your CLI shell. The IoT Extension adds IoT Hub, IoT Edge, and IoT Device Provisioning Service (DPS) specific commands to Azure CLI.
     ```bash
     az extension add --name azure-iot
     ```

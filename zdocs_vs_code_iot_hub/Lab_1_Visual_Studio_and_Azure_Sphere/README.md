@@ -4,7 +4,7 @@
 
 ---
 
-|Author|[Dave Glover](https://developer.microsoft.com/en-us/advocates/dave-glover?WT.mc_id=github-blog-dglover), Microsoft Cloud Developer Advocate, [@dglover](https://twitter.com/dglover) |
+|Author|[Dave Glover](https://developer.microsoft.com/en-us/advocates/dave-glover?WT.mc_id=julyot-azd-dglover), Microsoft Cloud Developer Advocate, [@dglover](https://twitter.com/dglover) |
 |:----|:---|
 |Date| March 2020 |
 
@@ -94,9 +94,9 @@ The following is a list of other common peripheral interfaces found on devices, 
 * [ADC - Analog-to-digital converter](https://en.wikipedia.org/wiki/Analog-to-digital_converter)
 * [UART - Universal asynchronous receiver-transmitter](https://en.wikipedia.org/wiki/Universal_asynchronous_receiver-transmitter)
 
-You will see references to **ISU** in the Azure Sphere and Mediatec documentation. An ISU is a Serial interface block and is an acronym for "**I**2C, **S**PI, **U**ART.". For more information refer to the [MT3620 Support Status](https://docs.microsoft.com/en-us/azure-sphere/hardware/mt3620-product-status?WT.mc_id=github-blog-dglover) page.
+You will see references to **ISU** in the Azure Sphere and Mediatec documentation. An ISU is a Serial interface block and is an acronym for "**I**2C, **S**PI, **U**ART.". For more information refer to the [MT3620 Support Status](https://docs.microsoft.com/en-us/azure-sphere/hardware/mt3620-product-status?WT.mc_id=julyot-azd-dglover) page.
 
-You can read more about the peripheral interfaces supported the Azure Sphere supports from the [MT3620 Support Status](https://docs.microsoft.com/en-us/azure-sphere/hardware/mt3620-product-status?WT.mc_id=github-blog-dglover) page.
+You can read more about the peripheral interfaces supported the Azure Sphere supports from the [MT3620 Support Status](https://docs.microsoft.com/en-us/azure-sphere/hardware/mt3620-product-status?WT.mc_id=julyot-azd-dglover) page.
 
 ---
 
@@ -379,7 +379,7 @@ Each Azure Sphere manufacturer maps pins differently. Follow these steps to unde
 
 3. Review the pin mappings set up for the Azure Sphere Learning Path using the Avnet Starter Kit.
 	
-	>Azure Sphere hardware is available from multiple vendors, and each vendor may expose features of the underlying chip in different ways. Azure Sphere applications manage hardware dependencies by using hardware definition files. For further information, review the [Managing target hardware dependencies](https://docs.microsoft.com/en-us/azure-sphere/app-development/manage-hardware-dependencies?WT.mc_id=github-blog-dglover) article.
+	>Azure Sphere hardware is available from multiple vendors, and each vendor may expose features of the underlying chip in different ways. Azure Sphere applications manage hardware dependencies by using hardware definition files. For further information, review the [Managing target hardware dependencies](https://docs.microsoft.com/en-us/azure-sphere/app-development/manage-hardware-dependencies?WT.mc_id=julyot-azd-dglover) article.
 
 	```c
 	/* Copyright (c) Microsoft Corporation. All rights reserved.
@@ -426,7 +426,7 @@ Each Azure Sphere manufacturer maps pins differently. Follow these steps to unde
 ### Connect the Azure Sphere device to your computer
 
 1. Connect the Azure Sphere to your computer via USB.
-2. Ensure you have [claimed](https://docs.microsoft.com/en-au/azure-sphere/install/claim-device?WT.mc_id=github-blog-dglover), [connected](https://docs.microsoft.com/en-au/azure-sphere/install/configure-wifi?WT.mc_id=github-blog-dglover), and [developer enabled](https://docs.microsoft.com/en-au/azure-sphere/install/qs-blink-application?WT.mc_id=github-blog-dglover) your Azure Sphere.
+2. Ensure you have [claimed](https://docs.microsoft.com/en-au/azure-sphere/install/claim-device?WT.mc_id=julyot-azd-dglover), [connected](https://docs.microsoft.com/en-au/azure-sphere/install/configure-wifi?WT.mc_id=julyot-azd-dglover), and [developer enabled](https://docs.microsoft.com/en-au/azure-sphere/install/qs-blink-application?WT.mc_id=julyot-azd-dglover) your Azure Sphere.
 3. Ensure you have enabled developer mode on the Azure Sphere.
 4. **For Linux users only**. Connect the Azure Sphere. From a terminal window, run the following command.
 
@@ -470,7 +470,7 @@ Each Azure Sphere manufacturer maps pins differently. Follow these steps to unde
 
 3. When the next timer event triggers, the debugger will stop at the line where you set the breakpoint.
 4. You can inspect variable values, step over code <kbd>F10</kbd>, step into code <kbd>F11</kbd>, and continue code execution <kbd>F5</kbd>. 
-5. For more information on debugging then read the [Visual Studio Code Debugger](https://code.visualstudio.com/docs/editor/debugging?WT.mc_id=github-blog-dglover) article.
+5. For more information on debugging then read the [Visual Studio Code Debugger](https://code.visualstudio.com/docs/editor/debugging?WT.mc_id=julyot-azd-dglover) article.
 
 ---
 

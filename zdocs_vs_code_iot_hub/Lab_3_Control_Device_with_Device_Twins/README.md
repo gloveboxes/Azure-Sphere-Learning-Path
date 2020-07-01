@@ -2,7 +2,7 @@
 
 ---
 
-|Author|[Dave Glover](https://developer.microsoft.com/en-us/advocates/dave-glover?WT.mc_id=github-blog-dglover), Microsoft Cloud Developer Advocate, [@dglover](https://twitter.com/dglover) |
+|Author|[Dave Glover](https://developer.microsoft.com/en-us/advocates/dave-glover?WT.mc_id=julyot-azd-dglover), Microsoft Cloud Developer Advocate, [@dglover](https://twitter.com/dglover) |
 |:----|:---|
 |Date| June 2020|
 
@@ -28,7 +28,7 @@ Each module assumes you have completed the previous module.
 
 ## What you will learn
 
-You will learn how to control an [Azure Sphere](https://azure.microsoft.com/services/azure-sphere/?WT.mc_id=github-blog-dglover) application using [Azure IoT Hub Device Twins](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins#:~:text=Device%20twins%20are%20JSON%20documents,you%20connect%20to%20IoT%20Hub.?WT.mc_id=github-blog-dglover).
+You will learn how to control an [Azure Sphere](https://azure.microsoft.com/services/azure-sphere/?WT.mc_id=julyot-azd-dglover) application using [Azure IoT Hub Device Twins](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins?WT.mc_id=julyot-azd-dglover).
 
 ---
 
@@ -54,11 +54,11 @@ The Learning Path libraries are **not** part of the official Azure Sphere librar
 
 There are three options for Azure IoT cloud to device communications: 
 
-1. [Direct Methods](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods?WT.mc_id=github-blog-dglover) for communications that require immediate confirmation of the result. Direct methods are often used for interactive control of devices, such as turning on a fan.
+1. [Direct Methods](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods?WT.mc_id=julyot-azd-dglover) for communications that require immediate confirmation of the result. Direct methods are often used for interactive control of devices, such as turning on a fan.
 
-2. [Device Twins](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins?WT.mc_id=github-blog-dglover) are for long-running commands intended to put the device into a certain desired state. For example, set the sample rate for a sensor to every 30 minutes.
+2. [Device Twins](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins?WT.mc_id=julyot-azd-dglover) are for long-running commands intended to put the device into a certain desired state. For example, set the sample rate for a sensor to every 30 minutes.
 
-3. [Cloud-to-device](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-messages-c2d?WT.mc_id=github-blog-dglover) messages are for one-way notifications to the device app.
+3. [Cloud-to-device](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-messages-c2d?WT.mc_id=julyot-azd-dglover) messages are for one-way notifications to the device app.
 
 This lab will cover Azure IoT Device Twins.
 
@@ -68,7 +68,7 @@ This lab will cover Azure IoT Device Twins.
 
 In Lab 1, **Peripherals** and **Event Timers** were introduced to simplify and describe GPIO pins and Event Timers and their interactions.
 
-In this lab, **DeviceTwinBindings** are introduced to simplify the implementation of Azure IoT [Device Twins](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins?WT.mc_id=github-blog-dglover).
+In this lab, **DeviceTwinBindings** are introduced to simplify the implementation of Azure IoT [Device Twins](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins?WT.mc_id=julyot-azd-dglover).
 
 ---
 
@@ -99,7 +99,7 @@ The following outlines how Azure IoT Hub uses Device Twins to set properties on 
 
 ![](resources/device-twin-configuration-pattern.png)
 
-For more information, refer to the [Understand and use device twins in IoT Hub](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins?WT.mc_id=github-blog-dglover) article.
+For more information, refer to the [Understand and use device twins in IoT Hub](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins?WT.mc_id=julyot-azd-dglover) article.
 
 ---
 
@@ -299,7 +299,7 @@ The default developer board configuration is for the AVENT Azure Sphere Starter 
 
 ## Display the actual temperature device twin
 
-We are going to use the Azure command-line tool to view and update the IoT Hub device twins. For more information see [az iot hub device-twin](https://docs.microsoft.com/en-us/cli/azure/ext/azure-cli-iot-ext/iot/hub/device-twin?view=azure-cli-latest).
+We are going to use the Azure command-line tool to view and update the IoT Hub device twins. For more information see [az iot hub device-twin](https://docs.microsoft.com/en-us/cli/azure/ext/azure-cli-iot-ext/iot/hub/device-twin?view=azure-cli-latest&WT.mc_id=julyot-azd-dglover).
 
 Follow these steps to show the actual temperature recorded by the device:
 
@@ -313,7 +313,7 @@ Follow these steps to show the actual temperature recorded by the device:
     ```
 
 4. Open the Azure Cloud shell by right mouse clicking on the following link and opening in a new tab "[https://shell.azure.com](https://shell.azure.com)".
-5. In the Cloud Shell, run the [az extension add](https://docs.microsoft.com/cli/azure/extension?view=azure-cli-latest#az-extension-add) command to add the Microsoft Azure IoT Extension to your CLI shell. The IoT Extension adds IoT Hub, IoT Edge, and IoT Device Provisioning Service (DPS) specific commands to Azure CLI.
+5. In the Cloud Shell, run the [az extension add](https://docs.microsoft.com/cli/azure/extension?view=azure-cli-latest&WT.mc_id=julyot-azd-dglover) command to add the Microsoft Azure IoT Extension to your CLI shell. The IoT Extension adds IoT Hub, IoT Edge, and IoT Device Provisioning Service (DPS) specific commands to Azure CLI.
 
     ```bash
     az extension add --name azure-iot

@@ -4,7 +4,7 @@
 
 ---
 
-|Author|[Dave Glover](https://developer.microsoft.com/en-us/advocates/dave-glover?WT.mc_id=github-blog-dglover), Microsoft Cloud Developer Advocate, [@dglover](https://twitter.com/dglover) |
+|Author|[Dave Glover](https://developer.microsoft.com/en-us/advocates/dave-glover?WT.mc_id=julyot-azd-dglover), Microsoft Cloud Developer Advocate, [@dglover](https://twitter.com/dglover) |
 |:----|:---|
 |Date| May 2020|
 
@@ -236,7 +236,7 @@ You can Debug the FreeRTOS application running on Azure Sphere Cortex M4 Real-Ti
 
 1. From Visual Studio, open the FreeRTOS application **main.c** file.
 2. Scroll down to the C function named **LedTask**.
-3. Set a [Visual Studio Breakpoint](https://docs.microsoft.com/en-us/visualstudio/debugger/using-breakpoints?view=vs-2019&WT.mc_id=github-blog-dglover) in the **LedTask** function on the line that reads **rt = xSemaphoreTake(LEDSemphr, portMAX_DELAY);**
+3. Set a [Visual Studio Breakpoint](https://docs.microsoft.com/en-us/visualstudio/debugger/using-breakpoints?view=vs-2019&WT.mc_id=julyot-azd-dglover) in the **LedTask** function on the line that reads **rt = xSemaphoreTake(LEDSemphr, portMAX_DELAY);**
 
     ![](resources/visual-studio-debug-led-task.png)
 4. The code will stop executing at the breakpoint

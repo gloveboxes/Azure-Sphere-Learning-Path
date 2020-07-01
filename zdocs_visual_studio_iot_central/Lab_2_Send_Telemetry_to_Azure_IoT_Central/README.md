@@ -4,7 +4,7 @@
 
 ---
 
-|Author|[Dave Glover](https://developer.microsoft.com/en-us/advocates/dave-glover?WT.mc_id=github-blog-dglover), Microsoft Cloud Developer Advocate, [@dglover](https://twitter.com/dglover) |
+|Author|[Dave Glover](https://developer.microsoft.com/en-us/advocates/dave-glover?WT.mc_id=julyot-azd-dglover), Microsoft Cloud Developer Advocate, [@dglover](https://twitter.com/dglover) |
 |:----|:---|
 |Date| March 2020|
 
@@ -30,7 +30,7 @@ Each module assumes you have completed the previous module.
 
 ## What you will learn
 
-You will learn how to build a High-Level [Azure Sphere](https://azure.microsoft.com/services/azure-sphere/?WT.mc_id=github-blog-dglover) application that connects and sends telemetry to [Azure IoT Central](https://azure.microsoft.com/services/iot-central/?WT.mc_id=github-blog-dglover).
+You will learn how to build a High-Level [Azure Sphere](https://azure.microsoft.com/services/azure-sphere/?WT.mc_id=julyot-azd-dglover) application that connects and sends telemetry to [Azure IoT Central](https://azure.microsoft.com/services/iot-central/?WT.mc_id=julyot-azd-dglover).
 
 ---
 
@@ -61,7 +61,7 @@ We recommend that you use the most up-to-date browser that's compatible with you
 * Chrome (latest version)
 * Firefox (latest version)
 
-[Supported browsers for Azure IoT Central](https://docs.microsoft.com/en-us/azure/iot-central/core/iot-central-supported-browsers)
+[Supported browsers for Azure IoT Central](https://docs.microsoft.com/en-us/azure/iot-central/core/iot-central-supported-browsers?WT.mc_id=julyot-azd-dglover)
 
 ## Tutorial Overview
 
@@ -81,15 +81,15 @@ We recommend that you use the most up-to-date browser that's compatible with you
 
 Your Azure Sphere device can securely connect and communicate with cloud services. Azure Sphere includes built-in library support for both Azure IoT Hub and Azure IoT Central. This lab focuses on Azure IoT Central.
 
-This project leverages the [Azure IoT Hub Device Provisioning Service (PDS)](https://docs.microsoft.com/en-us/azure-sphere/app-development/use-azure-iot?WT.mc_id=github-blog-dglover), which is included with Azure IoT Central. The Device Provisioning Service (DPS) enables zero-touch, just-in-time, large scale device provisioning.
+This project leverages the [Azure IoT Hub Device Provisioning Service (PDS)](https://docs.microsoft.com/en-us/azure-sphere/app-development/use-azure-iot?WT.mc_id=julyot-azd-dglover), which is included with Azure IoT Central. The Device Provisioning Service (DPS) enables zero-touch, just-in-time, large scale device provisioning.
 
-Take a moment to read [Your IoT journey: simplified and secure with Azure IoT Central and Azure Sphere](https://techcommunity.microsoft.com/t5/internet-of-things/your-iot-journey-simplified-and-secure-with-azure-iot-central/ba-p/1404247).
+Take a moment to read [Your IoT journey: simplified and secure with Azure IoT Central and Azure Sphere](https://techcommunity.microsoft.com/t5/internet-of-things/your-iot-journey-simplified-and-secure-with-azure-iot-central/ba-p/1404247?WT.mc_id=julyot-azd-dglover).
 
 ---
 
 ## Azure IoT Central
 
-[Azure IoT Central](https://azure.microsoft.com/en-in/services/iot-central/?WT.mc_id=github-blog-dglover) provides an easy way to connect, monitor, and manage your Internet of Things (IoT) assets at scale.
+[Azure IoT Central](https://azure.microsoft.com/en-in/services/iot-central/?WT.mc_id=julyot-azd-dglover) provides an easy way to connect, monitor, and manage your Internet of Things (IoT) assets at scale.
 
 ![Azure IoT Central](resources/azure-iot-central.jpg)
 
@@ -97,7 +97,7 @@ Take a moment to read [Your IoT journey: simplified and secure with Azure IoT Ce
 
 ## Step 1: Create a new IoT Central Application
 
-1. So the lab instructions are still visible, right mouse click, and open this link "[Azure IoT Central](https://azure.microsoft.com/en-au/services/iot-central/?WT.mc_id=pycon-blog-dglover)" in a new window.
+1. So the lab instructions are still visible, right mouse click, and open this link "[Azure IoT Central](https://azure.microsoft.com/en-au/services/iot-central/?WT.mc_id=julyot-azd-dglover)" in a new window.
 
 2. Click **Build a solution**.
 
@@ -127,7 +127,7 @@ Take a moment to read [Your IoT journey: simplified and secure with Azure IoT Ce
 
 A device template is a blueprint that defines the characteristics and behaviors of a type of device that connects to an Azure IoT Central application.
 
-For more information on device templates, review the [Define a new IoT device type in your Azure IoT Central application](https://docs.microsoft.com/en-us/azure/iot-central/core/howto-set-up-template?WT.mc_id=github-blog-dglover) article. 
+For more information on device templates, review the [Define a new IoT device type in your Azure IoT Central application](https://docs.microsoft.com/en-us/azure/iot-central/core/howto-set-up-template?WT.mc_id=julyot-azd-dglover) article. 
 
 1. Click **Device templates**, then **+ New**.
     ![](resources/iot-central-template-new.png)
@@ -181,7 +181,7 @@ For more information on device templates, review the [Define a new IoT device ty
 
 2. Next, confirm and click **Publish**
 
->See [Define a new IoT device type in your Azure IoT Central application](https://docs.microsoft.com/en-us/azure/iot-central/core/howto-set-up-template?WT.mc_id=github-blog-dglover) for information on creating your own device templates.
+>See [Define a new IoT device type in your Azure IoT Central application](https://docs.microsoft.com/en-us/azure/iot-central/core/howto-set-up-template?WT.mc_id=julyot-azd-dglover) for information on creating your own device templates.
 
 ---
 
@@ -259,7 +259,7 @@ Follow these steps:
 4. Run the **ShowIoTCentralConfig** tool.
     Now follow the prompts that the tool provides, and copy the information from the output into the app_manifest.json file in Visual Studio.
 
-    > **Note**: Your organization might require consent for the ShowIoTCentralConfig tool to access your Azure IoT Central data in the same way that the Azure API requires such consent. In some organizations, [enterprise application permissions](https://docs.microsoft.com/azure-sphere/install/admin-consent) must be granted by an IT administrator.
+    > **Note**: Your organization might require consent for the ShowIoTCentralConfig tool to access your Azure IoT Central data in the same way that the Azure API requires such consent. In some organizations, [enterprise application permissions](https://docs.microsoft.com/azure-sphere/install/admin-consent?WT.mc_id=julyot-azd-dglover) must be granted by an IT administrator.
 5. Review the output from the **ShowIoTCentralConfig** tool. It will look similar to the following text.
 
     </br>
@@ -296,7 +296,7 @@ We need the ID of the Azure Sphere Tenant that is now trusted by Azure IoT Centr
 
 A device template is a blueprint that defines the characteristics and behaviors of a type of device that connects to an Azure IoT Central application.
 
-For more information on device templates, review the [Define a new IoT device type in your Azure IoT Central application](https://docs.microsoft.com/en-us/azure/iot-central/core/howto-set-up-template?WT.mc_id=github-blog-dglover) article. 
+For more information on device templates, review the [Define a new IoT device type in your Azure IoT Central application](https://docs.microsoft.com/en-us/azure/iot-central/core/howto-set-up-template?WT.mc_id=julyot-azd-dglover) article. 
 
 1. From Azure IoT Central, navigate to **Device templates**, and select the **Azure Sphere** template.
 2. Click on **Interfaces** to list the interface capabilities.

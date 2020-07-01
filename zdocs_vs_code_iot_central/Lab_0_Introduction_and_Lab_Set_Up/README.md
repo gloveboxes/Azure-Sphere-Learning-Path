@@ -1,6 +1,6 @@
 # Lab 0: Lab Set Up
 
-|Author|[Dave Glover](https://developer.microsoft.com/en-us/advocates/dave-glover?WT.mc_id=github-blog-dglover), Microsoft Cloud Developer Advocate, [@dglover](https://twitter.com/dglover) |
+|Author|[Dave Glover](https://developer.microsoft.com/en-us/advocates/dave-glover?WT.mc_id=julyot-azd-dglover), Microsoft Cloud Developer Advocate, [@dglover](https://twitter.com/dglover) |
 |:----|:---|
 |Date| March 2020 |
 
@@ -36,11 +36,11 @@ These **Azure Sphere Learning Path** labs build on the [Azure Sphere Samples](ht
 
 ### Azure Sphere Documentation
 
-Full [Azure Sphere Documentation](https://azure.microsoft.com/en-au/services/azure-sphere/?WT.mc_id=github-blog-dglover).
+Full [Azure Sphere Documentation](https://azure.microsoft.com/en-au/services/azure-sphere/?WT.mc_id=julyot-azd-dglover).
 
 ### Azure Sphere (azsphere) Command Line Reference
 
-[Overview of azsphere command-line utility](https://docs.microsoft.com/en-us/azure-sphere/reference/overview?WT.mc_id=github-blog-dglover).
+[Overview of azsphere command-line utility](https://docs.microsoft.com/en-us/azure-sphere/reference/overview?WT.mc_id=julyot-azd-dglover).
 
 ---
 
@@ -78,29 +78,29 @@ You can develop applications for Azure Sphere on Windows 10 Anniversary Update o
 
 Install the following software.
 
-1. [Visual Studio (The free Community Edition or better)](https://visualstudio.microsoft.com/vs/?WT.mc_id=github-blog-dglover).
+1. [Visual Studio (The free Community Edition or better)](https://visualstudio.microsoft.com/vs/?WT.mc_id=julyot-azd-dglover).
     * No specific **Workloads** options are required.
     * Select **Individual components**.
     * Type *cmake* in search box.
     * Select **C++ CMake tools for Windows**.
     * Click install.
     ![install c++ cmake tools for windows](resources/visual-studio-install-cmake.png)
-2. [Azure Sphere SDK for Visual Studio](https://docs.microsoft.com/en-au/azure-sphere/install/install-sdk?WT.mc_id=github-blog-dglover#azure-sphere-sdk-for-visual-studio)
+2. [Azure Sphere SDK for Visual Studio](https://docs.microsoft.com/en-au/azure-sphere/install/install-sdk?WT.mc_id=julyot-azd-dglover)
 3. [Git for Windows](https://git-scm.com/downloads)
-4. [Install Azure Sphere drivers for Windows](https://docs.microsoft.com/en-au/azure-sphere/install/install-sdk?WT.mc_id=github-blog-dglover)
+4. [Install Azure Sphere drivers for Windows](https://docs.microsoft.com/en-au/azure-sphere/install/install-sdk?WT.mc_id=julyot-azd-dglover)
 
 ### Ubuntu 18.04 Users
 
 Install the following software.
 
-1. [Visual Studio Code](https://code.visualstudio.com/?WT.mc_id=github-blog-dglover)
-2. [Azure Sphere Extension for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=ms-vscode.azure-sphere-tools&WT.mc_id=github-blog-dglover).
-3. [CMake Tools Extension for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools&WT.mc_id=github-blog-dglover)
-4. [Install the Azure Sphere SDK on Linux](https://docs.microsoft.com/en-au/azure-sphere/install/install-sdk-linux?WT.mc_id=github-blog-dglover)
-5. [Set up your Linux system for app development](https://docs.microsoft.com/en-au/azure-sphere/install/development-environment-linux?WT.mc_id=github-blog-dglover)
+1. [Visual Studio Code](https://code.visualstudio.com/?WT.mc_id=julyot-azd-dglover)
+2. [Azure Sphere Extension for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=ms-vscode.azure-sphere-tools&WT.mc_id=julyot-azd-dglover).
+3. [CMake Tools Extension for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools&WT.mc_id=julyot-azd-dglover)
+4. [Install the Azure Sphere SDK on Linux](https://docs.microsoft.com/en-au/azure-sphere/install/install-sdk-linux?WT.mc_id=julyot-azd-dglover)
+5. [Set up your Linux system for app development](https://docs.microsoft.com/en-au/azure-sphere/install/development-environment-linux?WT.mc_id=julyot-azd-dglover)
 6. Install Git support **```apt install git```**.
 
-For complete instructions follow the Azure Sphere [Overview of set up procedures](https://docs.microsoft.com/en-au/azure-sphere/install/overview?WT.mc_id=github-blog-dglover) guide.
+For complete instructions follow the Azure Sphere [Overview of set up procedures](https://docs.microsoft.com/en-au/azure-sphere/install/overview?WT.mc_id=julyot-azd-dglover) guide.
 
 ---
 
@@ -176,7 +176,7 @@ From the **Azure Sphere Developer Command Prompt**:
 
 **Note**, claiming an Azure Sphere device is a one-time operation. The device will become associated with an Azure Sphere Tenant and the email address you used when you claimed the device.
 
-You **cannot move** the device to another Azure Tenant once it has been claimed. However, you can add additional [users and roles](https://docs.microsoft.com/en-us/azure-sphere/deployment/add-tenant-users?WT.mc_id=github-blog-dglover) to the Azure Sphere tenant, including users with Admin rights.
+You **cannot move** the device to another Azure Tenant once it has been claimed. However, you can add additional [users and roles](https://docs.microsoft.com/en-us/azure-sphere/deployment/add-tenant-users?WT.mc_id=julyot-azd-dglover) to the Azure Sphere tenant, including users with Admin rights.
 
 1. From the **Azure Sphere Developer Command Prompt**, run
 
@@ -184,7 +184,7 @@ You **cannot move** the device to another Azure Tenant once it has been claimed.
     azsphere device claim
     ```
 
-For more information visit [Claim your Azure Sphere device](https://docs.microsoft.com/en-au/azure-sphere/install/claim-device?WT.mc_id=github-blog-dglover).
+For more information visit [Claim your Azure Sphere device](https://docs.microsoft.com/en-au/azure-sphere/install/claim-device?WT.mc_id=julyot-azd-dglover).
 
 ---
 
@@ -217,7 +217,7 @@ From the **Azure Sphere Developer Command Prompt**:
     azsphere device wifi list
     ```
 
-For more information on networking, visit [Configure the Azure Sphere WiFi Settings](https://docs.microsoft.com/en-au/azure-sphere/install/configure-wifi?WT.mc_id=github-blog-dglover)
+For more information on networking, visit [Configure the Azure Sphere WiFi Settings](https://docs.microsoft.com/en-au/azure-sphere/install/configure-wifi?WT.mc_id=julyot-azd-dglover)
 
 ---
 
