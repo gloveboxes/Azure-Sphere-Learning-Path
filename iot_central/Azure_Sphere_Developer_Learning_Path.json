@@ -73,33 +73,23 @@
             "schema": "integer"
           },
           {
-            "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:LedBlinkRate:2",
-            "@type": "Property",
-            "displayName": {
-              "en": "Led Blink Rate"
-            },
-            "name": "LedBlinkRate",
-            "writable": true,
-            "schema": "integer"
-          },
-          {
             "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:DesiredTemperature:1",
             "@type": "Property",
             "displayName": {
-              "en": "Set Desired Temperature"
+              "en": "Desired Temperature"
             },
             "name": "DesiredTemperature",
             "writable": true,
             "schema": "float"
           },
           {
-            "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:ButtonPressed:2",
+            "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:ActualTemperature:1",
             "@type": "Property",
             "displayName": {
-              "en": "Button Pressed"
+              "en": "Actual Temperature"
             },
-            "name": "ButtonPressed",
-            "schema": "string"
+            "name": "ActualTemperature",
+            "schema": "float"
           },
           {
             "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:DeviceResetUTC:2",
@@ -108,30 +98,6 @@
               "en": "Device Reset UTC"
             },
             "name": "DeviceResetUTC",
-            "schema": "string"
-          },
-          {
-            "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:ButtonA:2",
-            "@type": [
-              "Telemetry",
-              "SemanticType/Event"
-            ],
-            "displayName": {
-              "en": "Button A Alert"
-            },
-            "name": "ButtonA",
-            "schema": "string"
-          },
-          {
-            "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:ButtonB:2",
-            "@type": [
-              "Telemetry",
-              "SemanticType/Event"
-            ],
-            "displayName": {
-              "en": "Button B Alert"
-            },
-            "name": "ButtonB",
             "schema": "string"
           },
           {

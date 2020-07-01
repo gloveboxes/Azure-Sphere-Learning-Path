@@ -1,5 +1,5 @@
 
-![Azure Sphere Learning Path](zdocs/resources/azure-sphere-learning-path.png)
+![Azure Sphere Learning Path](resources/azure-sphere-learning-path.png)
 
 ---
 
@@ -30,7 +30,7 @@ Azure Sphere is made up of three interrelated components:
 2. Azure Sphere OS
 3. Azure Sphere Security Service
 
-![Azure Sphere end-to-end](zdocs/resources/azure-sphere-end-to-end.png)
+![Azure Sphere end-to-end](resources/azure-sphere-end-to-end.png)
 
 These components are backed by Microsoft best-in-class security experts who monitor emerging threats, design updates and provide a decade of ongoing servicing.
 
@@ -46,15 +46,21 @@ Each lab assumes you have completed the previous lab.
 
 You are also free to use and modify the code provided in this learning path for your projects, commercial or otherwise, no liability accepted.
 
-Labs:
+Learning path overview:
 
-* Lab 0: [Introduction Azure Sphere and Lab Set Up](zdocs/Lab_0_Introduction_and_Lab_Set_Up/README.md)
-* Lab 1: [Build your first Azure Sphere Application with Visual Studio](zdocs/Lab_1_Visual_Studio_and_Azure_Sphere/README.md)
-* Lab 2: [Send Telemetry from an Azure Sphere to Azure IoT Central](zdocs/Lab_2_Send_Telemetry_to_Azure_IoT_Central/README.md)
-* Lab 3: [Control an Azure Sphere with Device Twins and Direct Methods](zdocs/Lab_3_Control_Device_with_Device_Twins_and_Direct_Methods/README.md)
-* Lab 4: [Integrating FreeRTOS with Azure Sphere Inter-Core Messaging](zdocs/Lab_4_FreeRTOS_and_Inter-Core_Messaging/README.md)
-* Lab 5: [Integrating FreeRTOS with Azure IoT Central](zdocs/Lab_5_FreeRTOS_and_Azure_IoT_Central/README.md)
-* Lab 6: [Over-the-air (OTA) Deployment](zdocs/Lab_6_Over-the-air-deployment/README.md)
+* Lab 0: Lab Set Up
+* Lab 1: Introduction to Azure Sphere development
+* Lab 2: Connect a room environment monitor to Azure IoT
+* Lab 3: Set the room virtual thermostat with Azure IoT Device Twins
+* Lab 4: Remote reboot your Azure Sphere with Azure IoT Direct Methods
+* Lab 5: Integrate FreeRTOS Real-time room sensors with Azure IoT
+* Lab 6: Integrate Azure RTOS Real-time room sensors with Azure IoT
+* Lab 7: Connect and control your room environment monitor with Azure IoT
+<!-- * Lab 8: Over-the-air (OTA) Deployment -->
+
+* [Recommended path for Windows users with Visual Studio 2019 and IoT Central](zdocs_visual_studio_iot_central/Lab_0_Introduction_and_Lab_Set_Up/README.md)
+* [Recommended path for Linux users with Visual Studio Code and IoT Central](zdocs_vs_code_iot_central/Lab_0_Introduction_and_Lab_Set_Up/README.md)
+* [Recommended path for Linux and Windows users with Visual Studio Code and IoT Hub](zdocs_vs_code_iot_hub/Lab_0_Introduction_and_Lab_Set_Up/README.md)
 
 ---
 
@@ -70,7 +76,7 @@ Almost a day doesn't go by without some newsworthy IoT security attack happening
 
 [The Seven Properties of Highly Secure Devices](https://www.microsoft.com/en-us/research/wp-content/uploads/2017/03/SevenPropertiesofHighlySecureDevices.pdf?WT.mc_id=github-blog-dglover) is highly recommended to help you understand what is required to mitigate exposure to IoT security issues. This IoT Security whitepaper draws from industry and Microsoft experience.
 
-![Connected Fish Tank](zdocs/resources/fish-tank.jpg)
+![Connected Fish Tank](resources/fish-tank.jpg)
 
 Here is one of the most unconventional: a fish tank. Not just an ordinary fish tank, mind you, but a high-tech one that featured Internet connectivity. That connection allowed the tank to be remotely monitored, automatically adjust temperature and salinity, and automate feedings.
 
@@ -84,7 +90,7 @@ It also allowed hackers to swipe 10 gigabytes of data from the North American ca
 
 Azure Sphere is a solution for securing MCU Power Devices. It comprises a secured, connected, crossover microcontroller unit (MCU), a custom high-level Linux-based operating system (OS), and a cloud-based security service that provides continuous, renewable security.
 
-![Azure Sphere end-to-end](zdocs/resources/azure-sphere-end-to-end.png) -->
+![Azure Sphere end-to-end](resources/azure-sphere-end-to-end.png) -->
 
 ---
 
@@ -94,7 +100,7 @@ Get started with Azure Sphere using the prototyping developer kits from Avnet an
 
 Today the Mediatec MT3620 MCU powers Azure Sphere. The family of certified Azure Sphere MCUs will expand to include offerings from Qualcomm and NXP.
 
-![Partners and their products](zdocs/resources/azure-sphere.png)
+![Partners and their products](resources/azure-sphere.png)
 
 ---
 
@@ -108,7 +114,7 @@ This PCB will initially support their parking solution, controlling boom gates a
 
 Building solutions with pre-certified Azure Sphere modules is the fastest way to bring a secure IoT product to market.
 
-![Prototype PCB design](zdocs/resources/divvy-parking.png)
+![Prototype PCB design](resources/divvy-parking.png)
 
 *Prototype PCB design included here with the permission of Divvy Parking*
 
@@ -122,7 +128,7 @@ Building solutions with pre-certified Azure Sphere modules is the fastest way to
 
 Click on the following image to start watching the introduction session to building secure solutions with Azure Sphere.
 
-[![Building Secure Solutions with Azure Sphere](zdocs/resources/youtube-building-secure-iot-solutions-with-azure-sphere.png)](https://www.youtube.com/watch?v=-efcCH5esok)
+[![Building Secure Solutions with Azure Sphere](resources/youtube-building-secure-iot-solutions-with-azure-sphere.png)](https://www.youtube.com/watch?v=-efcCH5esok)
 
 ---
 
@@ -151,9 +157,9 @@ The MT3620 MCU is also known as a Crossover MCU as it bridges the application wo
 
 * Only signed and verified apps can run on the microcontroller cores.
 
-![Azure Sphere architecture](zdocs/resources/azure-sphere-architecture.png)
+![Azure Sphere architecture](resources/azure-sphere-architecture.png)
 
-<!-- ![Azure Sphere architecture](zdocs/resources/azure-sphere-architecture-detailed.png) -->
+<!-- ![Azure Sphere architecture](resources/azure-sphere-architecture-detailed.png) -->
 
 
 ---
@@ -167,9 +173,9 @@ The following Azure Sphere developer boards are supported by these labs, and for
 | [Avnet Azure Sphere MT3620 Starter Kit](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-sk-g-3074457345636825680/) | [Seeed Studio Azure Sphere MT3620 Development Kit](https://www.seeedstudio.com/mt3620-for-azure-sphere) | [Seeed Studio Seeed Studio MT3620 Mini Dev Board](https://www.seeedstudio.com/mt3620-for-azure-sphere) |
 | :-------------: | :---------------: | :-----: |
 | [Reference](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-sk-g-3074457345636825680/) | [Reference](http://wiki.seeedstudio.com/Azure_Sphere_MT3620_Development_Kit/) | [Reference](http://wiki.seeedstudio.com/MT3620_Mini_Dev_Board/) |
-| ![](zdocs/resources/avnet-azure-sphere.jpg) | ![](zdocs/resources/seeed-studio-azure-sphere-rdb.jpg) | ![](zdocs/resources/seeed-studio-azure-sphere-mini.png) |
+| ![](resources/avnet-azure-sphere.jpg) | ![](resources/seeed-studio-azure-sphere-rdb.jpg) | ![](resources/seeed-studio-azure-sphere-mini.png) |
 | [Mikroe Click Boards](https://www.mikroe.com/) and Seeed Grove I2C | [Grove Starter Kit for Azure Sphere MT3620 Development Kit](http://wiki.seeedstudio.com/Grove_Starter_Kit_for_Azure_Sphere_MT3620_Development_Kit/) | [MT3620 Grove Breakout](https://www.seeedstudio.com/MT3620-Grove-Breakout-p-4043.html) |
-| ![](zdocs/resources/MIKROE-relay2.jpg) | ![](zdocs/resources/Grove_Starter_Kit_for_Azure_Sphere_MT3620_Development_Kit.jpg)  | ![](zdocs/resources/mt3620-grove-breakout-preview.png) |
+| ![](resources/MIKROE-relay2.jpg) | ![](resources/Grove_Starter_Kit_for_Azure_Sphere_MT3620_Development_Kit.jpg)  | ![](resources/mt3620-grove-breakout-preview.png) |
 
 <!-- --- -->
 
@@ -179,9 +185,9 @@ These labs support the following Azure Sphere Kits.
 
 | Manufacturer | Image |
 |---|---|
-| [Avnet Azure Sphere MT3620 Starter Kit](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-sk-g-3074457345636825680/). This starter kit includes a 3D accelerometer, a 3D Gyro, along with temperature, pressure, and ambient light sensors. | ![Avnet Azure Sphere MT3620 Starter Kit](zdocs/resources/avnet-azure-sphere.jpg)|
-| [Seeed Studio Azure Sphere MT3620 Development Kit](http://wiki.seeedstudio.com/Azure_Sphere_MT3620_Development_Kit/) | ![Seeed Studio Azure Sphere MT3620 Development Kit](zdocs/resources/seeed-studio-azure-sphere.png) |
-| [Seeed Studio Azure Sphere MT3620 Mini Dev Board]() | ![Seeed Studio Azure Sphere MT3620 Mini Dev Board](zdocs/resources/seeed-studio-azure-sphere-mini.png) | -->
+| [Avnet Azure Sphere MT3620 Starter Kit](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-sk-g-3074457345636825680/). This starter kit includes a 3D accelerometer, a 3D Gyro, along with temperature, pressure, and ambient light sensors. | ![Avnet Azure Sphere MT3620 Starter Kit](resources/avnet-azure-sphere.jpg)|
+| [Seeed Studio Azure Sphere MT3620 Development Kit](http://wiki.seeedstudio.com/Azure_Sphere_MT3620_Development_Kit/) | ![Seeed Studio Azure Sphere MT3620 Development Kit](resources/seeed-studio-azure-sphere.png) |
+| [Seeed Studio Azure Sphere MT3620 Mini Dev Board]() | ![Seeed Studio Azure Sphere MT3620 Mini Dev Board](resources/seeed-studio-azure-sphere-mini.png) | -->
 
 ---
 

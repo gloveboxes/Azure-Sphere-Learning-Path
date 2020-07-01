@@ -53,7 +53,7 @@
 #include <time.h>
 
 
-// Hardware specific
+ // Hardware specific
 
 #ifdef OEM_AVNET
 #include "learning_path_libs/AVNET/board.h"
@@ -81,7 +81,7 @@ static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 
 static const struct timespec led2BlinkPeriod = { 0, 300 * 1000 * 1000 };
 
-static int led1BlinkIntervalIndex = 0;
+static int led1BlinkIntervalIndex = 2;
 static const struct timespec led1BlinkIntervals[] = { {0, 125000000}, {0, 250000000}, {0, 500000000}, {0, 750000000}, {1, 0} };
 static const int led1BlinkIntervalsCount = NELEMS(led1BlinkIntervals);
 
@@ -90,7 +90,7 @@ static LP_PERIPHERAL_GPIO buttonA = { .pin = BUTTON_A, .direction = LP_INPUT, .i
 static LP_PERIPHERAL_GPIO buttonB = { .pin = BUTTON_B, .direction = LP_INPUT, .initialise = lp_openPeripheralGpio, .name = "buttonB" };
 
 // GPIO Output Peripherals
-static LP_PERIPHERAL_GPIO led1 = { .pin = LED1, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true, 
+static LP_PERIPHERAL_GPIO led1 = { .pin = LED1, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true,
 	.initialise = lp_openPeripheralGpio, .name = "led1" };
 
 static LP_PERIPHERAL_GPIO led2 = { .pin = LED2, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true,
@@ -182,37 +182,24 @@ static void Led2OffHandler(EventLoopTimer* eventLoopTimer)
 /// </summary>
 static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 {
+	static int msgId = 0;
+	static LP_ENVIRONMENT environment;
+	static const char* MsgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"Light\":%d, \"MsgId\":%d }";
+
 	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
 	{
 		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
 		return;
 	}
-	if (lp_readTelemetry(msgBuffer, JSON_MESSAGE_BYTES) > 0)
-	{
-		Log_Debug("%s\n", msgBuffer);
-		Led2On();
-	}
-}
 
-/// <summary>
-/// Read Button PeripheralGpio returns pressed state
-/// </summary>
-static bool IsButtonPressed(LP_PERIPHERAL_GPIO button, GPIO_Value_Type* oldState)
-{
-	bool isButtonPressed = false;
-	GPIO_Value_Type newState;
-
-	if (GPIO_GetValue(button.fd, &newState) != 0)
+	if (lp_readTelemetry(&environment))
 	{
-		lp_terminate(ExitCode_Gpio_Read);
+		if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, MsgTemplate, environment.temperature, environment.humidity, environment.pressure, environment.light, msgId++) > 0)
+		{
+			Log_Debug("%s\n", msgBuffer);
+			Led2On();
+		}
 	}
-	else
-	{
-		// Button is pressed if it is low and different than last known state.
-		isButtonPressed = (newState != *oldState) && (newState == GPIO_Value_Low);
-		*oldState = newState;
-	}
-	return isButtonPressed;
 }
 
 /// <summary>
@@ -229,25 +216,10 @@ static void ButtonPressCheckHandler(EventLoopTimer* eventLoopTimer)
 		return;
 	}
 
-	if (IsButtonPressed(buttonA, &buttonAState))
+	if (lp_gpioGetState(&buttonA, &buttonAState) || lp_gpioGetState(&buttonB, &buttonBState))
 	{
 		led1BlinkIntervalIndex = (led1BlinkIntervalIndex + 1) % led1BlinkIntervalsCount;
 		lp_changeTimer(&led1BlinkTimer, &led1BlinkIntervals[led1BlinkIntervalIndex]);
-
-		if (lp_readTelemetry(msgBuffer, JSON_MESSAGE_BYTES) > 0)
-		{
-			Log_Debug("%s\n", msgBuffer);
-			Led2On();
-		}
-	}
-
-	if (IsButtonPressed(buttonB, &buttonBState))
-	{
-		if (lp_readTelemetry(msgBuffer, JSON_MESSAGE_BYTES) > 0)
-		{
-			Log_Debug("%s\n", msgBuffer);
-			Led2On();
-		}
 	}
 }
 
@@ -256,7 +228,7 @@ static void ButtonPressCheckHandler(EventLoopTimer* eventLoopTimer)
 /// </summary>
 static void Led1BlinkHandler(EventLoopTimer* eventLoopTimer)
 {
-	static bool blinkingLedState = false;
+	static bool led_state = false;
 
 	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
 	{
@@ -264,9 +236,9 @@ static void Led1BlinkHandler(EventLoopTimer* eventLoopTimer)
 		return;
 	}
 
-	blinkingLedState = !blinkingLedState;
+	led_state = !led_state;
 
-	if (blinkingLedState) { lp_gpioOff(&led1); }
+	if (led_state) { lp_gpioOff(&led1); }
 	else { lp_gpioOn(&led1); }
 }
 
