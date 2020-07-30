@@ -16,6 +16,7 @@ typedef enum {
 struct _deviceTwinBinding {
 	const char* twinProperty;
 	void* twinState;
+	bool twinStateUpdated;
 	LP_DEVICE_TWIN_TYPE twinType;
 	void (*handler)(struct _deviceTwinBinding* deviceTwinBinding);
 };

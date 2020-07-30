@@ -18,8 +18,8 @@ set(AVNET TRUE "AVNET Azure Sphere Starter Kit")
 cmake_minimum_required (VERSION 3.10)
 project (AzureSphereIoTCentral C)
 
-azsphere_configure_tools(TOOLS_REVISION "20.04")
-azsphere_configure_api(TARGET_API_SET "5+Beta2004")
+azsphere_configure_tools(TOOLS_REVISION "20.07")
+azsphere_configure_api(TARGET_API_SET "6")
 
 
 add_subdirectory("learning_path_libs" out)
@@ -75,15 +75,15 @@ set_source_files_properties(./learning_path_libs/AVNET/imu_temp_pressure.c PROPE
 
 
 if(AVNET)
-    azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../Hardware/avnet_mt3620_sk" TARGET_DEFINITION "azure_sphere_learning_path.json")
+    azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../HardwareDefinitions/avnet_mt3620_sk" TARGET_DEFINITION "azure_sphere_learning_path.json")
 endif(AVNET)
 
 if (SEEED_STUDIO_RDB)
-    azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../Hardware/mt3620_rdb" TARGET_DEFINITION "azure_sphere_learning_path.json")
+    azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../HardwareDefinitions/mt3620_rdb" TARGET_DEFINITION "azure_sphere_learning_path.json")
 endif()
 
 if (SEEED_STUDIO_MINI)
-    azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../Hardware/seeed_mt3620_mdb" TARGET_DEFINITION "azure_sphere_learning_path.json")
+    azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../HardwareDefinitions/seeed_mt3620_mdb" TARGET_DEFINITION "azure_sphere_learning_path.json")
 endif(SEEED_STUDIO_MINI)
 
 azsphere_target_add_image_package(${PROJECT_NAME})

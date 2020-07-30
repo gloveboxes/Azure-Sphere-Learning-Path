@@ -19,8 +19,8 @@ cmake_minimum_required (VERSION 3.10)
 #set(CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY")
 project (demo_threadx C)
 
-azsphere_configure_tools(TOOLS_REVISION "20.04")
-azsphere_configure_api(TARGET_API_SET "5+Beta2004")
+azsphere_configure_tools(TOOLS_REVISION "20.07")
+#azsphere_configure_api(TARGET_API_SET "6")
 
 ADD_COMPILE_DEFINITIONS(OSAI_BARE_METAL)
 ADD_LINK_OPTIONS(-specs=nano.specs -specs=nosys.specs)
@@ -60,17 +60,17 @@ set_target_properties (${PROJECT_NAME} PROPERTIES LINK_DEPENDS ${PROJECT_SOURCE_
 # include ("${AZURE_SPHERE_MAKE_IMAGE_FILE}")
 
 if(AVNET)
-    azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../Hardware/avnet_mt3620_sk" TARGET_DEFINITION "azure_sphere_learning_path.json")
+    azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../HardwareDefinitions/avnet_mt3620_sk" TARGET_DEFINITION "azure_sphere_learning_path.json")
     add_definitions( -DOEM_AVNET=TRUE )
 endif(AVNET)
 
 if (SEEED_STUDIO_RDB)
-    azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../Hardware/mt3620_rdb" TARGET_DEFINITION "azure_sphere_learning_path.json")
+    azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../HardwareDefinitions/mt3620_rdb" TARGET_DEFINITION "azure_sphere_learning_path.json")
     add_definitions( -DOEM_SEEED_STUDIO=TRUE )
 endif()
 
 if (SEEED_STUDIO_MINI)
-    azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../Hardware/seeed_mt3620_mdb" TARGET_DEFINITION "azure_sphere_learning_path.json")
+    azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../HardwareDefinitions/seeed_mt3620_mdb" TARGET_DEFINITION "azure_sphere_learning_path.json")
     add_definitions( -DOEM_SEEED_STUDIO_MINI=TRUE )    
 endif(SEEED_STUDIO_MINI)
 

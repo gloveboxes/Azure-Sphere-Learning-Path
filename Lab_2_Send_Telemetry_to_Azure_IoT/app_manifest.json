@@ -8,11 +8,9 @@
     "Gpio": [
       "$BUTTON_A",
       "$BUTTON_B",
+      "$LED1",
       "$LED2",
-      "$NETWORK_CONNECTED_LED",
-      "$LED_RED",
-      "$LED_GREEN",
-      "$LED_BLUE"
+      "$NETWORK_CONNECTED_LED"
     ],
     "I2cMaster": [ "$I2cMaster2" ],
     "PowerControls": [ "ForceReboot" ],

@@ -24,8 +24,8 @@ cmake_minimum_required(VERSION 3.10)
 
 # Configurations
 project(FreeRTOS_RTcore_GPIO C)
-azsphere_configure_tools(TOOLS_REVISION "20.04")
-azsphere_configure_api(TARGET_API_SET "5+Beta2004")
+azsphere_configure_tools(TOOLS_REVISION "20.07")
+azsphere_configure_api(TARGET_API_SET "6")
 add_compile_definitions(OSAI_FREERTOS)
 add_compile_definitions(OSAI_ENABLE_DMA)
 add_link_options(-specs=nano.specs -specs=nosys.specs)
@@ -82,17 +82,17 @@ target_link_libraries(${PROJECT_NAME} MT3620_M4_Driver m)
 set_target_properties(${PROJECT_NAME} PROPERTIES LINK_DEPENDS ${CMAKE_SOURCE_DIR}/linker.ld)
 
 if(AVNET)
-    azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../Hardware/avnet_mt3620_sk" TARGET_DEFINITION "azure_sphere_learning_path.json")
+    azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../HardwareDefinitions/avnet_mt3620_sk" TARGET_DEFINITION "azure_sphere_learning_path.json")
     add_definitions( -DOEM_AVNET=TRUE )
 endif(AVNET)
 
 if (SEEED_STUDIO_RDB)
-    azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../Hardware/mt3620_rdb" TARGET_DEFINITION "azure_sphere_learning_path.json")
+    azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../HardwareDefinitions/mt3620_rdb" TARGET_DEFINITION "azure_sphere_learning_path.json")
     add_definitions( -DOEM_SEEED_STUDIO=TRUE )
 endif()
 
 if (SEEED_STUDIO_MINI)
-    azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../Hardware/seeed_mt3620_mdb" TARGET_DEFINITION "azure_sphere_learning_path.json")
+    azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../HardwareDefinitions/seeed_mt3620_mdb" TARGET_DEFINITION "azure_sphere_learning_path.json")
     add_definitions( -DOEM_SEEED_STUDIO_MINI=TRUE )    
 endif(SEEED_STUDIO_MINI)
 

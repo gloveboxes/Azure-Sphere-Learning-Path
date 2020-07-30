@@ -25,10 +25,6 @@
           "value": "${env.AzureSphereDefaultSDKDir}CMakeFiles\\AzureSphereRTCoreToolchain.cmake"
         },
         {
-          "name": "AZURE_SPHERE_TARGET_API_SET",
-          "value": "${env.AzureSphereTargetApiSet}"
-        },
-        {
           "name": "ARM_GNU_PATH",
           "value": "${env.DefaultArmToolsetPath}"
         }
@@ -50,10 +46,6 @@
         {
           "name": "CMAKE_TOOLCHAIN_FILE",
           "value": "${env.AzureSphereDefaultSDKDir}CMakeFiles\\AzureSphereRTCoreToolchain.cmake"
-        },
-        {
-          "name": "AZURE_SPHERE_TARGET_API_SET",
-          "value": "${env.AzureSphereTargetApiSet}"
         },
         {
           "name": "ARM_GNU_PATH",

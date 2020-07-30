@@ -32,12 +32,15 @@ void lp_openDeviceTwin(LP_DEVICE_TWIN_BINDING* deviceTwinBinding) {
 	switch (deviceTwinBinding->twinType) {
 	case LP_TYPE_INT:
 		deviceTwinBinding->twinState = malloc(sizeof(int));
+		*(int*)deviceTwinBinding->twinState = 0;
 		break;
 	case LP_TYPE_FLOAT:
 		deviceTwinBinding->twinState = malloc(sizeof(float));
+		*(float*)deviceTwinBinding->twinState = 0.0f;
 		break;
 	case LP_TYPE_BOOL:
 		deviceTwinBinding->twinState = malloc(sizeof(bool));
+		*(bool*)deviceTwinBinding->twinState = false;
 		break;
 	default:
 		break;
@@ -113,30 +116,33 @@ void SetDesiredState(JSON_Object* jsonObject, LP_DEVICE_TWIN_BINDING* deviceTwin
 		if (json_object_has_value_of_type(jsonObject, "value", JSONNumber)) {
 			*(int*)deviceTwinBinding->twinState = (int)json_object_get_number(jsonObject, "value");
 
+			deviceTwinBinding->twinStateUpdated = true;
+
 			if (deviceTwinBinding->handler != NULL) {
 				deviceTwinBinding->handler(deviceTwinBinding);
 			}
-			//lp_deviceTwinReportState(deviceTwinBinding, deviceTwinBinding->twinState);
 		}
 		break;
 	case LP_TYPE_FLOAT:
 		if (json_object_has_value_of_type(jsonObject, "value", JSONNumber)) {
 			*(float*)deviceTwinBinding->twinState = (float)json_object_get_number(jsonObject, "value");
 
+			deviceTwinBinding->twinStateUpdated = true;
+
 			if (deviceTwinBinding->handler != NULL) {
 				deviceTwinBinding->handler(deviceTwinBinding);
 			}
-			//lp_deviceTwinReportState(deviceTwinBinding, deviceTwinBinding->twinState);
 		}
 		break;
 	case LP_TYPE_BOOL:
 		if (json_object_has_value_of_type(jsonObject, "value", JSONBoolean)) {
 			*(bool*)deviceTwinBinding->twinState = (bool)json_object_get_boolean(jsonObject, "value");
 
+			deviceTwinBinding->twinStateUpdated = true;
+
 			if (deviceTwinBinding->handler != NULL) {
 				deviceTwinBinding->handler(deviceTwinBinding);
 			}
-			//lp_deviceTwinReportState(deviceTwinBinding, deviceTwinBinding->twinState);
 		}
 		break;
 	case LP_TYPE_STRING:
@@ -146,7 +152,6 @@ void SetDesiredState(JSON_Object* jsonObject, LP_DEVICE_TWIN_BINDING* deviceTwin
 			if (deviceTwinBinding->handler != NULL) {
 				deviceTwinBinding->handler(deviceTwinBinding);
 			}
-			//lp_deviceTwinReportState(deviceTwinBinding, deviceTwinBinding->twinState);
 			deviceTwinBinding->twinState = NULL;
 		}
 		break;
@@ -233,7 +238,7 @@ bool DeviceTwinUpdateReportedState(char* reportedPropertiesString) {
 		return false;
 	}
 	else {
-		Log_Debug("INFO: Reported state updated '%s'.\n", reportedPropertiesString);
+		Log_Debug("INFO: Reported state twinStateUpdated '%s'.\n", reportedPropertiesString);
 		return true;
 	}
 
