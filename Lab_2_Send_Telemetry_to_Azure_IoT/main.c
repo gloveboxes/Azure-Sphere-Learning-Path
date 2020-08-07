@@ -52,7 +52,7 @@
 #include <time.h>
 
 
-// Hardware specific
+ // Hardware specific
 
 #ifdef OEM_AVNET
 #include "learning_path_libs/AVNET/board.h"
@@ -174,8 +174,11 @@ static void SendMsgLedOn(char* message)
 	Log_Debug("%s\n", message);
 
 	// optional: message properties can be used for message routing in IOT Hub
-	lp_setMessageProperties(messageProperties, NELEMS(messageProperties));	
+	lp_setMessageProperties(messageProperties, NELEMS(messageProperties));
+
 	lp_sendMsg(message);
+
+	// optional: clear if you are send other message types that don't want properties
 	lp_clearMessageProperties();
 
 	lp_setOneShotTimer(&sendMsgLedOffOneShotTimer, &sendMsgLedBlinkPeriod);
