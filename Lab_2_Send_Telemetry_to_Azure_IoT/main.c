@@ -108,6 +108,11 @@ static LP_TIMER measureSensorTimer = { .period = { 10, 0 }, .name = "measureSens
 LP_PERIPHERAL_GPIO* peripheralGpioSet[] = { &buttonA, &buttonB, &led1, &sendMsgLed, &networkConnectedLed };
 LP_TIMER* timerSet[] = { &led1BlinkTimer, &sendMsgLedOffOneShotTimer, &buttonPressCheckTimer, &networkConnectionStatusTimer, &measureSensorTimer };
 
+// Message property set
+static LP_MESSAGE_PROPERTY messageLog = { .key = "log", .value = "true" };
+static LP_MESSAGE_PROPERTY messageAppId = { .key = "appid", .value = "hvac" };
+static LP_MESSAGE_PROPERTY* messageProperties[] = { &messageLog, &messageAppId };
+
 
 int main(int argc, char* argv[])
 {
@@ -167,7 +172,12 @@ static void SendMsgLedOn(char* message)
 {
 	lp_gpioOn(&sendMsgLed);
 	Log_Debug("%s\n", message);
+
+	// optional: message properties can be used for message routing in IOT Hub
+	lp_setMessageProperties(messageProperties, NELEMS(messageProperties));	
 	lp_sendMsg(message);
+	lp_clearMessageProperties();
+
 	lp_setOneShotTimer(&sendMsgLedOffOneShotTimer, &sendMsgLedBlinkPeriod);
 }
 

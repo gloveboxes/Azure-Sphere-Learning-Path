@@ -13,6 +13,9 @@ bool iothubAuthenticated = false;
 const int keepalivePeriodSeconds = 20;
 const char* _connectionString = NULL;
 
+LP_MESSAGE_PROPERTY** _messageProperties = NULL;
+size_t _messagePropertyCount = 0;
+
 const int maxPeriodSeconds = 5; // defines the max back off period for DoWork with lost network
 
 static LP_TIMER cloudToDeviceTimer = {
@@ -73,6 +76,18 @@ void AzureCloudToDeviceHandler(EventLoopTimer* eventLoopTimer) {
 	lp_setOneShotTimer(&cloudToDeviceTimer, &(struct timespec){period, 0});
 }
 
+void lp_setMessageProperties(LP_MESSAGE_PROPERTY** messageProperties, size_t messagePropertyCount)
+{
+	_messageProperties = messageProperties;
+	_messagePropertyCount = messagePropertyCount;
+}
+
+void lp_clearMessageProperties(void)
+{
+	_messageProperties = NULL;
+	_messagePropertyCount = 0;
+}
+
 bool lp_sendMsg(const char* msg) {
 	if (strlen(msg) < 1) {
 		return true;
@@ -87,6 +102,17 @@ bool lp_sendMsg(const char* msg) {
 	if (messageHandle == 0) {
 		Log_Debug("WARNING: unable to create a new IoTHubMessage\n");
 		return false;
+	}
+
+	if (_messageProperties != NULL)
+	{
+		for (size_t i = 0; i < _messagePropertyCount; i++)
+		{
+			if (_messageProperties[i]->key != NULL && _messageProperties[i]->value != NULL)
+			{
+				IoTHubMessage_SetProperty(messageHandle, _messageProperties[i]->key, _messageProperties[i]->value);
+			}
+		}
 	}
 
 	if (IoTHubDeviceClient_LL_SendEventAsync(iothubClientHandle, messageHandle, SendMessageCallback,

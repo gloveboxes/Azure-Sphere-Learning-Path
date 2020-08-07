@@ -17,6 +17,14 @@
 
 //extern IOTHUB_DEVICE_CLIENT_LL_HANDLE iothubClientHandle;
 
+typedef struct LP_MESSAGE_PROPERTY
+{
+	const char* key;
+	const char* value;
+} LP_MESSAGE_PROPERTY;
+
+void lp_setMessageProperties(LP_MESSAGE_PROPERTY** messageProperties, size_t messagePropertyCount);
+void lp_clearMessageProperties(void);
 bool lp_sendMsg(const char* msg);
 void lp_startCloudToDevice(void);
 void lp_stopCloudToDevice(void);
