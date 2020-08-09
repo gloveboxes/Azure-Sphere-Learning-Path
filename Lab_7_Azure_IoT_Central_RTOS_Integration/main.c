@@ -33,16 +33,19 @@
  *	   3. Click File, then Save to save the CMakeLists.txt file which will auto generate the CMake Cache.
  */
 
+// Hardware definition
 #include "hw/azure_sphere_learning_path.h"
 
-#include "learning_path_libs/azure_iot.h"
-#include "learning_path_libs/exit_codes.h"
-#include "learning_path_libs/globals.h"
-#include "learning_path_libs/inter_core.h"
-#include "learning_path_libs/peripheral_gpio.h"
-#include "learning_path_libs/terminate.h"
-#include "learning_path_libs/timer.h"
+// Learning Path Libraries
+#include "azure_iot.h"
+#include "exit_codes.h"
+#include "globals.h"
+#include "inter_core.h"
+#include "peripheral_gpio.h"
+#include "terminate.h"
+#include "timer.h"
 
+// System Libraries
 #include "applibs_versions.h"
 #include <applibs/gpio.h>
 #include <applibs/log.h>
@@ -51,17 +54,16 @@
 #include <stdio.h>
 #include <time.h>
 
-
- // Hardware specific
-
+// Hardware specific
 #ifdef OEM_AVNET
-#include "learning_path_libs/AVNET/board.h"
-#include "learning_path_libs/AVNET/imu_temp_pressure.h"
-#include "learning_path_libs/AVNET/light_sensor.h"
+#include "AVNET/board.h"
+#include "AVNET/imu_temp_pressure.h"
+#include "AVNET/light_sensor.h"
 #endif // OEM_AVNET
 
+// Hardware specific
 #ifdef OEM_SEEED_STUDIO
-#include "learning_path_libs/SEEED_STUDIO/board.h"
+#include "SEEED_STUDIO/board.h"
 #endif // SEEED_STUDIO
 
 #define JSON_MESSAGE_BYTES 128  // Number of bytes to allocate for the JSON telemetry message for IoT Central

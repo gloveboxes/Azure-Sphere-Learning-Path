@@ -22,7 +22,7 @@ azsphere_configure_tools(TOOLS_REVISION "20.07")
 azsphere_configure_api(TARGET_API_SET "6")
 
 
-add_subdirectory("learning_path_libs" out)
+add_subdirectory("../LearningPathLibrary" out)
 
 set(Source
     "main.c"
@@ -32,11 +32,11 @@ source_group("Source" FILES ${Source})
 if(AVNET)
 
     set(Oem
-        "./learning_path_libs/AVNET/lps22hh_reg.c"
-        "./learning_path_libs/AVNET/lsm6dso_reg.c"
-        "./learning_path_libs/AVNET/imu_temp_pressure.c"
-        "./learning_path_libs/AVNET/light_sensor.c"
-        "./learning_path_libs/AVNET/board.c"
+        "../LearningPathLibrary/AVNET/lps22hh_reg.c"
+        "../LearningPathLibrary/AVNET/lsm6dso_reg.c"
+        "../LearningPathLibrary/AVNET/imu_temp_pressure.c"
+        "../LearningPathLibrary/AVNET/light_sensor.c"
+        "../LearningPathLibrary/AVNET/board.c"
     )
     source_group("Oem" FILES ${Oem})
 
@@ -47,7 +47,7 @@ endif(AVNET)
 if(SEEED_STUDIO_RDB OR SEEED_STUDIO_MINI)
 
     set(Oem
-        "./learning_path_libs/SEEED_STUDIO/board.c"
+        "../LearningPathLibrary/SEEED_STUDIO/board.c"
     )
     source_group("Oem" FILES ${Oem})
 
@@ -65,13 +65,17 @@ add_executable(${PROJECT_NAME} ${ALL_FILES})
 target_compile_definitions(${PROJECT_NAME} PUBLIC AZURE_IOT_HUB_CONFIGURED)
 target_link_libraries(${PROJECT_NAME} applibs pthread gcc_s c azsphere_libs)
 
-target_compile_options(${PROJECT_NAME} PRIVATE -Wno-unknown-pragmas)
-set_source_files_properties(./learning_path_libs/AVNET/lsm6dso_reg.c PROPERTIES COMPILE_FLAGS -Wno-conversion)
-set_source_files_properties(./learning_path_libs/AVNET/lps22hh_reg.c PROPERTIES COMPILE_FLAGS -Wno-conversion)
+target_include_directories(${PROJECT_NAME} PUBLIC
+                           ../LearningPathLibrary
+                          )
 
-set_source_files_properties(./learning_path_libs/AVNET/imu_temp_pressure.c PROPERTIES COMPILE_FLAGS -Wno-float-conversion)
-set_source_files_properties(./learning_path_libs/AVNET/imu_temp_pressure.c PROPERTIES COMPILE_FLAGS -Wno-incompatible-pointer-types)
-set_source_files_properties(./learning_path_libs/AVNET/imu_temp_pressure.c PROPERTIES COMPILE_FLAGS -Wno-conversion)
+target_compile_options(${PROJECT_NAME} PRIVATE -Wno-unknown-pragmas)
+set_source_files_properties(../LearningPathLibrary/AVNET/lsm6dso_reg.c PROPERTIES COMPILE_FLAGS -Wno-conversion)
+set_source_files_properties(../LearningPathLibrary/AVNET/lps22hh_reg.c PROPERTIES COMPILE_FLAGS -Wno-conversion)
+
+set_source_files_properties(../LearningPathLibrary/AVNET/imu_temp_pressure.c PROPERTIES COMPILE_FLAGS -Wno-float-conversion)
+set_source_files_properties(../LearningPathLibrary/AVNET/imu_temp_pressure.c PROPERTIES COMPILE_FLAGS -Wno-incompatible-pointer-types)
+set_source_files_properties(../LearningPathLibrary/AVNET/imu_temp_pressure.c PROPERTIES COMPILE_FLAGS -Wno-conversion)
 
 
 if(AVNET)
