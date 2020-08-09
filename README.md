@@ -58,9 +58,9 @@ Learning path overview:
 * Lab 7: Connect and control your room environment monitor with Azure IoT
 <!-- * Lab 8: Over-the-air (OTA) Deployment -->
 
-* [Recommended path for Windows users with Visual Studio 2019 and IoT Central](docs/zdocs_visual_studio_iot_central/Lab_0_Introduction_and_Lab_Set_Up/README.md)
-* [Recommended path for Linux users with Visual Studio Code and IoT Central](docs/zdocs_vs_code_iot_central/Lab_0_Introduction_and_Lab_Set_Up/README.md)
-* [Recommended path for Linux and Windows users with Visual Studio Code and IoT Hub](docs/zdocs_vs_code_iot_hub/Lab_0_Introduction_and_Lab_Set_Up/README.md)
+* [Recommended path for Windows users with Visual Studio 2019 and IoT Central](docs/docs_visual_studio_iot_central/Lab_0_Introduction_and_Lab_Set_Up/README.md)
+* [Recommended path for Linux users with Visual Studio Code and IoT Central](docs/docs_vs_code_iot_central/Lab_0_Introduction_and_Lab_Set_Up/README.md)
+* [Recommended path for Linux and Windows users with Visual Studio Code and IoT Hub](docs/docs_vs_code_iot_hub/Lab_0_Introduction_and_Lab_Set_Up/README.md)
 
 ---
 
@@ -210,6 +210,6 @@ These labs support the following Azure Sphere Kits.
 
 ---
 
-**[Next](zdocs/Lab_0_Introduction_and_Lab_Set_Up/README.md)**
+**[Next](docs/Lab_0_Introduction_and_Lab_Set_Up/README.md)**
 
 ---
