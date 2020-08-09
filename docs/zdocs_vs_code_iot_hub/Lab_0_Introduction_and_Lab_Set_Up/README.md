@@ -10,7 +10,7 @@
 
 Each module assumes you have completed the previous module.
 
-[Home](../../README.md)
+[Home](../../../README.md)
 
 * Lab 0: [Lab Set Up](../Lab_0_Introduction_and_Lab_Set_Up/README.md)
 * Lab 1: [Introduction to Azure Sphere development](../Lab_1_Visual_Studio_and_Azure_Sphere/README.md)
