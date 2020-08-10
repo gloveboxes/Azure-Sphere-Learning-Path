@@ -28,10 +28,10 @@ typedef struct
 	float z;
 } AccelerationMilligForce;
 
-void imu_initialize(void);
-void imu_close(void);
-float get_temperature(void);
-float get_pressure(void);
-void calibrate_angular_rate(void);
-AngularRateDegreesPerSecond get_angular_rate(void);
-AccelerationMilligForce get_acceleration(void);
+void lp_imu_initialize(void);
+void lp_imu_close(void);
+float lp_get_temperature(void);
+float lp_get_pressure(void);
+void lp_calibrate_angular_rate(void);
+AngularRateDegreesPerSecond lp_get_angular_rate(void);
+AccelerationMilligForce lp_get_acceleration(void);

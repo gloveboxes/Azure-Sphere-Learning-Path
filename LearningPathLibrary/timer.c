@@ -1,8 +1,8 @@
 #include "timer.h"
 
-LP_TIMER** _timers = NULL;
-size_t _timerCount = 0;
-EventLoop* eventLoop = NULL;
+static LP_TIMER** _timers = NULL;
+static size_t _timerCount = 0;
+static EventLoop* eventLoop = NULL;
 
 
 EventLoop* lp_getTimerEventLoop(void) {

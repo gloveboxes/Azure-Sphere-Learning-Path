@@ -1,7 +1,7 @@
 #include "direct_methods.h"
 
-LP_DIRECT_METHOD_BINDING** _directMethods;
-size_t _directMethodCount;
+static LP_DIRECT_METHOD_BINDING** _directMethods;
+static size_t _directMethodCount;
 
 void lp_openDirectMethodSet(LP_DIRECT_METHOD_BINDING* directMethods[], size_t directMethodCount) {
 	_directMethods = directMethods;

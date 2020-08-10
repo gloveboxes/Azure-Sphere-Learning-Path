@@ -7,7 +7,7 @@ static int sampleBitCount = -1;
 static float sampleMaxVoltage = 2.5f;
 
 
-int GetLightLevel(void) {
+int lp_GetLightLevel(void) {
     uint32_t value;
     int result = ADC_Poll(adcControllerFd, ADC_CHANNEL, &value);
     if (result == -1) {
@@ -23,7 +23,7 @@ int GetLightLevel(void) {
 }
 
 
-bool OpenADC(void) {
+bool lp_OpenADC(void) {
     adcControllerFd = ADC_Open(AVNET_MT3620_SK_ADC_CONTROLLER0);
     if (adcControllerFd < 0) {
         Log_Debug("ADC_Open failed with error: %s (%d)\n", strerror(errno), errno);

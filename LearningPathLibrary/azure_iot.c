@@ -1,22 +1,22 @@
 #include "azure_iot.h"
 #include <time.h>
 
-const char* getAzureSphereProvisioningResultString(AZURE_SPHERE_PROV_RETURN_VALUE provisioningResult);
-const char* GetReasonString(IOTHUB_CLIENT_CONNECTION_STATUS_REASON reason);
-void SendMessageCallback(IOTHUB_CLIENT_CONFIRMATION_RESULT, void*);
-bool SetupAzureClient(void);
-void HubConnectionStatusCallback(IOTHUB_CLIENT_CONNECTION_STATUS, IOTHUB_CLIENT_CONNECTION_STATUS_REASON, void*);
-void AzureCloudToDeviceHandler(EventLoopTimer*);
+static const char* getAzureSphereProvisioningResultString(AZURE_SPHERE_PROV_RETURN_VALUE provisioningResult);
+static const char* GetReasonString(IOTHUB_CLIENT_CONNECTION_STATUS_REASON reason);
+static void SendMessageCallback(IOTHUB_CLIENT_CONFIRMATION_RESULT, void*);
+static bool SetupAzureClient(void);
+static void HubConnectionStatusCallback(IOTHUB_CLIENT_CONNECTION_STATUS, IOTHUB_CLIENT_CONNECTION_STATUS_REASON, void*);
+static void AzureCloudToDeviceHandler(EventLoopTimer*);
 
-IOTHUB_DEVICE_CLIENT_LL_HANDLE iothubClientHandle = NULL;
-bool iothubAuthenticated = false;
-const int keepalivePeriodSeconds = 20;
-const char* _connectionString = NULL;
+static IOTHUB_DEVICE_CLIENT_LL_HANDLE iothubClientHandle = NULL;
+static bool iothubAuthenticated = false;
+static const int keepalivePeriodSeconds = 20;
+static const char* _connectionString = NULL;
 
-LP_MESSAGE_PROPERTY** _messageProperties = NULL;
-size_t _messagePropertyCount = 0;
+static LP_MESSAGE_PROPERTY** _messageProperties = NULL;
+static size_t _messagePropertyCount = 0;
 
-const int maxPeriodSeconds = 5; // defines the max back off period for DoWork with lost network
+static const int maxPeriodSeconds = 5; // defines the max back off period for DoWork with lost network
 
 static LP_TIMER cloudToDeviceTimer = {
 	.period = { 0, 0 },			// one-shot timer
@@ -46,14 +46,14 @@ void lp_setConnectionString(const char* connectionString) {
 /// </summary>
 /// <param name="result">Message delivery status</param>
 /// <param name="context">User specified context</param>
-void SendMessageCallback(IOTHUB_CLIENT_CONFIRMATION_RESULT result, void* context) {
+static void SendMessageCallback(IOTHUB_CLIENT_CONFIRMATION_RESULT result, void* context) {
 	Log_Debug("INFO: Message received by IoT Hub. Result is: %d\n", result);
 }
 
 /// <summary>
 ///     Azure IoT Hub DoWork Handler with back off up to 5 seconds for network disconnect
 /// </summary>
-void AzureCloudToDeviceHandler(EventLoopTimer* eventLoopTimer) {
+static void AzureCloudToDeviceHandler(EventLoopTimer* eventLoopTimer) {
 	static int period = 1; //  initialize period to 1 second
 
 	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
@@ -177,7 +177,7 @@ bool lp_connectToAzureIot(void) {
 ///     When the SAS Token for a device expires the connection needs to be recreated
 ///     which is why this is not simply a one time call.
 /// </summary>
-bool SetupAzureClient() {
+static bool SetupAzureClient() {
 	if (iothubClientHandle != NULL) {
 		IoTHubDeviceClient_LL_Destroy(iothubClientHandle);
 	}
@@ -221,7 +221,7 @@ bool SetupAzureClient() {
 ///     Sets the IoT Hub authentication state for the app
 ///     The SAS Token expires which will set the authentication state
 /// </summary>
-void HubConnectionStatusCallback(IOTHUB_CLIENT_CONNECTION_STATUS result, IOTHUB_CLIENT_CONNECTION_STATUS_REASON reason, void* userContextCallback) {
+static void HubConnectionStatusCallback(IOTHUB_CLIENT_CONNECTION_STATUS result, IOTHUB_CLIENT_CONNECTION_STATUS_REASON reason, void* userContextCallback) {
 	iothubAuthenticated = (result == IOTHUB_CLIENT_CONNECTION_AUTHENTICATED);
 	Log_Debug("IoT Hub Connection Status: %s\n", GetReasonString(reason));
 }
@@ -229,7 +229,7 @@ void HubConnectionStatusCallback(IOTHUB_CLIENT_CONNECTION_STATUS result, IOTHUB_
 /// <summary>
 ///     Converts AZURE_SPHERE_PROV_RETURN_VALUE to a string.
 /// </summary>
-const char* getAzureSphereProvisioningResultString(
+static const char* getAzureSphereProvisioningResultString(
 	AZURE_SPHERE_PROV_RETURN_VALUE provisioningResult) {
 	switch (provisioningResult.result) {
 	case AZURE_SPHERE_PROV_RESULT_OK:
@@ -252,7 +252,7 @@ const char* getAzureSphereProvisioningResultString(
 /// <summary>
 ///     Converts the IoT Hub connection status reason to a string.
 /// </summary>
-const char* GetReasonString(IOTHUB_CLIENT_CONNECTION_STATUS_REASON reason) {
+static const char* GetReasonString(IOTHUB_CLIENT_CONNECTION_STATUS_REASON reason) {
 	static char* reasonString = "unknown reason";
 	switch (reason) {
 	case IOTHUB_CLIENT_CONNECTION_EXPIRED_SAS_TOKEN:

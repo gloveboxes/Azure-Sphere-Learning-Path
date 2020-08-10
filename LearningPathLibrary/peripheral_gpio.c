@@ -1,7 +1,7 @@
 #include "peripheral_gpio.h"
 
-LP_PERIPHERAL_GPIO** _peripheralSet = NULL;
-size_t _peripheralSetCount = 0;
+static LP_PERIPHERAL_GPIO** _peripheralSet = NULL;
+static size_t _peripheralSetCount = 0;
 
 bool lp_openPeripheralGpio(LP_PERIPHERAL_GPIO* peripheral)
 {

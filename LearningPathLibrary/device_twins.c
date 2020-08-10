@@ -1,12 +1,11 @@
 #include "device_twins.h"
 
-void SetDesiredState(JSON_Object* desiredProperties, LP_DEVICE_TWIN_BINDING* deviceTwinBinding);
-void lp_deviceTwinsReportStatusCallback(int result, void* context);
-bool DeviceTwinUpdateReportedState(char* reportedPropertiesString);
+static void SetDesiredState(JSON_Object* desiredProperties, LP_DEVICE_TWIN_BINDING* deviceTwinBinding);
+static bool DeviceTwinUpdateReportedState(char* reportedPropertiesString);
 
 
-LP_DEVICE_TWIN_BINDING** _deviceTwins = NULL;
-size_t _deviceTwinCount = 0;
+static LP_DEVICE_TWIN_BINDING** _deviceTwins = NULL;
+static size_t _deviceTwinCount = 0;
 
 
 void lp_openDeviceTwinSet(LP_DEVICE_TWIN_BINDING* deviceTwins[], size_t deviceTwinCount) {
@@ -109,7 +108,7 @@ cleanup:
 /// <summary>
 ///     Checks to see if the device twin twinProperty(name) is found in the json object. If yes, then act upon the request
 /// </summary>
-void SetDesiredState(JSON_Object* jsonObject, LP_DEVICE_TWIN_BINDING* deviceTwinBinding) {
+static void SetDesiredState(JSON_Object* jsonObject, LP_DEVICE_TWIN_BINDING* deviceTwinBinding) {
 
 	switch (deviceTwinBinding->twinType) {
 	case LP_TYPE_INT:
@@ -229,7 +228,7 @@ bool lp_deviceTwinReportState(LP_DEVICE_TWIN_BINDING* deviceTwinBinding, void* s
 }
 
 
-bool DeviceTwinUpdateReportedState(char* reportedPropertiesString) {
+static bool DeviceTwinUpdateReportedState(char* reportedPropertiesString) {
 	if (IoTHubDeviceClient_LL_SendReportedState(
 		lp_getAzureIotClientHandle(), (unsigned char*)reportedPropertiesString,
 		strlen(reportedPropertiesString), lp_deviceTwinsReportStatusCallback, 0) != IOTHUB_CLIENT_OK) 

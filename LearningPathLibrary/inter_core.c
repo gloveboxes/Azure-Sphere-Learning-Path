@@ -1,13 +1,13 @@
 #include "inter_core.h"
 
-void SocketEventHandler(EventLoop *el, int fd, EventLoop_IoEvents events, void *context);
-bool ProcessMsg(void);
-void (*_interCoreCallback)(LP_INTER_CORE_BLOCK *);
-char *_rtAppComponentId = NULL;
-int sockFd = -1;
+static void SocketEventHandler(EventLoop *el, int fd, EventLoop_IoEvents events, void *context);
+static bool ProcessMsg(void);
+static void (*_interCoreCallback)(LP_INTER_CORE_BLOCK *);
+static char *_rtAppComponentId = NULL;
+static int sockFd = -1;
 static EventRegistration *socketEventReg = NULL;
 
-bool initialise_inter_core_communications(void)
+static bool initialise_inter_core_communications(void)
 {
 	if (sockFd != -1) // Already initialised
 	{
@@ -80,7 +80,7 @@ int lp_enableInterCoreCommunications(char *rtAppComponentId, void (*interCoreCal
 /// <summary>
 ///     Handle socket event by reading incoming data from real-time capable application.
 /// </summary>
-void SocketEventHandler(EventLoop *el, int fd, EventLoop_IoEvents events, void *context)
+static void SocketEventHandler(EventLoop *el, int fd, EventLoop_IoEvents events, void *context)
 {
 	if (!ProcessMsg())
 	{
@@ -91,7 +91,7 @@ void SocketEventHandler(EventLoop *el, int fd, EventLoop_IoEvents events, void *
 /// <summary>
 ///     Handle socket event by reading incoming data from real-time capable application.
 /// </summary>
-bool ProcessMsg()
+static bool ProcessMsg()
 {
 	LP_INTER_CORE_BLOCK ic_control_block;
 

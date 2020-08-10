@@ -98,6 +98,7 @@ static int i2cHandle = -1;
 static stmdev_ctx_t dev_ctx;
 static stmdev_ctx_t pressure_ctx;
 static bool lps22hhDetected;
+static bool initialized = false;
 
 /* Extern variables ----------------------------------------------------------*/
 
@@ -162,9 +163,15 @@ static int32_t lsm6dso_write_lps22hh_cx(void* ctx, uint8_t reg, uint8_t* data, u
 //}
 
 
-AccelerationMilligForce get_acceleration(void)
+AccelerationMilligForce lp_get_acceleration(void)
 {
 	uint8_t reg;
+
+	if (!initialized)
+	{
+		accelerationMilligForce.x = accelerationMilligForce.y = accelerationMilligForce.z = NAN;
+		return accelerationMilligForce;
+	}
 
 	/* Read output only if new xl value is available */
 	lsm6dso_xl_flag_data_ready_get(&dev_ctx, &reg);
@@ -192,9 +199,15 @@ AccelerationMilligForce get_acceleration(void)
 }
 
 
-AngularRateDegreesPerSecond get_angular_rate(void)
+AngularRateDegreesPerSecond lp_get_angular_rate(void)
 {
 	uint8_t reg;
+
+	if (!initialized)
+	{
+		angularRateDps.x = angularRateDps.y = angularRateDps.z = NAN;
+		return angularRateDps;
+	}
 
 	lsm6dso_gy_flag_data_ready_get(&dev_ctx, &reg);
 	if (reg)
@@ -214,11 +227,16 @@ AngularRateDegreesPerSecond get_angular_rate(void)
 }
 
 
-float get_temperature()
+float lp_get_temperature()
 {
 	lps22hh_reg_t lps22hhReg;
 	int16_t i16bit;
 	static float lps22hhTemperature_degC = NAN;
+
+	if (!initialized)
+	{
+		return NAN;
+	}
 
 
 	if (lps22hhDetected)
@@ -240,11 +258,16 @@ float get_temperature()
 }
 
 
-float get_pressure(void)
+float lp_get_pressure(void)
 {
 	lps22hh_reg_t lps22hhReg;
 	uint32_t ui32bit;
 	static float pressure_hPa = NAN;
+
+	if (!initialized)
+	{
+		return NAN;
+	}
 
 	if (lps22hhDetected)
 	{
@@ -265,8 +288,13 @@ float get_pressure(void)
 }
 
 
-void calibrate_angular_rate(void)
+void lp_calibrate_angular_rate(void)
 {
+	if (!initialized)
+	{
+		return;
+	}
+
 	// Read the raw angular rate data from the device to use as offsets.  We're making the assumption that the device
 	// is stationary.
 
@@ -373,8 +401,10 @@ static void detect_lps22hh(void)
 }
 
 
-void imu_initialize(void)
+void lp_imu_initialize(void)
 {
+	if (initialized) { return; }
+
 	/* Initialize mems driver interface */
 	dev_ctx.write_reg = platform_write;
 	dev_ctx.read_reg = platform_read;
@@ -394,7 +424,11 @@ void imu_initialize(void)
 	/* Check device ID */
 	lsm6dso_device_id_get(&dev_ctx, &whoamI);
 	if (whoamI != LSM6DSO_ID)
-		while (1);
+	{
+		initialized = false;
+		return;
+	}
+
 
 	/* Restore default configuration */
 	lsm6dso_reset_set(&dev_ctx, PROPERTY_ENABLE);
@@ -423,9 +457,11 @@ void imu_initialize(void)
 	lsm6dso_xl_hp_path_on_out_set(&dev_ctx, LSM6DSO_LP_ODR_DIV_100);
 	lsm6dso_xl_filter_lp2_set(&dev_ctx, PROPERTY_ENABLE);
 
-	//calibrate_angular_rate();
+	//lp_calibrate_angular_rate();
 
 	detect_lps22hh();
+
+	initialized = true;
 
 	//read_imu();
 
@@ -532,9 +568,9 @@ static void platform_init(void)
 /// </summary>
 /// <param name="fd">File descriptor to close</param>
 /// <param name="fdName">File descriptor name to use in error message</param>
-void CloseFdPrintError(int fd, const char* fdName)
+static void CloseFdPrintError(int fd, const char* fdName)
 {
-	if (fd >= 0)
+	if (initialized && fd >= 0)
 	{
 		int result = close(fd);
 		if (result != 0)
@@ -542,13 +578,14 @@ void CloseFdPrintError(int fd, const char* fdName)
 			Log_Debug("ERROR: Could not close fd %s: %s (%d).\n", fdName, strerror(errno), errno);
 		}
 	}
+	initialized = false;
 }
 
 
 /// <summary>
 ///     Closes the I2C interface File Descriptors.
 /// </summary>
-void imu_close(void)
+void lp_imu_close(void)
 {
 	CloseFdPrintError(i2cHandle, "i2c");
 }
