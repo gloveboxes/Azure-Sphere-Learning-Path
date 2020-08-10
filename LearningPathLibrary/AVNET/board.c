@@ -4,17 +4,18 @@
 /// <summary>
 ///     Reads telemetry and returns the length of JSON data.
 /// </summary>
-bool lp_readTelemetry(LP_ENVIRONMENT * environment) {
-	AvnetSkSensorUpdate(); // Important - this must be called immediately before reading the telemetry
+bool lp_readTelemetry(LP_ENVIRONMENT* environment)
+{
 
-	//AngularRateDegreesPerSecond ardps = GetAngularRate();
-	//AccelerationMilligForce amgf = GetAcceleration();
-	
-	//Log_Debug("\nLSM6DSO: Angular rate [degrees per second] : %4.2f, %4.2f, %4.2f", ardps.x, ardps.y, ardps.z);
+	//AngularRateDegreesPerSecond ardps = get_angular_rate();
+	//AccelerationMilligForce amf = get_acceleration();
+
+	//Log_Debug("\nLSM6DSO: Angular rate [degrees per second] : %4.2f, %4.2f, %4.2f\n", ardps.x, ardps.y, ardps.z);
 	//Log_Debug("\nLSM6DSO: Acceleration [millig force]  : %.4lf, %.4lf, %.4lf\n", amgf.x, amgf.y, amgf.z);
 
-	environment->pressure = GetPressure();
-	environment->temperature = GetTemperature();
+	environment->temperature = get_temperature();
+	environment->pressure = get_pressure();
+
 	//light = GetLightLevel();
 	environment->light = 0;
 
@@ -24,20 +25,19 @@ bool lp_readTelemetry(LP_ENVIRONMENT * environment) {
 	return true;
 }
 
-bool lp_initializeDevKit(void) {
-
+bool lp_initializeDevKit(void)
+{
 	srand((unsigned int)time(NULL)); // seed the random number generator for fake telemetry
 
-	if (initI2c() == -1) {
-		return -1;
-	}
+	imu_initialize();
 
 	//OpenADC();
 
 	return true;
 }
 
-bool lp_closeDevKit(void) {
-	closeI2c();
+bool lp_closeDevKit(void)
+{
+	//closeI2c();
 	return true;
 }
