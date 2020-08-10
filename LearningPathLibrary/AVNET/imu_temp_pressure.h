@@ -32,5 +32,6 @@ void imu_initialize(void);
 void imu_close(void);
 float get_temperature(void);
 float get_pressure(void);
+void calibrate_angular_rate(void);
 AngularRateDegreesPerSecond get_angular_rate(void);
 AccelerationMilligForce get_acceleration(void);

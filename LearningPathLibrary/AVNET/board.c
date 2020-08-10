@@ -6,6 +6,7 @@
 /// </summary>
 bool lp_readTelemetry(LP_ENVIRONMENT* environment)
 {
+	//ENSURE calibrate_angular_rate(); call from lp_initializeDevKit before calling get_angular_rate()
 
 	//AngularRateDegreesPerSecond ardps = get_angular_rate();
 	//AccelerationMilligForce amf = get_acceleration();
@@ -30,6 +31,8 @@ bool lp_initializeDevKit(void)
 	srand((unsigned int)time(NULL)); // seed the random number generator for fake telemetry
 
 	imu_initialize();
+
+	//calibrate_angular_rate(); // call if using gyro
 
 	//OpenADC();
 

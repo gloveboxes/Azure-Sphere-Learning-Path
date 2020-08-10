@@ -265,7 +265,7 @@ float get_pressure(void)
 }
 
 
-static void calibrate(void)
+void calibrate_angular_rate(void)
 {
 	// Read the raw angular rate data from the device to use as offsets.  We're making the assumption that the device
 	// is stationary.
@@ -423,7 +423,7 @@ void imu_initialize(void)
 	lsm6dso_xl_hp_path_on_out_set(&dev_ctx, LSM6DSO_LP_ODR_DIV_100);
 	lsm6dso_xl_filter_lp2_set(&dev_ctx, PROPERTY_ENABLE);
 
-	calibrate();
+	//calibrate_angular_rate();
 
 	detect_lps22hh();
 
