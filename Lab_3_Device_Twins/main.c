@@ -217,8 +217,8 @@ static void SendMsgLedOffHandler(EventLoopTimer* eventLoopTimer)
 /// </summary>
 void SetTemperatureStatusColour(float actual_temperature)
 {
-	int actual = (int)round(actual_temperature);
-	int desired = (int)round(desired_temperature);
+	int actual = (int)(actual_temperature);
+	int desired = (int)(desired_temperature);
 
 	current_led = actual == desired ? GREEN : actual > desired ? BLUE : RED;
 }
