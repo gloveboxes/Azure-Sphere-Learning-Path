@@ -66,7 +66,7 @@
 #include "SEEED_STUDIO/board.h"
 #endif // SEEED_STUDIO
 
-#define JSON_MESSAGE_BYTES 128  // Number of bytes to allocate for the JSON telemetry message for IoT Central
+#define JSON_MESSAGE_BYTES 256  // Number of bytes to allocate for the JSON telemetry message for IoT Central
 
 // Forward signatures
 static void InitPeripheralGpiosAndHandlers(void);
@@ -118,6 +118,11 @@ LP_PERIPHERAL_GPIO* peripheralGpioSet[] = { &networkConnectedLed, &led2, &relay1
 LP_TIMER* timerSet[] = { &led2BlinkOffOneShotTimer, &networkConnectionStatusTimer, &measureSensorTimer, &resetDeviceOneShotTimer };
 LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &led1BlinkRate, &buttonPressed, &desiredTemperature, &relay1DeviceTwin, &deviceResetUtc };
 LP_DIRECT_METHOD_BINDING* directMethodBindingSet[] = { &resetDevice };
+
+// Message property set
+static LP_MESSAGE_PROPERTY messageLog = { .key = "log", .value = "true" };
+static LP_MESSAGE_PROPERTY messageAppId = { .key = "appid", .value = "hvac" };
+static LP_MESSAGE_PROPERTY* messageProperties[] = { &messageLog, &messageAppId };
 
 
 /// <summary>
@@ -178,7 +183,15 @@ static void SendMsgLed2On(char* message)
 {
 	lp_gpioOn(&led2);
 	Log_Debug("%s\n", message);
+
+	// optional: message properties can be used for message routing in IOT Hub
+	lp_setMessageProperties(messageProperties, NELEMS(messageProperties));
+
 	lp_sendMsg(message);
+
+	// optional: clear if you are sending other message types that don't require these properties
+	lp_clearMessageProperties();
+
 	lp_setOneShotTimer(&led2BlinkOffOneShotTimer, &sendMsgLedBlinkPeriod);
 }
 
@@ -216,7 +229,7 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 /// </summary>
 static void InterCoreHandler(LP_INTER_CORE_BLOCK* ic_message_block)
 {
-	static const char* msgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"Light\":%d, \"MsgId\":%d }";
+	static const char* msgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"Light\":%d, \"MsgId\":%d, \"Schema\":1 }";
 	static int msgId = 0;
 	int len = 0;
 

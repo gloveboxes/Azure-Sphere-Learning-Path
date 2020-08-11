@@ -65,7 +65,7 @@
 #include "SEEED_STUDIO/board.h"
 #endif // SEEED_STUDIO
 
-#define JSON_MESSAGE_BYTES 128  // Number of bytes to allocate for the JSON telemetry message for IoT Central
+#define JSON_MESSAGE_BYTES 256  // Number of bytes to allocate for the JSON telemetry message for IoT Central
 
 // Forward signatures
 static void InitPeripheralsAndHandlers(void);
@@ -179,7 +179,7 @@ static void SendMsgLedOn(char* message)
 
 	lp_sendMsg(message);
 
-	// optional: clear if you are send other message types that don't want properties
+	// optional: clear if you are sending other message types that don't require these properties
 	lp_clearMessageProperties();
 
 	lp_setOneShotTimer(&sendMsgLedOffOneShotTimer, &sendMsgLedBlinkPeriod);
@@ -205,7 +205,7 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 {
 	static int msgId = 0;
 	static LP_ENVIRONMENT environment;
-	static const char* MsgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"Light\":%d, \"MsgId\":%d }";
+	static const char* MsgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"Light\":%d, \"MsgId\":%d, \"Schema\":1 }";
 
 	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
 	{

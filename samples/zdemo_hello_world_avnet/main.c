@@ -67,7 +67,7 @@
 #endif // SEEED_STUDIO
 
 // Number of bytes to allocate for the JSON telemetry message for IoT Central
-#define JSON_MESSAGE_BYTES 128  
+#define JSON_MESSAGE_BYTES 256  
 
 // Forward signatures
 static void ReadSensorHandler(EventLoopTimer* eventLoopTimer);
