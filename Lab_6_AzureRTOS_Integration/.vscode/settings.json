@@ -5,7 +5,6 @@
     "cmake.configureSettings": {
         "CMAKE_TOOLCHAIN_FILE": "${command:azuresphere.AzureSphereSdkDir}/CMakeFiles/AzureSphereRTCoreToolchain.cmake",
         "ARM_GNU_PATH": "${command:azuresphere.ArmGnuPath}",
-        "AZURE_SPHERE_TARGET_API_SET": "latest-beta"
     },
     "cmake.configureOnOpen": true,
     "C_Cpp.default.configurationProvider": "vector-of-bool.cmake-tools"

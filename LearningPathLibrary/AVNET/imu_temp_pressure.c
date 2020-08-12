@@ -54,8 +54,8 @@
 /*
 Driver ported by: Dave Glover
 Date: August 2020
-Acknowledgment: Built from ST Micro samples 
-	https://github.com/STMicroelectronics/STMems_Standard_C_drivers/tree/master/lsm6dso_STdC 
+Acknowledgment: Built from ST Micro samples
+	https://github.com/STMicroelectronics/STMems_Standard_C_drivers/tree/master/lsm6dso_STdC
 	https://github.com/STMicroelectronics/STMems_Standard_C_drivers/tree/master/lps22hh_STdC
 	https://github.com/STMicroelectronics/STMems_Standard_C_drivers/blob/master/lsm6dso_STdC/example/lsm6dso_sensor_hub_lps22hh.c
 
@@ -321,7 +321,7 @@ AngularRateDegreesPerSecond lp_get_angular_rate(void)
 }
 
 
-float lp_get_temperature()
+float lp_get_temperature_lps22h(void)	// get_temperature() from lsm6dso is faster
 {
 	lps22hh_reg_t lps22hhReg;
 	int16_t i16bit;
@@ -331,7 +331,6 @@ float lp_get_temperature()
 	{
 		return NAN;
 	}
-
 
 	if (lps22hhDetected)
 	{
@@ -348,6 +347,30 @@ float lp_get_temperature()
 		}
 		return lps22hhTemperature_degC;
 	}
+	return NAN;
+}
+
+
+
+float lp_get_temperature(void)
+{
+	uint8_t reg;
+	axis1bit16_t data_raw_temperature;
+
+	if (!initialized)
+	{
+		return NAN;
+	}
+
+	lsm6dso_temp_flag_data_ready_get(&dev_ctx, &reg);
+	if (reg)
+	{
+		/* Read temperature data */
+		memset(data_raw_temperature.u8bit, 0x00, sizeof(int16_t));
+		lsm6dso_temperature_raw_get(&dev_ctx, data_raw_temperature.u8bit);
+		return lsm6dso_from_lsb_to_celsius(data_raw_temperature.i16bit);
+	}
+
 	return NAN;
 }
 
@@ -513,7 +536,7 @@ void lp_imu_initialize(void)
 	platform_init();
 
 	/* Wait sensor boot time */
-	platform_delay(10);
+	platform_delay(20);
 
 	/* Check device ID */
 	lsm6dso_device_id_get(&dev_ctx, &whoamI);
