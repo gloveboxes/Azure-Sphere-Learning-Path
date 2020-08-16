@@ -184,7 +184,7 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 {
 	static int msgId = 0;
 	static LP_ENVIRONMENT environment;
-	static const char* MsgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"Light\":%d, \"MsgId\":%d, \"Schema\":1 }";
+	static const char* MsgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"Light\":%d, \"MsgId\":%d }";
 
 	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
 	{

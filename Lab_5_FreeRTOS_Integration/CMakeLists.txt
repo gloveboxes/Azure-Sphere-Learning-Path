@@ -25,7 +25,9 @@ cmake_minimum_required(VERSION 3.10)
 # Configurations
 project(FreeRTOS_RTcore_GPIO C)
 azsphere_configure_tools(TOOLS_REVISION "20.07")
+
 azsphere_configure_api(TARGET_API_SET "6")
+
 add_compile_definitions(OSAI_FREERTOS)
 add_compile_definitions(OSAI_ENABLE_DMA)
 add_link_options(-specs=nano.specs -specs=nosys.specs)

@@ -120,9 +120,11 @@ LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &led1BlinkRate, &buttonPresse
 LP_DIRECT_METHOD_BINDING* directMethodBindingSet[] = { &resetDevice };
 
 // Message property set
-static LP_MESSAGE_PROPERTY messageLog = { .key = "log", .value = "true" };
 static LP_MESSAGE_PROPERTY messageAppId = { .key = "appid", .value = "hvac" };
-static LP_MESSAGE_PROPERTY* messageProperties[] = { &messageLog, &messageAppId };
+static LP_MESSAGE_PROPERTY messageType = { .key = "type", .value = "telemetry" };
+static LP_MESSAGE_PROPERTY messageFormat = { .key = "format", .value = "json" };
+static LP_MESSAGE_PROPERTY messageVersion = { .key = "version", .value = "1" };
+static LP_MESSAGE_PROPERTY* telemetryMessageProperties[] = { &messageAppId, &messageType, &messageFormat, &messageVersion };
 
 
 /// <summary>
@@ -185,7 +187,7 @@ static void SendMsgLed2On(char* message)
 	Log_Debug("%s\n", message);
 
 	// optional: message properties can be used for message routing in IOT Hub
-	lp_setMessageProperties(messageProperties, NELEMS(messageProperties));
+	lp_setMessageProperties(telemetryMessageProperties, NELEMS(telemetryMessageProperties));
 
 	lp_sendMsg(message);
 
@@ -229,7 +231,7 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 /// </summary>
 static void InterCoreHandler(LP_INTER_CORE_BLOCK* ic_message_block)
 {
-	static const char* msgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"Light\":%d, \"MsgId\":%d, \"Schema\":1 }";
+	static const char* msgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"Light\":%d, \"MsgId\":%d }";
 	static int msgId = 0;
 	int len = 0;
 

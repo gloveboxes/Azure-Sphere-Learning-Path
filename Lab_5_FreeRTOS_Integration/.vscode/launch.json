@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch for Azure Sphere High-Level Applications (gdb)",
+            "name": "Launch for Azure Sphere Real-Time Applications (gdb)",
             "type": "azurespheredbg",
             "request": "launch",
             "args": [],
@@ -13,7 +13,7 @@
             "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": true,
-            "targetCore": "HLCore",
+            "targetCore": "RTCore",
             "partnerComponents": [
                 "25025d2c-66da-4448-bae1-ac26fcdd3627"
             ],

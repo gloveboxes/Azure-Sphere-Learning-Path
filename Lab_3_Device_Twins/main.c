@@ -127,9 +127,11 @@ LP_TIMER* timerSet[] = { &temperatureStatusBlinkTimer, &sendMsgLedOffOneShotTime
 LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &desiredTemperature, &actualTemperature };
 
 // Message property set
-static LP_MESSAGE_PROPERTY messageLog = { .key = "log", .value = "true" };
 static LP_MESSAGE_PROPERTY messageAppId = { .key = "appid", .value = "hvac" };
-static LP_MESSAGE_PROPERTY* messageProperties[] = { &messageLog, &messageAppId };
+static LP_MESSAGE_PROPERTY messageType = { .key = "type", .value = "telemetry" };
+static LP_MESSAGE_PROPERTY messageFormat = { .key = "format", .value = "json" };
+static LP_MESSAGE_PROPERTY messageVersion = { .key = "version", .value = "1" };
+static LP_MESSAGE_PROPERTY* telemetryMessageProperties[] = { &messageAppId, &messageType, &messageFormat, &messageVersion };
 
 
 int main(int argc, char* argv[])
@@ -186,7 +188,7 @@ static void SendMsgLedOn(char* message)
 	Log_Debug("%s\n", message);
 
 	// optional: message properties can be used for message routing in IOT Hub
-	lp_setMessageProperties(messageProperties, NELEMS(messageProperties));
+	lp_setMessageProperties(telemetryMessageProperties, NELEMS(telemetryMessageProperties));
 
 	lp_sendMsg(message);
 
@@ -230,7 +232,7 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 {
 	static int msgId = 0;
 	static LP_ENVIRONMENT environment;
-	static const char* MsgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"Light\":%d, \"MsgId\":%d, \"Schema\":1 }";
+	static const char* MsgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"Light\":%d, \"MsgId\":%d }";
 
 	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
 	{
