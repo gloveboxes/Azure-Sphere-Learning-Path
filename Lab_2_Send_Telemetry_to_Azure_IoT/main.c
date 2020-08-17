@@ -33,7 +33,7 @@
  *	   3. Click File, then Save to save the CMakeLists.txt file which will auto generate the CMake Cache.
  */
 
-// Hardware definition
+ // Hardware definition
 #include "hw/azure_sphere_learning_path.h"
 
 // Learning Path Libraries
@@ -68,8 +68,6 @@
 #define JSON_MESSAGE_BYTES 256  // Number of bytes to allocate for the JSON telemetry message for IoT Central
 
 // Forward signatures
-static void InitPeripheralsAndHandlers(void);
-static void ClosePeripheralsAndHandlers(void);
 static void Led1BlinkHandler(EventLoopTimer* eventLoopTimer);
 static void LedOffHandler(EventLoopTimer* eventLoopTimer);
 static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer);
@@ -109,43 +107,27 @@ static LP_TIMER measureSensorTimer = { .period = { 10, 0 }, .name = "measureSens
 LP_PERIPHERAL_GPIO* peripheralGpioSet[] = { &buttonA, &buttonB, &led1, &sendMsgLed, &networkConnectedLed };
 LP_TIMER* timerSet[] = { &led1BlinkTimer, &sendMsgLedOffOneShotTimer, &buttonPressCheckTimer, &networkConnectionStatusTimer, &measureSensorTimer };
 
-// Message property set
+// Message templates and property sets
+
+// Common message properties
 static LP_MESSAGE_PROPERTY messageAppId = { .key = "appid", .value = "hvac" };
-static LP_MESSAGE_PROPERTY messageType = { .key = "type", .value = "telemetry" };
 static LP_MESSAGE_PROPERTY messageFormat = { .key = "format", .value = "json" };
+
+// Telemetry message template and properties
+static const char* MsgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"Light\":%d, \"MsgId\":%d }";
+static LP_MESSAGE_PROPERTY telemetryMessageType = { .key = "type", .value = "telemetry" };
 static LP_MESSAGE_PROPERTY messageVersion = { .key = "version", .value = "1" };
-static LP_MESSAGE_PROPERTY* telemetryMessageProperties[] = { &messageAppId, &messageType, &messageFormat, &messageVersion };
+
+// Alert message template and properties
+static const char* AlertMsgTemplate = "{ \"%s\": \"%s\" }";
+static LP_MESSAGE_PROPERTY alertMessageType = { .key = "type", .value = "alert" };
+static LP_MESSAGE_PROPERTY alertMessageVersion = { .key = "version", .value = "1" };
+
+// Message property sets
+static LP_MESSAGE_PROPERTY* telemetryMessageProperties[] = { &messageAppId, &telemetryMessageType, &messageFormat, &messageVersion };
+static LP_MESSAGE_PROPERTY* alertMessageProperties[] = { &messageAppId, &alertMessageType, &messageFormat, &alertMessageVersion };
 
 
-int main(int argc, char* argv[])
-{
-	lp_registerTerminationHandler();
-	lp_processCmdArgs(argc, argv);
-
-	if (strlen(scopeId) == 0)
-	{
-		Log_Debug("ScopeId needs to be set in the app_manifest CmdArgs\n");
-		return ExitCode_Missing_ID_Scope;
-	}
-
-	InitPeripheralsAndHandlers();
-
-	// Main loop
-	while (!lp_isTerminationRequired())
-	{
-		int result = EventLoop_Run(lp_getTimerEventLoop(), -1, true);
-		// Continue if interrupted by signal, e.g. due to breakpoint being set.
-		if (result == -1 && errno != EINTR)
-		{
-			lp_terminate(ExitCode_Main_EventLoopFail);
-		}
-	}
-
-	ClosePeripheralsAndHandlers();
-
-	Log_Debug("Application exiting.\n");
-	return lp_getTerminationExitCode();
-}
 
 /// <summary>
 /// Check status of connection to Azure IoT
@@ -176,13 +158,7 @@ static void SendMsgLedOn(char* message)
 	lp_gpioOn(&sendMsgLed);
 	Log_Debug("%s\n", message);
 
-	// optional: message properties can be used for message routing in IOT Hub
-	lp_setMessageProperties(telemetryMessageProperties, NELEMS(telemetryMessageProperties));
-
 	lp_sendMsg(message);
-
-	// optional: clear if you are sending other message types that don't require these properties
-	lp_clearMessageProperties();
 
 	lp_setOneShotTimer(&sendMsgLedOffOneShotTimer, &sendMsgLedBlinkPeriod);
 }
@@ -207,7 +183,6 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 {
 	static int msgId = 0;
 	static LP_ENVIRONMENT environment;
-	static const char* MsgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"Light\":%d, \"MsgId\":%d }";
 
 	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
 	{
@@ -219,8 +194,27 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 	{
 		if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, MsgTemplate, environment.temperature, environment.humidity, environment.pressure, environment.light, msgId++) > 0)
 		{
+			// Message properties can be used for message routing in IOT Hub
+			lp_setMessageProperties(telemetryMessageProperties, NELEMS(telemetryMessageProperties));
+
 			SendMsgLedOn(msgBuffer);
+
+			// optional: clear if you are sending other message types that don't require these properties
+			lp_clearMessageProperties();
 		}
+	}
+}
+
+void SendAlertMessage(const char* key, const char* value)
+{
+	if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, AlertMsgTemplate,key, value) > 0)
+	{
+		lp_setMessageProperties(alertMessageProperties, NELEMS(alertMessageProperties));
+
+		SendMsgLedOn(msgBuffer);
+
+		// optional: clear if you are sending other message types that don't require these properties
+		lp_clearMessageProperties();
 	}
 }
 
@@ -242,6 +236,8 @@ static void ButtonPressCheckHandler(EventLoopTimer* eventLoopTimer)
 	{
 		led1BlinkIntervalIndex = (led1BlinkIntervalIndex + 1) % led1BlinkIntervalsCount;
 		lp_changeTimer(&led1BlinkTimer, &led1BlinkIntervals[led1BlinkIntervalIndex]);
+
+		SendAlertMessage("button_a", "pressed");
 	}
 }
 
@@ -293,4 +289,35 @@ static void ClosePeripheralsAndHandlers(void)
 	lp_closeDevKit();
 
 	lp_stopTimerEventLoop();
+}
+
+
+int main(int argc, char* argv[])
+{
+	lp_registerTerminationHandler();
+	lp_processCmdArgs(argc, argv);
+
+	if (strlen(scopeId) == 0)
+	{
+		Log_Debug("ScopeId needs to be set in the app_manifest CmdArgs\n");
+		return ExitCode_Missing_ID_Scope;
+	}
+
+	InitPeripheralsAndHandlers();
+
+	// Main loop
+	while (!lp_isTerminationRequired())
+	{
+		int result = EventLoop_Run(lp_getTimerEventLoop(), -1, true);
+		// Continue if interrupted by signal, e.g. due to breakpoint being set.
+		if (result == -1 && errno != EINTR)
+		{
+			lp_terminate(ExitCode_Main_EventLoopFail);
+		}
+	}
+
+	ClosePeripheralsAndHandlers();
+
+	Log_Debug("Application exiting.\n");
+	return lp_getTerminationExitCode();
 }

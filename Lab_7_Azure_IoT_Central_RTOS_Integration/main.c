@@ -69,8 +69,6 @@
 #define JSON_MESSAGE_BYTES 256  // Number of bytes to allocate for the JSON telemetry message for IoT Central
 
 // Forward signatures
-static void InitPeripheralGpiosAndHandlers(void);
-static void ClosePeripheralGpiosAndHandlers(void);
 static void Led2OffHandler(EventLoopTimer* eventLoopTimer);
 static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer);
 static void NetworkConnectionStatusHandler(EventLoopTimer* eventLoopTimer);
@@ -318,7 +316,7 @@ static LP_DIRECT_METHOD_RESPONSE_CODE ResetDirectMethodHandler(JSON_Object* json
 ///  Initialize PeripheralGpios, device twins, direct methods, timers.
 /// </summary>
 /// <returns>0 on success, or -1 on failure</returns>
-static void InitPeripheralGpiosAndHandlers(void)
+static void InitPeripheralAndHandlers(void)
 {
 	lp_openPeripheralGpioSet(peripheralGpioSet, NELEMS(peripheralGpioSet));
 	lp_openDeviceTwinSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
@@ -336,7 +334,7 @@ static void InitPeripheralGpiosAndHandlers(void)
 /// <summary>
 /// Close PeripheralGpios and handlers.
 /// </summary>
-static void ClosePeripheralGpiosAndHandlers(void)
+static void ClosePeripheralAndHandlers(void)
 {
 	Log_Debug("Closing file descriptors\n");
 
@@ -362,7 +360,7 @@ int main(int argc, char* argv[])
 		return ExitCode_Missing_ID_Scope;
 	}
 
-	InitPeripheralGpiosAndHandlers();
+	InitPeripheralAndHandlers();
 
 	// Main loop
 	while (!lp_isTerminationRequired())
@@ -375,7 +373,7 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	ClosePeripheralGpiosAndHandlers();
+	ClosePeripheralAndHandlers();
 
 	Log_Debug("Application exiting.\n");
 	return lp_getTerminationExitCode();

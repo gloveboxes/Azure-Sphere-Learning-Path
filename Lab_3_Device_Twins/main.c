@@ -33,7 +33,7 @@
  *	   3. Click File, then Save to save the CMakeLists.txt file which will auto generate the CMake Cache.
  */
 
-// Hardware definition
+ // Hardware definition
 #include "hw/azure_sphere_learning_path.h"
 
 // Learning Path Libraries
@@ -68,8 +68,6 @@
 #define JSON_MESSAGE_BYTES 256 // Number of bytes to allocate for the JSON telemetry message for IoT Central
 
 // Forward signatures
-static void InitPeripheralGpiosAndHandlers(void);
-static void ClosePeripheralGpiosAndHandlers(void);
 static void TemperatureStatusBlinkHandler(EventLoopTimer* eventLoopTimer);
 static void SendMsgLedOffHandler(EventLoopTimer* eventLoopTimer);
 static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer);
@@ -85,14 +83,9 @@ static int led1BlinkIntervalIndex = 2;
 static const struct timespec led1BlinkIntervals[] = { {0, 125000000}, {0, 250000000}, {0, 500000000}, {0, 750000000}, {1, 0} };
 static const int led1BlinkIntervalsCount = NELEMS(led1BlinkIntervals);
 
-enum LEDS
-{
-	RED,
-	GREEN,
-	BLUE
-};
-
+enum LEDS { RED, GREEN, BLUE };
 static enum LEDS current_led = RED;
+static const char* hvacState[] = { "heating", "off", "cooling" };
 
 static float desired_temperature = 0;
 static float last_temperature = 0;
@@ -126,43 +119,26 @@ LP_PERIPHERAL_GPIO* PeripheralGpioSet[] = { &buttonA, &buttonB, &ledRed, &ledGre
 LP_TIMER* timerSet[] = { &temperatureStatusBlinkTimer, &sendMsgLedOffOneShotTimer, &networkConnectionStatusTimer, &measureSensorTimer, &buttonPressCheckTimer };
 LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &desiredTemperature, &actualTemperature };
 
-// Message property set
+// Message templates and property sets
+
+// Common message properties
 static LP_MESSAGE_PROPERTY messageAppId = { .key = "appid", .value = "hvac" };
-static LP_MESSAGE_PROPERTY messageType = { .key = "type", .value = "telemetry" };
 static LP_MESSAGE_PROPERTY messageFormat = { .key = "format", .value = "json" };
+
+// Telemetry message template and properties
+static const char* MsgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"Light\":%d, \"MsgId\":%d }";
+static LP_MESSAGE_PROPERTY telemetryMessageType = { .key = "type", .value = "telemetry" };
 static LP_MESSAGE_PROPERTY messageVersion = { .key = "version", .value = "1" };
-static LP_MESSAGE_PROPERTY* telemetryMessageProperties[] = { &messageAppId, &messageType, &messageFormat, &messageVersion };
 
+// Alert message template and properties
+static const char* AlertMsgTemplate = "{ \"%s\": \"%s\" }";
+static LP_MESSAGE_PROPERTY alertMessageType = { .key = "type", .value = "alert" };
+static LP_MESSAGE_PROPERTY alertMessageVersion = { .key = "version", .value = "1" };
 
-int main(int argc, char* argv[])
-{
-	lp_registerTerminationHandler();
-	lp_processCmdArgs(argc, argv);
+// Message property sets
+static LP_MESSAGE_PROPERTY* telemetryMessageProperties[] = { &messageAppId, &telemetryMessageType, &messageFormat, &messageVersion };
+static LP_MESSAGE_PROPERTY* alertMessageProperties[] = { &messageAppId, &alertMessageType, &messageFormat, &alertMessageVersion };
 
-	if (strlen(scopeId) == 0)
-	{
-		Log_Debug("ScopeId needs to be set in the app_manifest CmdArgs\n");
-		return ExitCode_Missing_ID_Scope;
-	}
-
-	InitPeripheralGpiosAndHandlers();
-
-	// Main loop
-	while (!lp_isTerminationRequired())
-	{
-		int result = EventLoop_Run(lp_getTimerEventLoop(), -1, true);
-		// Continue if interrupted by signal, e.g. due to breakpoint being set.
-		if (result == -1 && errno != EINTR)
-		{
-			lp_terminate(ExitCode_Main_EventLoopFail);
-		}
-	}
-
-	ClosePeripheralGpiosAndHandlers();
-
-	Log_Debug("Application exiting.\n");
-	return lp_getTerminationExitCode();
-}
 
 /// <summary>
 /// Check status of connection to Azure IoT
@@ -187,13 +163,7 @@ static void SendMsgLedOn(char* message)
 	lp_gpioOn(&sendMsgLed);
 	Log_Debug("%s\n", message);
 
-	// optional: message properties can be used for message routing in IOT Hub
-	lp_setMessageProperties(telemetryMessageProperties, NELEMS(telemetryMessageProperties));
-
 	lp_sendMsg(message);
-
-	// optional: clear if you are sending other message types that don't require these properties
-	lp_clearMessageProperties();
 
 	lp_setOneShotTimer(&sendMsgLedOffOneShotTimer, &sendMsgLedBlinkPeriod);
 }
@@ -213,7 +183,7 @@ static void SendMsgLedOffHandler(EventLoopTimer* eventLoopTimer)
 
 /// <summary>
 /// Set the temperature status led. 
-/// Red if heater needs to be turned on to get to desired temperature. 
+/// Red if HVAC needs to be turned on to get to desired temperature. 
 /// Blue to turn on cooler. 
 /// Green equals just right, no action required.
 /// </summary>
@@ -232,7 +202,6 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 {
 	static int msgId = 0;
 	static LP_ENVIRONMENT environment;
-	static const char* MsgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"Light\":%d, \"MsgId\":%d }";
 
 	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
 	{
@@ -247,8 +216,26 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 
 		if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, MsgTemplate, environment.temperature, environment.humidity, environment.pressure, environment.light, msgId++) > 0)
 		{
+			// Message properties can be used for message routing in IOT Hub
+			lp_setMessageProperties(telemetryMessageProperties, NELEMS(telemetryMessageProperties));
+
 			SendMsgLedOn(msgBuffer);
+
+			lp_clearMessageProperties();	// optional: clear if you are sending other message types that don't require these properties
 		}
+	}
+}
+
+void SendAlertMessage(const char* key, const char* value)
+{
+	if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, AlertMsgTemplate, key, value) > 0)
+	{
+		lp_setMessageProperties(alertMessageProperties, NELEMS(alertMessageProperties));
+
+		SendMsgLedOn(msgBuffer);
+
+		// optional: clear if you are sending other message types that don't require these properties
+		lp_clearMessageProperties();
 	}
 }
 
@@ -270,12 +257,15 @@ static void TemperatureStatusBlinkHandler(EventLoopTimer* eventLoopTimer)
 	{
 		lp_gpioOff(rgbLed[(int)previous_led]); // turn off old current colour
 		previous_led = current_led;
+
+		// send alert message as the HVAC state has changed
+		SendAlertMessage("hvac", hvacState[(int)current_led]);
 	}
 
 	led_state = !led_state;
 
 	if (led_state) { lp_gpioOff(rgbLed[(int)current_led]); }
-	else { lp_gpioOn(rgbLed[(int)current_led]); }	
+	else { lp_gpioOn(rgbLed[(int)current_led]); }
 }
 
 /// <summary>
@@ -288,7 +278,7 @@ static void DeviceTwinSetTemperatureHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBi
 		desired_temperature = *(float*)deviceTwinBinding->twinState;
 		SetTemperatureStatusColour(last_temperature);
 		lp_deviceTwinReportState(deviceTwinBinding, deviceTwinBinding->twinState);
-	}	
+	}
 
 	/*	Casting device twin state examples
 
@@ -319,6 +309,8 @@ static void ButtonPressCheckHandler(EventLoopTimer* eventLoopTimer)
 		lp_changeTimer(&temperatureStatusBlinkTimer, &led1BlinkIntervals[led1BlinkIntervalIndex]);
 
 		lp_deviceTwinReportState(&actualTemperature, &last_temperature);	// TwinType = LP_TYPE_FLOAT
+
+		SendAlertMessage("button_a", "pressed");
 	}
 }
 
@@ -326,7 +318,7 @@ static void ButtonPressCheckHandler(EventLoopTimer* eventLoopTimer)
 ///  Initialize PeripheralGpios, device twins, direct methods, timers.
 /// </summary>
 /// <returns>0 on success, or -1 on failure</returns>
-static void InitPeripheralGpiosAndHandlers(void)
+static void InitPeripheralAndHandlers(void)
 {
 	lp_initializeDevKit();
 
@@ -340,7 +332,7 @@ static void InitPeripheralGpiosAndHandlers(void)
 /// <summary>
 ///     Close PeripheralGpios and handlers.
 /// </summary>
-static void ClosePeripheralGpiosAndHandlers(void)
+static void ClosePeripheralAndHandlers(void)
 {
 	Log_Debug("Closing file descriptors\n");
 
@@ -353,4 +345,35 @@ static void ClosePeripheralGpiosAndHandlers(void)
 	lp_closeDevKit();
 
 	lp_stopTimerEventLoop();
+}
+
+
+int main(int argc, char* argv[])
+{
+	lp_registerTerminationHandler();
+	lp_processCmdArgs(argc, argv);
+
+	if (strlen(scopeId) == 0)
+	{
+		Log_Debug("ScopeId needs to be set in the app_manifest CmdArgs\n");
+		return ExitCode_Missing_ID_Scope;
+	}
+
+	InitPeripheralAndHandlers();
+
+	// Main loop
+	while (!lp_isTerminationRequired())
+	{
+		int result = EventLoop_Run(lp_getTimerEventLoop(), -1, true);
+		// Continue if interrupted by signal, e.g. due to breakpoint being set.
+		if (result == -1 && errno != EINTR)
+		{
+			lp_terminate(ExitCode_Main_EventLoopFail);
+		}
+	}
+
+	ClosePeripheralAndHandlers();
+
+	Log_Debug("Application exiting.\n");
+	return lp_getTerminationExitCode();
 }
