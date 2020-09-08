@@ -193,7 +193,7 @@ Devices claimed by your Azure Sphere tenant will be automatically enrolled when 
 3. Download the Certificate Authority (CA) certificate for your Azure Sphere tenant:
 
     ```bash
-    azsphere tenant download-CA-certificate --output CAcertificate.cer
+    azsphere ca-certificate download --output CAcertificate.cer
     ```
 
     The output file must have the .cer extension.
@@ -217,7 +217,7 @@ Devices claimed by your Azure Sphere tenant will be automatically enrolled when 
 2. Download a validation certificate that proves that you own the tenant CA certificate. Replace code in the command with the verification code from the previous step.
 
     ```bash
-    azsphere tenant download-validation-certificate --output ValidationCertification.cer --verificationcode <code>
+    azsphere ca-certificate download-proof --output ValidationCertification.cer --verificationcode <code>
     ```
 3. The Azure Sphere Security Service signs the validation certificate with the verification code to prove that you own the CA.
 
