@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -41,19 +41,100 @@
 /**
  * @addtogroup OS-HAL
  * @{
- * @addtogroup SPIM
+ * @addtogroup spim
  * @{
- * This section describes the programming interfaces of the spim os-hal
+ * This section introduces the Serial Peripheral Interface Master (SPIM) APIs
+ * including terms and acronyms, supported features,
+ * details on how to use this driver, enums, structures and functions.
+ *
+ * @section OS_HAL_SPIM_Terms_Chapter Terms and Acronyms
+ *
+ * |Terms                   |Details                             |
+ * |------------------------------|--|
+ * |\b DMA                        | Direct Memory Access.|
+ * |\b FIFO                       | First In, First Out.|
+ * |\b SPI                        | Serial Peripheral Interface.|
+ *
+ * @section OS_HAL_SPIM_Features_Chapter Supported Features
+ * See @ref MHAL_SPIM_Features_Chapter for the details of  Supported Features.
+ *
+ * @}
+ * @}
  */
 
+/**
+ * @addtogroup OS-HAL
+ * @{
+ * @addtogroup spim
+ * @{
+ * @section OS_HAL_SPIM_Driver_Usage_Chapter How to use this driver
+ *
+ * - \b Device \b driver \b sample \b code \b is \b as \b follows: \n
+ *  - sample code (this is the user application sample code on freeRTos):
+ *    @code
+ *	- init SPIM
+ *	 -Call mtk_os_hal_spim_ctlr_init(spim_num bus_num)
+ *	   to init spim bus.
+ *
+ *	- Use FIFO or DMA mode to do one blocking/synchronous SPI data transfer
+ *	  -Call mtk_os_hal_spim_transfer(spim_num bus_num,
+			     struct mtk_spi_config *config,
+			     struct mtk_spi_transfer *xfer)
+ *
+ *	- Use FIFO or DMA mode to do one asynchronous SPI transfer
+ *	  -Call mtk_os_hal_spim_async_transfer(spim_num bus_num,
+				   struct mtk_spi_config *config,
+				   struct mtk_spi_transfer *xfer,
+				   spi_usr_complete_callback complete,
+				   void *context)
+ *
+ *	- uninit SPIM
+ *	 - Call  mtk_os_hal_spim_ctlr_deinit(spim_num bus_num) to uninit
+ *	    spim and release resource.
+ *
+ *    @endcode
+ *
+ *
+ * @}
+ * @}
+ */
+
+/**
+* @addtogroup OS-HAL
+* @{
+* @addtogroup spim
+* @{
+*/
+
+/** @defgroup os_hal_spim_enum Enum
+  * @{
+  * This section introduces the enumerations
+  * that SPIM uses while performing transfer.
+  */
+
 typedef enum {
+	/** Use ISU0 as SPIM port */
 	OS_HAL_SPIM_ISU0 = 0,
+	/** Use ISU1 as SPIM port */
 	OS_HAL_SPIM_ISU1 = 1,
+	/** Use ISU2 as SPIM port */
 	OS_HAL_SPIM_ISU2 = 2,
+	/** Use ISU3as SPIM port */
 	OS_HAL_SPIM_ISU3 = 3,
+	/** Use ISU4 as SPIM port */
 	OS_HAL_SPIM_ISU4 = 4,
+	/** The maximum ISU number (invalid) */
 	OS_HAL_SPIM_ISU_MAX
 } spim_num;
+
+/**
+  * @}
+  */
+
+/** @defgroup os_hal_spim_typedef Typedef
+  * @{
+  * This section introduces the typedef that SPIM OS-HAL used.
+  */
 
 /** @brief This defines the callback function prototype.
  * It's called to report transaction completions.\n
@@ -62,10 +143,23 @@ typedef enum {
  * When one transaction is done, this user callback will be called in
  * fifo interrupt function (fifo mode) or in dma callback function (dma mode).
  *
- * @param [in] context: the argument to spi_usr_complete_callback()
+ * @param [in] context : the argument to spi_usr_complete_callback()
  * when it's called.
  */
 typedef int (*spi_usr_complete_callback) (void *context);
+
+/**
+  * @}
+  */
+
+/** @defgroup os_hal_spim_function Function
+  * @{
+   * This section provides high level APIs to upper layer.
+  */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @brief  Dump SPIM register value.
@@ -73,7 +167,7 @@ typedef int (*spi_usr_complete_callback) (void *context);
  *  @param [in] bus_num : SPIM ISU Port number,
  *  it can be OS_HAL_SPIM_ISU0~OS_HAL_SPIM_ISU4
  *
- *  @return -1 means fail.
+ *  @return negative value means fail.
  *  @return 0 means success.
  */
 int mtk_os_hal_spim_dump_reg(spim_num bus_num);
@@ -84,7 +178,7 @@ int mtk_os_hal_spim_dump_reg(spim_num bus_num);
  *  @param [in] bus_num : SPIM ISU Port number,
  *  it can be OS_HAL_SPIM_ISU0~OS_HAL_SPIM_ISU4
  *
- *  @return -1 means fail.
+ *  @return negative value means fail.
  *  @return 0 means success.
  */
 int mtk_os_hal_spim_ctlr_init(spim_num bus_num);
@@ -95,7 +189,7 @@ int mtk_os_hal_spim_ctlr_init(spim_num bus_num);
  *  @param [in] bus_num : SPIM ISU Port number,
  *  it can be OS_HAL_SPIM_ISU0~OS_HAL_SPIM_ISU4
  *
- *  @return -1 means fail.
+ *  @return negative value means fail.
  *  @return 0 means success.
  */
 int mtk_os_hal_spim_ctlr_deinit(spim_num bus_num);
@@ -106,33 +200,36 @@ int mtk_os_hal_spim_ctlr_deinit(spim_num bus_num);
  *
  *  @param [in] bus_num : SPIM ISU Port number,
  *  it can be OS_HAL_SPIM_ISU0~OS_HAL_SPIM_ISU4
- *  @param [in] config: the HW setting
- *  @param [in] xfer: the data should be read/writen.
+ *  @param [in] config : the HW setting
+ *  @param [in] xfer : the data should be read/writen.
  *
  * Note:
- * SPIM driver's user can use struct mtk_spi_transfer to judge
- * either the transfer is half-duplex or full-duplex.
- * Half-duplex transaction: There is only one valid transaction
- * at a time on a single direction: either Send or Receive.
- * Send: Device driver should provide mtk_spi_transfer->tx_buf,
- * mtk_spi_transfer->len and set mtk_spi_transfer->rx_buf = NULL.
- * Receive: Device driver should provide mtk_spi_transfer->rx_buf,
- * mtk_spi_transfer->len and set mtk_spi_transfer->tx_buf = NULL.
- * Full-duplex transaction: There are two valid mutually
- * inclusive transactions: Send and Receive.
- * Device driver should provide mtk_spi_transfer->len, mtk_spi_transfer->tx_buf
- * and set mtk_spi_transfer->rx_buf at the same time.
  *
- * SPIM HW has some requirements that the device driver needs to satisfy them.
  * The transfer data format should be as belows:
- * Half-duplex
- * tx: tx_buf should be opcode[1byte] + data [1~32bytes].
- * rx: rx_buf should be opcode[1byte] + data [1~32bytes].
- * Full-duplex
- * tx_buf should be opcode[1byte] + data [1~16bytes].
- * rx_buf should be dummy[1byte] + data [1~16bytes].
+ *	- Half-duplex transaction:
+ *	  There is only one valid transaction at a time on a single direction:
+ *	  either Send or Receive.
+ *	  - Send: Device driver should provide mtk_spi_transfer->opcode,
+ *		 mtk_spi_transfer->opcode_len, mtk_spi_transfer->tx_buf,
+ *	 mtk_spi_transfer->len and set mtk_spi_transfer->rx_buf = NULL.
+ *		 mtk_spi_transfer->opcode_len should be 1~4bytes,
+ *		 mtk_spi_transfer->len should be 0~32bytes.
+ *	  - Receive: Device driver should provide mtk_spi_transfer->opcode,
+ *		 mtk_spi_transfer->opcode_len, mtk_spi_transfer->rx_buf,
+ *	 mtk_spi_transfer->len and set mtk_spi_transfer->tx_buf = NULL.
+ *		 mtk_spi_transfer->opcode_len should be 0~4bytes,
+ *		 mtk_spi_transfer->len should be 1~32bytes.
  *
- *  @return -1 means fail.
+ *	- Full-duplex transaction:
+ *	  There are two valid mutually inclusive transactions: Send and Receive.
+ *	  - Device driver should provide mtk_spi_transfer->len,
+ *		mtk_spi_transfer->opcode, mtk_spi_transfer->opcode_len,
+ *		mtk_spi_transfer->tx_buf and set mtk_spi_transfer->rx_buf
+ *		at the same time.
+ *	  - mtk_spi_transfer->opcode_len should be 1~4bytes,
+ *		mtk_spi_transfer->len should be 1~16bytes.
+ *
+ *  @return negative value means fail.
  *  @return 0 means success.
  */
 int mtk_os_hal_spim_transfer(spim_num bus_num,
@@ -142,14 +239,14 @@ int mtk_os_hal_spim_transfer(spim_num bus_num,
 /**
  * @brief  use FIFO or DMA mode to do one asynchronous SPI transfer.
  *
- *  @param bus_num : SPIM ISU Port number,
+ *  @param [in] bus_num : SPIM ISU Port number,
  *  it can be OS_HAL_SPIM_ISU0~OS_HAL_SPIM_ISU4
- *  @param [in] config: the HW setting
- *  @param [in] xfer: the data should be read/writen.
- * @param [in] complete: called to report transaction completions
- * @param [in] context: the argument to complete() when it's called
+ *  @param [in] config : the HW setting
+ *  @param [in] xfer : the data should be read/writen.
+ * @param [in] complete : called to report transaction completions
+ * @param [in] context : the argument to complete() when it's called
  *
- *  @return -1 means fail.
+ *  @return negative value means fail.
  *  @return 0 means success.
  */
 int mtk_os_hal_spim_async_transfer(spim_num bus_num,
@@ -157,4 +254,18 @@ int mtk_os_hal_spim_async_transfer(spim_num bus_num,
 				   struct mtk_spi_transfer *xfer,
 				   spi_usr_complete_callback complete,
 				   void *context);
+
+#ifdef __cplusplus
+}
+#endif
+
+/**
+  * @}
+  */
+
+/**
+* @}
+* @}
+*/
+
 #endif

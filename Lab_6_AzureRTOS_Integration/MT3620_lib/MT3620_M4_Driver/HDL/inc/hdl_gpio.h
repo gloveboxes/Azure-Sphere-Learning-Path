@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -48,6 +48,10 @@
 #define gpio_debug(fmt, arg...)
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void mtk_hdl_gpio_modify_reg(void __iomem *base_addr,
 	u32 mask, u32 shift, u32 write, u32 *pvalue);
 
@@ -59,4 +63,9 @@ void mtk_hdl_gpio_set_mode_reg(
 
 void mtk_hdl_gpio_get_mode_reg_val(void __iomem *base_addr,
 	u32 offset, u32 *pvalue);
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif

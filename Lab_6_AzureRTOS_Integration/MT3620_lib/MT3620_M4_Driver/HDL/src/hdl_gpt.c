@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -261,7 +261,7 @@ void mtk_hdl_gpt_restart_count(void __iomem *gpt_reg_base,
 					   GPT_CTRL_LIST[timer_id],
 					   (val | GPT_RESTART));
 
-	} else { /* 2019 add this */
+	} else {
 		if (val & GPT_EN) {
 			_mtk_hdl_gpt_cm4_reg_write(gpt_reg_base,
 						   GPT_CTRL_LIST[timer_id],

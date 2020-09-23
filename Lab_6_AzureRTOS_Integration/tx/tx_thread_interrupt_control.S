@@ -12,8 +12,8 @@
 
 @/**************************************************************************/
 @/**************************************************************************/
-@/**                                                                       */ 
-@/** ThreadX Component                                                     */ 
+@/**                                                                       */
+@/** ThreadX Component                                                     */
 @/**                                                                       */
 @/**   Thread                                                              */
 @/**                                                                       */
@@ -32,39 +32,39 @@
     .text 32
     .align 4
     .syntax unified
-@/**************************************************************************/ 
-@/*                                                                        */ 
-@/*  FUNCTION                                               RELEASE        */ 
-@/*                                                                        */ 
-@/*    _tx_thread_interrupt_control                      Cortex-M4/GNU     */ 
+@/**************************************************************************/
+@/*                                                                        */
+@/*  FUNCTION                                               RELEASE        */
+@/*                                                                        */
+@/*    _tx_thread_interrupt_control                      Cortex-M4/GNU     */
 @/*                                                           6.0          */
 @/*  AUTHOR                                                                */
 @/*                                                                        */
 @/*    William E. Lamie, Microsoft Corporation                             */
 @/*                                                                        */
 @/*  DESCRIPTION                                                           */
-@/*                                                                        */ 
-@/*    This function is responsible for changing the interrupt lockout     */ 
-@/*    posture of the system.                                              */ 
-@/*                                                                        */ 
-@/*  INPUT                                                                 */ 
-@/*                                                                        */ 
-@/*    new_posture                           New interrupt lockout posture */ 
-@/*                                                                        */ 
-@/*  OUTPUT                                                                */ 
-@/*                                                                        */ 
-@/*    old_posture                           Old interrupt lockout posture */ 
-@/*                                                                        */ 
-@/*  CALLS                                                                 */ 
-@/*                                                                        */ 
-@/*    None                                                                */ 
-@/*                                                                        */ 
-@/*  CALLED BY                                                             */ 
-@/*                                                                        */ 
-@/*    Application Code                                                    */ 
-@/*                                                                        */ 
-@/*  RELEASE HISTORY                                                       */ 
-@/*                                                                        */ 
+@/*                                                                        */
+@/*    This function is responsible for changing the interrupt lockout     */
+@/*    posture of the system.                                              */
+@/*                                                                        */
+@/*  INPUT                                                                 */
+@/*                                                                        */
+@/*    new_posture                           New interrupt lockout posture */
+@/*                                                                        */
+@/*  OUTPUT                                                                */
+@/*                                                                        */
+@/*    old_posture                           Old interrupt lockout posture */
+@/*                                                                        */
+@/*  CALLS                                                                 */
+@/*                                                                        */
+@/*    None                                                                */
+@/*                                                                        */
+@/*  CALLED BY                                                             */
+@/*                                                                        */
+@/*    Application Code                                                    */
+@/*                                                                        */
+@/*  RELEASE HISTORY                                                       */
+@/*                                                                        */
 @/*    DATE              NAME                      DESCRIPTION             */
 @/*                                                                        */
 @/*  05-19-2020     William E. Lamie         Initial Version 6.0           */

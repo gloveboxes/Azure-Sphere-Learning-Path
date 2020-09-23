@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -45,10 +45,12 @@ volatile uint32_t sys_tick_in_ms = 0;
 void SystmTick_Handler(void)
 {
 	sys_tick_in_ms++;
-	/* #ifdef OSAI_FREERTOS */
+	#ifdef OSAI_FREERTOS
 	extern void SysTick_Handler(void);
 	SysTick_Handler();
-	/* #endif */
+	#endif
+    extern void SysTick_Handler(void);
+    SysTick_Handler();
 }
 
 int NVIC_Register(int irqn, NVIC_IRQ_Handler handler)

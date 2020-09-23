@@ -12,8 +12,8 @@
 @
 @/**************************************************************************/
 @/**************************************************************************/
-@/**                                                                       */ 
-@/** ThreadX Component                                                     */ 
+@/**                                                                       */
+@/** ThreadX Component                                                     */
 @/**                                                                       */
 @/**   Thread                                                              */
 @/**                                                                       */
@@ -41,42 +41,42 @@
     .text
     .align 4
     .syntax unified
-@/**************************************************************************/ 
-@/*                                                                        */ 
-@/*  FUNCTION                                               RELEASE        */ 
-@/*                                                                        */ 
-@/*    _tx_thread_schedule                               Cortex-M4/GNU     */ 
+@/**************************************************************************/
+@/*                                                                        */
+@/*  FUNCTION                                               RELEASE        */
+@/*                                                                        */
+@/*    _tx_thread_schedule                               Cortex-M4/GNU     */
 @/*                                                           6.0          */
 @/*  AUTHOR                                                                */
 @/*                                                                        */
 @/*    William E. Lamie, Microsoft Corporation                             */
 @/*                                                                        */
 @/*  DESCRIPTION                                                           */
-@/*                                                                        */ 
-@/*    This function waits for a thread control block pointer to appear in */ 
-@/*    the _tx_thread_execute_ptr variable.  Once a thread pointer appears */ 
-@/*    in the variable, the corresponding thread is resumed.               */ 
-@/*                                                                        */ 
-@/*  INPUT                                                                 */ 
-@/*                                                                        */ 
-@/*    None                                                                */ 
-@/*                                                                        */ 
-@/*  OUTPUT                                                                */ 
-@/*                                                                        */ 
+@/*                                                                        */
+@/*    This function waits for a thread control block pointer to appear in */
+@/*    the _tx_thread_execute_ptr variable.  Once a thread pointer appears */
+@/*    in the variable, the corresponding thread is resumed.               */
+@/*                                                                        */
+@/*  INPUT                                                                 */
+@/*                                                                        */
 @/*    None                                                                */
-@/*                                                                        */ 
-@/*  CALLS                                                                 */ 
-@/*                                                                        */ 
+@/*                                                                        */
+@/*  OUTPUT                                                                */
+@/*                                                                        */
 @/*    None                                                                */
-@/*                                                                        */ 
-@/*  CALLED BY                                                             */ 
-@/*                                                                        */ 
-@/*    _tx_initialize_kernel_enter          ThreadX entry function         */ 
-@/*    _tx_thread_system_return             Return to system from thread   */ 
-@/*    _tx_thread_context_restore           Restore thread's context       */ 
-@/*                                                                        */ 
-@/*  RELEASE HISTORY                                                       */ 
-@/*                                                                        */ 
+@/*                                                                        */
+@/*  CALLS                                                                 */
+@/*                                                                        */
+@/*    None                                                                */
+@/*                                                                        */
+@/*  CALLED BY                                                             */
+@/*                                                                        */
+@/*    _tx_initialize_kernel_enter          ThreadX entry function         */
+@/*    _tx_thread_system_return             Return to system from thread   */
+@/*    _tx_thread_context_restore           Restore thread's context       */
+@/*                                                                        */
+@/*  RELEASE HISTORY                                                       */
+@/*                                                                        */
 @/*    DATE              NAME                      DESCRIPTION             */
 @/*                                                                        */
 @/*  05-19-2020     William E. Lamie         Initial Version 6.0           */

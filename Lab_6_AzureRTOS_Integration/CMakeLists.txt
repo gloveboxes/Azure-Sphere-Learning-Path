@@ -33,26 +33,33 @@ add_executable (${PROJECT_NAME}
                             ./demo_threadx/lsm6dso_reg.c 
                             ./demo_threadx/lsm6dso_driver.c 
                             ./demo_threadx/i2c.c
+                            ./MT3620_lib/OS_HAL/src/os_hal_i2c.c
+                            ./MT3620_lib/OS_HAL/src/os_hal_gpio.c
+                            ./MT3620_lib/OS_HAL/src/os_hal_uart.c
 )
 
-target_include_directories (${PROJECT_NAME} PUBLIC "./tx")
-TARGET_INCLUDE_DIRECTORIES(${PROJECT_NAME} PUBLIC
-                           ./MT3620_lib/MT3620_M4_BSP/CMSIS/include
-                           ./MT3620_lib/MT3620_M4_BSP/mt3620/inc
-                           ./MT3620_lib/MT3620_M4_BSP/printf
-                           ./MT3620_lib/MT3620_M4_Driver/MHAL/inc
-                           ./MT3620_lib/MT3620_M4_Driver/HDL/inc
-                           ./MT3620_lib/OS_HAL/inc)
+include_directories(${PROJECT_NAME} PUBLIC
+                    ./)
 
-target_link_libraries (${PROJECT_NAME} "${PROJECT_SOURCE_DIR}/out/tx/ARM-Debug/libtx.a")
-target_link_libraries (${PROJECT_NAME} "${PROJECT_SOURCE_DIR}/out/mt3620_lib/ARM-Debug/libmt3620_lib.a")
-target_link_libraries (${PROJECT_NAME} "${PROJECT_SOURCE_DIR}/out/mt3620_lib/ARM-Debug/lib/MT3620_M4_BSP/libMT3620_M4_BSP.a")
-target_link_libraries (${PROJECT_NAME} "${PROJECT_SOURCE_DIR}/out/mt3620_lib/ARM-Debug/lib/MT3620_M4_Driver/libMT3620_M4_Driver.a")
+target_include_directories(${PROJECT_NAME} PUBLIC
+                           ./MT3620_lib/OS_HAL/inc
+                           ./)
+
+
+
+add_subdirectory(./MT3620_lib/MT3620_M4_Driver ./lib/MT3620_M4_Driver)
+add_subdirectory(tx)
+
+target_link_libraries(${PROJECT_NAME} MT3620_M4_Driver MT3620_M4_BSP)
+target_link_libraries(${PROJECT_NAME} tx)
 target_link_libraries(${PROJECT_NAME} m)
 
+# target_link_libraries (${PROJECT_NAME} "${PROJECT_SOURCE_DIR}/out/tx/ARM-Debug/libtx.a")
+# target_link_libraries (${PROJECT_NAME} "${PROJECT_SOURCE_DIR}/out/mt3620_lib/ARM-Debug/libmt3620_lib.a")
+# target_link_libraries (${PROJECT_NAME} "${PROJECT_SOURCE_DIR}/out/mt3620_lib/ARM-Debug/lib/MT3620_M4_BSP/libMT3620_M4_BSP.a")
+# target_link_libraries (${PROJECT_NAME} "${PROJECT_SOURCE_DIR}/out/mt3620_lib/ARM-Debug/lib/MT3620_M4_Driver/libMT3620_M4_Driver.a")
 
-add_subdirectory("${PROJECT_SOURCE_DIR}/tx" "${PROJECT_SOURCE_DIR}/out/tx/ARM-Debug/")
-add_subdirectory("${PROJECT_SOURCE_DIR}/MT3620_lib" "${PROJECT_SOURCE_DIR}/out/mt3620_lib/ARM-Debug/")
+
 
 set_target_properties (${PROJECT_NAME} PROPERTIES LINK_DEPENDS ${PROJECT_SOURCE_DIR}/linker.ld)
 

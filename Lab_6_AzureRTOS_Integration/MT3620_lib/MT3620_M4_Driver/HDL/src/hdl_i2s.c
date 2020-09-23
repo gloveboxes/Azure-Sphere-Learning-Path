@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -76,8 +76,6 @@ void mtk_hdl_i2s_gbl_cfg(void __iomem *base_address,
 		reg |= BIT(I2S_LOOPBACK_SHFT);
 
 	osai_writel(reg, I2S_GLB_CONTROL_ADDR(base_address));
-
-	return;
 }
 
 void mtk_hdl_i2s_dl_cfg(void __iomem *base_address,
@@ -105,8 +103,6 @@ void mtk_hdl_i2s_dl_cfg(void __iomem *base_address,
 	reg |= BIT(I2S_DL_WS_RESYNC_SHFT);
 
 	osai_writel(reg, I2S_DL_CONTROL_ADDR(base_address));
-
-	return;
 }
 
 
@@ -138,8 +134,6 @@ void mtk_hdl_i2s_ul_cfg(void __iomem *base_address,
 	reg |= BIT(I2S_UL_WS_RESYNC_SHFT);
 
 	osai_writel(reg, I2S_UL_CONTROL_ADDR(base_address));
-
-	return;
 }
 void mtk_hdl_i2s_clk_gating(void __iomem *base_address, u8 en)
 {
@@ -156,8 +150,6 @@ void mtk_hdl_i2s_clk_gating(void __iomem *base_address, u8 en)
 		reg &= ~(I2S_OUT_CLK_MASK);
 	}
 	osai_writel(reg, I2S_GLB_CONTROL_ADDR(base_address));
-
-	return;
 }
 
 void mtk_hdl_i2s_clk_fifo_en(void __iomem *base_address, u8 en)
@@ -174,8 +166,6 @@ void mtk_hdl_i2s_clk_fifo_en(void __iomem *base_address, u8 en)
 		reg &= ~(I2S_ENGEN_EN_MASK);
 	}
 	osai_writel(reg, I2S_GLB_CONTROL_ADDR(base_address));
-
-	return;
 }
 
 void mtk_hdl_i2s_dl_en(void __iomem *base_address, u8 en)
@@ -188,8 +178,6 @@ void mtk_hdl_i2s_dl_en(void __iomem *base_address, u8 en)
 	else
 		reg &= ~(I2S_DL_EN_MASK);
 	osai_writel(reg, I2S_DL_CONTROL_ADDR(base_address));
-
-	return;
 }
 
 
@@ -203,8 +191,6 @@ void mtk_hdl_i2s_ul_en(void __iomem *base_address, u8 en)
 	else
 		reg &= ~(I2S_UL_EN_MASK);
 	osai_writel(reg, I2S_UL_CONTROL_ADDR(base_address));
-
-	return;
 }
 
 void mtk_hdl_i2s_reset(void __iomem *base_address)
@@ -212,15 +198,13 @@ void mtk_hdl_i2s_reset(void __iomem *base_address)
 	u32 reg = 0;
 
 	reg = osai_readl(I2S_SW_RESET_ADDR(base_address));
-	reg |= BIT(I2S_SW_RST_EN_SHFT);
+	reg |= (BIT(I2S_SW_RST_EN_SHFT) | BIT(I2S_GLB_SW_RST_EN_SHFT));
 	osai_writel(reg, I2S_SW_RESET_ADDR(base_address));
-	osai_delay_ms(1);
+	osai_delay_us(1);
 	reg = osai_readl(I2S_SW_RESET_ADDR(base_address));
-	reg &= ~(I2S_SW_RST_EN_MASK);
+	reg &= ~(BIT(I2S_SW_RST_EN_SHFT) | BIT(I2S_GLB_SW_RST_EN_SHFT));
 	osai_writel(reg, I2S_SW_RESET_ADDR(base_address));
-	osai_delay_ms(1);
-
-	return;
+	osai_delay_us(1);
 }
 
 void mtk_hdl_i2s_cfg_tdm_ch_bit_per_sample(enum_i2s_dl_ch_per_sample
@@ -235,8 +219,6 @@ void mtk_hdl_i2s_cfg_tdm_ch_bit_per_sample(enum_i2s_dl_ch_per_sample
 	i2s_ul_cfg->i2s_ch_per_sample = ul_ch_per_sample;
 	i2s_dl_cfg->i2s_bit_per_sample = dl_bit_per_sample;
 	i2s_ul_cfg->i2s_bit_per_sample = ul_bit_per_sample;
-
-	return;
 }
 
 void mtk_hdl_i2s_cfg_mono_stereo(enum_i2s_dl_mono_stereo_mode dl_mono_stereo,
@@ -250,8 +232,6 @@ void mtk_hdl_i2s_cfg_mono_stereo(enum_i2s_dl_mono_stereo_mode dl_mono_stereo,
 
 	i2s_gbl_cfg->i2s_dl_mono_stereo_sel = dl_mono_stereo;
 	i2s_gbl_cfg->i2s_dl_monodup_en = i2s_dl_monodup_en;
-
-	return;
 }
 
 void mtk_hdl_i2s_cfg_sample_rate(enum_i2s_dl_sample_rate dl_sample_rate,
@@ -263,8 +243,6 @@ void mtk_hdl_i2s_cfg_sample_rate(enum_i2s_dl_sample_rate dl_sample_rate,
 	i2s_dl_cfg->i2s_sample_rate = dl_sample_rate;
 	i2s_ul_cfg->i2s_sample_rate = ul_sample_rate;
 	i2s_ul_cfg->i2s_down_rate_en = ul_down_rate_en;
-
-	return;
 }
 
 
@@ -367,6 +345,4 @@ void mtk_hdl_i2s_cfg_init_setting(enum_i2s_initial_type initial_type,
 	default:
 	break;
 	}
-
-	return;
 }

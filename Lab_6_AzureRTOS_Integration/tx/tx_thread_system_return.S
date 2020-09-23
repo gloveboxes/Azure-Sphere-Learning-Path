@@ -12,8 +12,8 @@
 @
 @/**************************************************************************/
 @/**************************************************************************/
-@/**                                                                       */ 
-@/** ThreadX Component                                                     */ 
+@/**                                                                       */
+@/** ThreadX Component                                                     */
 @/**                                                                       */
 @/**   Thread                                                              */
 @/**                                                                       */
@@ -33,41 +33,41 @@
     .text 32
     .align 4
     .syntax unified
-@/**************************************************************************/ 
-@/*                                                                        */ 
-@/*  FUNCTION                                               RELEASE        */ 
-@/*                                                                        */ 
-@/*    _tx_thread_system_return                          Cortex-M4/GNU     */ 
+@/**************************************************************************/
+@/*                                                                        */
+@/*  FUNCTION                                               RELEASE        */
+@/*                                                                        */
+@/*    _tx_thread_system_return                          Cortex-M4/GNU     */
 @/*                                                           6.0          */
 @/*  AUTHOR                                                                */
 @/*                                                                        */
 @/*    William E. Lamie, Microsoft Corporation                             */
 @/*                                                                        */
 @/*  DESCRIPTION                                                           */
-@/*                                                                        */ 
-@/*    This function is target processor specific.  It is used to transfer */ 
-@/*    control from a thread back to the ThreadX system.  Only a           */ 
-@/*    minimal context is saved since the compiler assumes temp registers  */ 
-@/*    are going to get slicked by a function call anyway.                 */ 
-@/*                                                                        */ 
-@/*  INPUT                                                                 */ 
-@/*                                                                        */ 
-@/*    None                                                                */ 
-@/*                                                                        */ 
-@/*  OUTPUT                                                                */ 
-@/*                                                                        */ 
-@/*    None                                                                */ 
-@/*                                                                        */ 
-@/*  CALLS                                                                 */ 
-@/*                                                                        */ 
-@/*    _tx_thread_schedule                   Thread scheduling loop        */ 
-@/*                                                                        */ 
-@/*  CALLED BY                                                             */ 
-@/*                                                                        */ 
-@/*    ThreadX components                                                  */ 
-@/*                                                                        */ 
-@/*  RELEASE HISTORY                                                       */ 
-@/*                                                                        */ 
+@/*                                                                        */
+@/*    This function is target processor specific.  It is used to transfer */
+@/*    control from a thread back to the ThreadX system.  Only a           */
+@/*    minimal context is saved since the compiler assumes temp registers  */
+@/*    are going to get slicked by a function call anyway.                 */
+@/*                                                                        */
+@/*  INPUT                                                                 */
+@/*                                                                        */
+@/*    None                                                                */
+@/*                                                                        */
+@/*  OUTPUT                                                                */
+@/*                                                                        */
+@/*    None                                                                */
+@/*                                                                        */
+@/*  CALLS                                                                 */
+@/*                                                                        */
+@/*    _tx_thread_schedule                   Thread scheduling loop        */
+@/*                                                                        */
+@/*  CALLED BY                                                             */
+@/*                                                                        */
+@/*    ThreadX components                                                  */
+@/*                                                                        */
+@/*  RELEASE HISTORY                                                       */
+@/*                                                                        */
 @/*    DATE              NAME                      DESCRIPTION             */
 @/*                                                                        */
 @/*  05-19-2020     William E. Lamie         Initial Version 6.0           */

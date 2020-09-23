@@ -12,8 +12,8 @@
 @
 @/**************************************************************************/
 @/**************************************************************************/
-@/**                                                                       */ 
-@/** ThreadX Component                                                     */ 
+@/**                                                                       */
+@/** ThreadX Component                                                     */
 @/**                                                                       */
 @/**   Timer                                                               */
 @/**                                                                       */
@@ -46,43 +46,43 @@
     .text
     .align 4
     .syntax unified
-@/**************************************************************************/ 
-@/*                                                                        */ 
-@/*  FUNCTION                                               RELEASE        */ 
-@/*                                                                        */ 
-@/*    _tx_timer_interrupt                               Cortex-M4/GNU     */ 
+@/**************************************************************************/
+@/*                                                                        */
+@/*  FUNCTION                                               RELEASE        */
+@/*                                                                        */
+@/*    _tx_timer_interrupt                               Cortex-M4/GNU     */
 @/*                                                           6.0          */
 @/*  AUTHOR                                                                */
 @/*                                                                        */
 @/*    William E. Lamie, Microsoft Corporation                             */
 @/*                                                                        */
 @/*  DESCRIPTION                                                           */
-@/*                                                                        */ 
-@/*    This function processes the hardware timer interrupt.  This         */ 
-@/*    processing includes incrementing the system clock and checking for  */ 
-@/*    time slice and/or timer expiration.  If either is found, the        */ 
-@/*    interrupt context save/restore functions are called along with the  */ 
-@/*    expiration functions.                                               */ 
-@/*                                                                        */ 
-@/*  INPUT                                                                 */ 
-@/*                                                                        */ 
-@/*    None                                                                */ 
-@/*                                                                        */ 
-@/*  OUTPUT                                                                */ 
-@/*                                                                        */ 
-@/*    None                                                                */ 
-@/*                                                                        */ 
-@/*  CALLS                                                                 */ 
-@/*                                                                        */ 
-@/*    _tx_timer_expiration_process          Timer expiration processing   */ 
-@/*    _tx_thread_time_slice                 Time slice interrupted thread */ 
-@/*                                                                        */ 
-@/*  CALLED BY                                                             */ 
-@/*                                                                        */ 
-@/*    interrupt vector                                                    */ 
-@/*                                                                        */ 
-@/*  RELEASE HISTORY                                                       */ 
-@/*                                                                        */ 
+@/*                                                                        */
+@/*    This function processes the hardware timer interrupt.  This         */
+@/*    processing includes incrementing the system clock and checking for  */
+@/*    time slice and/or timer expiration.  If either is found, the        */
+@/*    interrupt context save/restore functions are called along with the  */
+@/*    expiration functions.                                               */
+@/*                                                                        */
+@/*  INPUT                                                                 */
+@/*                                                                        */
+@/*    None                                                                */
+@/*                                                                        */
+@/*  OUTPUT                                                                */
+@/*                                                                        */
+@/*    None                                                                */
+@/*                                                                        */
+@/*  CALLS                                                                 */
+@/*                                                                        */
+@/*    _tx_timer_expiration_process          Timer expiration processing   */
+@/*    _tx_thread_time_slice                 Time slice interrupted thread */
+@/*                                                                        */
+@/*  CALLED BY                                                             */
+@/*                                                                        */
+@/*    interrupt vector                                                    */
+@/*                                                                        */
+@/*  RELEASE HISTORY                                                       */
+@/*                                                                        */
 @/*    DATE              NAME                      DESCRIPTION             */
 @/*                                                                        */
 @/*  05-19-2020     William E. Lamie         Initial Version 6.0           */

@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -118,7 +118,6 @@ static int _mtk_os_hal_gpioif_irq_handler(gpioif_group group)
 		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
-	printf("now in gpioif%d_irq_handler\n", group);
 	ctlr->mconfig->group = (mhal_gpioif_group)group;
 	mtk_mhal_gpioif_isr_handle(ctlr);
 	ctlr_rtos->int_callback(ctlr_rtos->user_data);
@@ -634,21 +633,16 @@ int mtk_os_hal_gpioif_hardware_reset(gpioif_group group,
 	if (mode == MTK_OS_GPIOIF_EVENT_COUNTER_MODE) {
 		mtk_mhal_gpioif_read_gpio_event_count(ctlr,
 		&value);
-		printf("event counter value 0x%x\n", value);
 	} else if (mode == MTK_OS_GPIOIF_CAP_COUNTER_MODE) {
 		mtk_mhal_gpioif_read_gpio_cap_fifo0_value(ctlr,
 		&value);
-		printf("capture counter value 0x%x\n", value);
 	} else if (mode == MTK_OS_GPIOIF_EVENT_CAP_COUNTER_MODE) {
 		mtk_mhal_gpioif_read_gpio_event_count(ctlr,
 		&value);
-		printf("event counter value 0x%x\n", value);
 		mtk_mhal_gpioif_read_gpio_cap_fifo0_value(ctlr,
 		&value);
-		printf("capture counter fifo0 value 0x%x\n", value);
 		mtk_mhal_gpioif_read_gpio_cap_fifo1_value(ctlr,
 		&value);
-		printf("capture counter fifo1 value 0x%x\n", value);
 	}
 
 	return 0;
@@ -1111,9 +1105,9 @@ int mtk_os_hal_gpioif_ctlr_init(gpioif_group group)
 	if (group >= MTK_GPIOIF_MAX_GRP_NUM)
 		return -GPIOIF_EINVAL;
 
-	ctlr_rtos->ctlr = &g_gpioif_ctlr[group];
+	ctlr_rtos->ctlr = &g_gpioif_ctlr[(u8)group];
 	ctlr = ctlr_rtos->ctlr;
-	ctlr->base[group] = (void __iomem *)gpioif_base_addr[group];
+	ctlr->base[(u8)group] = (void __iomem *)gpioif_base_addr[(u8)group];
 	ctlr->reg_clk_base = (void __iomem *)CM4_GPIOIF_CG_BASE;
 	ctlr->mconfig = &g_gpioif_mconfig[group];
 	ctlr->int_cnt = &g_gpioif_int_cnt[group];

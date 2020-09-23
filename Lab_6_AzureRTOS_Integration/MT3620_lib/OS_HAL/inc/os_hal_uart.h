@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -39,22 +39,141 @@
 #include "mhal_uart.h"
 
 /**
- * @addtogroup HAL
+ * @addtogroup OS-HAL
  * @{
- * @addtogroup UART
+ * @addtogroup Uart
  * @{
- * This section describes the programming interfaces of the UART hal
+ * This section introduces the Universal Asynchronous Receiver/Transmitter
+ * (UART) APIs including terms and acronyms, supported features, software
+ * architecture, details on how to use this driver, enums,
+ * structures and functions.
+ *
+ * @section OS_HAL_UART_Terms_Chapter Terms and Acronyms
+ *
+ * |Terms                   |Details                             |
+ * |------------------------------|--|
+ * |\b DMA              | Direct Memory Access.|
+ * |\b FIFO             | First In, First Out.|
+ * |\b PIO              | Programming Input/Out Model.|
+ * |\b UART             | Universal Asynchronous  Receiver/Transmitter.|
+ * @section OS_HAL_UART_Features_Chapter Supported Features
+ * See @ref MHAL_UART_Features_Chapter for the details of Supported Features.
+ *
+ * @}
+ * @}
  */
 
+/**
+ * @addtogroup OS-HAL
+ * @{
+ * @addtogroup Uart
+ * @{
+ * @section OS_HAL_UART_Driver_Usage_Chapter How to use this driver
+ *
+ * - \b Device \b driver \b sample \b code \b is \b as \b follows: \n
+ *  - sample code (this is the user application sample code on freeRTos):
+ *    @code
+ *      - Initialize UART
+ *          - Call mtk_os_hal_uart_ctlr_init(UART_PORT port_num)
+ *
+ *      - De-initialize UART
+ *          - Call mtk_os_hal_uart_ctlr_deinit(UART_PORT port_num)
+ *
+ *      - Set Baudarate
+ *        - Call mtk_os_hal_uart_set_baudrate(UART_PORT port_num)
+ *
+ *      - Set data format
+ *        - Call mtk_os_hal_uart_set_format(UART_PORT port_num)
+ *
+ *      - Set data format
+ *        - Call mtk_os_hal_uart_set_format(UART_PORT port_num)
+ *
+ *      - Get one byte of data blocking in PIO mode
+ *        - Call mtk_os_hal_uart_get_char(UART_PORT port_num)
+ *
+ *      - Get one byte of data directly in PIO mode
+ *        - Call mtk_os_hal_uart_get_char_nowait(UART_PORT port_num)
+ *
+ *      - Send one byte of data in PIO mode
+ *        - Call mtk_os_hal_uart_put_char(UART_PORT port_num)
+ *
+ *      - Set hardware flow control
+ *        - Call mtk_os_hal_uart_set_hw_fc(UART_PORT port_num, u8 hw_fc)
+ *
+ *      - Set software flow control
+ *        - Call mtk_os_hal_uart_set_sw_fc(UART_PORT port_num,
+ *          u8 xon1, u8 xoff1, u8 xon2, u8 xoff2, u8 escape_data)
+ *
+ *      - Disable software flow control
+ *        - Call mtk_os_hal_uart_disable_sw_fc(UART_PORT port_num)
+ *
+ *      - Get and clear UART interrupt
+ *        - Call mtk_os_hal_uart_clear_irq_status(UART_PORT port_num)
+ *
+ *      - Set IRQ
+ *        - Call mtk_os_hal_uart_set_irq(UART_PORT port_num, u8 irq_flag)
+ *
+ *      - Send UART data in DMA mode
+ *        - Call mtk_os_hal_uart_dma_send_data(UART_PORT port_num,
+ *          u8 *data, u32 len, bool vff_mode, u32 timeout)
+ *
+ *      - Get UART data in DMA mode
+ *        - Call mtk_os_hal_uart_dma_get_data(UART_PORT port_num,
+ *          u8 *data, u32 len, bool vff_mode, u32 timeout)
+ *
+ *    @endcode
+ *
+ *
+ * @}
+ * @}
+ */
+
+/**
+* @addtogroup OS-HAL
+* @{
+* @addtogroup Uart
+* @{
+*/
+
+/**
+ * @defgroup os_hal_uart_enum Enum
+ *  This section introduces the enumerations used by UART OS-HAL used.
+ * @{
+ */
+
+/**
+ * @brief  The enum definition of UART PORT.\n
+ * It is used to configure UART.
+ */
 typedef enum {
+	/** Use CM4-UART as UART port */
 	OS_HAL_UART_PORT0 = 0,
+	/** Use ISU0 as UART port */
 	OS_HAL_UART_ISU0,
+	/** Use ISU1 as UART port */
 	OS_HAL_UART_ISU1,
+	/** Use ISU2 as UART port */
 	OS_HAL_UART_ISU2,
+	/** Use ISU3 as UART port */
 	OS_HAL_UART_ISU3,
+	/** Use ISU4 as UART port */
 	OS_HAL_UART_ISU4,
+	/** The maximum ISU number (invalid) */
 	OS_HAL_UART_MAX_PORT
 } UART_PORT;
+
+/**
+  * @}
+  */
+
+/** @defgroup os_hal_uart_function Function
+  * @{
+   * This section provides high level APIs to upper layer.
+  */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @brief  Init UART controller.
@@ -206,31 +325,48 @@ int mtk_os_hal_uart_clear_irq_status(UART_PORT port_num);
 void mtk_os_hal_uart_set_irq(UART_PORT port_num, u8 irq_flag);
 
 /**
- * @brief  Send UART data in DMA mode.
+ * @brief  Send UART data in DMA mode. This function will return when :
+ *     "Error detected" or "timeout" or "TX DMA completed".
  *
  *  @param [in] bus_num : UART Port number,
  *  it can be OS_HAL_UART_PORT0~OS_HAL_UART_ISU4.
  *  @param [in] data : Pointer to the data.
  *  @param [in] len : Data length.
  *  @param [in] vff_mode : true: VFF Mode; false: Half-Size Mode.
+ *  @param [in] timeout : transfer timeout in ms.
  *
  *  @return Number of bytes have been send.
  */
 int mtk_os_hal_uart_dma_send_data(UART_PORT port_num,
-	u8 *data, u32 len, bool vff_mode);
+	u8 *data, u32 len, bool vff_mode, u32 timeout);
 
 /**
- * @brief  Get UART data in DMA mode.
+ * @brief  Get UART data in DMA mode. This function will return when :
+ *    "Error detected" or "timeout" or "RX DMA completed".
  *
  *  @param [in] bus_num : UART Port number,
  *  it can be OS_HAL_UART_PORT0~OS_HAL_UART_ISU4.
  *  @param [in] data : Pointer to the data.
  *  @param [in] len : Data length.
  *  @param [in] vff_mode : true: VFF Mode; false: Half-Size Mode.
+ *  @param [in] timeout : transfer timeout in ms.
  *
  *  @return Number of bytes have been received.
  */
 int mtk_os_hal_uart_dma_get_data(UART_PORT port_num,
-	u8 *data, u32 len, bool vff_mode);
+	u8 *data, u32 len, bool vff_mode, u32 timeout);
+
+#ifdef __cplusplus
+}
+#endif
+
+/**
+  * @}
+  */
+
+/**
+* @}
+* @}
+*/
 
 #endif

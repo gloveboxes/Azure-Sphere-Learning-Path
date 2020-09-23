@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -101,7 +101,7 @@ int mtk_os_hal_gpio_free(os_hal_gpio_pin pin)
 
 int mtk_os_hal_gpio_get_input(os_hal_gpio_pin pin, os_hal_gpio_data *pvalue)
 {
-	return mtk_mhal_gpio_get_input(&pctl, pin, (u32 *)pvalue);
+	return mtk_mhal_gpio_get_input(&pctl, pin, (mhal_gpio_data *)pvalue);
 }
 
 int mtk_os_hal_gpio_set_output(os_hal_gpio_pin pin, os_hal_gpio_data out_val)
@@ -111,7 +111,7 @@ int mtk_os_hal_gpio_set_output(os_hal_gpio_pin pin, os_hal_gpio_data out_val)
 
 int mtk_os_hal_gpio_get_output(os_hal_gpio_pin pin, os_hal_gpio_data *pvalue)
 {
-	return mtk_mhal_gpio_get_output(&pctl, pin, (u32 *)pvalue);
+	return mtk_mhal_gpio_get_output(&pctl, pin, (mhal_gpio_data *)pvalue);
 }
 
 int mtk_os_hal_gpio_set_direction(os_hal_gpio_pin pin,
@@ -123,7 +123,8 @@ int mtk_os_hal_gpio_set_direction(os_hal_gpio_pin pin,
 int mtk_os_hal_gpio_get_direction(os_hal_gpio_pin pin,
 	os_hal_gpio_direction *pvalue)
 {
-	return mtk_mhal_gpio_get_direction(&pctl, pin, (u32 *)pvalue);
+	return mtk_mhal_gpio_get_direction(&pctl, pin,
+		(mhal_gpio_direction *)pvalue);
 }
 
 int mtk_os_hal_gpio_set_pullen_pullsel(

@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -38,7 +38,79 @@
 
 #include "mhal_eint.h"
 
-/* This enum defines the range of EINT debounce time.*/
+/**
+ * @addtogroup OS-HAL
+ * @{
+ * @addtogroup eint
+ * @{
+ * This section introduces the External Interrupt Controller(EINT) APIs
+ * including terms and acronyms, supported features,
+ * details on how to use this driver, enums, structures and functions.
+ *
+ * @section OS_HAL_EINT_Terms_Chapter Terms and Acronyms
+ *
+ * |Terms                   |Details                                           |
+ * |------------------------|------------|
+ * |\b EINT                 | External Interrupt Controller.|
+ *
+ * @section OS_HAL_EINT_Features_Chapter Supported Features
+ * See @ref HAL_EINT_Features_Chapter for the details of  Supported Features.
+ *
+ * @}
+ * @}
+ */
+
+/**
+ * @addtogroup OS-HAL
+ * @{
+ * @addtogroup eint
+ * @{
+ * @section OS_HAL_EINT_Driver_Usage_Chapter How to use this driver
+ *
+ * - \b Device \b driver \b sample \b code \b is \b as \b follows: \n
+ *  - sample code (this is the user application sample code on freeRTos):
+ *    @code
+ *	- Register EINT
+ *	 -Call mtk_os_hal_eint_register(eint_number eint_num,
+ *			eint_trigger_mode trigger_mode, void (*handle)(void))
+ *		to register eint.
+ *
+ *	- Unregister EINT
+ *   -Call mtk_os_hal_eint_unregister(eint_number eint_num)
+ *		to unregister eint.
+ *
+ *	- Set EINT debounce
+ *	  -Call mtk_os_hal_eint_set_debounce(eint_number eint_num,
+ *			os_hal_eint_debounce_time debounce_time)
+ *		to set debounce
+ *
+ *	- Enable/disable debounce
+ *	 - Call mtk_os_hal_eint_enable_debounce(eint_number eint_num)
+ *		or mtk_os_hal_eint_disable_debounce(eint_number eint_num)
+ *		to enable/disable eint debounce function.
+ *
+ *    @endcode
+ *
+ * @}
+ * @}
+ */
+
+/**
+* @addtogroup OS-HAL
+* @{
+* @addtogroup eint
+* @{
+*/
+
+/** @defgroup os_hal_eint_enum Enum
+  * @{
+  * This section introduces the enumerations
+  * that EINT uses while set debounce time.
+  */
+
+/** @brief This enum defines the range of EINT debounce time(unit: ms).
+ */
+
 typedef enum {
 	OS_HAL_EINT_DB_TIME_1 = 1,
 	OS_HAL_EINT_DB_TIME_2 = 2,
@@ -51,9 +123,18 @@ typedef enum {
 	OS_HAL_EINT_DB_TIME_MAX = OS_HAL_EINT_DB_TIME_128
 } os_hal_eint_debounce_time;
 
-#define IRQ_EDGE_TRIGGER        0x00
-#define IRQ_LEVEL_TRIGGER       0x01
-#define IRQ_EDGE2LVL_TRIGGER    0x02
+/**
+ * @}
+ */
+
+/** @defgroup os_hal_eint_function Function
+  * @{
+   * This section provides high level APIs to upper layer.
+  */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  *@brief This function is used to register EINT.
@@ -133,6 +214,19 @@ int mtk_os_hal_eint_enable_debounce(eint_number eint_num);
  * Return -#EINVAL if eint_num is invalid argument.
  */
 int mtk_os_hal_eint_disable_debounce(eint_number eint_num);
+
+#ifdef __cplusplus
+}
+#endif
+
+/**
+  * @}
+  */
+
+/**
+* @}
+* @}
+*/
 
 #endif /* __HAL_EINT_H__ */
 

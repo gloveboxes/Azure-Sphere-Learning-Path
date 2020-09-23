@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -249,6 +249,10 @@ ADC_DELAY_3NS = 0,
 	ADC_DELAY_12NS
 } adc_comparator_delay;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void mtk_hal_adc_init(void __iomem *base);
 
 void mtk_hal_adc_uninit(void __iomem *base);
@@ -288,6 +292,10 @@ void mtk_hdl_adc_fifo_get_length(void __iomem *base,
 		u32 *length);
 
 int mtk_hdl_adc_fifo_read_data(void __iomem *base);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __HDL_ADC_H__ */
 
