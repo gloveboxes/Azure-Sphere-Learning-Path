@@ -101,6 +101,15 @@
             "schema": "string"
           },
           {
+            "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:HVACState:2",
+            "@type": "Property",
+            "displayName": {
+              "en": "HVAC State"
+            },
+            "name": "HvacState",
+            "schema": "string"
+          },
+          {
             "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:ResetMethod:3",
             "@type": "Command",
             "commandType": "synchronous",
