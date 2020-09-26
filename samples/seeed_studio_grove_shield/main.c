@@ -117,7 +117,7 @@ static LP_TIMER measureSensorTimer = {.period = {10, 0}, .name = "measureSensorT
 // Azure IoT Device Twins
 static LP_DEVICE_TWIN_BINDING desiredTemperature = {.twinProperty = "DesiredTemperature", .twinType = LP_TYPE_FLOAT, .handler = DeviceTwinSetTemperatureHandler};
 static LP_DEVICE_TWIN_BINDING actualTemperature = {.twinProperty = "ActualTemperature", .twinType = LP_TYPE_FLOAT};
-static LP_DEVICE_TWIN_BINDING actualHvacState = {.twinProperty = "ActualTemperature", .twinType = LP_TYPE_STRING};
+static LP_DEVICE_TWIN_BINDING actualHvacState = {.twinProperty = "HvacState", .twinType = LP_TYPE_STRING};
 
 // Initialize Sets
 LP_PERIPHERAL_GPIO *peripheralGpioSet[] = {
@@ -250,7 +250,8 @@ static void MeasureSensorHandler(EventLoopTimer *eventLoopTimer)
 		lp_clearMessageProperties();
 	}
 
-	if ((int)last_temperature != (int)temperature){
+	if ((int)last_temperature != (int)temperature)
+	{
 		lp_deviceTwinReportState(&actualTemperature, &temperature);
 	}
 
@@ -273,7 +274,6 @@ static void DeviceTwinSetTemperatureHandler(LP_DEVICE_TWIN_BINDING *deviceTwinBi
 /// <summary>
 ///  Initialize peripherals, device twins, direct methods, timers.
 /// </summary>
-/// <returns>0 on success, or -1 on failure</returns>
 static void InitPeripheralsAndHandlers(void)
 {
 	// Initialize Grove Shield and Grove Temperature and Humidity Sensor
@@ -299,10 +299,6 @@ static void ClosePeripheralsAndHandlers(void)
 
 	lp_closePeripheralGpioSet();
 	lp_closeDeviceTwinSet();
-
-#ifndef SEEED_GROVE_SHIELD
-	lp_closeDevKit();
-#endif
 
 	lp_stopTimerEventLoop();
 }
