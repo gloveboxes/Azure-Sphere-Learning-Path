@@ -83,24 +83,25 @@ If you do not have an Azure Subscription then [create an Azure Subscription](htt
 
 You can prepare Azure cloud resources with the Azure CLI, the Azure Portal Web interface, or deployment templates. For this module, we will be using an Azure deployment template. Click the **Deploy to Azure** button to deploy a Device Provisioning Service and a linked IoT Hub.
 
-<!-- [![Deploy to Azure](https://azuredeploy.net/deploybutton.png)](https://azuredeploy.net/?repository=https://github.com/MicrosoftDocs/Azure-Sphere-Developer-Learning-Path/blob/master/docs-vs-code-iot-hub/Lab_2_Send_Telemetry_to_Azure_IoT_Central/setup)  -->
+[![Deploy to Azure](https://azuredeploy.net/deploybutton.png)](https://azuredeploy.net/?repository=https://github.com/MicrosoftDocs/Azure-Sphere-Developer-Learning-Path/blob/master/docs-vs-code-iot-hub/Lab_2_Send_Telemetry_to_Azure_IoT_Central/setup) 
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fgloveboxes%2FAzure-Sphere-Learning-Path%2Fmaster%2Fdocs%2Fdocs_vs_code_iot_hub%2FLab_2_Send_Telemetry_to_Azure_IoT_Hub%2Fsetup%2Fazuredeploy.json)
 
-1. Select or create a new resource group, choose the site located closest to you, and select the IoT Hub Tier. The default IoT Hub tier is the free **F1** tier. You can only have one free IoT Hub per subscription. If you already have a free IoT Hub then either select S1 ([pricing](https://azure.microsoft.com/en-us/pricing/details/iot-hub/?WT.mc_id=julyot-azd-dglover)) or delete your existing free IoT Hub before proceeding.
+1. Select or create a new resource group
 
-    ![](resources/azure-deployment-settings.png)
+2. Choose the site located closest to you.
 
-2. Click **Next**.
-3. Click **Deploy**. The deployment will take three to four minutes to complete.
+3. Select the IoT Hub Tier. The default IoT Hub tier is the free **F1** tier. You can only have one free IoT Hub per subscription. If you already have a free IoT Hub then either select S1 ([pricing](https://azure.microsoft.com/pricing/details/iot-hub/)) or delete your existing free IoT Hub before proceeding.
 
-    ![](resources/azure-deployment-completed.png)
+4. Click **Next**.
 
-4. When the deployment has completed, click on **Manage your resources**. You will see two services listed in the Azure Web Portal. The Device Provisioning Service (DPS) and the IoT Hub. Appended to the resource names is a random string to ensure the names are globally unique.
+5. Click **Deploy**. The deployment will take three to four minutes to complete.
 
-    ![](resources/azure-iot-resources.png)
+6. When the deployment has completed, click on **Manage your resources**. You will see two services listed in the Azure Web Portal. The Device Provisioning Service (DPS) and the IoT Hub. Appended to the resource names is a random string to ensure the names are globally unique.
 
-5. **DO NOT** close the Azure Web Portal and you will be needing it shortly.
+   ![The illustration shows Azure IoT resources.](resources/azure-iot-resources.png)
+
+7. **DON'T** close the Azure Web portal because you will need to access it again.
 
 ---
 
