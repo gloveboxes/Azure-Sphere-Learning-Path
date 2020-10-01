@@ -192,8 +192,14 @@ After you have completed this step, any device that is claimed by your Azure Sph
 ### Download the tenant authentication CA certificate
 
 1. Open an **Azure Sphere Developer Command Prompt**
-2. Be sure to make a note of the current directory, or change to the Azure Sphere Learning path directory. You will need the name of this directory in the next step. 
-3. Download the Certificate Authority (CA) certificate for your Azure Sphere tenant:
+2. Log into your Azure Sphere tenant if you have not already done so.
+
+   ```
+   azsphere login
+   ```
+
+3. Be sure to make a note of the current directory, or change to the Azure Sphere Learning path directory. You will need the name of this directory in the next step. 
+4. Download the Certificate Authority (CA) certificate for your Azure Sphere tenant:
 
     ```bash
     azsphere ca-certificate download --output CAcertificate.cer

@@ -4,13 +4,6 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        // "siteLocation": {
-        //     "type": "string",
-        //     "defaultValue": "East US",
-        //     "metadata": {
-        //         "description": "Select your preferred location"
-        //     }
-        // },
         "iotHubTier": {
             "type": "string",
             "allowedValues": [
@@ -27,7 +20,6 @@
         "UniqueStringBasedOnTimeStamp": "[uniqueString( resourceGroup().id, deployment().name )]",
         "iotHubName": "[concat('IOT-HUB-', variables('UniqueStringBasedOnTimeStamp'))]",
         "dpsName": "[concat('DPS-', variables('UniqueStringBasedOnTimeStamp'))]",
-        // "location": "[parameters('siteLocation')]",
         "iotHubResourceId": "[resourceId('Microsoft.Devices/Iothubs', variables('iotHubName'))]",
         "iotHubKeyName": "iothubowner",
         "iotHubKeyResource": "[resourceId('Microsoft.Devices/Iothubs/Iothubkeys', variables('iotHubName'), variables('iotHubKeyName'))]"
