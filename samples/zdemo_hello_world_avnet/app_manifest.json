@@ -29,14 +29,6 @@
 
 
 
-
-
-
-
-
-
-
-
     "DeviceAuthentication": "<Azure Sphere Tenant ID>"
   },
   "ApplicationType": "Default"

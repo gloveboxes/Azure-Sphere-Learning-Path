@@ -66,6 +66,7 @@
 #include "SEEED_STUDIO/board.h"
 #endif // SEEED_STUDIO
 
+
 // Number of bytes to allocate for the JSON telemetry message for IoT Central
 #define JSON_MESSAGE_BYTES 256  
 
@@ -76,6 +77,17 @@ static void led1ControlHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding);
 // Variables
 static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 
+// Telemetry message template and properties
+static const char* MsgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"Light\":%d, \"MsgId\":%d }";
+
+static LP_MESSAGE_PROPERTY messageAppId = { .key = "appid", .value = "hvac" };
+static LP_MESSAGE_PROPERTY messageFormat = { .key = "format", .value = "json" };
+static LP_MESSAGE_PROPERTY telemetryMessageType = { .key = "type", .value = "telemetry" };
+static LP_MESSAGE_PROPERTY messageVersion = { .key = "version", .value = "1" };
+
+static LP_MESSAGE_PROPERTY* telemetryMessageProperties[] = { &messageAppId, &telemetryMessageType, &messageFormat, &messageVersion };
+
+
 
 
 
@@ -85,7 +97,8 @@ static LP_PERIPHERAL_GPIO* peripheralSet[] = { };
 static LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = {  };
 
 
-static void InitPeripheralsAndHandlers(void) {
+static void InitPeripheralsAndHandlers(void)
+{
 	lp_initializeDevKit();
 
 	lp_openPeripheralGpioSet(peripheralSet, NELEMS(peripheralSet));
@@ -93,9 +106,12 @@ static void InitPeripheralsAndHandlers(void) {
 
 	lp_startTimerSet(timerSet, NELEMS(timerSet));
 	lp_startCloudToDevice();
+
+	lp_setMessageProperties(telemetryMessageProperties, NELEMS(telemetryMessageProperties));
 }
 
-static void ClosePeripheralsAndHandlers(void) {
+static void ClosePeripheralsAndHandlers(void)
+{
 	Log_Debug("Closing file descriptors\n");
 
 	lp_stopTimerSet();
@@ -109,11 +125,13 @@ static void ClosePeripheralsAndHandlers(void) {
 	lp_stopTimerEventLoop();
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[])
+{
 	lp_registerTerminationHandler();
 	lp_processCmdArgs(argc, argv);
 
-	if (strlen(scopeId) == 0) {
+	if (strlen(scopeId) == 0)
+	{
 		Log_Debug("ScopeId needs to be set in the app_manifest CmdArgs\n");
 		return ExitCode_Missing_ID_Scope;
 	}
@@ -121,12 +139,14 @@ int main(int argc, char* argv[]) {
 	InitPeripheralsAndHandlers();
 
 	// Main loop
-	while (!lp_isTerminationRequired()) {
+	while (!lp_isTerminationRequired())
+	{
 
 		int result = EventLoop_Run(lp_getTimerEventLoop(), -1, true);
 
 		// Continue if interrupted by signal, e.g. due to breakpoint being set.
-		if (result == -1 && errno != EINTR) {
+		if (result == -1 && errno != EINTR)
+		{
 			lp_terminate(ExitCode_Main_EventLoopFail);
 		}
 	}

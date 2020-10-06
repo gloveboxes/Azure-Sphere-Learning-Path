@@ -73,18 +73,21 @@ static LP_TIMER readSensorTimer = {
 
 static void ReadSensorHandler(EventLoopTimer* eventLoopTimer)
 {
+	static int msgId = 0;
+	static LP_ENVIRONMENT environment;
+
 	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
 	{
 		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
 		return;
 	}
 
-	if (lp_readTelemetry(msgBuffer, JSON_MESSAGE_BYTES) > 0)
+	if (lp_readTelemetry(&environment))
 	{
-
-		Log_Debug("%s\n", msgBuffer);
-
-		lp_sendMsg(msgBuffer);
+		if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, MsgTemplate, environment.temperature, environment.humidity, environment.pressure, environment.light, msgId++) > 0)
+		{
+			lp_sendMsg(msgBuffer);
+		}
 	}
 }
 ```
