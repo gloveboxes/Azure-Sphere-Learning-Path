@@ -79,7 +79,7 @@ static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 // Telemetry message template and properties
 static const char* MsgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"Light\":%d, \"MsgId\":%d }";
 
-static LP_MESSAGE_PROPERTY messageAppId = { .key = "appid", .value = "hvac" };
+static LP_MESSAGE_PROPERTY messageAppId = { .key = "appid", .value = "lab-monitor" };
 static LP_MESSAGE_PROPERTY messageFormat = { .key = "format", .value = "json" };
 static LP_MESSAGE_PROPERTY telemetryMessageType = { .key = "type", .value = "telemetry" };
 static LP_MESSAGE_PROPERTY messageVersion = { .key = "version", .value = "1" };

@@ -99,6 +99,7 @@ static void ReadSensorHandler(EventLoopTimer* eventLoopTimer)
 	{
 		if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, MsgTemplate, environment.temperature, environment.humidity, environment.pressure, environment.light, msgId++) > 0)
 		{
+			Log_Debug(msgBuffer);
 			lp_sendMsg(msgBuffer);
 		}
 	}
