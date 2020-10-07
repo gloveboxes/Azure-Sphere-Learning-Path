@@ -162,3 +162,60 @@ static LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &led1_C2D_DeviceTwin }
 6. Set breakpoint in device twin handler
 7. Back in the portal save the device twin
 8. swap back to Visual Studio - the code should have halted at the breakpoint
+
+## Extension sample - Direct Methods
+
+```c
+static LP_DIRECT_METHOD_BINDING resetDevice = { .methodName = "ResetMethod", .handler = ResetDirectMethodHandler };
+static LP_TIMER resetDeviceOneShotTimer = { .period = {0, 0}, .name = "resetDeviceOneShotTimer", .handler = ResetDeviceHandler };
+
+/// <summary>
+/// Reset the Device
+/// </summary>
+static void ResetDeviceHandler(EventLoopTimer* eventLoopTimer)
+{
+	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
+	{
+		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
+		return;
+	}
+	PowerManagement_ForceSystemReboot();
+}
+
+/// <summary>
+/// Start Device Power Restart Direct Method 'ResetMethod' {"reset_timer":5}
+/// </summary>
+static LP_DIRECT_METHOD_RESPONSE_CODE ResetDirectMethodHandler(JSON_Object* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg)
+{
+	const char propertyName[] = "reset_timer";
+	static struct timespec period;
+
+	if (!json_object_has_value_of_type(json, propertyName, JSONNumber))
+	{
+		return LP_METHOD_FAILED;
+	}
+	int seconds = (int)json_object_get_number(json, propertyName);
+
+	// leave enough time for the device twin deviceResetUtc to update before restarting the device
+	if (seconds > 2 && seconds < 10)
+	{
+		// Set One Shot LP_TIMER
+		period = (struct timespec){ .tv_sec = seconds, .tv_nsec = 0 };
+		lp_setOneShotTimer(&resetDeviceOneShotTimer, &period);
+
+		return LP_METHOD_SUCCEEDED;
+	}
+	else
+	{
+		return LP_METHOD_FAILED;
+	}
+}
+```
+
+```c
+// Sets
+static LP_TIMER* timerSet[] = { &readSensorTimer, &resetDeviceOneShotTimer };
+static LP_PERIPHERAL_GPIO* peripheralSet[] = { &led1 };
+static LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &led1_C2D_DeviceTwin };
+LP_DIRECT_METHOD_BINDING* directMethodBindingSet[] = { &resetDevice };
+```

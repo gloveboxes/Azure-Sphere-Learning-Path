@@ -33,7 +33,8 @@
  *	   3. Click File, then Save to save the CMakeLists.txt file which will auto generate the CMake Cache.
  */
 
-// Hardware definition
+
+ // Hardware definition
 #include "hw/azure_sphere_learning_path.h"
 
 // Learning Path Libraries
@@ -49,179 +50,54 @@
 #include <applibs/gpio.h>
 #include <applibs/log.h>
 #include <applibs/powermanagement.h>
-#include <applibs/uart.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <time.h>
-#include <math.h>
 
-// Grove Temperature and Humidity Sensor
-#include "Grove.h"
-#include "Sensors/GroveTempHumiSHT31.h"
+// Hardware specific
+#ifdef OEM_AVNET
+#include "AVNET/board.h"
+#include "AVNET/imu_temp_pressure.h"
+#include "AVNET/light_sensor.h"
+#endif // OEM_AVNET
 
-// Required for Grove Sensors
-static int i2cFd;
-static void *sht31;
+// Hardware specific
+#ifdef OEM_SEEED_STUDIO
+#include "SEEED_STUDIO/board.h"
+#endif // SEEED_STUDIO
 
-#define JSON_MESSAGE_BYTES 256 // Number of bytes to allocate for the JSON telemetry message for IoT Central
+
+// Number of bytes to allocate for the JSON telemetry message for IoT Central
+#define JSON_MESSAGE_BYTES 256  
 
 // Forward signatures
-static void LedOffHandler(EventLoopTimer *eventLoopTimer);
-static void MeasureSensorHandler(EventLoopTimer *eventLoopTimer);
-static void NetworkConnectionStatusHandler(EventLoopTimer *eventLoopTimer);
-static void DeviceTwinSetTemperatureHandler(LP_DEVICE_TWIN_BINDING *deviceTwinBinding);
+static void ReadSensorHandler(EventLoopTimer* eventLoopTimer);
+static void SampleRateHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding);
 
-static char msgBuffer[JSON_MESSAGE_BYTES] = {0};
-
-static const struct timespec sendMsgLedBlinkPeriod = {0, 300 * 1000 * 1000};
-
-enum LEDS
-{
-	RED,
-	GREEN,
-	BLUE
-};
-static enum LEDS current_led = RED;
-static const char *hvacState[] = {"heating", "off", "cooling"};
-
-static int desired_temperature = 0;
-static float last_temperature = 0;
-
-// GPIO Output PeripheralGpios
-static LP_PERIPHERAL_GPIO sendMsgLed = {
-	.pin = LED2,
-	.direction = LP_OUTPUT,
-	.initialState = GPIO_Value_Low,
-	.invertPin = true,
-	.initialise = lp_openPeripheralGpio,
-	.name = "sendMsgLed"};
-
-static LP_PERIPHERAL_GPIO networkConnectedLed = {
-	.pin = NETWORK_CONNECTED_LED,
-	.direction = LP_OUTPUT,
-	.initialState = GPIO_Value_Low,
-	.invertPin = true,
-	.initialise = lp_openPeripheralGpio,
-	.name = "networkConnectedLed"};
-
-static LP_PERIPHERAL_GPIO ledRed = {.pin = LED_RED, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true, .initialise = lp_openPeripheralGpio, .name = "red led"};
-static LP_PERIPHERAL_GPIO ledGreen = {.pin = LED_GREEN, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true, .initialise = lp_openPeripheralGpio, .name = "green led"};
-static LP_PERIPHERAL_GPIO ledBlue = {.pin = LED_BLUE, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true, .initialise = lp_openPeripheralGpio, .name = "blue led"};
-static LP_PERIPHERAL_GPIO *rgbLed[] = {&ledRed, &ledGreen, &ledBlue};
-
-// Timers
-static LP_TIMER sendMsgLedOffOneShotTimer = {.period = {0, 0}, .name = "sendMsgLedOffOneShotTimer", .handler = LedOffHandler};
-static LP_TIMER networkConnectionStatusTimer = {.period = {5, 0}, .name = "networkConnectionStatusTimer", .handler = NetworkConnectionStatusHandler};
-static LP_TIMER measureSensorTimer = {.period = {10, 0}, .name = "measureSensorTimer", .handler = MeasureSensorHandler};
-
-// Azure IoT Device Twins
-static LP_DEVICE_TWIN_BINDING desiredTemperature = {.twinProperty = "DesiredTemperature", .twinType = LP_TYPE_FLOAT, .handler = DeviceTwinSetTemperatureHandler};
-static LP_DEVICE_TWIN_BINDING actualTemperature = {.twinProperty = "ActualTemperature", .twinType = LP_TYPE_FLOAT};
-static LP_DEVICE_TWIN_BINDING actualHvacState = {.twinProperty = "HvacState", .twinType = LP_TYPE_STRING};
-
-// Initialize Sets
-LP_PERIPHERAL_GPIO *peripheralGpioSet[] = {
-	&sendMsgLed,
-	&networkConnectedLed,
-	&ledRed,
-	&ledGreen,
-	&ledBlue,
-};
-LP_TIMER *timerSet[] = {&sendMsgLedOffOneShotTimer, &networkConnectionStatusTimer, &measureSensorTimer};
-LP_DEVICE_TWIN_BINDING *deviceTwinBindingSet[] = {&desiredTemperature, &actualTemperature, &actualHvacState};
-
-// Message templates and property sets
-
-// Common message properties
-static LP_MESSAGE_PROPERTY messageAppId = {.key = "appid", .value = "hvac"};
-static LP_MESSAGE_PROPERTY messageFormat = {.key = "format", .value = "json"};
+// Variables
+static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 
 // Telemetry message template and properties
-static const char *MsgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"Light\":%d, \"MsgId\":%d }";
-static LP_MESSAGE_PROPERTY telemetryMessageType = {.key = "type", .value = "telemetry"};
-static LP_MESSAGE_PROPERTY messageVersion = {.key = "version", .value = "1"};
+static const char* MsgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"Light\":%d, \"MsgId\":%d }";
 
-// Message property sets
-static LP_MESSAGE_PROPERTY *telemetryMessageProperties[] = {&messageAppId, &telemetryMessageType, &messageFormat, &messageVersion};
+static LP_MESSAGE_PROPERTY messageAppId = { .key = "appid", .value = "hvac" };
+static LP_MESSAGE_PROPERTY messageFormat = { .key = "format", .value = "json" };
+static LP_MESSAGE_PROPERTY telemetryMessageType = { .key = "type", .value = "telemetry" };
+static LP_MESSAGE_PROPERTY messageVersion = { .key = "version", .value = "1" };
 
-/// <summary>
-/// Check status of connection to Azure IoT
-/// </summary>
-static void NetworkConnectionStatusHandler(EventLoopTimer *eventLoopTimer)
-{
-	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
-	{
-		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
-		return;
-	}
+static LP_MESSAGE_PROPERTY* telemetryMessageProperties[] = { &messageAppId, &telemetryMessageType, &messageFormat, &messageVersion };
 
-	if (lp_connectToAzureIot())
-	{
-		lp_gpioOn(&networkConnectedLed);
-	}
-	else
-	{
-		lp_gpioOff(&networkConnectedLed);
-	}
-}
+// Timer
+static LP_TIMER readSensorTimer = {
+	.period = { 5, 0 },
+	.name = "readSensorTimer",
+	.handler = ReadSensorHandler
+};
 
-/// <summary>
-/// Turn on LED2, send message to Azure IoT and set a one shot timer to turn LED2 off
-/// </summary>
-static void SendMsgLedOn(char *message)
-{
-	lp_gpioOn(&sendMsgLed);
-	Log_Debug("%s\n", message);
-
-	lp_sendMsg(message);
-
-	lp_setOneShotTimer(&sendMsgLedOffOneShotTimer, &sendMsgLedBlinkPeriod);
-}
-
-/// <summary>
-/// One shot timer to turn sendMsgLed off
-/// </summary>
-static void LedOffHandler(EventLoopTimer *eventLoopTimer)
-{
-	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
-	{
-		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
-		return;
-	}
-	lp_gpioOff(&sendMsgLed);
-}
-
-/// <summary>
-/// Set the temperature status led.
-/// Red if HVAC needs to be turned on to get to desired temperature.
-/// Blue to turn on cooler.
-/// Green equals just right, no action required.
-/// </summary>
-void SetTemperatureStatusColour(float actual_temperature)
-{
-	static enum LEDS previous_led = RED;
-	int actual = (int)(actual_temperature);
-
-	current_led = actual == desired_temperature ? GREEN : actual > desired_temperature ? BLUE : RED;
-
-	if (previous_led != current_led)
-	{
-		lp_gpioOff(rgbLed[(int)previous_led]); // turn off old current colour
-		previous_led = current_led;
-
-		lp_deviceTwinReportState(&actualHvacState, hvacState[(int)current_led]);
-	}
-
-	lp_gpioOn(rgbLed[(int)current_led]);
-}
-
-/// <summary>
-/// Read sensor and send to Azure IoT
-/// </summary>
-static void MeasureSensorHandler(EventLoopTimer *eventLoopTimer)
+static void ReadSensorHandler(EventLoopTimer* eventLoopTimer)
 {
 	static int msgId = 0;
-	int len = 0;
+	static LP_ENVIRONMENT environment;
 
 	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
 	{
@@ -229,67 +105,52 @@ static void MeasureSensorHandler(EventLoopTimer *eventLoopTimer)
 		return;
 	}
 
-	GroveTempHumiSHT31_Read(sht31);
-	float temperature = GroveTempHumiSHT31_GetTemperature(sht31);
-	float humidity = GroveTempHumiSHT31_GetHumidity(sht31);
-	if (isnan(temperature) || isnan(humidity))
+	if (lp_readTelemetry(&environment))
 	{
-		return;
+		if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, MsgTemplate, environment.temperature, environment.humidity, environment.pressure, environment.light, msgId++) > 0)
+		{
+			lp_sendMsg(msgBuffer);
+		}
 	}
-
-	SetTemperatureStatusColour(temperature);
-
-	if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, MsgTemplate, temperature, humidity, 0.0, 0, msgId++) > 0)
-	{
-		// Message properties can be used for message routing in IOT Hub
-		lp_setMessageProperties(telemetryMessageProperties, NELEMS(telemetryMessageProperties));
-
-		SendMsgLedOn(msgBuffer);
-
-		// optional: clear if you are sending other message types that don't require these properties
-		lp_clearMessageProperties();
-	}
-
-	if ((int)last_temperature != (int)temperature)
-	{
-		lp_deviceTwinReportState(&actualTemperature, &temperature);
-	}
-
-	last_temperature = temperature;
 }
 
-/// <summary>
-/// Device Twin Handler to set the desired temperature value
-/// </summary>
-static void DeviceTwinSetTemperatureHandler(LP_DEVICE_TWIN_BINDING *deviceTwinBinding)
+// Cloud to Device
+static LP_DEVICE_TWIN_BINDING sampleRate_DeviceTwin = {
+	.twinProperty = "SampleRateSeconds",
+	.twinType = LP_TYPE_INT,
+	.handler = SampleRateHandler
+};
+
+
+static void SampleRateHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding)
 {
-	if (deviceTwinBinding->twinType == LP_TYPE_FLOAT)
+	struct timespec sampleRateSeconds = { *(int*)deviceTwinBinding->twinState, 0 };
+
+	if (sampleRateSeconds.tv_sec > 0 && sampleRateSeconds.tv_sec < (5 * 60))
 	{
-		desired_temperature = (int)*(float *)deviceTwinBinding->twinState;
-		SetTemperatureStatusColour(last_temperature);
-		lp_deviceTwinReportState(deviceTwinBinding, deviceTwinBinding->twinState);
+		lp_changeTimer(&readSensorTimer, &sampleRateSeconds);
 	}
 }
 
-/// <summary>
-///  Initialize peripherals, device twins, direct methods, timers.
-/// </summary>
+// Sets
+static LP_TIMER* timerSet[] = { &readSensorTimer };
+static LP_PERIPHERAL_GPIO* peripheralSet[] = { };
+static LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &sampleRate_DeviceTwin };
+
+
 static void InitPeripheralsAndHandlers(void)
 {
-	// Initialize Grove Shield and Grove Temperature and Humidity Sensor
-	GroveShield_Initialize(&i2cFd, 115200);
-	sht31 = GroveTempHumiSHT31_Open(i2cFd);
+	lp_initializeDevKit();
 
-	lp_openPeripheralGpioSet(peripheralGpioSet, NELEMS(peripheralGpioSet));
+	lp_openPeripheralGpioSet(peripheralSet, NELEMS(peripheralSet));
 	lp_openDeviceTwinSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
 
 	lp_startTimerSet(timerSet, NELEMS(timerSet));
 	lp_startCloudToDevice();
+
+	lp_setMessageProperties(telemetryMessageProperties, NELEMS(telemetryMessageProperties));
 }
 
-/// <summary>
-///     Close peripherals and handlers.
-/// </summary>
 static void ClosePeripheralsAndHandlers(void)
 {
 	Log_Debug("Closing file descriptors\n");
@@ -300,10 +161,12 @@ static void ClosePeripheralsAndHandlers(void)
 	lp_closePeripheralGpioSet();
 	lp_closeDeviceTwinSet();
 
+	lp_closeDevKit();
+
 	lp_stopTimerEventLoop();
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
 	lp_registerTerminationHandler();
 	lp_processCmdArgs(argc, argv);
@@ -319,7 +182,9 @@ int main(int argc, char *argv[])
 	// Main loop
 	while (!lp_isTerminationRequired())
 	{
+
 		int result = EventLoop_Run(lp_getTimerEventLoop(), -1, true);
+
 		// Continue if interrupted by signal, e.g. due to breakpoint being set.
 		if (result == -1 && errno != EINTR)
 		{

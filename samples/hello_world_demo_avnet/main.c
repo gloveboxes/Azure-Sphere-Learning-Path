@@ -33,7 +33,6 @@
  *	   3. Click File, then Save to save the CMakeLists.txt file which will auto generate the CMake Cache.
  */
 
-
  // Hardware definition
 #include "hw/azure_sphere_learning_path.h"
 
@@ -66,13 +65,13 @@
 #include "SEEED_STUDIO/board.h"
 #endif // SEEED_STUDIO
 
-
 // Number of bytes to allocate for the JSON telemetry message for IoT Central
-#define JSON_MESSAGE_BYTES 256  
+#define JSON_MESSAGE_BYTES 256
 
 // Forward signatures
 static void ReadSensorHandler(EventLoopTimer* eventLoopTimer);
-static void led1ControlHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding);
+static void SampleRateDeviceTwinHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding);
+static LP_DIRECT_METHOD_RESPONSE_CODE LightControlDirectMethodHandler(JSON_Object* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg);
 
 // Variables
 static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
@@ -87,15 +86,29 @@ static LP_MESSAGE_PROPERTY messageVersion = { .key = "version", .value = "1" };
 
 static LP_MESSAGE_PROPERTY* telemetryMessageProperties[] = { &messageAppId, &telemetryMessageType, &messageFormat, &messageVersion };
 
+/***********************************************/
+/*****  Declare Timers, Twins and Methods  *****/
 
 
 
 
-// Sets
-static LP_TIMER* timerSet[] = { };
-static LP_PERIPHERAL_GPIO* peripheralSet[] = { };
+/****************************************/
+/*****  Initialise collection set  *****/
+
+static LP_TIMER* timerSet[] = {  };
 static LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = {  };
+static LP_PERIPHERAL_GPIO* peripheralSet[] = {  };
+static LP_DIRECT_METHOD_BINDING* directMethodBindingSet[] = {  };
 
+/****************************************/
+/*****  Demo Code                   *****/
+
+
+
+
+/*****************************************************************************/
+/*         Initialise and run code                                           */
+/*****************************************************************************/
 
 static void InitPeripheralsAndHandlers(void)
 {
@@ -103,6 +116,7 @@ static void InitPeripheralsAndHandlers(void)
 
 	lp_openPeripheralGpioSet(peripheralSet, NELEMS(peripheralSet));
 	lp_openDeviceTwinSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
+	lp_openDirectMethodSet(directMethodBindingSet, NELEMS(directMethodBindingSet));
 
 	lp_startTimerSet(timerSet, NELEMS(timerSet));
 	lp_startCloudToDevice();
@@ -119,6 +133,7 @@ static void ClosePeripheralsAndHandlers(void)
 
 	lp_closePeripheralGpioSet();
 	lp_closeDeviceTwinSet();
+	lp_closeDirectMethodSet();
 
 	lp_closeDevKit();
 
