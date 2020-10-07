@@ -208,12 +208,12 @@ static LP_DIRECT_METHOD_BINDING* directMethodBindingSet[] = { &lightControl };
 static LP_DIRECT_METHOD_RESPONSE_CODE LightControlDirectMethodHandler(JSON_Object* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg)
 {
 	const char propertyName[] = "light_state";
-	static struct timespec period;
 
 	if (!json_object_has_value_of_type(json, propertyName, JSONBoolean))
 	{
 		return LP_METHOD_FAILED;
 	}
+	
 	bool state = (bool)json_object_get_boolean(json, propertyName);
 
 	if (state)
