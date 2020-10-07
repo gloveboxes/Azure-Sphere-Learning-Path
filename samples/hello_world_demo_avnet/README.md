@@ -113,8 +113,8 @@ static void ReadSensorHandler(EventLoopTimer* eventLoopTimer)
 1. Step through the breakpoint and discuss
 
 > Notes: CLI example
-HUB_NAME={your hub name}
-CLI Usage example: az iot hub monitor-events --hub-name $HUB_NAME -p app -o table
+    - HUB_NAME={your hub name}
+    - CLI Usage example: az iot hub monitor-events --hub-name $HUB_NAME -p app -o table
 
 ---
 
@@ -168,9 +168,9 @@ static void SampleRateDeviceTwinHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBindin
 1. Step through the breakpoint and discuss
 
 > Notes: CLI example
-DEVICE_ID={your Azure Sphere device ID}
-HUB_NAME={your hub name}
-az iot hub device-twin update --device-id "\${DEVICE_ID,,}" -n $HUB_NAME --set properties.desired='{"SampleRateSeconds":{"value":8}}'
+    - DEVICE_ID={your Azure Sphere device ID}
+    - HUB_NAME={your hub name}
+    - az iot hub device-twin update --device-id "\${DEVICE_ID,,}" -n $HUB_NAME --set properties.desired='{"SampleRateSeconds":{"value":8}}'
 
 ---
 
@@ -249,37 +249,8 @@ static LP_DIRECT_METHOD_RESPONSE_CODE LightControlDirectMethodHandler(JSON_Objec
 1. Step through the breakpoint and discuss
 
 > Notes: CLI example
-DEVICE_ID={your Azure Sphere device ID}
-HUB_NAME={your hub name}
-az iot hub invoke-device-method --method-name "LightControl" --method-payload '{"light_state":true}' --device-id "\${DEVICE_ID,,}" -n $HUB_NAME --timeout 120
+    - DEVICE_ID={your Azure Sphere device ID}
+    - HUB_NAME={your hub name}
+    - az iot hub invoke-device-method --method-name "LightControl" --method-payload '{"light_state":true}' --device-id "\${DEVICE_ID,,}" -n $HUB_NAME --timeout 120
 
 ---
-
-## Step 5: Build, Deploy, Debug
-
-<kbd>F5</kbd>
-
-## Step 6: Monitor Telemetry
-
-1. From the Azure Sphere Cloud Shell
-2. Run the az monitor events command
-	```bash
-	az iot hub monitor-events --hub-name iot-hub-azure-sphere
-	```
-
-## Step 7: Explorer a Device Twin
-
-1. From IoT Hub Portal
-2. Select IoT Devices
-3. Open your device
-4. Select device twins
-5. add/update desired property
-	```json
-   "SampleRateSeconds": {
-     "value": 2
-   },
-	```
-6. Set breakpoint in device twin handler
-7. Back in the portal save the device twin
-8. swap back to Visual Studio Code - the code should have halted at the breakpoint
-
