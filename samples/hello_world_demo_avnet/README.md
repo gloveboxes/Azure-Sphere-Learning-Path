@@ -112,6 +112,10 @@ static void ReadSensorHandler(EventLoopTimer* eventLoopTimer)
 1. From Azure IoT Hub CLI or Azure IoT Explorer view telemetry
 1. Step through the breakpoint and discuss
 
+> Notes: CLI example
+HUB_NAME={your hub name}
+CLI Usage example: az iot hub monitor-events --hub-name $HUB_NAME -p app -o table
+
 ---
 
 ## Step 3: Set Sensor Sample Rate 
@@ -162,6 +166,11 @@ static void SampleRateDeviceTwinHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBindin
     ```
 
 1. Step through the breakpoint and discuss
+
+> Notes: CLI example
+DEVICE_ID={your Azure Sphere device ID}
+HUB_NAME={your hub name}
+az iot hub device-twin update --device-id "\${DEVICE_ID,,}" -n $HUB_NAME --set properties.desired='{"SampleRateSeconds":{"value":8}}'
 
 ---
 
@@ -238,6 +247,11 @@ static LP_DIRECT_METHOD_RESPONSE_CODE LightControlDirectMethodHandler(JSON_Objec
     * Method name: **LightControl**
   	* Payload: **{"light_state":true}**
 1. Step through the breakpoint and discuss
+
+> Notes: CLI example
+DEVICE_ID={your Azure Sphere device ID}
+HUB_NAME={your hub name}
+az iot hub invoke-device-method --method-name "LightControl" --method-payload '{"light_state":true}' --device-id "\${DEVICE_ID,,}" -n $HUB_NAME --timeout 120
 
 ---
 
