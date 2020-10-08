@@ -29,12 +29,11 @@ Demo flow
    1. ID Scope
    2. whitelist peripherals
    3. whitelist network endpoints
-2. Set up event timer and handler
-3. Add peripheral
-4. Add device twin
-5. F5 to run
-6. Review telemetry from azure portal shell
-   * az iot hub monitor-events --hub-name iot-hub-azure-sphere
+1. Discuss main.c structure
+1. Set up event timer and handler
+1. Add peripheral
+1. Add device twin
+1. Add Direct method
 
 ---
 
