@@ -25,10 +25,13 @@ Introduce hello world demo project structure
 
 Demo flow
 
-1. app_manifest.json
+1. Really important concept for Azure Sphere - the platform is secure by default
+2. Apps have no access to any resources unless explicity decalred - hardware and network endpoints 
+3. app_manifest.json
    1. ID Scope
-   2. whitelist peripherals
-   3. whitelist network endpoints
+   2. Capabilities have to be expliciticity declared
+    	- peripherals
+   		- allows network endpoints
 1. Discuss main.c structure
 1. Set up event timer and handler
 1. Add peripheral
