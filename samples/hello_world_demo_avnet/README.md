@@ -40,14 +40,14 @@ Demo flow
 
 ---
 
-## Step 1: Whitelist peripherals and network endpoints
+## Step 1: Declare peripherals and network endpoints
 
 ```json
     "Gpio": [ "$LED1", "$RELAY" ],
     "I2cMaster": [ "$I2cMaster2" ],
 ```
 
-### Whitelist Network Endpoints
+### Decalre Network Endpoints
 
 ```json
 "AllowedConnections": [
