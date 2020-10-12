@@ -121,63 +121,7 @@ static void ReadSensorHandler(EventLoopTimer* eventLoopTimer)
 
 ---
 
-## Step 3: Set Sensor Sample Rate 
-
-**Add device twin**
-
-```c
-// Device Twin to set sample rate 
-static LP_DEVICE_TWIN_BINDING sampleRate_DeviceTwin = {
-	.twinProperty = "SampleRateSeconds",
-	.twinType = LP_TYPE_INT,
-	.handler = SampleRateDeviceTwinHandler };
-```
-
-**Update device twin set**
-
-```c
-static LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &sampleRate_DeviceTwin };
-```
-
-**Add handler code**
-
-```c
-/// <summary>
-/// This handler called when device twin desired 'SampleRateSeconds' recieved
-/// </summary>
-static void SampleRateDeviceTwinHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding)
-{
-	struct timespec sampleRateSeconds = { *(int*)deviceTwinBinding->twinState, 0 };
-
-	if (sampleRateSeconds.tv_sec > 0 && sampleRateSeconds.tv_sec < (5 * 60)) // check sensible range
-	{
-		lp_changeTimer(&readSensorTimer, &sampleRateSeconds);
-		lp_deviceTwinReportState(deviceTwinBinding, deviceTwinBinding->twinState);
-	}
-}
-```
-
-### Set sensor sample rate run instructions
-
-1. Set breakpoint at beginning of SampleRateDeviceTwinHandler function
-1. Press <kbd>F5</kbd> to run
-1. Wait for first telemsg sent so you know you are Azure IoT connected
-1. From Azure IoT Hub CLI or Azure IoT Explorer set desired twin
-
-    ```json
-    "SensorRate": { "value": 6 }
-    ```
-
-1. Step through the breakpoint and discuss
-
-> Notes: CLI example
-    - DEVICE_ID={your Azure Sphere device ID}
-    - HUB_NAME={your hub name}
-    - az iot hub device-twin update --device-id "\${DEVICE_ID,,}" -n $HUB_NAME --set properties.desired='{"SampleRateSeconds":{"value":8}}'
-
----
-
-## Step 4: Remote control lab light
+## Step 3: Remote control lab light
 
 **Add GPIO declaration**
 
@@ -256,4 +200,71 @@ static LP_DIRECT_METHOD_RESPONSE_CODE LightControlDirectMethodHandler(JSON_Objec
     - HUB_NAME={your hub name}
     - az iot hub invoke-device-method --method-name "LightControl" --method-payload '{"light_state":true}' --device-id "\${DEVICE_ID,,}" -n $HUB_NAME --timeout 120
 
+
+### Remote Control Serverless Solution
+
+Invoke direct method via serverless web app and Azure Functions
+
+[Azure Sphere Lab Light Control with Azure IoT Direct Methods](https://aka.ms/learn/iothub/demo)
+
+> **Important**. Ensure correct Azure Function *IOT_HUB_SERVICE_CONNECTION_STRING* and *AZURE_SPHERE_IOT_HUB_DEVICE_ID* app settings set for demo.  
+
 ---
+
+## Step 4: Set Sensor Sample Rate 
+
+**Add device twin**
+
+```c
+// Device Twin to set sample rate 
+static LP_DEVICE_TWIN_BINDING sampleRate_DeviceTwin = {
+	.twinProperty = "SampleRateSeconds",
+	.twinType = LP_TYPE_INT,
+	.handler = SampleRateDeviceTwinHandler };
+```
+
+**Update device twin set**
+
+```c
+static LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &sampleRate_DeviceTwin };
+```
+
+**Add handler code**
+
+```c
+/// <summary>
+/// This handler called when device twin desired 'SampleRateSeconds' recieved
+/// </summary>
+static void SampleRateDeviceTwinHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding)
+{
+	struct timespec sampleRateSeconds = { *(int*)deviceTwinBinding->twinState, 0 };
+
+	if (sampleRateSeconds.tv_sec > 0 && sampleRateSeconds.tv_sec < (5 * 60)) // check sensible range
+	{
+		lp_changeTimer(&readSensorTimer, &sampleRateSeconds);
+		lp_deviceTwinReportState(deviceTwinBinding, deviceTwinBinding->twinState);
+	}
+}
+```
+
+### Set sensor sample rate run instructions
+
+1. Set breakpoint at beginning of SampleRateDeviceTwinHandler function
+1. Press <kbd>F5</kbd> to run
+1. Wait for first telemsg sent so you know you are Azure IoT connected
+1. From Azure IoT Hub CLI or Azure IoT Explorer set desired twin
+
+    ```json
+    "SensorRate": { "value": 6 }
+    ```
+
+1. Step through the breakpoint and discuss
+
+> Notes: CLI example
+    - DEVICE_ID={your Azure Sphere device ID}
+    - HUB_NAME={your hub name}
+    - az iot hub device-twin update --device-id "\${DEVICE_ID,,}" -n $HUB_NAME --set properties.desired='{"SampleRateSeconds":{"value":8}}'
+
+---
+
+
