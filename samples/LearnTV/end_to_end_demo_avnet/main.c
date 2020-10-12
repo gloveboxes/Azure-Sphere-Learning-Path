@@ -89,102 +89,21 @@ static LP_MESSAGE_PROPERTY* telemetryMessageProperties[] = { &messageAppId, &tel
 /***********************************************/
 /*****  Declare Timers, Twins and Methods  *****/
 
-// Timer
-static LP_TIMER readSensorTimer = {
-	.period = {5, 0},
-	.name = "readSensorTimer",
-	.handler = ReadSensorHandler };
 
-// Device Twin to set sample rate 
-static LP_DEVICE_TWIN_BINDING sampleRate_DeviceTwin = {
-	.twinProperty = "SampleRateSeconds",
-	.twinType = LP_TYPE_INT,
-	.handler = SampleRateDeviceTwinHandler };
-
-static LP_PERIPHERAL_GPIO relay = {
-	.pin = RELAY,
-	.direction = LP_OUTPUT,
-	.initialState = GPIO_Value_Low,
-	.invertPin = false,
-	.initialise = lp_openPeripheralGpio,
-	.name = "relay" };
-
-static LP_DIRECT_METHOD_BINDING lightControl = {
-	.methodName = "LightControl",
-	.handler = LightControlDirectMethodHandler };
 
 
 /****************************************/
 /*****  Initialise collection set  *****/
 
-static LP_TIMER* timerSet[] = { &readSensorTimer };
-static LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &sampleRate_DeviceTwin };
-static LP_PERIPHERAL_GPIO* peripheralSet[] = { &relay  };
-static LP_DIRECT_METHOD_BINDING* directMethodBindingSet[] = { &lightControl };
+static LP_TIMER* timerSet[] = {  };
+static LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = {  };
+static LP_PERIPHERAL_GPIO* peripheralSet[] = {  };
+static LP_DIRECT_METHOD_BINDING* directMethodBindingSet[] = {  };
 
 /****************************************/
 /*****  Demo Code                   *****/
 
-/// <summary>
-/// Remote control lab light Direct Method 'LightControl' {"light_state":true}
-/// </summary>
-static LP_DIRECT_METHOD_RESPONSE_CODE LightControlDirectMethodHandler(JSON_Object* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg)
-{
-	const char propertyName[] = "light_state";
 
-	if (!json_object_has_value_of_type(json, propertyName, JSONBoolean))
-	{
-		return LP_METHOD_FAILED;
-	}
-	
-	bool state = (bool)json_object_get_boolean(json, propertyName);
-
-	if (state)
-	{
-		lp_gpioOn(&relay);
-	}
-	else
-	{
-		lp_gpioOff(&relay);
-	}
-
-	return LP_METHOD_SUCCEEDED;
-}
-
-/// <summary>
-/// This handler called when device twin desired 'SampleRateSeconds' recieved
-/// </summary>
-static void SampleRateDeviceTwinHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding)
-{
-	struct timespec sampleRateSeconds = { *(int*)deviceTwinBinding->twinState, 0 };
-
-	if (sampleRateSeconds.tv_sec > 0 && sampleRateSeconds.tv_sec < (5 * 60)) // check sensible range
-	{
-		lp_changeTimer(&readSensorTimer, &sampleRateSeconds);
-		lp_deviceTwinReportState(deviceTwinBinding, deviceTwinBinding->twinState);
-	}
-}
-
-static void ReadSensorHandler(EventLoopTimer* eventLoopTimer)
-{
-	static int msgId = 0;
-	static LP_ENVIRONMENT environment;
-
-	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
-	{
-		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
-		return;
-	}
-
-	if (lp_readTelemetry(&environment))
-	{
-		if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, MsgTemplate, environment.temperature, environment.humidity, environment.pressure, environment.light, msgId++) > 0)
-		{
-			Log_Debug(msgBuffer);
-			lp_sendMsg(msgBuffer);
-		}
-	}
-}
 
 
 /*****************************************************************************/
