@@ -3,6 +3,11 @@
 	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <style>
+
+	body{
+		font-family: Arial, Helvetica, sans-serif;
+	}
+
 	#status {
 		background-color: blue;
 		font-size: 4;
@@ -44,7 +49,7 @@
 		border-radius: 12px;
 	}
 
-	.button-connect {
+	.button-green {
 		background-color: green;
 		border: none;
 		color: white;
@@ -52,7 +57,8 @@
 		text-align: center;
 		text-decoration: none;
 		display: inline-block;
-		font-size: 16px;
+		font-size: 32px;
+		font-weight: bold;
 		width: 120px;
 		height: 120px;
 		border-radius: 12px;
@@ -66,7 +72,8 @@
 		text-align: center;
 		text-decoration: none;
 		display: inline-block;
-		font-size: 16px;
+		font-size: 32px;
+		font-weight: bold;
 		width: 120px;
 		height: 120px;
 		border-radius: 50%;
@@ -108,7 +115,7 @@
 		<tr>
 			<td>
 				<div style="text-align:center;">
-					<button class="button-connect" onclick="userAction('true');">On</button>
+					<button class="button-green" onclick="userAction('true');">On</button>
 					<br />
 					<br />
 					<button class="button-red" onclick="userAction('false')">Off</button>

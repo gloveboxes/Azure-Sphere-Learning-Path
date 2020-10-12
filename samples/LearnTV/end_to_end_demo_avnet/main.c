@@ -96,9 +96,9 @@ static LP_MESSAGE_PROPERTY* telemetryMessageProperties[] = { &messageAppId, &tel
 /*****  Initialise collection set  *****/
 
 static LP_TIMER* timerSet[] = {  };
-static LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = {  };
 static LP_PERIPHERAL_GPIO* peripheralSet[] = {  };
 static LP_DIRECT_METHOD_BINDING* directMethodBindingSet[] = {  };
+static LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = {  };
 
 /****************************************/
 /*****  Demo Code                   *****/
