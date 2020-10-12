@@ -1,0 +1,9 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "AZURE_SPHERE_IOT_HUB_DEVICE_ID":"",
+    "IOT_HUB_SERVICE_CONNECTION_STRING":""
+  }
+}
