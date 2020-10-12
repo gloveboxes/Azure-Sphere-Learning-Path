@@ -22,7 +22,7 @@ azsphere_configure_tools(TOOLS_REVISION "20.07")
 azsphere_configure_api(TARGET_API_SET "6")
 
 
-add_subdirectory("../../LearningPathLibrary" out)
+add_subdirectory("../../../LearningPathLibrary" out)
 
 set(Source
     "main.c"
@@ -32,11 +32,11 @@ source_group("Source" FILES ${Source})
 if(AVNET)
 
     set(Oem
-        "../../LearningPathLibrary/AVNET/lps22hh_reg.c"
-        "../../LearningPathLibrary/AVNET/lsm6dso_reg.c"
-        "../../LearningPathLibrary/AVNET/imu_temp_pressure.c"
-        "../../LearningPathLibrary/AVNET/light_sensor.c"
-        "../../LearningPathLibrary/AVNET/board.c"
+        "../../../LearningPathLibrary/AVNET/lps22hh_reg.c"
+        "../../../LearningPathLibrary/AVNET/lsm6dso_reg.c"
+        "../../../LearningPathLibrary/AVNET/imu_temp_pressure.c"
+        "../../../LearningPathLibrary/AVNET/light_sensor.c"
+        "../../../LearningPathLibrary/AVNET/board.c"
     )
     source_group("Oem" FILES ${Oem})
 
@@ -47,7 +47,7 @@ endif(AVNET)
 if(SEEED_STUDIO_RDB OR SEEED_STUDIO_MINI)
 
     set(Oem
-        "../../LearningPathLibrary/SEEED_STUDIO/board.c"
+        "../../../LearningPathLibrary/SEEED_STUDIO/board.c"
     )
     source_group("Oem" FILES ${Oem})
 
@@ -66,28 +66,28 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC AZURE_IOT_HUB_CONFIGURED)
 target_link_libraries(${PROJECT_NAME} applibs pthread gcc_s c azsphere_libs)
 
 target_include_directories(${PROJECT_NAME} PUBLIC
-                           ../../LearningPathLibrary
+                           ../../../LearningPathLibrary
                           )
 
 target_compile_options(${PROJECT_NAME} PRIVATE -Wno-unknown-pragmas)
-set_source_files_properties(../../LearningPathLibrary/AVNET/lsm6dso_reg.c PROPERTIES COMPILE_FLAGS -Wno-conversion)
-set_source_files_properties(../../LearningPathLibrary/AVNET/lps22hh_reg.c PROPERTIES COMPILE_FLAGS -Wno-conversion)
+set_source_files_properties(../../../LearningPathLibrary/AVNET/lsm6dso_reg.c PROPERTIES COMPILE_FLAGS -Wno-conversion)
+set_source_files_properties(../../../LearningPathLibrary/AVNET/lps22hh_reg.c PROPERTIES COMPILE_FLAGS -Wno-conversion)
 
-set_source_files_properties(../../LearningPathLibrary/AVNET/imu_temp_pressure.c PROPERTIES COMPILE_FLAGS -Wno-float-conversion)
-set_source_files_properties(../../LearningPathLibrary/AVNET/imu_temp_pressure.c PROPERTIES COMPILE_FLAGS -Wno-incompatible-pointer-types)
-set_source_files_properties(../../LearningPathLibrary/AVNET/imu_temp_pressure.c PROPERTIES COMPILE_FLAGS -Wno-conversion)
+set_source_files_properties(../../../LearningPathLibrary/AVNET/imu_temp_pressure.c PROPERTIES COMPILE_FLAGS -Wno-float-conversion)
+set_source_files_properties(../../../LearningPathLibrary/AVNET/imu_temp_pressure.c PROPERTIES COMPILE_FLAGS -Wno-incompatible-pointer-types)
+set_source_files_properties(../../../LearningPathLibrary/AVNET/imu_temp_pressure.c PROPERTIES COMPILE_FLAGS -Wno-conversion)
 
 
 if(AVNET)
-    azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../../HardwareDefinitions/avnet_mt3620_sk" TARGET_DEFINITION "azure_sphere_learning_path.json")
+    azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../../../HardwareDefinitions/avnet_mt3620_sk" TARGET_DEFINITION "azure_sphere_learning_path.json")
 endif(AVNET)
 
 if (SEEED_STUDIO_RDB)
-    azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../../HardwareDefinitions/mt3620_rdb" TARGET_DEFINITION "azure_sphere_learning_path.json")
+    azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../../../HardwareDefinitions/mt3620_rdb" TARGET_DEFINITION "azure_sphere_learning_path.json")
 endif()
 
 if (SEEED_STUDIO_MINI)
-    azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../../HardwareDefinitions/seeed_mt3620_mdb" TARGET_DEFINITION "azure_sphere_learning_path.json")
+    azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../../../HardwareDefinitions/seeed_mt3620_mdb" TARGET_DEFINITION "azure_sphere_learning_path.json")
 endif(SEEED_STUDIO_MINI)
 
 azsphere_target_add_image_package(${PROJECT_NAME})

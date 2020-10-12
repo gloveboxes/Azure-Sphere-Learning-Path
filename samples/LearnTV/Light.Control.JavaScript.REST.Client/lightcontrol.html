@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html
+	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<style>
+	#status {
+		background-color: blue;
+		font-size: 4;
+		font-weight: bold;
+		color: white;
+		line-height: 140%;
+	}
+
+	#warning {
+		color: red;
+	}
+
+	label {
+		display: inline-block;
+		float: left;
+		clear: left;
+		width: 60px;
+		text-align: right;
+	}
+
+	input {
+		display: inline-block;
+		float: left;
+	}
+
+	.button {
+		background-color: blueviolet;
+		/* Green */
+		border: none;
+		color: white;
+		padding: 20px 10px;
+		margin: 16px 10px 10px;
+		text-align: center;
+		text-decoration: none;
+		display: inline-block;
+		font-size: 16px;
+		width: 120px;
+		/* height: 80px; */
+		border-radius: 12px;
+	}
+
+	.button-connect {
+		background-color: green;
+		border: none;
+		color: white;
+		padding: 10px 10px;
+		text-align: center;
+		text-decoration: none;
+		display: inline-block;
+		font-size: 16px;
+		width: 120px;
+		height: 120px;
+		border-radius: 12px;
+	}
+
+	.button-red {
+		background-color: red;
+		border: none;
+		color: white;
+		padding: 30px 10px;
+		text-align: center;
+		text-decoration: none;
+		display: inline-block;
+		font-size: 16px;
+		width: 120px;
+		height: 120px;
+		border-radius: 50%;
+	}
+</style>
+
+<head>
+	<title>Azure Sphere</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script type="text/javascript">
+
+		const userAction = async (cmd) => {
+			url = 'https://azurespherelightcontrol.azurewebsites.net/api/control?cmd=' + cmd
+			const response = await fetch(url);
+		}
+
+		document.onkeydown = function (event) {
+			switch (event.keyCode) {
+				case 38: // up key
+					userAction('true');
+					break;
+				case 40: // down key
+					userAction('false');
+					break;
+			}
+		};
+
+	</script>
+</head>
+
+<body>
+	<h1>Azure Sphere Lab Light Control with Azure IoT Direct Methods</h1>
+
+
+	<hr>
+	<br />
+
+	<table cellpadding="10">
+		<tr>
+			<td>
+				<div style="text-align:center;">
+					<button class="button-connect" onclick="userAction('true');">On</button>
+					<br />
+					<br />
+					<button class="button-red" onclick="userAction('false')">Off</button>
+				</div>
+			</td>
+			<td>
+				<img src="azure-sphere.jpg" alt="Azure Sphere" width="450">
+			</td>
+
+		</tr>
+	</table>
+
+	<br />
+	<hr />
+	<br />
+	<h1>Solution architecture</h1>
+
+	<img src="architecture.png" />
+
+</body>
+
+</html>
