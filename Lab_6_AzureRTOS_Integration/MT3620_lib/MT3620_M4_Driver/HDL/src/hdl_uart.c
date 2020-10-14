@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2020 MediaTek Inc. All rights reserved.
+ * (C) 2005-2019 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -153,14 +153,13 @@ void mtk_hdl_uart_dma_en(void __iomem *uart_base, bool dma_en)
 {
 	u8 reg_val;
 
-	if (dma_en) {
-		/* Clear TX and RX FIFO */
-		reg_val = osai_readl(uart_base + UART_FCR_RO);
-		reg_val |= UART_FCR_FIFO_INIT;
-		osai_writel(reg_val, uart_base + UART_FCR);
+	/* Clear TX and RX FIFO */
+	reg_val = osai_readl(uart_base + UART_FCR_RO);
+	reg_val |= UART_FCR_FIFO_INIT;
+	osai_writel(reg_val, uart_base + UART_FCR);
 
+	if (dma_en)
 		reg_val = 0x01;
-	}
 	else
 		reg_val = 0x00;
 	osai_writel(reg_val, uart_base + UART_VFIFO_EN_REG);

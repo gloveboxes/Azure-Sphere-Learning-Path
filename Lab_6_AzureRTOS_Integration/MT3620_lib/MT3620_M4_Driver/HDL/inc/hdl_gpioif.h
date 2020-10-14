@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2020 MediaTek Inc. All rights reserved.
+ * (C) 2005-2019 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -224,10 +224,6 @@
 #define GPIO_CAP_VALUE_1_MASK		BITS(0, 31)
 #define GPIO_CAP_VALUE_1_SHFT		0
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 void mtk_hdl_gpioif_select_clock_source(
 	void __iomem *reg_clk_base, u32 clk);
 void mtk_hdl_gpioif_event_counter_setting(void __iomem *base_addr,
@@ -269,9 +265,5 @@ void mtk_hdl_gpioif_read_high_limit_val(
 void mtk_hdl_gpioif_clear_int_sts_by_bit(
 	void __iomem *base_addr, u32 int_bit, u32 shift, u32 mask);
 void	mtk_hdl_gpioif_read_int_val(void __iomem *base_addr, u32 *pvalue);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

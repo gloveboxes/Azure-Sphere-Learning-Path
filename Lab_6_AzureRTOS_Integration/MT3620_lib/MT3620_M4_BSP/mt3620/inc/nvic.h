@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2020 MediaTek Inc. All rights reserved.
+ * (C) 2005-2019 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -165,9 +165,7 @@ __STATIC_INLINE uint32_t NVIC_GetVectActive(void)
 		__set_PRIMASK(flag);		\
 	}while(0);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+
 void NVIC_SetupVectorTable(void);
 void NVIC_SWInt(unsigned int source);
 void CM4_Install_NVIC(int irqn,int prior,int edgetr, NVIC_IRQ_Handler handler ,int enable);
@@ -176,8 +174,6 @@ int NVIC_UnRegister(int irqn);
 int NVIC_ISR_Check_and_backup(int irqn);
 int NVIC_ISR_Restore(void);
 unsigned int cm4_irq_sw_reset(void);
-#ifdef __cplusplus
-}
-#endif
+
 
 #endif

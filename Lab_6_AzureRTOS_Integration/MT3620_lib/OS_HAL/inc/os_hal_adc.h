@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2020 MediaTek Inc. All rights reserved.
+ * (C) 2005-2019 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -38,136 +38,6 @@
 #define __OS_HAL_ADC_H__
 
 #include "mhal_adc.h"
-
-/**
- * @addtogroup OS-HAL
- * @{
- * @addtogroup adc
- * @{
- * This section introduces the Analog-to-Digital Converter (ADC) APIs
- * including terms and acronyms, supported features,
- * details on how to use this driver, enums, structures and functions.
- *
- * @section OS_HAL_ADC_Terms_Chapter Terms and Acronyms
- *
- * |Terms		   |Details		|
- * |------------|-------------------------------------|
- * |\b ADC		 | ADC is an Analog-to-Digital Converter.|
- * |\b DMA		 | Direct Memory Access.|
- * |\b FIFO		 | First In, First Out.|
- *
- * @section OS_HAL_ADC_Features_Chapter Supported Features
- * See @ref MHAL_ADC_Features_Chapter for the details of  Supported Features.
- *
- * @}
- * @}
- */
-
-/**
- * @addtogroup OS-HAL
- * @{
- * @addtogroup adc
- * @{
- * @section OS_HAL_ADC_Driver_Usage_Chapter How to use this driver
- *
- * - \b How \b to \b develop \b user \b application \b by \b using
- *	  \b OS-HAL \b API: \n
- *	- sample code (this is the user application sample code on freeRTos):
- *	  @code
- *
- *
- *	  - ADC one shot mode:
- *
- *        -Initialize the ADC module.
- *            - Call mtk_os_hal_adc_ctlr_init(
- *            adc_pmode pmode,
- *            adc_fifo_mode fifo_mode,
- *            u16 bit_map)
- *
- *        -Set one shot state machine parameters.
- *            -Call mtk_os_hal_adc_fsm_param_set(
- *            struct adc_fsm_param *adc_fsm_parameter)
- *
- *        -Start the ADC module.
- *            - Call mtk_os_hal_adc_start(void) or
- *            mtk_os_hal_adc_start_ch(u16 ch_bit_map)
- *
- *        -Retrieve sample data for a channel.
- *            - Call mtk_os_hal_adc_one_shot_get_data(
- *            adc_channel sample_channel,
- *            u32 *data)
- *
- *        -ADC hw is no longer in use,  to return the ADC module back
- *        to its original state.
- *            - Call mtk_os_hal_adc_ctlr_deinit(void)
- *
- *
- *	  - ADC fifo mode:
- *
- *        -Initialize the ADC module.
- *            - Call mtk_os_hal_adc_ctlr_init(
- *            adc_pmode pmode,
- *            adc_fifo_mode fifo_mode,
- *            u16 bit_map)
- *
- *        -Set one shot state machine parameters.
- *            - Call mtk_os_hal_adc_fsm_param_set(
- *            struct adc_fsm_param *adc_fsm_parameter)
- *
- *        -Retrieve the sample data.
- *            - Call mtk_os_hal_adc_period_get_data(u32 (*rx_buf)[32],
- *            u32 *length)
- *
- *        -ADC hw is no longer in use,  to return the ADC module back
- *        to its original state.
- *            - Call mtk_os_hal_adc_ctlr_deinit(void)
- *
- *
- *	  - ADC dma mode:
- *
- *        -Initialize the ADC module.
- *            - Call mtk_os_hal_adc_ctlr_init(
- *            adc_pmode pmode,
- *            adc_fifo_mode fifo_mode,
- *            u16 bit_map)
- *
- *        -Set one shot state machine parameters.
- *            - Call mtk_os_hal_adc_fsm_param_set(
- *            struct adc_fsm_param *adc_fsm_parameter)
- *
- *        -Retrieve sample dat
- *            - Call mtk_os_hal_adc_period_get_data(u32 (*rx_buf)[32],
- *            u32 *length)
- *
- *        -ADC hw is no longer in use,  to return the ADC module back
- *        to its original state.
- *            - Call mtk_os_hal_adc_ctlr_deinit(void)
- *	@endcode
- *
- * @}
- * @}
- */
-
-/**
- * @addtogroup OS-HAL
- * @{
- * @addtogroup adc
- * @{
- */
-
-/** @defgroup os_hal_adc_function Function
-  * @{
-  *	OS-HAL ADC function list information, including
-  *	ADC hardware initializing and de-initializing,
-  *	enabling and disabling ADC hardware output,
-  *	gets ADC sample data using FIFO mode,
-  *	gets ADC sample data using DMA mode,
-  */
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * @brief  Init ADC controller.
  *
@@ -182,8 +52,8 @@ extern "C" {
   *  ch_bit_map = ADC_CH_0 | ADC_CH_1,\n
  * @return
  *	If return value is 0, it means success.\n
- *	If return value is -#ADC_EPTR , it means ctlr is NULL.\n
- *	If return value is -#ADC_EPARAMETER , it means parameter invalid.
+ *	If return value is -#EPTR , it means ctlr is NULL.\n
+ *	If return value is -#EPARAMETER , it means parameter invalid.
  */
 int mtk_os_hal_adc_ctlr_init(adc_pmode pmode, adc_fifo_mode fifo_mode,
 	u16 bit_map);
@@ -195,20 +65,20 @@ int mtk_os_hal_adc_ctlr_init(adc_pmode pmode, adc_fifo_mode fifo_mode,
  *
  * @return
  *	If return value is 0, it means success.\n
- *	If return value is -#ADC_EPTR , it means ctlr is NULL.\n
- *	If return value is -#ADC_EPARAMETER , it means parameter invalid.
+ *	If return value is -#EPTR , it means ctlr is NULL.\n
+ *	If return value is -#EPARAMETER , it means parameter invalid.
  */
 int mtk_os_hal_adc_ctlr_deinit(void);
 
 /**
- * @brief  start predefined channels by ADC init API.
+ * @brief  start ADC controller.
  *
  *  @param none.
  *
  * @return
  *	If return value is 0, it means success.\n
- *	If return value is -#ADC_EPTR , it means ctlr is NULL.\n
- *	If return value is -#ADC_EPARAMETER , it means parameter invalid.
+ *	If return value is -#EPTR , it means ctlr is NULL.\n
+ *	If return value is -#EPARAMETER , it means parameter invalid.
  */
 int mtk_os_hal_adc_start(void);
 
@@ -223,8 +93,8 @@ int mtk_os_hal_adc_start(void);
  *
  * @return
  *	If return value is 0, it means success.\n
- *	If return value is -#ADC_EPTR , it means ctlr is NULL.\n
- *	If return value is -#ADC_EPARAMETER , it means parameter invalid.
+ *	If return value is -#EPTR , it means ctlr is NULL.\n
+ *	If return value is -#EPARAMETER , it means parameter invalid.
  */
 
 int mtk_os_hal_adc_start_ch(u16 ch_bit_map);
@@ -233,8 +103,8 @@ int mtk_os_hal_adc_start_ch(u16 ch_bit_map);
   * @param [in] adc_fsm_parameter : ADC parameter information.
   * @return
   *  If return value is 0, it means success.\n
-  *  If return value is -#ADC_EPTR , it means ctlr is NULL.\n
-  *  If return value is -#ADC_EPARAMETER , it means parameter invalid.
+  *  If return value is -#EPTR , it means ctlr is NULL.\n
+  *  If return value is -#EPARAMETER , it means parameter invalid.
   */
 int mtk_os_hal_adc_fsm_param_set(struct adc_fsm_param *adc_fsm_parameter);
 /**
@@ -244,33 +114,19 @@ int mtk_os_hal_adc_fsm_param_set(struct adc_fsm_param *adc_fsm_parameter);
   * @param [out] data : ADC sample data.
   * @return
   *  If return value is 0, it means success.\n
-  *  If return value is -#ADC_EPTR , it means ctlr is NULL.\n
-  *  If return value is -#ADC_EPARAMETER , it means parameter invalid.
+  *  If return value is -#EPTR , it means ctlr is NULL.\n
+  *  If return value is -#EPARAMETER , it means parameter invalid.
   */
 
 int mtk_os_hal_adc_one_shot_get_data(adc_channel sample_channel, u32 *data);
 /**
   * @brief  This function is used to sample ADC channel voltage
   *  using period FIFO mode.
-  * @param [out] rx_buf : Sampled data.
-  * @param [out] length : Length of sample data.
+  * @param [in] sample_channel : ADC channel number(0~7).
   * @return
   *  If return value is 0, it means success.\n
-  *  If return value is -#ADC_EPTR , it means ctlr is NULL.\n
-  *  If return value is -#ADC_EPARAMETER , it means parameter invalid.
+  *  If return value is -#EPTR , it means ctlr is NULL.\n
+  *  If return value is -#EPARAMETER , it means parameter invalid.
   */
-int mtk_os_hal_adc_period_get_data(u32 (*rx_buf)[32], u32 *length);
-
-#ifdef __cplusplus
-}
-#endif
-
-/**
-  * @}
-  */
-
-/**
-  * @}
-  * @}
-  */
+int mtk_os_hal_adc_period_get_data(adc_channel sample_channel);
 #endif

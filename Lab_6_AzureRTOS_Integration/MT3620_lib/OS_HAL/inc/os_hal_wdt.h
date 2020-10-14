@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2020 MediaTek Inc. All rights reserved.
+ * (C) 2005-2019 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -37,92 +37,6 @@
 #define __OS_HAL_WDT_H__
 
 /**
- * @addtogroup OS-HAL
- * @{
- * @addtogroup wdt
- * @{
- *
- *  These sections introduce the Watchdog Timer (WDT) APIs including terms and
- * acronyms, supported features, details on how to use this driver, enums,
- * structures and functions.
- *
- * @section OS_HAL_WDT_Terms_Chapter Terms and Acronyms
- *
- * | Terms |                       Details                                  |
- * |-------|----------------------------------------------------------------|
- * |WDT    |Watchdog Timer                                                  |
- * |HW-RST |Hardware Reset. It can be provided by WDT counter timeout(hwrst)|
- * |SW-RST |Software Reset. It can be provided by WDT function(swrst)       |
- *
- * @section OS_HAL_WDT_Features_Chapter Supported Features
- * See @ref MHAL_WDT_Features_Chapter for the details of  Supported Features.
- *
- * @}
- * @}
- */
-
-/**
- * @addtogroup OS-HAL
- * @{
- * @addtogroup wdt
- * @{
- *
- * @section OS_HAL_WDT_Driver_Usage_Chapter How to Use This Driver
- *
- * - \b Device \b driver \b sample \b code \b is \b as \b follows: \n
- *  - sample code (this is the user application sample code on freeRTos):
- *    @code
- *      - Initialize WDT driver:
- *        - Call mtk_os_hal_wdt_init() to initialize WDT driver.
- *
- *      - Configure WDT timeout value:
- *        - Call mtk_os_hal_wdt_set_timeout(T) to set WDT timeout value as T
- *          second.
- *
- *      - Configure WDT as interrupt mode:
- *        - Define a variable "struct os_wdt_int wdt_int" if necessary.
- *        - Call mtk_os_hal_wdt_register_irq(&wdt_int) to register WDT user
- *          interrupt callback handle and user data. (If input NULL to
- *          mtk_os_hal_wdt_register_irq(), the default callback handle will be
- *          registered which will reset system immediately.)
- *        - Call mtk_os_hal_wdt_config(OS_WDT_TRIGGER_IRQ) to sec WDT as
- *          interrupt mode.
- *
- *      - Configure WDT as reset mode:
- *        - Call mtk_os_hal_wdt_config(OS_WDT_TRIGGER_RESET) to sec WDT as
- *          reset mode.
- *
- *      - Enable/disable WDT:
- *        - Call mtk_os_hal_wdt_enable() and mtk_os_hal_wdt_disable() to enable/
- *          disable WDT.
- *
- *      - Restart WDT counter:
- *        - Call mtk_os_hal_wdt_restart() to restart WDT counter.
- *
- *      - Trigger system reset immediately:
- *        - Call mtk_os_hal_wdt_sw_reset() to trigger SW-RST immediately.
- *        - Call mtk_os_hal_wdt_hw_reset() to trigger HW-RST immediately.
- *    @endcode
- *
- * @}
- * @}
- */
-
-/**
-* @addtogroup OS-HAL
-* @{
-* @addtogroup wdt
-* @{
-*/
-
-
-/**
- * @defgroup os_hal_wdt_struct Struct
- *  This section introduces the structure used by WDT OS-HAL used.
- * @{
- */
-
-/**
  * @brief  The definition of WDT user interrupt handle structure.\n
  *	It can be used to register WDT user interrupt handle by
  *	mtk_os_hal_wdt_register_irq().
@@ -135,16 +49,6 @@ struct os_wdt_int {
 	  */
 	void *wdt_cb_data;
 };
-
-/**
-  * @}
-  */
-
-/**
- * @defgroup os_hal_wdt_enum Enum
- *  This section introduces the enumerations used by WDT OS-HAL used.
- * @{
- */
 
 /**
  * @brief  The enum definition of WDT event mode.\n
@@ -169,19 +73,6 @@ enum os_wdt_rst_sta {
 	/** Reset by WDT counter timeout. */
 	OS_WDT_HW_RST = 2,
 };
-
-/**
-  * @}
-  */
-
-/** @defgroup os_hal_wdt_function Function
-  * @{
-   * This section provides high level APIs to upper layer.
-  */
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * @brief  This function is used to enable WDT.
@@ -251,18 +142,18 @@ void mtk_os_hal_wdt_hw_reset(void);
  *  @param
  *	None
  *  @return
- *	#OS_WDT_NONE_RST: system boots normally in this time.\n
- *	#OS_WDT_SW_RST: system reboots by WDT swrst.\n
- *	#OS_WDT_HW_RST: system reboots by WDT counter timeout.
+ *	OS_WDT_NONE_RST: system boots normally in this time.
+ *	OS_WDT_SW_RST: system reboots by WDT swrst.
+ *	OS_WDT_HW_RST: system reboots by WDT counter timeout.
  */
 enum os_wdt_rst_sta mtk_os_hal_wdt_get_reset_status(void);
 
 /**
  * @brief  This function is used to config WDT irq mode.
- *	#OS_WDT_TRIGGER_IRQ means IRQ will be triggered when WDT timeout, while
- *	#OS_WDT_TRIGGER_RESET means the M4 core will be reset immediately when
+ *	OS_WDT_TRIGGER_IRQ means IRQ will be triggered when WDT timeout, while
+ *	OS_WDT_TRIGGER_RESET means the M4 core will be reset immediately when
  *	WDT timeout.
- *  @param [in] irq : config WDT to trigger irq(input OS_WDT_TRIGGER_IRQ), or
+ *  @param [in] irq: config WDT to trigger irq(input OS_WDT_TRIGGER_IRQ), or
  *		trigger reset(input OS_WDT_TRIGGER_RESET)
  *  @return
  *	None
@@ -271,7 +162,7 @@ void mtk_os_hal_wdt_config(enum os_wdt_mode mode);
 
 /**
  * @brief  This function is used to register user interrupt handle for WDT.
- *  @param [in] wdt_int : a pointer of struct os_wdt_int to register user
+ *  @param [in] wdt_int: a pointer of struct os_wdt_int to register user
  *		interrupt handle(wdt_cb_hdl) and callback data(wdt_cb_data).
  *		When WDT interrupt is triggered, wdt_cb_hdl(wdt_cb_data) will be
  *		called without any other process.
@@ -293,18 +184,5 @@ void mtk_os_hal_wdt_register_irq(struct os_wdt_int *wdt_int);
  *	None
  */
 void mtk_os_hal_wdt_init(void);
-
-#ifdef __cplusplus
-}
-#endif
-
-/**
-  * @}
-  */
-
-/**
-* @}
-* @}
-*/
 
 #endif /* __OS_HAL_WDT_H__ */

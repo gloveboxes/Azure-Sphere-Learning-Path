@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2020 MediaTek Inc. All rights reserved.
+ * (C) 2005-2019 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -64,10 +64,6 @@
 #define IRQ_DUAL_ENABLE					0x00
 #define IRQ_DUAL_DISABLE				0x01
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 extern void mtk_hdl_eint_enable_debounce(u32 eint_num,
 				void __iomem *eint_base);
 extern void mtk_hdl_eint_disable_debounce(u32 eint_num,
@@ -80,10 +76,5 @@ extern void mtk_hdl_eint_set_prescaler(u32 eint_num,
 				u32 prescaler, void __iomem *eint_base);
 extern void mtk_hdl_eint_set_cnt(u32 eint_num,
 				u32 cnt, void __iomem *eint_base);
-
-#ifdef __cplusplus
-}
-#endif
-
 #endif /* __EINT_H__ */
 

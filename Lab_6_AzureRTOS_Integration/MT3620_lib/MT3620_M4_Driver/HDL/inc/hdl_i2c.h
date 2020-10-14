@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2020 MediaTek Inc. All rights reserved.
+ * (C) 2005-2019 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -252,10 +252,6 @@ enum mtk_trans_op {
 #define OFFSET_S_FIFO_DATA		0xF0
 #define I2C_S_DATA_WR_REG_MASK		BITS(0, 7)
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 u32 mtk_hdl_i2c_get_pad_con0(void __iomem *i2c_base);
 void mtk_hdl_i2c_enable_clk(void __iomem *clk_base);
 void mtk_hdl_i2c_disable_clk(void __iomem *clk_base);
@@ -279,9 +275,5 @@ void mtk_hdl_i2c_slave_irq_handle(void __iomem *i2c_base, u32 *irq_stat);
 void mtk_hdl_i2c_slave_trigger_transfer(void __iomem *i2c_base, bool dma_en);
 int mtk_hdl_i2c_slave_get_data(void __iomem *i2c_base, u8 *buf, u16 len);
 int mtk_hdl_i2c_slave_check_fifo_sta(void __iomem *i2c_base);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

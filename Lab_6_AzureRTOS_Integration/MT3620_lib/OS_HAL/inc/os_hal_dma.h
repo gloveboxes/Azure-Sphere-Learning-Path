@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2020 MediaTek Inc. All rights reserved.
+ * (C) 2005-2019 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -41,103 +41,10 @@
 /**
  * @addtogroup OS-HAL
  * @{
- * @addtogroup dma
+ * @addtogroup DMA
  * @{
- * This section describes the programing api of DMA OS-HAL layer,
- * including terms and acronyms, supported features,
- * details on how to use this driver, enums and functions.
- *
- * @section OS_HAL_DMA_Terms_Chapter Terms and Acronyms
- *
- * |Terms                   |Details                             |
- * |------------------------------|--|
- * |\b DMA                        | Direct Memory Access.|
- * |\b FIFO                       | First In, First Out.|
- * |\b VFF \b DMA                 | Virtual FIFO DMA. |
- *
- * @section OS_HAL_DMA_Features_Chapter Supported Features
- * See @ref DRIVER_DMA_Features_Chapter for the details of Supported Features.
- *
- * @}
- * @}
+ * This section describes the programing api of DMA OS-HAL layer.
  */
-
-/**
- * @addtogroup OS-HAL
- * @{
- * @addtogroup dma
- * @{
- * @section OS_HAL_DMA_Driver_Usage_Chapter How to use this driver
- *
- * - \b Device \b driver \b sample \b code \b is \b as \b follows: \n
- *  - sample code (this is the user application sample code on freeRTos):
- *    @code
- *	- Allocate one DMA channel
- *	 -Call mtk_os_hal_dma_alloc_chan(enum dma_channel chn)
- *	   to allocate one DMA channel.
- *
- *	- Config one DMA channel
- *	  -Call mtk_os_hal_dma_config(enum dma_channel chn,
-				struct dma_setting *setting)
- *
- *	- Start one DMA channel
- *	 -Call mtk_os_hal_dma_start(enum dma_channel chn)
- *
- *	- Stop one DMA channel
- *	 -Call mtk_os_hal_dma_stop(enum dma_channel chn)
- *
- *	- Pause one DMA channel
- *	 -Call mtk_os_hal_dma_pause(enum dma_channel chn)
- *
- *	- Resume one DMA channel
- *	 -Call mtk_os_hal_dma_resume(enum dma_channel chn)
- *
- *	- Get DMA channel status
- *	 -Call mtk_os_hal_dma_get_status(enum dma_channel chn)
- *
- *	- Register interrupt callback
- *	 -Call mtk_os_hal_dma_register_isr(enum dma_channel chn,
-				dma_interrupt_callback callback,
-				void *callback_data,
-				enum dma_interrupt_type isr_type)
- *
- *	- Dump DMA registers
- *	 - Call  mtk_os_hal_dma_dump_register(enum dma_channel chn)
- *
- *	- Update VFF DMA channel swptr
- *	 - Call  mtk_os_hal_dma_update_swptr(enum dma_channel chn,
-				u32 length_byte)
- *
- *
- *	- Set DMA parameter which is defined in the #dma_param_type
- *	 - Call  mtk_os_hal_dma_set_param(enum dma_channel chn,
-				enum dma_param_type param_type, u32 value)
- *
- *	- Get DMA parameter which is defined in the #dma_param_type
- *	 - Call  mtk_os_hal_dma_get_param(enum dma_channel chn,
-				enum dma_param_type param_type)
- *
- *	- Release one DMA channel
- *	 - Call  mtk_os_hal_dma_release_chan(enum dma_channel chn)
- *
- *	- Reset DMA channel
- *	 - Call  mtk_os_hal_dma_reset(enum dma_channel chn)
- *
- *	- Clear dreq signal of DMA channel
- *	 - Call  mtk_os_hal_dma_clr_dreq(enum dma_channel chn)
- *
- *    @endcode
- *
- * @}
- * @}
- */
-
-/**
-* @addtogroup OS-HAL
-* @{
-* @addtogroup dma
-* @{
-*/
 
 /** @defgroup os_hal_dma_enum Enum
  * @{
@@ -283,7 +190,7 @@ enum dma_interrupt_type {
  * and it can notify users that corresponding HW event occurs.
  * This typedef describes the callback indicating what users want to do.
  *
- * @param [in] user_data : is a user defined parameter provided
+ * @param [in] user_data is a users defined parameter provided
  * by #mtk_os_hal_dma_register_isr().
  * @sa  #mtk_os_hal_dma_register_isr()
  */
@@ -421,10 +328,6 @@ struct dma_setting {
  * @{
  * This section provides DMA OS-HAL APIs to use DMA channel for data transfer.
  */
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * @brief This function is used to allocate one DMA channel.
@@ -588,7 +491,7 @@ int mtk_os_hal_dma_update_swptr(enum dma_channel chn, u32 length_byte);
  * @brief Usage: Used to read data from FIFO of VFF DMA channel. This api
  * will also update swptr after reading data. This API is only for VFF DMA.
  * @param [in] chn : The DMA channel number, please refer to #dma_channel.
- * @param [out] buffer : buffer for saving read data.
+ * @param [in] buffer : buffer for saving read data.
  * @param [in] length : byte number which users want to read. It cannot be
  * larger than vfifo size.
  * @return
@@ -629,11 +532,6 @@ int mtk_os_hal_dma_reset(enum dma_channel chn);
  * Return negative integer indicating error number when error occur.\n
  */
 int mtk_os_hal_dma_clr_dreq(enum dma_channel chn);
-
-#ifdef __cplusplus
-}
-#endif
-
 /**
  * @}
  */

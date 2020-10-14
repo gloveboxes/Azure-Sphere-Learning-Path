@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2020 MediaTek Inc. All rights reserved.
+ * (C) 2005-2019 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -119,48 +119,68 @@ void mtk_hdl_spim_enable_fifo_transfer(void __iomem *base,
 				       int tx_enable,
 				       int rx_enable)
 {
-	int i, reg_val, tmp_data;
+	u32 fifo_fill_data[SPIM_BYTE_LENGTH];
+	int i;
 
 	spim_debug("[%s]opcode(0x%x), opcode_len(%d)\n", __func__,
 		   opcode, opcode_len);
 
-	/* tx only: HW can send opcode only, then data_len = 0 */
-	if (data_len > 0)
-		mtk_hdl_spim_print_packet("spi_data", spi_data, data_len);
+	mtk_hdl_spim_print_packet("spi_data", spi_data, data_len);
+
+	for (i = 0; i < 15; i++)
+		fifo_fill_data[i] = 0;
 
 	/* 1. OPCODE first */
-	osai_writel(opcode, SPI_REG_OPCODE(base));
+	fifo_fill_data[0] = opcode;
 
 	/* 2. Data[n] then */
+	i = 0;
 	if (tx_enable) {
 		for (i = 0; i < (data_len / 4 + 1); i++) {
-			if ((data_len == 0) || (i == 8))
-				break;
-			tmp_data = spi_data[i * 4] |
+			u32 t = spi_data[i * 4] |
 			    spi_data[i * 4 + 1] << 8 |
 			    spi_data[i * 4 + 2] << 16 |
 			    spi_data[i * 4 + 3] << 24;
-			osai_writel(tmp_data, SPI_REG_DATA(base, i));
+			fifo_fill_data[i + 1] = t;
 		}
 	}
 
+	for (; i < 8; i++)
+		fifo_fill_data[i + 1] = 0x0;
+
 	/* 3. Master register */
-	reg_val = osai_readl(SPI_REG_MASTER(base));
-	reg_val |= SPI_MASTER_MB_MODE_ENABLE;
-	osai_writel(reg_val, SPI_REG_MASTER(base));
+	fifo_fill_data[9] = osai_readl(SPI_REG_MASTER(base));
+	fifo_fill_data[9] = fifo_fill_data[9] | SPI_MASTER_MB_MODE_ENABLE;
 
 	/* 4. More Buffer mode1 register */
-	reg_val = (opcode_len * 8) << 24;
-	reg_val &= ~(SPI_MBCTL_TX_RX_CNT_MASK);
+	fifo_fill_data[10] = fifo_fill_data[10] | (opcode_len * 8) << 24;
+	fifo_fill_data[10] = fifo_fill_data[10] & ~(SPI_MBCTL_TX_RX_CNT_MASK);
 	if (tx_enable)
-		reg_val |= (data_len * 8);
+		fifo_fill_data[10] = fifo_fill_data[10] | (data_len * 8);
 	/* miso_bit_cnt */
 	if (rx_enable)
-		reg_val |= ((data_len * 8) << 12);
-	osai_writel(reg_val, SPI_REG_MOREBUF(base));
+		fifo_fill_data[10] = fifo_fill_data[10] | (data_len * 8) << 12;
 
-	reg_val = SPI_CTL_ADDR_SIZE_24BIT | SPI_CTL_START;
-	osai_writel(reg_val, SPI_REG_CTL(base));
+	fifo_fill_data[11] = osai_readl(SPI_REG_Q_CTL(base));
+	fifo_fill_data[12] = osai_readl(SPI_REG_STATUS(base));
+	fifo_fill_data[13] = osai_readl(SPI_REG_CS_POLAR(base));
+
+	fifo_fill_data[14] = 0;
+
+	fifo_fill_data[14] = fifo_fill_data[14] |
+	    (SPI_CTL_ADDR_SIZE_24BIT | SPI_CTL_START);
+
+	spim_debug("[%s line%d]Dump fifo_fill_data:\n", __func__, __LINE__);
+	for (i = 0; i < 15; i++)
+		spim_debug("fifo_fill_data[%d] 0x%x\n", i, fifo_fill_data[i]);
+
+	for (i = 0; i < 15; i++) {
+		if (i == 14)
+			osai_writel(fifo_fill_data[i], SPI_REG_CTL(base));
+		else
+			osai_writel(fifo_fill_data[i],
+				    SPI_REG_OPCODE(base + i * 4));
+	}
 }
 
 void mtk_hdl_spim_clear_irq_status(void __iomem *base)
@@ -176,30 +196,30 @@ void mtk_hdl_spim_fifo_handle_rx(void __iomem *base,
 	int i, reg_val, q, r, val_tmp;
 
 	if ((!tx_buf) && rx_buf) {	/* half duplex */
-		for (i = 0; i < len; i++) {
+		for (i = 0; i < len - 1; i++) {
 			q = i / 4;
 			r = i % 4;
 			reg_val = osai_readl(SPI_REG_SDIR(base, q));
 			val_tmp = (u8) (reg_val >> (r * 8));
 
-			spim_debug("i:%d,rx_data:0x%x,val_tmp:0x%x\n",
+			spim_debug("i:%d,rx_data:0x%x, val_tmp:0x%x\n",
 				   i, reg_val, val_tmp);
 
-			*((char *)rx_buf + i) = val_tmp;
+			memcpy(rx_buf + i + 1, &val_tmp, 1);
 		}
 	}
 
 	if (tx_buf && rx_buf) {	/* full duplex */
-		for (i = 0; i < len; i++) {
+		for (i = 0; i < len - 1; i++) {
 			q = i / 4;
 			r = i % 4;
 			reg_val = osai_readl(SPI_REG_SDIR(base, 4 + q));
 			val_tmp = (u8) (reg_val >> (r * 8));
 
-			spim_debug("i:%d,rx_data:0x%x,val_tmp:0x%x\n",
+			spim_debug("i:%d,rx_data:0x%x, val_tmp:0x%x\n",
 				   i, reg_val, val_tmp);
 
-			*((char *)rx_buf + i) = val_tmp;
+			memcpy(rx_buf + i + 1, &val_tmp, 1);
 		}
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2020 MediaTek Inc. All rights reserved.
+ * (C) 2005-2019 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -79,7 +79,7 @@ static inline void _mtk_hdl_wdt_cm4_reg_write(void __iomem *wdt_reg_base,
 					      u32 offset, u32 val)
 {
 	wdt_write_reg(wdt_reg_base, offset, val);
-	osai_delay_us(100);
+	osai_delay_us(50);
 }
 
 void mtk_hdl_wdt_set_enable(void __iomem *wdt_reg_base, u32 en)

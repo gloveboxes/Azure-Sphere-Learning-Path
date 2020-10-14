@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2020 MediaTek Inc. All rights reserved.
+ * (C) 2005-2019 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -39,80 +39,12 @@
 #include "mhal_gpio.h"
 
 /**
- * @addtogroup OS-HAL
+ * @addtogroup HAL
  * @{
- * @addtogroup gpio
+ * @addtogroup GPIO
  * @{
- * This section introduces the Inter-Integrated Circuit (GPIO) APIs
- * including terms and acronyms, supported features,
- * details on how to use this driver, enums and functions.
- *
- * @section OS_HAL_GPIO_Terms_Chapter Terms and Acronyms
- *
- * |Terms                   |Details                             |
- * |------------------------------|--|
- * |\b GPIO                        | General-Purpose Inputs-Outputs.|
- *
- * @section OS_HAL_GPIO_Features_Chapter Supported Features
- * See @ref MHAL_GPIO_Features_Chapter for the details of  Supported Features.
- *
- * @}
- * @}
+ * This section describes the programming interfaces of the GPIO hal
  */
-
-/**
- * @addtogroup OS-HAL
- * @{
- * @addtogroup gpio
- * @{
- * @section OS_HAL_GPIO_Driver_Usage_Chapter How to use this driver
- *
- * - \b How \b to \b develop \b user \b application \b by \b using
- *    \b OS-HAL \b API: \n
- *  - sample code (this is the user application sample code on freeRTos):
- *    @code
- *
- *    - Set GPIO output high/low:
- *      -Call mtk_os_hal_gpio_request(pin) to get gpio request resource.
- *      -Call mtk_os_hal_gpio_set_direction(pin, OS_HAL_GPIO_DIR_OUTPUT)
- *        to set gpio direction as output mode.
- *      -Call mtk_os_hal_gpio_set_output(pin, OS_HAL_GPIO_DATA_HIGH)
- *        to set gpio output high.
- *      -Call mtk_os_hal_gpio_set_output(pin, OS_HAL_GPIO_DATA_LOW)
- *        to set gpio output low.
- *      -Call mtk_os_hal_gpio_free(pin) to free gpio request resource.
- *
- *    - Set GPIO input mode:
- *      -Call mtk_os_hal_gpio_request(pin) to get gpio request resource.
- *      -Call mtk_os_hal_gpio_set_direction(pin, OS_HAL_GPIO_DIR_INPUT)
- *        to set gpio direction as input mode.
- *      -Call mtk_os_hal_gpio_set_pullen_pullsel(pin, false, false)
- *        to disable gpio pull-up and pull-down state.
- *      -Call mtk_os_hal_gpio_set_pullen_pullsel(pin, ture, false)
- *        to set gpio as pull-down state.
- *      -Call mtk_os_hal_gpio_set_pullen_pullsel(pin, ture, ture)
- *        to set gpio as pull-up state.
- *      -Call mtk_os_hal_gpio_get_input(pin, pvalue) to get gpio input value.
- *      -Call mtk_os_hal_gpio_free(pin) to free gpio request resource.
- *
- *    @endcode
- *
- * @}
- * @}
- */
-
-/**
- * @addtogroup OS-HAL
- * @{
- * @addtogroup gpio
- * @{
- */
-
-/** @defgroup os_hal_gpio_enum Enum
-  * @{
-  * This section introduces the enumerations
-  * that GPIO should configure when calling GPIO APIs.
-  */
 
 /**@brief This enum defines the GPIO port.\n
  */
@@ -217,13 +149,31 @@ typedef enum {
 	OS_HAL_GPIO_MAX
 } os_hal_gpio_pin;
 
+/**@brief This enum defines the GPIO mode
+ * which can be selected.\n
+ */
+
+typedef enum {
+	/** GPIO mode number is from 0 to 7 */
+	OS_HAL_MODE_0 = 0,
+	OS_HAL_MODE_1 = 1,
+	OS_HAL_MODE_2 = 2,
+	OS_HAL_MODE_3 = 3,
+	OS_HAL_MODE_4 = 4,
+	OS_HAL_MODE_5 = 5,
+	OS_HAL_MODE_6 = 6,
+	OS_HAL_MODE_7 = 7,
+	/** GPIO mode maximum number(invalid) */
+	OS_HAL_MODE_MAX
+} os_hal_gpio_mode;
+
 /** @brief This enum defines GPIO direction.\n
  */
 typedef enum {
 	/** Define GPIO input direction */
-	OS_HAL_GPIO_DIR_INPUT  = MHAL_GPIO_DIRECTION_INPUT,
+	OS_HAL_GPIO_DIR_INPUT  = 0,
 	/** Define GPIO output direction */
-	OS_HAL_GPIO_DIR_OUTPUT = MHAL_GPIO_DIRECTION_OUTPUT
+	OS_HAL_GPIO_DIR_OUTPUT = 1
 } os_hal_gpio_direction;
 
 
@@ -231,23 +181,10 @@ typedef enum {
  */
 typedef enum {
 	/** Define GPIO data of low */
-	OS_HAL_GPIO_DATA_LOW  = MHAL_GPIO_DATA_LOW,
+	OS_HAL_GPIO_DATA_LOW  = 0,
 	/** Define GPIO data of high */
-	OS_HAL_GPIO_DATA_HIGH = MHAL_GPIO_DATA_HIGH
+	OS_HAL_GPIO_DATA_HIGH = 1
 } os_hal_gpio_data;
-
-/**
-  * @}
-  */
-
-/** @defgroup os_hal_gpio_function Function
-  * @{
-  * This section provides high level APIs to upper layer.
-  */
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * @brief     This function is used to request the target GPIO.
@@ -397,16 +334,8 @@ int mtk_os_hal_gpio_get_direction(os_hal_gpio_pin pin,
 int mtk_os_hal_gpio_set_pullen_pullsel(
 	os_hal_gpio_pin pin, bool enable, bool isup);
 
-#ifdef __cplusplus
-}
-#endif
-
 /**
-  * @}
-  */
-
-/**
-  * @}
-  * @}
-  */
+* @}
+* @}
+*/
 #endif

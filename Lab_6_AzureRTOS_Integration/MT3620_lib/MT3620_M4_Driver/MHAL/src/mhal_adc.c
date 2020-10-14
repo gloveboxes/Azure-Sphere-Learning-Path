@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2020 MediaTek Inc. All rights reserved.
+ * (C) 2005-2019 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -623,7 +623,7 @@ int mtk_mhal_adc_one_shot_get_data(struct mtk_adc_controller *ctlr,
 }
 
 int mtk_mhal_adc_period_get_data(struct mtk_adc_controller *ctlr,
-		adc_channel channel, u32 *data, u32 *length)
+		adc_channel channel)
 {
 	u32 write_point = 0;
 	u32 read_point = 0;
@@ -672,11 +672,12 @@ int mtk_mhal_adc_period_get_data(struct mtk_adc_controller *ctlr,
 				read_point = 0;
 			}
 
-		 data[ctlr->rx_size] =
+		ctlr->rx_buf[ctlr->rx_size] =
 			ctlr->current_xfer[channel].ring_buf[read_point];
 
-		adc_debug("channel- >%d,data:%d.\n",
-		channel, data[ctlr->rx_size]);
+		adc_debug("channel->%d,data:%d.\n",
+		channel,
+		ctlr->rx_buf[ctlr->rx_size]);
 		adc_debug("channel->%d,size:%d.\n",
 		channel,
 		ctlr->rx_size);
@@ -684,7 +685,6 @@ int mtk_mhal_adc_period_get_data(struct mtk_adc_controller *ctlr,
 		ctlr->current_xfer[channel].read_point++;
 		ctlr->rx_size++;
 		}
-		*length = ctlr->rx_size;
 	}
 
 	return 0;
@@ -724,3 +724,4 @@ int mtk_mhal_adc_fifo_handle_rx(struct mtk_adc_controller *ctlr)
 
 	return 0;
 }
+

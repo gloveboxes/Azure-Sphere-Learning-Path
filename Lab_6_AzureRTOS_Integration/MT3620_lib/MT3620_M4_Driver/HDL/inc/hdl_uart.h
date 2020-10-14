@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2020 MediaTek Inc. All rights reserved.
+ * (C) 2005-2019 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -140,10 +140,6 @@
 #define SW_FLOW_INT_W1C			(0x20)
 #define HW_FLOW_INT_W1C			(0x40)
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 void mtk_hdl_uart_cg_config(void __iomem *uart_cg_base, bool enable_clk);
 void mtk_hdl_uart_reset(void __iomem *uart_cg_base);
 
@@ -170,10 +166,6 @@ void mtk_hdl_uart_set_sw_fc(void __iomem *uart_base,
 /* PIO mode */
 void mtk_hdl_uart_output_char(void __iomem *uart_base, u8 c);
 u8 mtk_hdl_uart_input_char(void __iomem *uart_base);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /*_HDL_UART_H_*/
 

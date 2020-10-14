@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2020 MediaTek Inc. All rights reserved.
+ * (C) 2005-2019 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -228,11 +228,6 @@
  * @{
  * This section is function declaration.
  */
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 void mtk_hdl_dma_set_src(void __iomem *chn_base, u32 src_addr);
 void mtk_hdl_dma_set_dst(void __iomem *chn_base, u32 dst_addr);
 void mtk_hdl_dma_set_wppt(void __iomem *chn_base, u32 wppt, u8 transize);
@@ -275,11 +270,6 @@ void mtk_hdl_dma_set_dreq(void __iomem *dma_base, u8 chn);
 void mtk_hdl_dma_clr_dreq(void __iomem *dma_base, u8 chn);
 void mtk_hdl_dma_clock_enable(void __iomem *dma_base, u8 chn);
 void mtk_hdl_dma_clock_disable(void __iomem *dma_base, u8 chn);
-
-#ifdef __cplusplus
-}
-#endif
-
 /**
  * @}
  */

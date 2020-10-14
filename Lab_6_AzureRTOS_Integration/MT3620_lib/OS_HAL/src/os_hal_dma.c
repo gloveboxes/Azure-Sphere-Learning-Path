@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2020 MediaTek Inc. All rights reserved.
+ * (C) 2005-2019 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -38,9 +38,6 @@
 #include "os_hal_dma.h"
 
 #define DMA_BASE 0x21080000
-#define DMA_SYSRAM_ORIGIN 0x22000000
-#define DMA_SYSRAM_SIZE 0x10000
-#define DMA_SYSRAM_END (DMA_SYSRAM_ORIGIN + DMA_SYSRAM_SIZE)
 
 #define DMA_CHANNEL_MAX (VDMA_ADC_RX_CH29 + 1)
 
@@ -99,8 +96,9 @@ static void _mtk_os_hal_dma_irq_handler(void)
 		if (ctrl_rtos == NULL || ctrl_rtos->ctlr == NULL)
 			continue;
 		status = mtk_mhal_dma_get_status(ctrl_rtos->ctlr);
-		if (status & DMA_STATUS_INTERRUPT)
+		if (status & DMA_STATUS_INTERRUPT) {
 			mtk_mhal_dma_clear_irq_status(ctrl_rtos->ctlr);
+		}
 	}
 
 	NVIC_EnableIRQ((IRQn_Type)CM4_IRQ_M4DMA);
@@ -209,14 +207,6 @@ static void _mtk_os_hal_dma_set_control_mode(struct dma_controller *ctrl,
 	ctrl->cfg->wrap_to_addr = ctrl_mode->wrap_settings.wrap_to_addr;
 }
 
-static int _mtk_os_hal_dma_addr_check(u32 addr)
-{
-	if ((addr >= DMA_SYSRAM_ORIGIN) && (addr < DMA_SYSRAM_END))
-		return 0;
-
-	return -DMA_EPTR;
-}
-
 int mtk_os_hal_dma_config(enum dma_channel chn, struct dma_setting *setting)
 {
 	struct dma_controller_rtos *ctrl_rtos;
@@ -235,21 +225,7 @@ int mtk_os_hal_dma_config(enum dma_channel chn, struct dma_setting *setting)
 	_mtk_os_hal_dma_set_control_mode(ctrl, &(setting->ctrl_mode));
 
 	if (ctrl->chn_type == DMA_TYPE_FULLSIZE) {
-		if (_mtk_os_hal_dma_addr_check(setting->src_addr)) {
-			printf(
-				"DMA support SYSRAM memory only, src(0x%x) out of range, valid address range [0x%x-0x%x]\n",
-				setting->src_addr, DMA_SYSRAM_ORIGIN,
-				DMA_SYSRAM_END);
-			return -DMA_EPTR;
-		}
 		ctrl->cfg->addr_1 = setting->src_addr;
-		if (_mtk_os_hal_dma_addr_check(setting->dst_addr)) {
-			printf(
-				"DMA support SYSRAM memory only, dst(0x%x) out of range,valid address range [0x%x-0x%x]\n",
-				setting->dst_addr, DMA_SYSRAM_ORIGIN,
-				DMA_SYSRAM_END);
-			return -DMA_EPTR;
-		}
 		ctrl->cfg->addr_2 = setting->dst_addr;
 		ctrl->cfg->count = setting->count;
 		ctrl->ctrls->src_inc_en = 1;
@@ -260,25 +236,11 @@ int mtk_os_hal_dma_config(enum dma_channel chn, struct dma_setting *setting)
 	} else {
 		ctrl->ctrls->dir = (enum dma_dir)setting->dir;
 		if (ctrl->ctrls->dir == MEM_2_PERI) {
-			if (_mtk_os_hal_dma_addr_check(setting->src_addr)) {
-				printf(
-					"DMA support SYSRAM memory only,src(0x%x)out of range, valid address range[0x%x-0x%x]\n",
-					setting->src_addr, DMA_SYSRAM_ORIGIN,
-					DMA_SYSRAM_END);
-				return -DMA_EPTR;
-			}
 			ctrl->cfg->addr_1 = setting->src_addr;
 			ctrl->cfg->addr_2 = setting->dst_addr;
 			ctrl->ctrls->src_inc_en = 1;
 			ctrl->ctrls->dst_inc_en = 0;
 		} else {
-			if (_mtk_os_hal_dma_addr_check(setting->dst_addr)) {
-				printf(
-					"DMA support SYSRAM memory only,dst(0x%x)out of range, valid address range[0x%x-0x%x]\n",
-					setting->dst_addr, DMA_SYSRAM_ORIGIN,
-					DMA_SYSRAM_END);
-				return -DMA_EPTR;
-			}
 			ctrl->cfg->addr_1 = setting->dst_addr;
 			ctrl->cfg->addr_2 = setting->src_addr;
 			ctrl->ctrls->src_inc_en = 0;

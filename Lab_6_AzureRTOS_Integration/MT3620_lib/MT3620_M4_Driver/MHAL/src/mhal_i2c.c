@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2020 MediaTek Inc. All rights reserved.
+ * (C) 2005-2019 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -343,7 +343,7 @@ int mtk_mhal_i2c_result_handle(struct mtk_i2c_controller *i2c)
 		}
 
 		if (i2c->irq_stat & I2C_ID_ACKERR) {
-			/* i2c_err("addr: %x, slave id ACK error\n", msgs->addr); */
+			i2c_err("addr: %x, slave id ACK error\n", msgs->addr);
 
 			ret = -I2C_ENXIO;
 			goto err_exit;
@@ -537,7 +537,7 @@ int _mtk_mhal_i2c_dma(struct mtk_i2c_controller *i2c)
 		/*Data from memory to peripheral*/
 		i2c_dma.interrupt_flag = OSAI_DMA_INT_COMPLETION;
 		i2c_dma.dir = DMA_MEM_TO_DEV;
-		i2c_dma.src_addr = (u32)mdata->tx_dma_addr;
+		i2c_dma.src_addr = (u32)mdata->tx_buff;
 		i2c_dma.count = mdata->tx_len;
 		i2c_dma.transize = OSAI_DMA_SIZE_BYTE;
 		i2c_dma.done_callback = NULL;
@@ -566,7 +566,7 @@ int _mtk_mhal_i2c_dma(struct mtk_i2c_controller *i2c)
 		/*Data from peripheral to memory*/
 		i2c_dma.interrupt_flag = OSAI_DMA_INT_COMPLETION;
 		i2c_dma.dir = DMA_DEV_TO_MEM;
-		i2c_dma.dst_addr = (u32)mdata->rx_dma_addr;
+		i2c_dma.dst_addr = (u32)mdata->rx_buff;
 		i2c_dma.count = mdata->rx_len;
 		i2c_dma.transize = OSAI_DMA_SIZE_BYTE;
 		i2c_dma.done_callback = _mtk_mhal_i2c_dma_callback;
@@ -597,7 +597,7 @@ int _mtk_mhal_i2c_dma(struct mtk_i2c_controller *i2c)
 	} else if (i2c->op == I2C_WRRD) {
 		i2c_dma.interrupt_flag = OSAI_DMA_INT_COMPLETION;
 		i2c_dma.dir = DMA_MEM_TO_DEV;
-		i2c_dma.src_addr = (u32)mdata->tx_dma_addr;
+		i2c_dma.src_addr = (u32)mdata->tx_buff;
 		i2c_dma.dst_addr = (u32)i2c->base + OFFSET_MM_FIFO_DATA;
 		i2c_dma.count = mdata->tx_len;
 		i2c_dma.transize = OSAI_DMA_SIZE_BYTE;
@@ -621,7 +621,7 @@ int _mtk_mhal_i2c_dma(struct mtk_i2c_controller *i2c)
 		i2c_dma.interrupt_flag = OSAI_DMA_INT_COMPLETION;
 		i2c_dma.dir = DMA_DEV_TO_MEM;
 		i2c_dma.src_addr = (u32)i2c->base + OFFSET_MM_FIFO_DATA;
-		i2c_dma.dst_addr = (u32)mdata->rx_dma_addr;
+		i2c_dma.dst_addr = (u32)mdata->rx_buff;
 		i2c_dma.count = mdata->rx_len;
 		i2c_dma.transize = OSAI_DMA_SIZE_BYTE;
 		i2c_dma.done_callback = _mtk_mhal_i2c_dma_callback;
@@ -684,7 +684,7 @@ int mtk_mhal_i2c_trigger_transfer(struct mtk_i2c_controller *i2c)
 			}
 		}
 
-		if (msgs->addr >= 0x80) {
+		if (msgs->addr <= 0x00 || msgs->addr >= 0x80) {
 			i2c_err("Invaild slave address, msgs->addr: 0x%x",
 				msgs->addr);
 			return -I2C_EINVAL;

@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2020 MediaTek Inc. All rights reserved.
+ * (C) 2005-2019 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -55,7 +55,7 @@ int mtk_mhal_gpioif_event_counter_setting(struct mtk_gpioif_controller *ctlr)
 	int mode = 0;
 
 	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->mconfig->setting)
-		|| (!ctlr->base[(u8)(ctlr->mconfig->group)]))
+		|| (!ctlr->base[ctlr->mconfig->group]))
 		return -GPIOIF_EPTR;
 
 	group = ctlr->mconfig->group;
@@ -82,7 +82,7 @@ int mtk_mhal_gpioif_capture_counter_setting(struct mtk_gpioif_controller *ctlr)
 	int edge_type_gpio_1 = 0;
 
 	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->mconfig->setting)
-		|| (!ctlr->base[(u8)(ctlr->mconfig->group)]))
+		|| (!ctlr->base[ctlr->mconfig->group]))
 		return -GPIOIF_EPTR;
 
 	group = ctlr->mconfig->group;
@@ -103,8 +103,7 @@ int mtk_mhal_gpioif_enable_event_counter(struct mtk_gpioif_controller *ctlr)
 {
 	u8 group = 0;
 
-	if ((!ctlr) || (!ctlr->mconfig) ||
-		(!ctlr->base[(u8)(ctlr->mconfig->group)]))
+	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group]))
 		return -GPIOIF_EPTR;
 	if (ctlr->mconfig->group >= MHAL_GPIOIF_GROUP_MAX)
 		return -GPIOIF_EINVAL;
@@ -118,8 +117,7 @@ int mtk_mhal_gpioif_disable_event_counter(struct mtk_gpioif_controller *ctlr)
 {
 	u8 group = 0;
 
-	if ((!ctlr) || (!ctlr->mconfig) ||
-		(!ctlr->base[(u8)(ctlr->mconfig->group)]))
+	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group]))
 		return -GPIOIF_EPTR;
 	if (ctlr->mconfig->group >= MHAL_GPIOIF_GROUP_MAX)
 		return -GPIOIF_EINVAL;
@@ -133,8 +131,7 @@ int mtk_mhal_gpioif_enable_capture_counter(struct mtk_gpioif_controller *ctlr)
 {
 	u8 group = 0;
 
-	if ((!ctlr) || (!ctlr->mconfig) ||
-		(!ctlr->base[(u8)(ctlr->mconfig->group)]))
+	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group]))
 		return -GPIOIF_EPTR;
 	if (ctlr->mconfig->group >= MHAL_GPIOIF_GROUP_MAX)
 		return -GPIOIF_EINVAL;
@@ -148,8 +145,7 @@ int mtk_mhal_gpioif_disable_capture_counter(struct mtk_gpioif_controller *ctlr)
 {
 	u8 group = 0;
 
-	if ((!ctlr) || (!ctlr->mconfig) ||
-		(!ctlr->base[(u8)(ctlr->mconfig->group)]))
+	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group]))
 		return -GPIOIF_EPTR;
 	if (ctlr->mconfig->group >= MHAL_GPIOIF_GROUP_MAX)
 		return -GPIOIF_EINVAL;
@@ -164,8 +160,7 @@ int mtk_mhal_gpioif_software_reset(struct mtk_gpioif_controller *ctlr)
 	u8 group = 0;
 	u32 mode = 0;
 
-	if ((!ctlr) || (!ctlr->mconfig) ||
-		(!ctlr->base[(u8)(ctlr->mconfig->group)]))
+	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group]))
 		return -GPIOIF_EPTR;
 
 	group = ctlr->mconfig->group;
@@ -185,7 +180,7 @@ int mtk_mhal_gpioif_interrupt_bit_wise(
 	u8 group = 0;
 
 	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->int_cnt)
-		|| (!ctlr->base[(u8)(ctlr->mconfig->group)]))
+		|| (!ctlr->base[ctlr->mconfig->group]))
 		return -GPIOIF_EPTR;
 	if (ctlr->mconfig->group >= MHAL_GPIOIF_GROUP_MAX)
 		return -GPIOIF_EINVAL;
@@ -205,8 +200,7 @@ int mtk_mhal_gpioif_hardware_reset_by_gpio_2(
 	u8 group = 0;
 	u32 mode = 0;
 
-	if ((!ctlr) || (!ctlr->mconfig) ||
-		(!ctlr->base[(u8)(ctlr->mconfig->group)]))
+	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group]))
 		return -GPIOIF_EPTR;
 
 	if ((active_reset > 1) || (active_reset < 0))
@@ -228,8 +222,7 @@ int mtk_mhal_gpioif_read_gpio_event_count(
 {
 	u8 group = 0;
 
-	if ((!ctlr) || (!ctlr->mconfig) ||
-		(!ctlr->base[(u8)(ctlr->mconfig->group)])
+	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group])
 		|| (pvalue == NULL))
 		return -GPIOIF_EPTR;
 	if (ctlr->mconfig->group >= MHAL_GPIOIF_GROUP_MAX)
@@ -245,8 +238,7 @@ int mtk_mhal_gpioif_read_reset_val(
 {
 	u8 group = 0;
 
-	if ((!ctlr) || (!ctlr->mconfig) ||
-		(!ctlr->base[(u8)(ctlr->mconfig->group)])
+	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group])
 		|| (pvalue == NULL))
 		return -GPIOIF_EPTR;
 	if (ctlr->mconfig->group >= MHAL_GPIOIF_GROUP_MAX)
@@ -262,8 +254,7 @@ int mtk_mhal_gpioif_read_low_limit_val(
 {
 	u8 group = 0;
 
-	if ((!ctlr) || (!ctlr->mconfig) ||
-		(!ctlr->base[(u8)(ctlr->mconfig->group)])
+	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group])
 		|| (pvalue == NULL))
 		return -GPIOIF_EPTR;
 	if (ctlr->mconfig->group >= MHAL_GPIOIF_GROUP_MAX)
@@ -279,8 +270,7 @@ int mtk_mhal_gpioif_read_high_limit_val(
 {
 	u8 group = 0;
 
-	if ((!ctlr) || (!ctlr->mconfig) ||
-		(!ctlr->base[(u8)(ctlr->mconfig->group)])
+	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group])
 		|| (pvalue == NULL))
 		return -GPIOIF_EPTR;
 	if (ctlr->mconfig->group >= MHAL_GPIOIF_GROUP_MAX)
@@ -296,8 +286,7 @@ int mtk_mhal_gpioif_read_gpio_cap_fifo0_value(
 {
 	u8 group = 0;
 
-	if ((!ctlr) || (!ctlr->mconfig) ||
-		(!ctlr->base[(u8)(ctlr->mconfig->group)])
+	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group])
 		|| (pvalue == NULL))
 		return -GPIOIF_EPTR;
 	if (ctlr->mconfig->group >= MHAL_GPIOIF_GROUP_MAX)
@@ -314,8 +303,7 @@ int mtk_mhal_gpioif_read_gpio_cap_fifo1_value(
 {
 	u8 group = 0;
 
-	if ((!ctlr) || (!ctlr->mconfig) ||
-		(!ctlr->base[(u8)(ctlr->mconfig->group)])
+	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group])
 		|| (pvalue == NULL))
 		return -GPIOIF_EPTR;
 	if (ctlr->mconfig->group >= MHAL_GPIOIF_GROUP_MAX)
@@ -333,8 +321,7 @@ int mtk_mhal_gpioif_de_glitch(
 {
 	u8 group = 0;
 
-	if ((!ctlr) || (!ctlr->mconfig) ||
-		(!ctlr->base[(u8)(ctlr->mconfig->group)]))
+	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group]))
 		return -GPIOIF_EPTR;
 	if (ctlr->mconfig->group >= MHAL_GPIOIF_GROUP_MAX)
 		return -GPIOIF_EINVAL;
@@ -363,8 +350,7 @@ int mtk_mhal_gpioif_limit_comparator(struct mtk_gpioif_controller *ctlr)
 	int sa_limit_v = 0;
 	int interrupt_limit_v = 0;
 
-	if ((!ctlr) || (!ctlr->mconfig) ||
-		(!ctlr->base[(u8)(ctlr->mconfig->group)]))
+	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group]))
 		return -GPIOIF_EPTR;
 
 	group = ctlr->mconfig->group;
@@ -384,8 +370,7 @@ int mtk_mhal_gpioif_global_reset(struct mtk_gpioif_controller *ctlr)
 {
 	u8 group = 0;
 
-	if ((!ctlr) || (!ctlr->mconfig) ||
-		(!ctlr->base[(u8)(ctlr->mconfig->group)]))
+	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group]))
 		return -GPIOIF_EPTR;
 	if (ctlr->mconfig->group >= MHAL_GPIOIF_GROUP_MAX)
 		return -GPIOIF_EINVAL;
@@ -400,8 +385,7 @@ int mtk_mhal_gpioif_counter_clock_setting(
 {
 	u8 group = 0;
 
-	if ((!ctlr) || (!ctlr->mconfig) ||
-		(!ctlr->base[(u8)(ctlr->mconfig->group)]))
+	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group]))
 		return -GPIOIF_EPTR;
 	if (ctlr->mconfig->group >= MHAL_GPIOIF_GROUP_MAX)
 		return -GPIOIF_EINVAL;
@@ -424,8 +408,7 @@ int mtk_mhal_gpioif_isr_handle(struct mtk_gpioif_controller *ctlr)
 	u32 count_fifo0 = 0;
 	u32 count_fifo1 = 0;
 
-	if ((!ctlr) || (!ctlr->mconfig) ||
-		(!ctlr->base[(u8)(ctlr->mconfig->group)]))
+	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group]))
 		return -GPIOIF_EPTR;
 
 	if (ctlr->mconfig->group >= MHAL_GPIOIF_GROUP_MAX)

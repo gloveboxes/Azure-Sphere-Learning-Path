@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2020 MediaTek Inc. All rights reserved.
+ * (C) 2005-2019 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -48,7 +48,7 @@
  * acronyms, supported features. And the usage of these APIs and current
  * system case of WDT are introduced in the section on how to use this driver.
  *
- * @section MHAL_WDT_Terms_Chapter Terms and Acronyms
+ * @section MHAL_WDT_Driver_Terms_Chapter Terms and Acronyms
  *
  * | Terms |                       Details                                  |
  * |-------|----------------------------------------------------------------|
@@ -56,7 +56,7 @@
  * |HW-RST |Hardware Reset. It can be provided by WDT counter timeout(hwrst)|
  * |SW-RST |Software Reset. It can be provided by WDT function(swrst)       |
  *
- * @section MHAL_WDT_Features_Chapter Supported Features
+ * @section MHAL_WDT_Driver_Module_Chapter Supported Features
  *
  *  Each IO-CM4 has one WDT device respectively to support system operation
  * monitoring.\n
@@ -66,30 +66,248 @@
  * (SW-RST).\n
  *  For more details, please refer the WDT datasheet.
  *
- * @}
- * @}
- */
-
-/**
- * @addtogroup M-HAL
- * @{
- * @addtogroup WDT
- * @{
- *
  * @section MHAL_WDT_Driver_Usage_Chapter How to Use This Driver
  *
- * - \b SW \b Architecture: \n
+ * - \b Software \b Architecture \b of \b WDT \n
  *
  *  See @ref MHAL_Overview_2_Chapter for details of SW architecture.\n
  *
  *  This section describes the definition of APIs and provides an example on
- * freeRTos to show to use these APIs to develop an OS-related WDT driver.\n
+ * FreeRTOS to show to use these APIs to develop an OS-related WDT driver.\n
  *  Also, this section provides an example about the sequence of APIs that
  * should be used by the WDT driver.\n
  *
- * - \b The \b OS-HAL \b freeRTos \b driver\n
- * \b sample \b code \b is \b as \b follows: \n
- * <a href="https://github.com/MediaTek-Labs/mt3620_m4_software/blob/master/MT3620_M4_Sample_Code/FreeRTOS/OS_HAL/src/os_hal_wdt.c"> freeRTos WDT sample code on github </a>
+ * - \b Scope \b of \b M-HAL \b WDT \b APIs \n
+ *
+ *  M-HAL WDT APIs are used to control WDT hardware behaviors.\n
+ *  - For all WDT, mtk_mhal_wdt_enable() and mtk_mhal_wdt_restart() can be used
+ * to enable, disable and restart WDT counter, mtk_mhal_wdt_set_timeout() can be
+ * used to set timeout value(unit: tick by 32kHz) for WDT.\n
+ *  - mtk_mhal_wdt_config() can be used to select the type of event that WDT
+ * will trigger.\n
+ *  - mtk_mhal_wdt_hwrst() and mtk_mhal_wdt_swrst() will trigger the event
+ * immediately in WDT HW-RST way or WDT SW-RST way. It will affect reset status
+ * of WDT.\n
+ *
+ * - \b The \b OS-HAL \b Driver \b Sample \b Code \b for \b FreeRTOS: \n
+ *
+ *  FreeRTOS does not have WDT framework, so this sample needs to provide driver
+ * APIs for User Application:\n
+ *
+ * @code
+ *	#include <mhal_wdt.h>
+ *	#include <os_hal_wdt.h>
+ *	#include <timer.h>
+ *	#include <nvic.h>
+ *	#include <irq.h>
+ *
+ *	#define OS_WDT_LOG(string, args...)	printf("[os_wdt]"string, ##args)
+ *
+ *	// defined in os_hal_wdt.h
+ *	struct os_wdt_int {
+ *		void (*wdt_cb_hdl)(void *);
+ *		void *wdt_cb_data;
+ *	};
+ *
+ *	// defined in os_hal_wdt.h
+ *	enum os_wdt_mode {
+ *		OS_WDT_TRIGGER_RESET = 0,
+ *		OS_WDT_TRIGGER_IRQ = 1,
+ *	};
+ *
+ *	// defined in os_hal_wdt.h
+ *	enum os_wdt_rst_sta {
+ *		OS_WDT_NONE_RST = 0,
+ *		OS_WDT_SW_RST = 1,
+ *		OS_WDT_HW_RST = 2,
+ *	};
+ *
+ *	struct os_wdt_dev {
+ *		struct hal_wdt_dev	hal_dev;
+ *		struct os_wdt_int	int_info;
+ *		unsigned int		irq_id;
+ *		enum os_wdt_rst_sta	reset_status;
+ *		bool			inited;
+ *	};
+ *
+ *	static struct os_wdt_dev wdt_dev;
+ *
+ *	static bool _mtk_os_hal_wdt_is_inited(struct os_wdt_dev *dev)
+ *	{
+ *		if (!dev->inited) {
+ *			OS_WDT_LOG("wdt device initialization failed\n");
+ *			return false;
+ *		}
+ *		return true;
+ *	}
+ *
+ *	// internal functions for interrupt
+ *
+ *	static void _mtk_os_hal_wdt_default_irq_hdl(void *unused)
+ *	{
+ *		unsigned int rst_sta = 0;
+ *
+ *		mtk_mhal_wdt_get_status(&(wdt_dev.hal_dev), &rst_sta);
+ *		OS_WDT_LOG("default_irq_hdl: sta %x\n", rst_sta);
+ *
+ *		mtk_mhal_wdt_enable(&(wdt_dev.hal_dev), 0);
+ *		// some information can be dumped in here...
+ *		mtk_mhal_wdt_hwrst(&(wdt_dev.hal_dev));
+ *	}
+ *
+ *	static void _mtk_os_hal_wdt_isr(void)
+ *	{
+ *		if (wdt_dev.int_info.wdt_cb_hdl)
+ *			wdt_dev.int_info.wdt_cb_hdl(
+ *					wdt_dev.int_info.wdt_cb_data);
+ *	}
+ *
+ *	// external functions
+ *
+ *	void mtk_os_hal_wdt_enable(void)
+ *	{
+ *		if (!_mtk_os_hal_wdt_is_inited(&wdt_dev))
+ *			return;
+ *
+ *		mtk_mhal_wdt_restart(&(wdt_dev.hal_dev));
+ *		mtk_mhal_wdt_enable(&(wdt_dev.hal_dev), 1);
+ *	}
+ *
+ *	void mtk_os_hal_wdt_disable(void)
+ *	{
+ *		if (!_mtk_os_hal_wdt_is_inited(&wdt_dev))
+ *			return;
+ *
+ *		mtk_mhal_wdt_enable(&(wdt_dev.hal_dev), 0);
+ *	}
+ *
+ *	int mtk_os_hal_wdt_set_timeout(unsigned int sec)
+ *	{
+ *		if (!_mtk_os_hal_wdt_is_inited(&wdt_dev))
+ *			return -WDT_EPTR;
+ *
+ *		return mtk_mhal_wdt_set_timeout(&(wdt_dev.hal_dev), sec);
+ *	}
+ *
+ *	void mtk_os_hal_wdt_restart(void)
+ *	{
+ *		if (!_mtk_os_hal_wdt_is_inited(&wdt_dev))
+ *			return;
+ *
+ *		mtk_mhal_wdt_restart(&(wdt_dev.hal_dev));
+ *	}
+ *
+ *	void mtk_os_hal_wdt_sw_reset(void)
+ *	{
+ *		if (!_mtk_os_hal_wdt_is_inited(&wdt_dev))
+ *			return;
+ *
+ *		mtk_mhal_wdt_config(&(wdt_dev.hal_dev), 0);
+ *		mtk_mhal_wdt_swrst(&(wdt_dev.hal_dev));
+ *	}
+ *
+ *	void mtk_os_hal_wdt_hw_reset(void)
+ *	{
+ *		if (!_mtk_os_hal_wdt_is_inited(&wdt_dev))
+ *			return;
+ *
+ *		mtk_mhal_wdt_config(&(wdt_dev.hal_dev), 0);
+ *		mtk_mhal_wdt_hwrst(&(wdt_dev.hal_dev));
+ *	}
+ *
+ *	enum os_wdt_rst_sta mtk_os_hal_wdt_get_reset_status(void)
+ *	{
+ *		return wdt_dev.reset_status;
+ *	}
+ *
+ *	void mtk_os_hal_wdt_config(enum os_wdt_mode mode)
+ *	{
+ *		if (!_mtk_os_hal_wdt_is_inited(&wdt_dev))
+ *			return;
+ *
+ *		mtk_mhal_wdt_config(&(wdt_dev.hal_dev), mode);
+ *	}
+ *
+ *	void mtk_os_hal_wdt_register_irq(struct os_wdt_int *wdt_int)
+ *	{
+ *		if (!wdt_int || !(wdt_int->wdt_cb_hdl)) {
+ *			wdt_dev.int_info.wdt_cb_hdl =
+ *				_mtk_os_hal_wdt_default_irq_hdl;
+ *			wdt_dev.int_info.wdt_cb_data = NULL;
+ *		} else {
+ *			wdt_dev.int_info.wdt_cb_hdl = wdt_int->wdt_cb_hdl;
+ *			wdt_dev.int_info.wdt_cb_data = wdt_int->wdt_cb_data;
+ *		}
+ *	}
+ *
+ *	// device initialization
+ *
+ *	void mtk_os_hal_wdt_init(void)
+ *	{
+ *		unsigned int rst_sta;
+ *
+ *		if (wdt_dev.inited)
+ *			return;
+ *
+ *		// initialize WDT devices
+ *		wdt_dev.hal_dev.cm4_wdt_base = (void __iomem *)(0x21020000);
+ *		wdt_dev.irq_id = CM4_IRQ_WDT_M4_IO;
+ *
+ *		// get WDT reset status
+ *		mtk_mhal_wdt_get_status(&(wdt_dev.hal_dev), &rst_sta);
+ *		wdt_dev.reset_status = (enum os_wdt_rst_sta)rst_sta;
+ *
+ *		// disable WDT
+ *		mtk_mhal_wdt_enable(&(wdt_dev.hal_dev), 0);
+ *
+ *		// register default interrupt handle
+ *		mtk_os_hal_wdt_register_irq(NULL);
+ *		// request irq from system
+ *		NVIC_Register(wdt_dev.irq_id, _mtk_os_hal_wdt_isr);
+ *		NVIC_SetPriority(wdt_dev.irq_id, CM4_WDT_PRI);
+ *		NVIC_EnableIRQ(wdt_dev.irq_id);
+ *
+ *		wdt_dev.inited = true;
+ *	}
+ * @endcode
+ *
+ * - \b How \b to \b Develop \b User \b Application \b by \b Using \b OS-HAL
+ *   \b API:\n
+ *
+ *  - Sample Code (The user application sample code on FreeRTOS.)\n
+ *
+ *    @code
+ *    - Initialize WDT driver:
+ *      - Call mtk_os_hal_wdt_init() to initialize WDT driver.
+ *
+ *    - Configure WDT timeout value:
+ *      - Call mtk_os_hal_wdt_set_timeout(T) to set WDT timeout value as T
+ *        second.
+ *
+ *    - Configure WDT as interrupt mode:
+ *      - Define a variable "struct os_wdt_int wdt_int" if necessary.
+ *      - Call mtk_os_hal_wdt_register_irq(&wdt_int) to register WDT user
+ *        interrupt callback handle and user data. (If input NULL to
+ *        mtk_os_hal_wdt_register_irq(), the default callback handle will be
+ *        registered which will reset system immediately.)
+ *      - Call mtk_os_hal_wdt_config(OS_WDT_TRIGGER_IRQ) to sec WDT as
+ *        interrupt mode.
+ *
+ *    - Configure WDT as reset mode:
+ *      - Call mtk_os_hal_wdt_config(OS_WDT_TRIGGER_RESET) to sec WDT as
+ *        reset mode.
+ *
+ *    - Enable/disable WDT:
+ *      - Call mtk_os_hal_wdt_enable() and mtk_os_hal_wdt_disable() to enable/
+ *        disable WDT.
+ *
+ *    - Restart WDT counter:
+ *      - Call mtk_os_hal_wdt_restart() to restart WDT counter.
+ *
+ *    - Trigger system reset immediately:
+ *      - Call mtk_os_hal_wdt_sw_reset() to trigger SW-RST immediately.
+ *      - Call mtk_os_hal_wdt_hw_reset() to trigger HW-RST immediately.
+ * @endcode
  *
  * @}
  * @}
@@ -144,10 +362,6 @@ struct hal_wdt_dev {
  * control the MediaTek WDT HW.
  * @{
  */
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * @brief  This function is used to enable or disable WDT.
@@ -233,10 +447,6 @@ int mtk_mhal_wdt_swrst(struct hal_wdt_dev *wdt_dev);
  */
 int mtk_mhal_wdt_get_status(struct hal_wdt_dev *wdt_dev,
 			    unsigned int *rst_sta);
-
-#ifdef __cplusplus
-}
-#endif
 
 /**
  * @}

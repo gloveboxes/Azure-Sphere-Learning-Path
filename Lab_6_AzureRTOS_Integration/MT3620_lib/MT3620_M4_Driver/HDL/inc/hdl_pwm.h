@@ -1,5 +1,5 @@
 /*
-  * (C) 2005-2020 MediaTek Inc. All rights reserved.
+  * (C) 2005-2019 MediaTek Inc. All rights reserved.
   *
   * Copyright Statement:
   *
@@ -146,10 +146,6 @@ typedef enum{
 #define PWM_PARAM_S1_PWM_ON_TIME_OFFSET             (0)
 #define PWM_PARAM_S1_PWM_ON_TIME_MASK               (BITS(0, 15))
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 void mtk_hdl_pwm_init(void __iomem *base);
 
 void mtk_hdl_pwm_group_clock_select(void __iomem *base, pwm_clk clock_source);
@@ -193,10 +189,6 @@ void mtk_hdl_pwm_group_query(void __iomem *base, u8 pwm_num,
 		u16 *duty_Cycle,
 		u32 *pwm_freq,
 		u8 *enable);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* __HDL_PWM_H__ */
 

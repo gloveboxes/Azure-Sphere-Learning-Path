@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2020 MediaTek Inc. All rights reserved.
+ * (C) 2005-2019 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -38,77 +38,6 @@
 
 #include "mhal_i2s.h"
 
-/**
- * @addtogroup OS-HAL
- * @{
- * @addtogroup i2s
- * @{
- * This section introduces the Integrated Interchip Sound (I2S) APIs including
- * terms and acronyms, supported features, software architecture,
- * details on how to use this driver, enums, structures and functions.
- *
- * @section OS_HAL_I2S_Terms_Chapter Terms and Acronyms
- *
- * |Terms                   |Details                             |
- * |------------------------------|--|
- * |\b DMA                        | Direct Memory Access.|
- * |\b FIFO                       | First In, First Out.|
- * |\b ISR                        | Interrupt Service Routine.|
- * |\b I2S                        | Integrated Interchip Sound.|
- *
- * @section OS_HAL_I2S_Features_Chapter Supported Features
- * See @ref MHAL_I2S_Features_Chapter for the details of  Supported Features.
- * @}
- * @}
- */
-
-/**
- * @addtogroup OS-HAL
- * @{
- * @addtogroup i2s
- * @{
- * @section OS_HAL_I2S_Driver_Usage_Chapter How to use this driver
- *
- * - \b Device \b driver \b sample \b code \b is \b as \b follows: \n
- *  - sample code (this is the user application sample code on freeRTos):
- *    @code
- *	- initial I2S.
- *	 -Call mtk_os_hal_request_i2s(i2s_no i2s_port)
- *	   to initial I2S and reguest resource.
- *
- *	- configure I2S and DMA.
- *	  -Call mtk_os_hal_config_i2s(i2s_no i2s_port,
-				      audio_parameter *parameter)
-		to configure I2S and DMA for I2S settings and start up DMA.
- *
- *	- Enable I2S transfer.
- *	  -Call mtk_os_hal_enable_i2s(i2s_no i2s_port).
- *
- *	- Disable I2S transfer.
- *	 - Call  mtk_os_hal_disable_i2s(i2s_no i2s_port).
- *
- *	- release I2S.
- *	 - Call  mtk_os_hal_disable_i2s(i2s_no i2s_port) to release resource.
- *
- *    @endcode
- *
- *
- * @}
- * @}
- */
-
-/**
-* @addtogroup OS-HAL
-* @{
-* @addtogroup i2s
-* @{
-*/
-
-/** @defgroup os_hal_i2s_enum Enum
-  * @{
-  * This section introduces the enumerations
-  * that I2S uses while performing transfer.
-  */
 typedef struct {
 	/** Protocol mode */
 	hal_i2s_initial_type		i2s_initial_type;
@@ -151,18 +80,6 @@ typedef struct {
 	/** RX callback data */
 	void				*rx_callback_data;
 } audio_parameter;
-/**
-  * @}
-  */
-
-/** @defgroup os_hal_i2s_function Function
-  * @{
-   * This section provides high level APIs to upper layer.
-  */
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * @brief     Set the I2S configuration.
@@ -184,7 +101,7 @@ int mtk_os_hal_config_i2s(i2s_no i2s_port, audio_parameter *parameter);
  * @param[in] i2s_port : enum i2s_no.
  * @return
  *      Return "0" if start I2S TX and RX are sucessfully.\n
- *      Return -#I2S_EPTR if the i2s_port is over MTK_I2S_MAX_PORT_NUMBER
+ *      Return "-#I2S_EPTR" if the i2s_port is over MTK_I2S_MAX_PORT_NUMBER
  *      or enable I2S TX and RX are fail.
  */
 int mtk_os_hal_enable_i2s(i2s_no i2s_port);
@@ -195,18 +112,19 @@ int mtk_os_hal_enable_i2s(i2s_no i2s_port);
  * @param[in] i2s_port : enum i2s_no.
  * @return
  *      Return "0" if stop I2S TX, RX and DMA are sucessfully.\n
- *      Return -#I2S_EPTR if the i2s_port is over MTK_I2S_MAX_PORT_NUMBER
+ *      Return "-#I2S_EPTR" if the i2s_port is over MTK_I2S_MAX_PORT_NUMBER
  *      or stop I2S TX, RX and DMA are fail.
  */
 int mtk_os_hal_disable_i2s(i2s_no i2s_port);
 
 /**
  * @brief     request I2S use.
- * @brief     Usage: User can call this function to request the DMA channels.
+ * @brief     Usage: User can call this function to request the DMA channels
+ *            and I2S PINMUX.
  * @param[in] i2s_port : enum i2s_no.
  * @return
  *      Return "0" if request I2S PINMUX and DMA channels are sucessfully.\n
- *      Return -#I2S_EPTR if the i2s_port is over MTK_I2S_MAX_PORT_NUMBER
+ *      Return "-#I2S_EPTR" if the i2s_port is over MTK_I2S_MAX_PORT_NUMBER
  *      or DMA channel request fail
  */
 int mtk_os_hal_request_i2s(i2s_no i2s_port);
@@ -218,22 +136,9 @@ int mtk_os_hal_request_i2s(i2s_no i2s_port);
  * @param[in] i2s_port : enum i2s_no.
  * @return
  *      Return "0" if free PINMUX and DMA channel are sucessfully.\n
- *      Return -#I2S_EPTR if the i2s_port is over MTK_I2S_MAX_PORT_NUMBER
+ *      Return "-#I2S_EPTR" if the i2s_port is over MTK_I2S_MAX_PORT_NUMBER
  *      or DMA channel release is fail
  */
 int mtk_os_hal_free_i2s(i2s_no i2s_port);
-
-#ifdef __cplusplus
-}
-#endif
-
-/**
-  * @}
-  */
-
-/**
-* @}
-* @}
-*/
 
 #endif  /*__OS_HAL_I2S_H__*/

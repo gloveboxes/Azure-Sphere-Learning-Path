@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2020 MediaTek Inc. All rights reserved.
+ * (C) 2005-2019 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -371,7 +371,6 @@ void mtk_hdl_gpioif_de_glitch(void __iomem *base_addr,
 	int gpio, int enable, u32 min_p, u32 init_v)
 {
 	u32 reg_val = 0;
-
 	gpioif_debug("%s gpio %x enable %x min_p %u init_v %u\n",
 		__func__, gpio, enable, min_p, init_v);
 	reg_val = osai_readl(base_addr + GPIO_CNT_GRP_STATIC_CTRL_0);

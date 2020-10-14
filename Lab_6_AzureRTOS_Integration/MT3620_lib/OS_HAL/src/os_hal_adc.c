@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2020 MediaTek Inc. All rights reserved.
+ * (C) 2005-2019 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -33,30 +33,17 @@
  * MEDIATEK SOFTWARE AT ISSUE.
  */
 
-#ifdef OSAI_FREERTOS
-#include <FreeRTOS.h>
-#include <semphr.h>
-#endif
-
 #include "nvic.h"
 #include "os_hal_adc.h"
 #include "os_hal_dma.h"
 
-#if defined(OSAI_ENABLE_DMA) && !defined(OSAI_FREERTOS)
-static __attribute__((section(".sysram"))) uint8_t adc_dma_buf[ADC_DMA_BUF_WORD_SIZE];
-#endif
-
-#define CM4_ADC_BASE				0x38000000
+#define CM4_ADC_BASE					0x38000000
 #define CM4_ADC_TOPCFGAON_CLK_RG		0x30030208
 
 struct mtk_adc_controller_rtos {
 	struct mtk_adc_controller *ctlr;
 	/* the type based on OS */
-#ifdef OSAI_FREERTOS
-	QueueHandle_t rx_completion;
-#else
 	volatile u8 rx_completion;
-#endif
 };
 static struct adc_fsm_param adc_fsm_parameter;
 
@@ -64,7 +51,7 @@ static struct mtk_adc_controller adc_controller;
 
 static struct mtk_adc_controller_rtos g_adc_ctlr_rtos;
 
-struct mtk_adc_controller_rtos *_mtk_os_hal_adc_get_ctlr(void)
+static struct mtk_adc_controller_rtos *_mtk_os_hal_adc_get_ctlr(void)
 {
 	return &g_adc_ctlr_rtos;
 }
@@ -110,39 +97,18 @@ static int _mtk_os_hal_adc_wait_for_completion_timeout(
 				struct mtk_adc_controller_rtos
 				*ctlr_rtos, int time_ms)
 {
-#ifdef OSAI_FREERTOS
-	if (pdTRUE != xSemaphoreTake(ctlr_rtos->rx_completion,
-				     time_ms / portTICK_RATE_MS))
-		return -1;
-#else
-	extern volatile u32 sys_tick_in_ms;
-	uint32_t start_tick = sys_tick_in_ms;
-
-	while (ctlr_rtos->rx_completion == 0) {
-		if (sys_tick_in_ms - start_tick > time_ms)
-			return -1;
-	}
+	while(ctlr_rtos->rx_completion==0){}
 	ctlr_rtos->rx_completion--;
-#endif
 
 	return 0;
 }
 
 static int _mtk_os_hal_adc_rx_done_callback(void *data)
 {
-#ifdef OSAI_FREERTOS
-	BaseType_t x_higher_priority_task_woken = pdFALSE;
-	struct mtk_adc_controller_rtos *ctlr_rtos = data;
-
-	/* while using DMA mode, release semaphore in this callback */
-	xSemaphoreGiveFromISR(ctlr_rtos->rx_completion,
-			      &x_higher_priority_task_woken);
-	portYIELD_FROM_ISR(x_higher_priority_task_woken);
-#else
 	struct mtk_adc_controller_rtos *ctlr_rtos = data;
 
 	ctlr_rtos->rx_completion++;
-#endif
+
 	return 0;
 }
 
@@ -161,13 +127,9 @@ int mtk_os_hal_adc_ctlr_init(adc_pmode pmode, adc_fifo_mode fifo_mode,
 	if ((pmode != ADC_PMODE_ONE_TIME) && (pmode != ADC_PMODE_PERIODIC))
 		return -ADC_EPARAMETER;
 
-#ifndef OSAI_ENABLE_DMA
-	if (fifo_mode == ADC_FIFO_DMA)
-		return -ADC_EPARAMETER;
-#endif
-
 	if ((fifo_mode != ADC_FIFO_DIRECT) && (fifo_mode != ADC_FIFO_DMA))
 		return -ADC_EPARAMETER;
+
 
 	ctlr_rtos->ctlr = &adc_controller;
 
@@ -192,20 +154,7 @@ int mtk_os_hal_adc_ctlr_init(adc_pmode pmode, adc_fifo_mode fifo_mode,
 	ctlr->adc_fsm_parameter->fifo_mode = fifo_mode;
 	ctlr->adc_fsm_parameter->ier_mode = ADC_FIFO_IER_RXFULL;
 	if (ctlr->adc_fsm_parameter->fifo_mode == ADC_FIFO_DMA) {
-#ifdef OSAI_ENABLE_DMA
-
-#ifdef OSAI_FREERTOS
-		ctlr->adc_fsm_parameter->dma_vfifo_addr = pvPortMalloc(ADC_DMA_BUF_WORD_SIZE);
 		ctlr->adc_fsm_parameter->dma_vfifo_len = ADC_DMA_BUF_WORD_SIZE;
-#else
-		ctlr->adc_fsm_parameter->dma_vfifo_addr = (u32 *)adc_dma_buf;
-		ctlr->adc_fsm_parameter->dma_vfifo_len = ADC_DMA_BUF_WORD_SIZE;
-#endif
-
-#else	/* OSAI_ENABLE_DMA */
-		ctlr->adc_fsm_parameter->dma_vfifo_addr = NULL;
-		ctlr->adc_fsm_parameter->dma_vfifo_len = 0;
-#endif
 
 		ctlr->dma_channel = VDMA_ADC_RX_CH29;
 		ctlr->use_dma = 1;
@@ -228,12 +177,8 @@ int mtk_os_hal_adc_ctlr_init(adc_pmode pmode, adc_fifo_mode fifo_mode,
 		if (ret)
 			return ret;
 	}
-#ifdef OSAI_FREERTOS
-	if (!ctlr_rtos->rx_completion)
-		ctlr_rtos->rx_completion = xSemaphoreCreateBinary();
-#else
-	ctlr_rtos->rx_completion = 0;
-#endif
+
+	ctlr_rtos->rx_completion = 1;
 
 	ret = mtk_mhal_adc_rx_notify_callback_register(ctlr,
 					 _mtk_os_hal_adc_rx_done_callback,
@@ -282,18 +227,10 @@ int mtk_os_hal_adc_ctlr_deinit(void)
 	if (!ctlr_rtos->ctlr)
 		return -ADC_EPTR;
 
-#ifdef OSAI_FREERTOS
-	vSemaphoreDelete(ctlr_rtos->rx_completion);
-	ctlr_rtos->rx_completion = NULL;
-#else
-	ctlr_rtos->rx_completion = 0;
-#endif
-
 	if (ctlr_rtos->ctlr->adc_fsm_parameter->fifo_mode == ADC_FIFO_DIRECT) {
 		/* Disable ADC IRQ */
 		NVIC_DisableIRQ((IRQn_Type)CM4_IRQ_ADC);
 	}
-
 	ret = mtk_mhal_adc_stop(ctlr_rtos->ctlr);
 	if (ret)
 		return ret;
@@ -305,12 +242,6 @@ int mtk_os_hal_adc_ctlr_deinit(void)
 	ret = mtk_mhal_adc_disable_clk(ctlr_rtos->ctlr);
 	if (ret)
 		return ret;
-
-	if (ctlr_rtos->ctlr->adc_fsm_parameter->fifo_mode == ADC_FIFO_DMA) {
-#if defined(OSAI_ENABLE_DMA) && defined(OSAI_FREERTOS)
-		vPortFree(ctlr_rtos->ctlr->adc_fsm_parameter->dma_vfifo_addr);
-#endif
-	}
 
 	return 0;
 }
@@ -325,14 +256,6 @@ int mtk_os_hal_adc_fsm_param_set(struct adc_fsm_param *adc_fsm_parameter)
 	ctlr_rtos =	_mtk_os_hal_adc_get_ctlr();
 	if (!ctlr_rtos)
 		return -ADC_EPTR;
-
-	if (!adc_fsm_parameter)
-		return -ADC_EPTR;
-
-#ifndef OSAI_ENABLE_DMA
-	if (adc_fsm_parameter->fifo_mode == ADC_FIFO_DMA)
-		return -ADC_EPARAMETER;
-#endif
 
 	ctlr = ctlr_rtos->ctlr;
 
@@ -381,10 +304,6 @@ int mtk_os_hal_adc_one_shot_get_data(adc_channel sample_channel, u32 *data)
 		(ctlr->adc_fsm_parameter->fifo_mode != ADC_FIFO_DIRECT))
 		return -ADC_EPARAMETER;
 
-	ret = _mtk_os_hal_adc_wait_for_completion_timeout(ctlr_rtos, 1000);
-	if (ret)
-		printf("Take adc master Semaphore timeout!\n");
-
 	ret = mtk_mhal_adc_one_shot_get_data(ctlr_rtos->ctlr,
 		sample_channel, data);
 	if (ret)
@@ -393,13 +312,11 @@ int mtk_os_hal_adc_one_shot_get_data(adc_channel sample_channel, u32 *data)
 	return 0;
 }
 
-int mtk_os_hal_adc_period_get_data(u32 (*rx_buf)[32], u32 *length)
+int mtk_os_hal_adc_period_get_data(adc_channel sample_channel)
 {
 	struct mtk_adc_controller_rtos *ctlr_rtos;
 	struct mtk_adc_controller *ctlr;
 	int ret = 0;
-	int channel_count = 0;
-	u32 size = 0;
 
 	ctlr_rtos =	_mtk_os_hal_adc_get_ctlr();
 	if (!ctlr_rtos)
@@ -416,18 +333,11 @@ int mtk_os_hal_adc_period_get_data(u32 (*rx_buf)[32], u32 *length)
 	ret = _mtk_os_hal_adc_wait_for_completion_timeout(ctlr_rtos, 1000);
 	if (ret)
 		printf("Take adc master Semaphore timeout!\n");
-	for (channel_count = 0; channel_count < ADC_CHANNEL_MAX;
-			channel_count++) {
-		if (ctlr->adc_fsm_parameter->channel_map & BIT(channel_count)) {
-			ret = mtk_mhal_adc_period_get_data(ctlr,
-				(adc_channel)channel_count,
-				rx_buf[channel_count], &size);
-		if (ret)
-			return ret;
-	}
-		length[channel_count] = size;
 
-	}
+	ret = mtk_mhal_adc_period_get_data(ctlr, sample_channel);
+	if (ret)
+		return ret;
+
 	ret = mtk_mhal_adc_stop(ctlr);
 	if (ret)
 		return ret;
@@ -440,3 +350,5 @@ int mtk_os_hal_adc_period_get_data(u32 (*rx_buf)[32], u32 *length)
 
 	return 0;
 }
+
+

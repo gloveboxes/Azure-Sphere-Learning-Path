@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2020 MediaTek Inc. All rights reserved.
+ * (C) 2005-2019 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -33,18 +33,9 @@
  * MEDIATEK SOFTWARE AT ISSUE.
  */
 
-#ifdef OSAI_FREERTOS
-#include <FreeRTOS.h>
-#include <semphr.h>
-#endif
-
 #include "nvic.h"
 #include "os_hal_i2c.h"
 #include "os_hal_dma.h"
-
-#ifndef OSAI_ENABLE_DMA
-#define PIO_I2C_MAX_LEN 8
-#endif
 
 #define ISU0_I2C_BASE	0x38070200
 #define ISU1_I2C_BASE	0x38080200
@@ -90,11 +81,7 @@ struct mtk_i2c_ctrl_rtos {
 	struct mtk_i2c_controller *i2c;
 
 	/* the type based on OS */
-#ifdef OSAI_FREERTOS
-	QueueHandle_t xfer_completion;
-#else
 	volatile u8 xfer_completion;
-#endif
 };
 
 static struct mtk_i2c_ctrl_rtos g_i2c_ctrl_rtos[OS_HAL_I2C_ISU_MAX];
@@ -106,22 +93,14 @@ static void _mtk_os_hal_i2c_irq_handler(int bus_num)
 	u8 ret = 0;
 	struct mtk_i2c_ctrl_rtos *ctrl_rtos = &g_i2c_ctrl_rtos[bus_num];
 	struct mtk_i2c_controller *i2c = ctrl_rtos->i2c;
-#ifdef OSAI_FREERTOS
-	BaseType_t x_higher_priority_task_woken = pdFALSE;
-#endif
+
 	ret = mtk_mhal_i2c_irq_handle(i2c);
 
 	/* 1. FIFO mode: return completion done in I2C irq handler
 	 * 2. DMA mode: return completion done in DMA irq handler
 	 */
 	if (!ret) {
-#ifdef OSAI_FREERTOS
-		xSemaphoreGiveFromISR(ctrl_rtos->xfer_completion,
-				      &x_higher_priority_task_woken);
-		portYIELD_FROM_ISR(x_higher_priority_task_woken);
-#else
 		ctrl_rtos->xfer_completion++;
-#endif
 	}
 }
 
@@ -204,44 +183,17 @@ static void _mtk_os_hal_i2c_free_irq(int bus_num)
 
 static int _mtk_os_hal_i2c_dma_done_callback(void *data)
 {
-#ifdef OSAI_FREERTOS
-	BaseType_t x_higher_priority_task_woken = pdFALSE;
-	struct mtk_i2c_ctrl_rtos *ctrl_rtos;
-
-	ctrl_rtos = (struct mtk_i2c_ctrl_rtos *)data;
-
-	/* while using DMA mode, release semaphore in this callback */
-	xSemaphoreGiveFromISR(ctrl_rtos->xfer_completion,
-			      &x_higher_priority_task_woken);
-	portYIELD_FROM_ISR(x_higher_priority_task_woken);
-
-	return 0;
-#else
 	struct mtk_i2c_ctrl_rtos *ctrl_rtos = data;
 
 	ctrl_rtos->xfer_completion++;
 	return 0;
-#endif
 }
 
 static int _mtk_os_hal_i2c_wait_for_completion_timeout(
 	struct mtk_i2c_ctrl_rtos *ctrl_rtos, int time_ms)
 {
-#ifdef OSAI_FREERTOS
-	if (pdTRUE != xSemaphoreTake(ctrl_rtos->xfer_completion,
-				     time_ms / portTICK_RATE_MS))
-		return -1;
-#else
-	extern volatile u32 sys_tick_in_ms;
-	uint32_t start_tick = sys_tick_in_ms;
-
-	while (ctrl_rtos->xfer_completion == 0) {
-		if (sys_tick_in_ms - start_tick > time_ms)
-			return -1;
-	}
+	while(ctrl_rtos->xfer_completion==0){}
 	ctrl_rtos->xfer_completion--;
-#endif
-
 	return 0;
 }
 
@@ -299,12 +251,7 @@ int mtk_os_hal_i2c_ctrl_init(i2c_num bus_num)
 					     (void *)ctrl_rtos);
 
 	ctrl_rtos->i2c = i2c;
-#ifdef OSAI_FREERTOS
-	if (!ctrl_rtos->xfer_completion)
-		ctrl_rtos->xfer_completion = xSemaphoreCreateBinary();
-#else
 	ctrl_rtos->xfer_completion = 0;
-#endif
 
 
 	ret = mtk_mhal_i2c_request_dma(i2c);
@@ -335,15 +282,6 @@ int mtk_os_hal_i2c_ctrl_deinit(i2c_num bus_num)
 		printf("i2c%d *i2c is NULL Pointer\n", bus_num);
 		return -I2C_EPTR;
 	}
-
-#ifdef OSAI_FREERTOS
-	if (ctrl_rtos->xfer_completion) {
-		vSemaphoreDelete(ctrl_rtos->xfer_completion);
-		ctrl_rtos->xfer_completion = NULL;
-	}
-#else
-	ctrl_rtos->xfer_completion = 0;
-#endif
 
 	_mtk_os_hal_i2c_free_irq(bus_num);
 	mtk_mhal_i2c_release_dma(i2c);
@@ -389,13 +327,6 @@ int mtk_os_hal_i2c_read(i2c_num bus_num, u8 device_addr, u8 *buffer, u16 len)
 	if (bus_num >= OS_HAL_I2C_ISU_MAX)
 		return -I2C_EINVAL;
 
-#ifndef OSAI_ENABLE_DMA
-	if (len > PIO_I2C_MAX_LEN) {
-		printf("Error! buf length should be less than or equal to %d\n", PIO_I2C_MAX_LEN);
-		return -I2C_EINVAL;
-	}
-#endif
-
 	ctrl_rtos = &g_i2c_ctrl_rtos[bus_num];
 
 	i2c = ctrl_rtos->i2c;
@@ -433,13 +364,6 @@ int   mtk_os_hal_i2c_write(i2c_num bus_num, u8 device_addr, u8 *buffer, u16 len)
 
 	if (bus_num >= OS_HAL_I2C_ISU_MAX)
 		return -I2C_EINVAL;
-
-#ifndef OSAI_ENABLE_DMA
-	if (len > PIO_I2C_MAX_LEN) {
-		printf("Error! buf length should be less than or equal to %d\n", PIO_I2C_MAX_LEN);
-		return -I2C_EINVAL;
-	}
-#endif
 
 	ctrl_rtos = &g_i2c_ctrl_rtos[bus_num];
 
@@ -479,13 +403,6 @@ int mtk_os_hal_i2c_write_read(i2c_num bus_num, u8 device_addr,
 
 	if (bus_num >= OS_HAL_I2C_ISU_MAX)
 		return -I2C_EINVAL;
-
-#ifndef OSAI_ENABLE_DMA
-	if (wr_len > PIO_I2C_MAX_LEN || rd_len > PIO_I2C_MAX_LEN) {
-		printf("Error! buf length should be less than or equal to %d\n", PIO_I2C_MAX_LEN);
-		return -I2C_EINVAL;
-	}
-#endif
 
 	ctrl_rtos = &g_i2c_ctrl_rtos[bus_num];
 
@@ -556,13 +473,6 @@ int mtk_os_hal_i2c_slave_tx(i2c_num bus_num, u8 *buffer, u16 len, u32 time_out)
 	if (bus_num >= OS_HAL_I2C_ISU_MAX)
 		return -I2C_EINVAL;
 
-#ifndef OSAI_ENABLE_DMA
-	if (len > PIO_I2C_MAX_LEN) {
-		printf("Error! buf length should be less than or equal to %d\n", PIO_I2C_MAX_LEN);
-		return -I2C_EINVAL;
-	}
-#endif
-
 	ctrl_rtos = &g_i2c_ctrl_rtos[bus_num];
 
 	i2c = ctrl_rtos->i2c;
@@ -600,13 +510,6 @@ int mtk_os_hal_i2c_slave_rx(i2c_num bus_num, u8 *buffer, u16 len, u32 time_out)
 
 	if (bus_num >= OS_HAL_I2C_ISU_MAX)
 		return -I2C_EINVAL;
-
-#ifndef OSAI_ENABLE_DMA
-	if (len > PIO_I2C_MAX_LEN) {
-		printf("Error! buf length should be less than or equal to %d\n", PIO_I2C_MAX_LEN);
-		return -I2C_EINVAL;
-	}
-#endif
 
 	ctrl_rtos = &g_i2c_ctrl_rtos[bus_num];
 
