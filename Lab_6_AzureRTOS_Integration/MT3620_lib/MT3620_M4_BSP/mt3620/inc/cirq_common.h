@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -44,6 +44,10 @@
 #ifndef __CIRQ_COMMON_H__
 #define __CIRQ_COMMON_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifdef M4SC_ENABLE
 #define ENABLE_GPIO_IRQ_EDGE2LEVEL
 #endif
@@ -66,6 +70,10 @@ int cirq_irq_ctl_set_level(uint32_t vector);
 int cirq_irq_ctl_set_edge(uint32_t vector);
 int cirq_cm4_wic_enable(uint32_t vector);
 int cirq_cm4_wic_disable(uint32_t vector);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __CIRQ_COMMON_H__ */
 

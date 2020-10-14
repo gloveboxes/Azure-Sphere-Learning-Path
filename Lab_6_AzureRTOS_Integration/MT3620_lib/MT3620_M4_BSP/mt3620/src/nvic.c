@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -45,10 +45,10 @@ volatile uint32_t sys_tick_in_ms = 0;
 void SystmTick_Handler(void)
 {
 	sys_tick_in_ms++;
-	/* #ifdef OSAI_FREERTOS */
+	// #ifdef OSAI_FREERTOS
 	extern void SysTick_Handler(void);
 	SysTick_Handler();
-	/* #endif */
+	// #endif
 }
 
 int NVIC_Register(int irqn, NVIC_IRQ_Handler handler)
@@ -56,7 +56,11 @@ int NVIC_Register(int irqn, NVIC_IRQ_Handler handler)
 	NVIC_DisableIRQ(irqn);
 	NVIC_ClearPendingIRQ(irqn);
 
+#ifdef M4_ENABLE_XIP_FLASH
+	__isr_vector_tcm[irqn+16] = (unsigned long) handler;
+#else
 	__isr_vector[irqn+16] = (unsigned long) handler;
+#endif
 	__asm volatile( "dsb" );
 	__asm volatile( "isb" );
 	return 0;
@@ -67,7 +71,11 @@ int NVIC_UnRegister(int irqn)
 	NVIC_DisableIRQ(irqn);
 	NVIC_ClearPendingIRQ(irqn);
 
+#ifdef M4_ENABLE_XIP_FLASH
+	__isr_vector_tcm[irqn+16] = NULL;
+#else
 	__isr_vector[irqn+16] = NULL;
+#endif
 	__asm volatile( "dsb" );
 	__asm volatile( "isb" );
 	return 0;
@@ -75,7 +83,14 @@ int NVIC_UnRegister(int irqn)
 
 void NVIC_SetupVectorTable(void)
 {
+#ifdef M4_ENABLE_XIP_FLASH
+	relocate_vector_table(&__vector_table_start__,
+			      &__vector_table_end__,
+			      __isr_vector_tcm);
+	SCB->VTOR = (uint32_t)__isr_vector_tcm;
+#else
 	SCB->VTOR = (uint32_t)__isr_vector;
+#endif
 	__asm volatile( "dsb" );
 	__asm volatile( "isb" );
 
@@ -96,7 +111,11 @@ NVIC_IRQ_Handler backup_handler = NULL;
 int backup_irqn = 0;
 int NVIC_ISR_Check_and_backup(int irqn)
 {
+#ifdef M4_ENABLE_XIP_FLASH
+	backup_handler = (NVIC_IRQ_Handler) __isr_vector_tcm[irqn + 16];
+#else
     backup_handler = (NVIC_IRQ_Handler) __isr_vector[irqn + 16];
+#endif
     backup_irqn = irqn;
     return 0;
 }

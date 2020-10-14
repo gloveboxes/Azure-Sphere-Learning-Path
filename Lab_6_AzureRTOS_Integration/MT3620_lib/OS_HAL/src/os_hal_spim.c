@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -33,10 +33,19 @@
  * MEDIATEK SOFTWARE AT ISSUE.
  */
 
+#ifdef OSAI_FREERTOS
+#include <FreeRTOS.h>
+#include <semphr.h>
+#endif
+
 #include "nvic.h"
 
 #include "os_hal_dma.h"
 #include "os_hal_spim.h"
+
+#if defined(OSAI_ENABLE_DMA) && !defined(OSAI_FREERTOS)
+static __attribute__((section(".sysram"))) uint8_t spim_dma_buf[MTK_SPIM_DMA_BUFFER_BYTES];
+#endif
 
 #define ISU0_SPIM_BASE			0x38070300
 #define ISU1_SPIM_BASE			0x38080300
@@ -82,7 +91,11 @@ struct mtk_spi_controller_rtos {
 	struct mtk_spi_controller *ctlr;
 
 	/* the type based on OS */
+#ifdef OSAI_FREERTOS
+	QueueHandle_t xfer_completion;
+#else
 	volatile u8 xfer_completion;
+#endif
 
 	/* used for async API */
 	spi_usr_complete_callback complete;
@@ -92,11 +105,6 @@ struct mtk_spi_controller_rtos {
 static struct mtk_spi_controller_rtos g_spim_ctlr_rtos[OS_HAL_SPIM_ISU_MAX];
 static struct mtk_spi_controller g_spim_ctlr[OS_HAL_SPIM_ISU_MAX];
 static struct mtk_spi_private g_spim_mdata[OS_HAL_SPIM_ISU_MAX];
-
-static unsigned char
-	tmp_tx_buffer[OS_HAL_SPIM_ISU_MAX][MTK_SPIM_DMA_BUFFER_BYTES] __attribute__((section(".sysram")));
-static unsigned char
-	tmp_rx_buffer[OS_HAL_SPIM_ISU_MAX][MTK_SPIM_DMA_BUFFER_BYTES] __attribute__((section(".sysram")));
 
 static struct mtk_spi_controller_rtos *
 	_mtk_os_hal_spim_get_ctlr(spim_num bus_num)
@@ -121,9 +129,7 @@ int mtk_os_hal_spim_dump_reg(spim_num bus_num)
 
 	ctlr = ctlr_rtos->ctlr;
 
-	mtk_mhal_spim_enable_clk(ctlr);
 	mtk_mhal_spim_dump_reg(ctlr);
-	mtk_mhal_spim_disable_clk(ctlr);
 
 	return 0;
 }
@@ -133,7 +139,9 @@ static int _mtk_os_hal_spim_irq_handler(spim_num bus_num)
 	struct mtk_spi_controller_rtos *ctlr_rtos;
 	struct mtk_spi_controller *ctlr;
 	struct mtk_spi_transfer *curr_xfer;
-
+#ifdef OSAI_FREERTOS
+	BaseType_t x_higher_priority_task_woken = pdFALSE;
+#endif
 
 	ctlr_rtos = _mtk_os_hal_spim_get_ctlr(bus_num);
 	if (!ctlr_rtos)
@@ -150,16 +158,21 @@ static int _mtk_os_hal_spim_irq_handler(spim_num bus_num)
 	/* 1. FIFO mode: return completion done in SPI irq handler
 	 * 2. DMA mode: return rx completion done in DMA irq handler
 	 */
-	if (!curr_xfer->use_dma || (curr_xfer->tx_buf && !curr_xfer->rx_buf)) {
+	if (!curr_xfer->use_dma ||
+	    ((curr_xfer->opcode_len != 0) && !curr_xfer->rx_buf)) {
 		if (ctlr_rtos->complete) {
 			/* async xfer */
 			ctlr_rtos->complete(ctlr_rtos->context);
 			ctlr_rtos->complete = NULL;
 			ctlr_rtos->context = NULL;
-			mtk_mhal_spim_disable_clk(ctlr_rtos->ctlr);
 		} else {
 			/* sync xfer */
+#ifdef OSAI_FREERTOS
+			xSemaphoreGiveFromISR(ctlr_rtos->xfer_completion, &x_higher_priority_task_woken);
+			portYIELD_FROM_ISR(x_higher_priority_task_woken);
+#else
 			ctlr_rtos->xfer_completion++;
+#endif
 		}
 	}
 
@@ -245,18 +258,25 @@ static void _mtk_os_hal_spim_free_irq(int bus_num)
 
 static int _mtk_os_hal_spim_dma_done_callback(void *data)
 {
+#ifdef OSAI_FREERTOS
+	BaseType_t x_higher_priority_task_woken = pdFALSE;
+#endif
 	struct mtk_spi_controller_rtos *ctlr_rtos = data;
 
 	if (ctlr_rtos->complete) {
 		ctlr_rtos->complete(ctlr_rtos->context);
 		ctlr_rtos->complete = NULL;
 		ctlr_rtos->context = NULL;
-		mtk_mhal_spim_disable_clk(ctlr_rtos->ctlr);
 	} else {
 		/* while using DMA mode to do sync xfer,
 		 * release semaphore in this callback
 		 */
+#ifdef OSAI_FREERTOS
+		xSemaphoreGiveFromISR(ctlr_rtos->xfer_completion, &x_higher_priority_task_woken);
+		portYIELD_FROM_ISR(x_higher_priority_task_woken);
+#else
 		ctlr_rtos->xfer_completion++;
+#endif
 	}
 
 	return 0;
@@ -278,8 +298,18 @@ int mtk_os_hal_spim_ctlr_init(spim_num bus_num)
 	ctlr = ctlr_rtos->ctlr;
 	ctlr->mdata = &g_spim_mdata[bus_num];
 
-	ctlr->dma_tmp_tx_buf = tmp_tx_buffer[bus_num];
-	ctlr->dma_tmp_rx_buf = tmp_rx_buffer[bus_num];
+	/* Allocated by pvPortMalloc to guard memory is in sram */
+#ifdef OSAI_ENABLE_DMA
+
+#ifdef OSAI_FREERTOS
+	ctlr->dma_tmp_tx_buf = pvPortMalloc(MTK_SPIM_DMA_BUFFER_BYTES);
+#else
+	ctlr->dma_tmp_tx_buf = spim_dma_buf;
+#endif
+
+#else	/* OSAI_ENABLE_DMA */
+	ctlr->dma_tmp_tx_buf = NULL;
+#endif
 
 	ctlr->base = (void __iomem *)spim_base_addr[bus_num];
 	ctlr->cg_base = (void __iomem *)cg_base_addr[bus_num];
@@ -287,11 +317,17 @@ int mtk_os_hal_spim_ctlr_init(spim_num bus_num)
 	ctlr->dma_tx_chan = spim_dma_chan[bus_num][0];
 	ctlr->dma_rx_chan = spim_dma_chan[bus_num][1];
 
+#ifdef OSAI_FREERTOS
+	ctlr_rtos->xfer_completion = xSemaphoreCreateBinary();
+#else
 	ctlr_rtos->xfer_completion = 0;
+#endif
 
 	mtk_mhal_spim_dma_done_callback_register(ctlr,
 					 _mtk_os_hal_spim_dma_done_callback,
 					 (void *)ctlr_rtos);
+
+	mtk_mhal_spim_enable_clk(ctlr);
 
 	mtk_mhal_spim_allocate_dma_chan(ctlr);
 
@@ -309,11 +345,20 @@ int mtk_os_hal_spim_ctlr_deinit(spim_num bus_num)
 	if (!ctlr_rtos)
 		return -1;
 
+#ifdef OSAI_FREERTOS
+	vSemaphoreDelete(ctlr_rtos->xfer_completion);
+#else
+	ctlr_rtos->xfer_completion = 0;
+#endif
 	ctlr = ctlr_rtos->ctlr;
 
 	_mtk_os_hal_spim_free_irq(bus_num);
 	mtk_mhal_spim_release_dma_chan(ctlr);
+	mtk_mhal_spim_disable_clk(ctlr);
 
+#if defined(OSAI_ENABLE_DMA) && defined(OSAI_FREERTOS)
+	vPortFree(ctlr->dma_tmp_tx_buf);
+#endif
 	ctlr_rtos->ctlr = NULL;
 
 	return 0;
@@ -323,8 +368,20 @@ static int _mtk_os_hal_spim_wait_for_completion_timeout(
 				struct mtk_spi_controller_rtos
 				*ctlr_rtos, int time_ms)
 {
-	while(ctlr_rtos->xfer_completion == 0) {}
+#ifdef OSAI_FREERTOS
+	if (pdTRUE != xSemaphoreTake(ctlr_rtos->xfer_completion, time_ms / portTICK_RATE_MS))
+		return -1;
+#else
+	extern volatile u32 sys_tick_in_ms;
+	uint32_t start_tick = sys_tick_in_ms;
+
+	while (ctlr_rtos->xfer_completion == 0) {
+		if (sys_tick_in_ms - start_tick > 60000)
+			return -1;
+	}
 	ctlr_rtos->xfer_completion--;
+#endif
+
 	return 0;
 }
 
@@ -348,7 +405,11 @@ int mtk_os_hal_spim_transfer(spim_num bus_num,
 	mtk_mhal_spim_prepare_transfer(ctlr, xfer);
 
 	if (xfer->use_dma)
+#ifdef OSAI_ENABLE_DMA
 		ret = mtk_mhal_spim_dma_transfer_one(ctlr, xfer);
+#else
+		return -1;
+#endif
 	else
 		ret = mtk_mhal_spim_fifo_transfer_one(ctlr, xfer);
 
@@ -362,8 +423,6 @@ int mtk_os_hal_spim_transfer(spim_num bus_num,
 		printf("Take spi master Semaphore timeout!\n");
 
 err_xfer_fail:
-	mtk_mhal_spim_disable_clk(ctlr);
-
 	return ret;
 }
 
@@ -393,7 +452,11 @@ int mtk_os_hal_spim_async_transfer(spim_num bus_num,
 	mtk_mhal_spim_prepare_transfer(ctlr, xfer);
 
 	if (xfer->use_dma)
+#ifdef OSAI_ENABLE_DMA
 		ret = mtk_mhal_spim_dma_transfer_one(ctlr, xfer);
+#else
+		return -1;
+#endif
 	else
 		ret = mtk_mhal_spim_fifo_transfer_one(ctlr, xfer);
 
@@ -401,8 +464,8 @@ int mtk_os_hal_spim_async_transfer(spim_num bus_num,
 		printf("spi master async one fail.\n");
 		ctlr_rtos->complete = NULL;
 		ctlr_rtos->context = NULL;
-		mtk_mhal_spim_disable_clk(ctlr);
 	}
 
 	return ret;
 }
+

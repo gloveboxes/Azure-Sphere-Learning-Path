@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -38,6 +38,10 @@
 
 #include "mhal_osai.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 int mtk_hdl_gpt_set_compare(void __iomem *gpt_reg_base,
 			    u8 timer_id,
 			    u32 cmp_val);
@@ -64,5 +68,9 @@ u32 mtk_hdl_gpt_get_count(void __iomem *gpt_reg_base,
 void mtk_hdl_gpt_config_clk(void __iomem *gpt_reg_base,
 			    u8 timer_id,
 			    u8 clk_src);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __HDL_GPT_H__ */

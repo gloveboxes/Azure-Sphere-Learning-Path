@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -102,7 +102,6 @@ int mtk_mhal_wdt_hwrst(struct hal_wdt_dev *wdt_dev)
 	mtk_hdl_wdt_set_length(wdt_reg, 1);
 	mtk_hdl_wdt_restart(wdt_reg);
 	mtk_hdl_wdt_set_irq_mode(wdt_reg, 0);
-	osai_delay_us(50);  /* make sure set register success */
 	mtk_hdl_wdt_set_enable(wdt_reg, 1);
 	/* wait core reset by WDT hwrst */
 	osai_delay_ms(1000);
@@ -120,10 +119,10 @@ int mtk_mhal_wdt_swrst(struct hal_wdt_dev *wdt_dev)
 	wdt_reg = wdt_dev->cm4_wdt_base;
 
 	mtk_hdl_wdt_set_enable(wdt_reg, 0);
+	mtk_hdl_wdt_set_length(wdt_reg,
+		WDT_LENGTH_SEC2TICK(WDT_LENGTH_SEC_MAX));
 	mtk_hdl_wdt_restart(wdt_reg);
 	mtk_hdl_wdt_set_irq_mode(wdt_reg, 0);
-	osai_delay_us(50);  /* make sure set register success */
-	mtk_hdl_wdt_set_enable(wdt_reg, 1);
 	mtk_hdl_wdt_swrst(wdt_reg);
 	/* wait core reset by WDT swrst */
 	osai_delay_ms(1000);

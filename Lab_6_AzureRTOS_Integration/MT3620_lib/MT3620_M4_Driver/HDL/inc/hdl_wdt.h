@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -46,6 +46,10 @@
 /* max tick = 0x7ff */
 #define WDT_LENGTH_SEC_MAX		(64)
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void mtk_hdl_wdt_set_enable(void __iomem *wdt_reg_base, u32 en);
 void mtk_hdl_wdt_set_irq_mode(void __iomem *wdt_reg_base, u32 irq);
 void mtk_hdl_wdt_set_length(void __iomem *wdt_reg_base, u32 tick);
@@ -54,5 +58,9 @@ void mtk_hdl_wdt_restart(void __iomem *wdt_reg_base);
 u32 mtk_hdl_wdt_get_status(void __iomem *wdt_reg_base);
 
 void mtk_hdl_wdt_swrst(void __iomem *wdt_reg_base);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __HDL_WDT_H__ */

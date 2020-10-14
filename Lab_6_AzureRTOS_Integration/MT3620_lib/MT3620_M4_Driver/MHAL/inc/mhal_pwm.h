@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -35,6 +35,9 @@
 
 #ifndef __MHAL_PWM_H__
 #define __MHAL_PWM_H__
+
+#include "mhal_osai.h"
+
  /**
   * @addtogroup M-HAL
   * @{
@@ -70,8 +73,6 @@
   *   channels can be selected as auxiliary channels in the same phase or
   *   reverse phase as the base channel.
   *
-  * @section MHAL_PWM_Driver_Usage_Chapter  How to Use This Driver
-  *
   * @}
   * @}
  */
@@ -80,335 +81,22 @@
  * @{
  * @addtogroup PWM
  * @{
+ * @section MHAL_PWM_Driver_Usage_Chapter  How to Use This Driver
+ *
  * - \b SW \b Architecture: \n
+ *
  *	See @ref MHAL_Overview_2_Chapter for details on the SW architecture.
  *	This section describes the definition of APIs and provides
  *	an example on FreeRTOS about how to use these APIs to develop
  *	an OS-related driver.\n
- * - \b The \b OS-HAL \b FreeRTOS \b driver\n
- * \b sample \b code \b is \b as \b follows:\n
- *	- sample code (FreeRTOS doesn't have PWM framework,
- * so this sample code provides APIs to user application):
- *	  @code
- *	#define GROUP0_PWM_BASE			0x38011000
- *	#define GROUP1_PWM_BASE			0x38021000
- *	#define GROUP2_PWM_BASE			0x38031000
  *
- *	static const unsigned long pwm_base_addr[MAX_GROUP_NUM] = {
- *		GROUP0_PWM_BASE,
- *		GROUP1_PWM_BASE,
- *		GROUP2_PWM_BASE,
- *	};
- *
- *	static const pwm_clk pwm_clock_source[MAX_GROUP_NUM] = {
- *		PWM_CLOCK_XTAL,
- *		PWM_CLOCK_XTAL,
- *		PWM_CLOCK_XTAL
- *	};
-
- *	static const unsigned long group0_register[MAX_CHANNEL_NUM] = {
- *		0x100, 0x110, 0x120, 0x130
- *	};
- *
- *	static const unsigned long group1_register[MAX_CHANNEL_NUM] = {
- *		0x100, 0x110, 0x120, 0x130
- *	};
- *
- *	static const unsigned long group2_register[MAX_CHANNEL_NUM] = {
- *		0x100, 0x110, 0x120, 0x130
- *	};
- *
- *	static struct mtk_com_pwm_data group0_pwm_data = {
- *		.pwm_register = &group0_register[0],
- *		.pwm_nums = 4,
- *		.index = 0,
- *	};
- *	static struct mtk_com_pwm_data group1_pwm_data = {
- *		.pwm_register = &group1_register[0],
- *		.pwm_nums = 4,
- *		.index = 4,
- *	};
- *	static struct mtk_com_pwm_data group2_pwm_data = {
- *		.pwm_register = &group2_register[0],
- *		.pwm_nums = 4,
- *		.index = 8,
- *	};
- *
- *	struct mtk_com_pwm_data *pwm_common_data[MAX_GROUP_NUM] = {
- *		&group0_pwm_data, &group1_pwm_data, &group2_pwm_data
- *	};
- *
- *	static struct mtk_pwm_controller g_pwm_controller[MAX_GROUP_NUM];
- *
- *	struct mtk_pwm_controller_rtos {
- *		struct mtk_pwm_controller *ctlr;
- *	};
- *
- *	static struct mtk_pwm_controller_rtos g_pwm_ctlr_rtos[MAX_GROUP_NUM];
- *
- *	static struct mtk_pwm_controller_rtos *_mtk_os_hal_pwm_get_ctlr(
- *		int group_num)
- *	{
- *		return &g_pwm_ctlr_rtos[group_num];
- *	}
- *
- *
- *	int mtk_os_hal_pwm_ctlr_init(int group_num, u32 channel_bit_map)
- *	{
- *		struct mtk_pwm_controller_rtos *ctlr_rtos;
- *		struct mtk_pwm_controller *ctlr;
- *		int ret = 0;
- *
- *		ctlr_rtos = _mtk_os_hal_pwm_get_ctlr(group_num);
- *		if (!ctlr_rtos)
- *			return -PWM_EPTR;
- *
- *		ctlr_rtos->ctlr = &g_pwm_controller[group_num];
- *
- *		if (!ctlr_rtos->ctlr)
- *			return -PWM_EPTR;
- *		printf("mtk_os_hal_pwm_ctlr_init\n");
- *		ctlr = ctlr_rtos->ctlr;
- *
- *		ctlr->base = (void __iomem *)pwm_base_addr[group_num];
- *		ctlr->group_number = group_num;
- *		ctlr->group_clock = pwm_clock_source[group_num];
- *
- *		ctlr->data = pwm_common_data[group_num];
- *
- *		ret = mtk_mhal_pwm_init(ctlr, channel_bit_map);
- *		if (ret)
- *			return ret;
- *
- *		return 0;
- *	}
- *
- *	int mtk_os_hal_pwm_ctlr_deinit(int group_num, u32 channel_bit_map)
- *	{
- *		struct mtk_pwm_controller_rtos *ctlr_rtos;
- *		struct mtk_pwm_controller *ctlr;
- *		int ret = 0;
-	 *	u32	bit_map = 0;
- *
- *		ctlr_rtos = _mtk_os_hal_pwm_get_ctlr(group_num);
- *		if (!ctlr_rtos)
- *			return -PWM_EPTR;
- *
- *		ctlr = ctlr_rtos->ctlr;
- *		bit_map = channel_bit_map;
- *
- *		ret = mtk_mhal_pwm_deinit(ctlr, bit_map);
- *		if (ret)
- *			return ret;
- *
- *		return 0;
- *	}
- *
- *	int mtk_os_hal_pwm_config_freq_duty_normal(int group_num,
- *			pwm_channels channel_num,
- *			u32  frequency,
- *			u32  duty_cycle)
- *	{
- *		struct mtk_pwm_controller_rtos *ctlr_rtos;
- *		struct mtk_pwm_controller *ctlr;
- *		int ret = 0;
- *
- *		ctlr_rtos = _mtk_os_hal_pwm_get_ctlr(group_num);
- *		if (!ctlr_rtos)
- *			return -PWM_EPTR;
- *
- *		ctlr = ctlr_rtos->ctlr;
- *
- *		ctlr->data->frequency = frequency;
- *		ctlr->data->duty_cycle = duty_cycle;
- *		printf("set frequency == %d, duty_cycle== %d\n",
- *			ctlr->data->frequency, ctlr->data->duty_cycle);
- *		ret = mtk_mhal_pwm_set_frequency(ctlr_rtos->ctlr, channel_num);
- *		if (ret)
- *			return ret;
- *		printf("set frequency end\n");
- *		ret = mtk_mhal_pwm_set_duty_cycle(ctlr_rtos->ctlr, channel_num);
- *		if (ret)
- *			return ret;
- *		printf("set duty end\n");
- *
- *		return 0;
- *	}
- *
- *	int mtk_os_hal_pwm_feature_enable(int group_num,
- *			pwm_channels channel_num,
- *			bool global_kick_enable,
- *			bool io_ctrl_sel,
- *			bool polarity_set)
- *	{
- *		struct mtk_pwm_controller_rtos *ctlr_rtos;
- *		struct mtk_pwm_controller *ctlr;
- *		int ret = 0;
- *
- *		ctlr_rtos = _mtk_os_hal_pwm_get_ctlr(group_num);
- *		if (!ctlr_rtos)
- *			return -PWM_EPTR;
- *
- *		ctlr = ctlr_rtos->ctlr;
- *
- *		ctlr->data->global_kick_enable = global_kick_enable;
- *		ctlr->data->io_ctrl_sel = io_ctrl_sel;
- *		ctlr->data->polarity_set = polarity_set;
- *
- *		ret = mtk_mhal_pwm_feature_enable(ctlr_rtos->ctlr, channel_num);
- *		if (ret)
- *			return ret;
- *
- *		return 0;
- *	}
- *
- *	int mtk_os_hal_pwm_config_freq_duty_2_state(int group_num,
- *			pwm_channels channel_num,
- *			struct mtk_com_pwm_data state_config)
- *	{
- *		struct mtk_pwm_controller_rtos *ctlr_rtos;
- *		struct mtk_pwm_controller *ctlr;
- *		int ret = 0;
- *
- *		ctlr_rtos = _mtk_os_hal_pwm_get_ctlr(group_num);
- *		if (!ctlr_rtos)
- *			return -PWM_EPTR;
- *
- *		ctlr = ctlr_rtos->ctlr;
- *		printf("state_config->frequency %d\n", state_config.frequency);
- *		printf("state_config->duty_cycle %d\n",
- *				state_config.duty_cycle);
- *		printf("state_config->stage %d\n", state_config.stage);
- *		ctlr->data->frequency = state_config.frequency;
- *		ctlr->data->duty_cycle = state_config.duty_cycle;
- *		ctlr->data->stage = state_config.stage;
- *
- *		ret = mtk_mhal_pwm_config_s0_s1_freq_duty(ctlr_rtos->ctlr,
- *				channel_num);
- *		if (ret)
- *			return ret;
- *
- *		return 0;
- *	}
- *	int mtk_os_hal_pwm_config_stay_cycle_2_state(int group_num,
- *			pwm_channels channel_num,
- *			struct mtk_com_pwm_data state_config)
- *	{
- *		struct mtk_pwm_controller_rtos *ctlr_rtos;
- *		struct mtk_pwm_controller *ctlr;
- *		int ret = 0;
- *
- *		ctlr_rtos = _mtk_os_hal_pwm_get_ctlr(group_num);
- *		if (!ctlr_rtos)
- *			return -PWM_EPTR;
- *
- *		ctlr = ctlr_rtos->ctlr;
- *
- *		ctlr->data->s0_stay_cycle = state_config.s0_stay_cycle;
- *		ctlr->data->s1_stay_cycle = state_config.s1_stay_cycle;
- *		ctlr->data->replay_mode = state_config.replay_mode;
- *
- *		ret = mtk_mhal_pwm_s0_s1_stay_cycle_config(ctlr_rtos->ctlr,
- *				channel_num);
- *		if (ret)
- *			return ret;
- *
- *		ret = mtk_mhal_pwm_kick(ctlr_rtos->ctlr, channel_num);
- *		if (ret)
- *			return ret;
- *
- *		return 0;
- *	}
- *
- *	int mtk_os_hal_pwm_config_dpsel(int group_num,
- *		pwm_channels channel_num,
- *		pwm_differential_select mode)
- *	{
- *		struct mtk_pwm_controller_rtos *ctlr_rtos =
- *		    _mtk_os_hal_pwm_get_ctlr(group_num);
- *
- *		if (!ctlr_rtos)
- *			return -PWM_EPTR;
- *
- *		ctlr_rtos->ctlr->data->mode = mode;
- *
- *		return mtk_mhal_pwm_dpsel(ctlr_rtos->ctlr, channel_num);
- *	}
- *
- *	int mtk_os_hal_pwm_start_normal(int group_num,
- *			pwm_channels channel_num)
- *	{
- *		struct mtk_pwm_controller_rtos *ctlr_rtos =
- *			_mtk_os_hal_pwm_get_ctlr(group_num);
- *
- *		if (!ctlr_rtos)
- *			return -PWM_EPTR;
- *
- *		return mtk_mhal_pwm_start(ctlr_rtos->ctlr, channel_num);
- *	}
- *
- *	int mtk_os_hal_pwm_stop_normal(int group_num,
- *			pwm_channels channel_num)
- *	{
- *		struct mtk_pwm_controller_rtos *ctlr_rtos =
- *			_mtk_os_hal_pwm_get_ctlr(group_num);
- *
- *		if (!ctlr_rtos)
- *			return -PWM_EPTR;
- *
- *		return mtk_mhal_pwm_stop(ctlr_rtos->ctlr, channel_num);
- *	}
- *	@endcode
- *
- * - \b How \b to \b develop \b user \b application \b by \b using
- *    \b OS-HAL \b API: \n
- *  - sample code (this is the user application sample code on freeRTos):
- *	  @code
- *
- *      -PWM normal mode:
- *      -Call mtk_os_hal_pwm_ctlr_init() to initialize the PWM module.
- *      -Call mtk_os_hal_pwm_feature_enable() to select PWM global kick,
- *        IO ctrl, polarity setting.
- *      -Call mtk_os_hal_pwm_config_freq_duty_normal()
- *        IO ctrl, to config normal mode freq & duty.
- *      -Call mtk_os_hal_pwm_start_normal() to enable pwm waveform output.
- *      -Call mtk_os_hal_pwm_stop_normal()  to disabe pwm waveform output.
- *      -Call mtk_os_hal_pwm_ctlr_deinit() to return the
- *        PWM module back to its original state.
- *
- *      -PWM 2-state mode:
- *      -Call mtk_os_hal_pwm_ctlr_init() to initialize the PWM module.
- *      -Call mtk_os_hal_pwm_feature_enable() to select PWM global kick,
- *        IO ctrl, polarity setting.
- *      -Call mtk_os_hal_pwm_config_freq_duty_2_state() to  set PWM  frequency
- *        and  duty cycle  of S0 stage in 2-state mode.
- *      -Call mtk_os_hal_pwm_config_freq_duty_2_state() to  set PWM  frequency
- *        and  duty cycle  S1 stage in 2-state mode.
- *      -Call mtk_os_hal_pwm_config_stay_cycle_2_state() to  set PWM  stay
- *        cycles of S0 & S1 in 2-state mode.
- *      -Call mtk_os_hal_pwm_stop_normal() to disabe pwm waveform output.
- *      -Call mtk_os_hal_pwm_ctlr_deinit() to return the
- *        PWM module back to its original state.
- *
- *      -PWM differential mode:
- *      -Call mtk_os_hal_pwm_ctlr_init() to initialize the PWM module.
- *      -Call mtk_os_hal_pwm_feature_enable() to select PWM global kick,
- *        IO ctrl, polarity setting.
- *      -Call mtk_os_hal_pwm_config_freq_duty_normal()
- *        to config normal mode duty.
- *      -Call mtk_os_hal_pwm_config_dpsel() to set PWM channel's
- *        differential mode.
- *      -Call mtk_os_hal_pwm_start_normal() to enable pwm waveform output.
- *      -Call mtk_os_hal_pwm_stop_normal() to disabe pwm waveform output.
- *      -Call mtk_os_hal_pwm_ctlr_deinit() to return the
- *        PWM module back to its original state.
- *	@endcode
+ * - \b The \b OS-HAL \b freeRTos \b driver\n
+ *    \b sample \b code \b is \b as \b follows: \n
+ * <a href="https://github.com/MediaTek-Labs/mt3620_m4_software/blob/master/MT3620_M4_Sample_Code/OS_HAL/src/os_hal_pwm.c"> freeRTos PWM sample code on github </a>
  *
  * @}
  * @}
  */
-
-#include "mhal_osai.h"
 
 /**
  * @addtogroup M-HAL
@@ -601,6 +289,10 @@ struct mtk_pwm_controller {
   *	enabling and disabling clock.
   *
   */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @brief This function is used to select PWM clock source of
@@ -900,6 +592,10 @@ int mtk_mhal_pwm_global_kick(struct mtk_pwm_controller *ctlr);
  */
 int mtk_mhal_pwm_dpsel(struct mtk_pwm_controller *ctlr,
 		pwm_channels channel_num);
+
+#ifdef __cplusplus
+}
+#endif
 
 /**
   * @}

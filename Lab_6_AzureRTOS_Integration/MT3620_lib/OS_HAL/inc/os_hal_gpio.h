@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -39,12 +39,76 @@
 #include "mhal_gpio.h"
 
 /**
- * @addtogroup HAL
+ * @addtogroup OS-HAL
  * @{
- * @addtogroup GPIO
+ * @addtogroup gpio
  * @{
- * This section describes the programming interfaces of the GPIO hal
+ * This section introduces the Inter-Integrated Circuit (GPIO) APIs
+ * including terms and acronyms, supported features,
+ * details on how to use this driver, enums and functions.
+ *
+ * @section OS_HAL_GPIO_Terms_Chapter Terms and Acronyms
+ *
+ * |Terms                   |Details                             |
+ * |------------------------------|--|
+ * |\b GPIO                        | General-Purpose Inputs-Outputs.|
+ *
+ * @section OS_HAL_GPIO_Features_Chapter Supported Features
+ * See @ref MHAL_GPIO_Features_Chapter for the details of  Supported Features.
+ *
+ * @}
+ * @}
  */
+
+/**
+ * @addtogroup OS-HAL
+ * @{
+ * @addtogroup gpio
+ * @{
+ * @section OS_HAL_GPIO_Driver_Usage_Chapter How to use this driver
+ *
+ * - \b How \b to \b develop \b user \b application \b by \b using
+ *    \b OS-HAL \b API: \n
+ *  - sample code (this is the user application sample code on freeRTos):
+ *    @code
+ *
+ *    - Set GPIO output high/low:
+ *      -Call mtk_os_hal_gpio_set_direction(pin, OS_HAL_GPIO_DIR_OUTPUT)
+ *        to set gpio direction as output mode.
+ *      -Call mtk_os_hal_gpio_set_output(pin, OS_HAL_GPIO_DATA_HIGH)
+ *        to set gpio output high.
+ *      -Call mtk_os_hal_gpio_set_output(pin, OS_HAL_GPIO_DATA_LOW)
+ *        to set gpio output low.
+ *
+ *    - Set GPIO input mode:
+ *      -Call mtk_os_hal_gpio_set_direction(pin, OS_HAL_GPIO_DIR_INPUT)
+ *        to set gpio direction as input mode.
+ *      -Call mtk_os_hal_gpio_set_pullen_pullsel(pin, false, false)
+ *        to disable gpio pull-up and pull-down state.
+ *      -Call mtk_os_hal_gpio_set_pullen_pullsel(pin, ture, false)
+ *        to set gpio as pull-down state.
+ *      -Call mtk_os_hal_gpio_set_pullen_pullsel(pin, ture, ture)
+ *        to set gpio as pull-up state.
+ *      -Call mtk_os_hal_gpio_get_input(pin, pvalue) to get gpio input value.
+ *
+ *    @endcode
+ *
+ * @}
+ * @}
+ */
+
+/**
+ * @addtogroup OS-HAL
+ * @{
+ * @addtogroup gpio
+ * @{
+ */
+
+/** @defgroup os_hal_gpio_enum Enum
+  * @{
+  * This section introduces the enumerations
+  * that GPIO should configure when calling GPIO APIs.
+  */
 
 /**@brief This enum defines the GPIO port.\n
  */
@@ -149,31 +213,13 @@ typedef enum {
 	OS_HAL_GPIO_MAX
 } os_hal_gpio_pin;
 
-/**@brief This enum defines the GPIO mode
- * which can be selected.\n
- */
-
-typedef enum {
-	/** GPIO mode number is from 0 to 7 */
-	OS_HAL_MODE_0 = 0,
-	OS_HAL_MODE_1 = 1,
-	OS_HAL_MODE_2 = 2,
-	OS_HAL_MODE_3 = 3,
-	OS_HAL_MODE_4 = 4,
-	OS_HAL_MODE_5 = 5,
-	OS_HAL_MODE_6 = 6,
-	OS_HAL_MODE_7 = 7,
-	/** GPIO mode maximum number(invalid) */
-	OS_HAL_MODE_MAX
-} os_hal_gpio_mode;
-
 /** @brief This enum defines GPIO direction.\n
  */
 typedef enum {
 	/** Define GPIO input direction */
-	OS_HAL_GPIO_DIR_INPUT  = 0,
+	OS_HAL_GPIO_DIR_INPUT  = MHAL_GPIO_DIRECTION_INPUT,
 	/** Define GPIO output direction */
-	OS_HAL_GPIO_DIR_OUTPUT = 1
+	OS_HAL_GPIO_DIR_OUTPUT = MHAL_GPIO_DIRECTION_OUTPUT
 } os_hal_gpio_direction;
 
 
@@ -181,44 +227,27 @@ typedef enum {
  */
 typedef enum {
 	/** Define GPIO data of low */
-	OS_HAL_GPIO_DATA_LOW  = 0,
+	OS_HAL_GPIO_DATA_LOW  = MHAL_GPIO_DATA_LOW,
 	/** Define GPIO data of high */
-	OS_HAL_GPIO_DATA_HIGH = 1
+	OS_HAL_GPIO_DATA_HIGH = MHAL_GPIO_DATA_HIGH
 } os_hal_gpio_data;
 
 /**
- * @brief     This function is used to request the target GPIO.
- * @brief Usage: OS-HAL driver should call it before other GPIO function
- *    to request the GPIO. It is used to get the gpio resource.
- *    If we call it on the second time, the API function
- *    will return -#EQUEST to indicate request fail.
- * @param[in] pin : Specifies the pin number to operate.(0~93)
- * @return    To indicate that whether the pin is requested
- *    successfully or not.\n
- *    If the return value is -#EQUEST, it means GPIO fails to be requested.\n
- *    If the return value is 0, it means GPIO is requested successfully.\n
- */
+  * @}
+  */
 
-int mtk_os_hal_gpio_request(os_hal_gpio_pin pin);
+/** @defgroup os_hal_gpio_function Function
+  * @{
+  * This section provides high level APIs to upper layer.
+  */
 
-/**
- * @brief This function is used to free the target GPIO.
- * @brief Usage: OS-HAL driver should call it after other GPIO functions
- *    to free the GPIO. It is used to free the gpio resource.
- *    If we call it on the second time, the API function
- *    will return -#EFREE to indicate free fail.
- * @param[in] pin : Specifies the pin number to operate.(0~93)
- * @return  To indicate that whether the pin is freed successfully or not.\n
- *    If the return value is -#EFREE, it means that GPIO is not freed.\n
- *    If the return value is 0, it means that GPIO is freed successfully.\n
- */
-int mtk_os_hal_gpio_free(os_hal_gpio_pin pin);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @brief This function is used to get input data of the target GPIO.
  * @brief Usage: OS-HAL driver should call it in GPIO get-input value function.
- *    This API function get the input value of pin and save it to
- *    mtk_pinctrl_controller->mtk_pins[pin].din
  * @param[in] pin : Specifies the pin number to operate.(0~93)
  * @param [out] pvalue : Get DIN value and save it to address pvalue.
  * @return To indicate that whether this function call is successful or not.\n
@@ -255,8 +284,6 @@ int mtk_os_hal_gpio_set_output(os_hal_gpio_pin pin, os_hal_gpio_data out_val);
 /**
  * @brief This function is used to get output data of the target GPIO.
  * @brief Usage: OS-HAL driver should call it in GPIO get-output value function.
- *    This API function get the output value of pin and save it to
- *    mtk_pinctrl_controller->mtk_pins[pin].dout
  * @param[in] pin : Specifies the pin number to operate.(0~93)
  * @param [out] pvalue : Get DOUT value and save it to address pvalue
  * @return To indicate that whether this function call is successful or not.\n
@@ -294,8 +321,6 @@ int mtk_os_hal_gpio_set_direction(os_hal_gpio_pin pin,
 /**
  * @brief This function is used to get the direction of the target GPIO.
  * @brief Usage: OS-HAL driver should call it in GPIO get-direction function.
- *    This API function get the direction value of pin and save it to
- *    mtk_pinctrl_controller->mtk_pins[pin].dir
  * @param[in] pin : Specifies the pin number to operate.(0~93)
  * @param [out] pvalue : Get DIR value and save it to address pvalue
  * @return To indicate that whether this function call is successful or not.\n
@@ -334,8 +359,16 @@ int mtk_os_hal_gpio_get_direction(os_hal_gpio_pin pin,
 int mtk_os_hal_gpio_set_pullen_pullsel(
 	os_hal_gpio_pin pin, bool enable, bool isup);
 
+#ifdef __cplusplus
+}
+#endif
+
 /**
-* @}
-* @}
-*/
+  * @}
+  */
+
+/**
+  * @}
+  * @}
+  */
 #endif

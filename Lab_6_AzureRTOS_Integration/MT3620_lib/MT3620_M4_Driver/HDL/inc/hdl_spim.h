@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -56,7 +56,13 @@
 #define SPI_REG_MOREBUF(offset)	(offset + 0x2c)
 #define SPI_REG_Q_CTL(offset)	(offset + 0x30)
 #define SPI_REG_STATUS(offset)	(offset + 0x34)
+
 #define SPI_REG_CS_POLAR(offset)	(offset + 0x38)
+#define CMD_DELAY_SEL_MASK		BITS(12, 15)
+#define CMD_DELAY_SEL_OFFSET		12
+#define END_DELAY_SEL_MASK		BITS(16, 19)
+#define END_DELAY_SEL_OFFSET		16
+
 #define SPI_REG_DATAPORT_CR(offset)	(offset + 0x40)
 #define SPI_REG_SDIR0(offset)	(offset + 0x48)
 #define SPI_REG_SDIR(offset, x)	(offset + 0x48 + ((x) * 4))
@@ -141,14 +147,19 @@
 #define SPI_CTL_CLK_SEL_MASK	0x03000000
 #define SPI_OPCODE_MASK	0x000000ff
 
-#define SPIM_BYTE_LENGTH	128
+#define MTK_SPIM_MIN_TX_OPCODE_LEN_HALF		1
+#define MTK_SPIM_MIN_RX_OPCODE_LEN_HALF		0
+#define MTK_SPIM_MIN_OPCODE_LEN_FULL		1
+#define MTK_SPIM_MAX_OPCODE_LEN			4
 
-#define MTK_SPIM_MAX_LEN	33
+/* data_bytes */
+#define MTK_SPIM_MAX_LENGTH_ONE_TRANS_FULL	(16)
+/* data_bytes */
+#define MTK_SPIM_MAX_LENGTH_ONE_TRANS_HALF	(32)
 
-/* opcode + data_bytes */
-#define MTK_SPIM_MAX_LENGTH_ONE_TRANS_FULL	(1 + 16)
-/* opcode + data_bytes */
-#define MTK_SPIM_MAX_LENGTH_ONE_TRANS_HALF	(1 + 32)
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 void mtk_hdl_spim_dump_reg(void __iomem *base);
 void mtk_hdl_spim_print_packet(char *name, u8 *ptr, int len);
@@ -175,4 +186,9 @@ void mtk_hdl_spim_disable_clk(void __iomem *cg_base);
 void mtk_hdl_spim_sw_reset(void __iomem *cg_base);
 void mtk_hdl_spim_enable_dma(void __iomem *base);
 void mtk_hdl_spim_disable_dma(void __iomem *base);
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif

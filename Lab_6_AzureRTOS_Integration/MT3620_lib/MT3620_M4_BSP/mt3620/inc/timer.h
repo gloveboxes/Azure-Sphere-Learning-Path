@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -35,6 +35,10 @@
 
 #ifndef __TIMER_H__
 #define __TIMER_H__
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* timer information (only can be used by system but not other modules) */
 
@@ -127,6 +131,9 @@ void mtk_timer_stop_kick_wdt(void);
  */
 void mtk_timer_init(void);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __TIMER_H__ */
 

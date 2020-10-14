@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -40,14 +40,163 @@
 #include "mhal_gpioif.h"
 
 /**
- * @addtogroup HAL
+ * @addtogroup OS-HAL
  * @{
- * @addtogroup GPIO
+ * @addtogroup gpioif
  * @{
- * This section describes the programming interfaces of the GPIO hal
+ * This section introduces the Inter-Integrated Circuit (GPIOIF) APIs
+ * including terms and acronyms, supported features,
+ * details on how to use this driver, enums and functions.
+ *
+ * @section OS_HAL_GPIOIF_Terms_Chapter Terms and Acronyms
+ *
+ * |Terms                   |Details                             |
+ * |------------------------------|--|
+ * |\b GPIOIF  | General-Purpose Inputs-Outputs Interface.|
+ * |\b FIFO                       | First In, First Out.|
+ *
+ * @section OS_HAL_GPIOIF_Features_Chapter Supported Features
+ * See @ref MHAL_GPIOIF_Features_Chapter for the details of  Supported Features.
+ *
+ * @}
+ * @}
  */
 
+/**
+ * @addtogroup OS-HAL
+ * @{
+ * @addtogroup gpioif
+ * @{
+ * @section OS_HAL_GPIOIF_Driver_Usage_Chapter How to use this driver
+ *
+ * - \b How \b to \b develop \b user \b application \b by \b using
+ *    \b OS-HAL \b API: \n
+ *  - sample code (this is the user application sample code on freeRTos):
+ *	   @code
+ *
+ *  //1. Call this function to initialize GPIOIF HW
+ *  mtk_os_hal_gpioif_ctlr_init(group);
+ *    //2. Define user struct and interrupt callback function
+ *  struct mtk_gpioif_test {
+ *   u32 group;
+ *  };
+ *
+ *  int mtk_os_hal_gpioif_int_callback(void *data)
+ *  {
+ *   struct mtk_gpioif_test *gpioif_test = data;
+ *
+ *   return 0;
+ *  }
+ *    - Set GPIOIF Event Counter Direction mode:
+ *   -Call mtk_os_hal_gpioif_int_callback_register(3,
+ *           mtk_os_hal_gpioif_int_callback, (void *)gpioif_test)
+ *   to register callback function.
+ *   -Call mtk_os_hal_gpioif_hardware_reset(group, mode, active_reset)
+ *   to enable hardware reset of GPIOIF event counter.
+ *   -Call mtk_os_hal_gpioif_de_glitch(group, gpio, enable, min_p, init_v)
+ *   to add GPIOIF GPIO_0 & GPIO_1 & GPIO_2 of one group de-glitch setting.
+ *    -Call mtk_os_hal_gpioif_limit_comparator(group, sa_limit_v,
+ *      interrupt_limit_v)
+ *    to set different interrupt mode or saturation mode.
+ *    -Call mtk_os_hal_gpioif_set_direction_mode(group, control_setting,
+ *    low_limit, high_limit, reset_value, clock_source)
+ *    to set GPIOIF Direction mode setting.
+ *    -Call mtk_os_hal_gpioif_interrupt_control(group, enable, clear, bit)
+ *    to clear all interrupt then enable all interrupt.
+ *   -Input high/low singal to GPIOIF GPIO_0 and GPIO_1,
+ *    the interrupt callback function will be called
+ *    swhen interrupt is asserted.
+ *
+ *    - Set GPIOIF Event Counter Up Down mode:
+ *   -Call mtk_os_hal_gpioif_int_callback_register(3,
+ *     mtk_os_hal_gpioif_int_callback, (void *)gpioif_test)
+ *     to register callback function.
+ *   -Call mtk_os_hal_gpioif_hardware_reset(group, mode, active_reset)
+ *     to enable hardware reset of GPIOIF event counter.
+ *   -Call mtk_os_hal_gpioif_de_glitch(group, gpio, enable, min_p, init_v)
+ *     to add GPIOIF GPIO_0 & GPIO_1 & GPIO_2 of one group de-glitch setting.
+ *    -Call mtk_os_hal_gpioif_limit_comparator(group, sa_limit_v,
+ *     interrupt_limit_v)
+ *     to set different interrupt mode or saturation mode.
+ *    -Call mtk_os_hal_gpioif_set_updown_mode(group, control_setting,
+ *     low_limit, high_limit, reset_value, clock_source)
+ *     to set GPIOIF Up Down mode setting.
+ *    -Call mtk_os_hal_gpioif_interrupt_control(group, enable, clear, bit)
+ *     to clear all interrupt then enable all interrupt.
+ *   -Input high/low singal to GPIOIF GPIO_0 and GPIO_1,
+ *     the interrupt callback function will be called
+ *     when interrupt is asserted.
+ *
+ *    - Set GPIOIF Event Counter Quadrature mode:
+ *   -Call mtk_os_hal_gpioif_int_callback_register(3,
+ *     mtk_os_hal_gpioif_int_callback, (void *)gpioif_test)
+ *     to register callback function.
+ *   -Call mtk_os_hal_gpioif_hardware_reset(group, mode, active_reset)
+ *     to enable hardware reset of GPIOIF event counter.
+ *   -Call mtk_os_hal_gpioif_de_glitch(group, gpio, enable, min_p, init_v)
+ *     to add GPIOIF GPIO_0 & GPIO_1 & GPIO_2 of one group de-glitch setting.
+ *    -Call mtk_os_hal_gpioif_limit_comparator(group, sa_limit_v,
+ *     interrupt_limit_v)
+ *     to set different interrupt mode or saturation mode.
+ *    -Call mtk_os_hal_gpioif_set_quadrature_mode(group, control_setting,
+ *      low_limit, high_limit, reset_value, clock_source)
+ *      to set GPIOIF Quadrature mode setting.
+ *    -Call mtk_os_hal_gpioif_interrupt_control(group, enable, clear, bit)
+ *      to clear all interrupt then enable all interrupt.
+ *   -Input high/low singal to GPIOIF GPIO_0 and GPIO_1,
+ *      the interrupt callback function will be called
+ *      when interrupt is asserted.
+ *
+ *    - Set GPIOIF Capture Counter Mode:
+ *   -Call mtk_os_hal_gpioif_int_callback_register(3,
+ *     mtk_os_hal_gpioif_int_callback, (void *)gpioif_test)
+ *     to register callback function.
+ *   -Call mtk_os_hal_gpioif_hardware_reset(group, mode, active_reset)
+ *     to enable hardware reset of GPIOIF event counter.
+ *   -Call mtk_os_hal_gpioif_de_glitch(group, gpio, enable, min_p, init_v)
+ *     to add GPIOIF GPIO_0 & GPIO_1 & GPIO_2 of one group de-glitch setting.
+ *    -Call mtk_os_hal_gpioif_set_capture_mode(group, edge_type_gpio_0,
+ *      edge_type_gpio_1, clock_source)
+ *      to set GPIOIF Capture Counter Mode setting.
+ *    -Call mtk_os_hal_gpioif_set_quadrature_mode(group, control_setting,
+ *      low_limit, high_limit, reset_value, clock_source)
+ *      to set GPIOIF Quadrature mode setting.
+ *    -Call mtk_os_hal_gpioif_interrupt_control(group, enable, clear, bit)
+ *      to clear all interrupt then enable all interrupt.
+ *   -Input high/low singal to GPIOIF GPIO_0 and GPIO_1,
+ *     the interrupt callback function will be called
+ *     when interrupt is asserted.
+ *
+ *    @endcode
+ *
+ * @}
+ * @}
+ */
+
+/**
+ * @addtogroup OS-HAL
+ * @{
+ * @addtogroup gpioif
+ * @{
+ */
+
+/** @defgroup os_hal_gpioif_define Define
+  * @{
+  * This section introduces the Macro definition.
+  */
+
+/** This defines GPIOIF maximum available group number */
 #define MTK_GPIOIF_MAX_GRP_NUM	6
+/**
+  * @}
+  */
+
+
+/** @defgroup os_hal_gpioif_enum Enum
+  * @{
+  * This section introduces the enumerations
+  * that GPIOIF should configure when calling GPIOIF APIs.
+  */
 
 /**
  * @brief This enum defines GPIOIF group selection.\n
@@ -135,6 +284,15 @@ typedef enum {
 	GPIOIF_INTERRUPT_MAX
 } gpioif_interrupt_limit_select;
 
+/**
+  * @}
+  */
+
+/** @defgroup os_hal_gpioif_typedef Typedef
+  * @{
+  * This section introduces the typedef that gpioif OS-HAL used.
+  */
+
 /** @brief	This defines the callback function prototype.
  * It's used for GPIOIF interrupt function handle.\n
  * User can register a callback function when using GPIOIF interrupt.\n
@@ -143,14 +301,26 @@ typedef enum {
  * This typedef is used to describe the callback function
  * what the user wants to call.
  *
- * @param [in] user_data: An OS-HAL defined parameter provided
+ * @param [in] user_data : An OS-HAL defined parameter provided
  * by #mtk_os_hal_gpioif_int_callback_register().
- * @sa  #mtk_mhal_gpioif_int_callback_register()
  *
  * @return  Return "0" if callback register successfully,
  *    or return "-1" if fail.
  */
 typedef int (*gpioif_int_callback) (void *user_data);
+
+/**
+  * @}
+  */
+
+/** @defgroup os_hal_gpioif_function Function
+  * @{
+  * This section provides high level APIs to upper layer.
+  */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @brief  Init GPIOIF controller.
@@ -833,6 +1003,14 @@ int mtk_os_hal_gpioif_get_cap_fifo1_val(gpioif_group group, u32 idex);
  */
 int mtk_os_hal_gpioif_int_callback_register(gpioif_group group,
 	gpioif_int_callback callback, void *user_data);
+
+#ifdef __cplusplus
+}
+#endif
+
+/**
+  * @}
+  */
 
 /**
 * @}

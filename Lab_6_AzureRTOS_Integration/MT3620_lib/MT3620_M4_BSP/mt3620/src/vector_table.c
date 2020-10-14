@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -57,7 +57,7 @@ void __attribute__((weak, alias("DefaultExceptionHandler"))) SystmTick_Handler(v
 
 uintptr_t __isr_vector[116] __attribute__((section(".vector_table"))) __attribute__((used)) = {
 	[0] = (uintptr_t)&StackTop,				/* Top of Stack */
-	[1] = (uintptr_t)RTCoreMain,			/* Reset Handler */
+	[1] = (uintptr_t)Reset_Handler,			/* Reset Handler */
 	[2] = (uintptr_t)NMI_Handler,			/* NMI Handler */
 	[3] = (uintptr_t)Hard_Fault_Handler,	/* Hard Fault Handler */
 	[4] = (uintptr_t)MPU_Fault_Handler,		/* MPU Fault Handler */
@@ -70,4 +70,23 @@ uintptr_t __isr_vector[116] __attribute__((section(".vector_table"))) __attribut
 
 	[(16)... (115)] = (uintptr_t)DefaultExceptionHandler
 };
+
+#ifdef M4_ENABLE_XIP_FLASH
+uintptr_t __isr_vector_tcm[116] __attribute__((section(".vector_table_tcm")));
+
+void relocate_vector_table(uintptr_t *vector_start,
+			   uintptr_t *vector_end,
+			   uintptr_t *new_address)
+{
+	uintptr_t *src, *dest;
+
+	src = vector_start;
+	dest = new_address;
+
+	if ((dest - src) & 0xFFFFFF00) {
+		while (src < vector_end)
+			*dest++ = *src++;
+	}
+}
+#endif
 

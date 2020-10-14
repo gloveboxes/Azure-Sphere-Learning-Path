@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -36,9 +36,24 @@
 #ifndef __VECTOR_TABLE_H__
 #define __VECTOR_TABLE_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#ifdef M4_ENABLE_XIP_FLASH
+extern uintptr_t __isr_vector_tcm[];
+extern uintptr_t __vector_table_start__;
+extern uintptr_t __vector_table_end__;
+extern void relocate_vector_table(uintptr_t *vector_start,
+				  uintptr_t *vector_end,
+				  uintptr_t *new_address);
+#endif
 extern uintptr_t __isr_vector[];
 
-_Noreturn void RTCoreMain(void);
+_Noreturn void Reset_Handler(void);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif

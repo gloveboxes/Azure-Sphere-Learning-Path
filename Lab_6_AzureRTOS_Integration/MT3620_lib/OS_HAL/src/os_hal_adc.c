@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -33,7 +33,12 @@
  * MEDIATEK SOFTWARE AT ISSUE.
  */
 
+#ifdef OSAI_FREERTOS
+#include <FreeRTOS.h>
+#include <semphr.h>
+#endif
 #include "nvic.h"
+
 #include "os_hal_adc.h"
 #include "os_hal_dma.h"
 
@@ -43,7 +48,11 @@
 struct mtk_adc_controller_rtos {
 	struct mtk_adc_controller *ctlr;
 	/* the type based on OS */
+#ifdef OSAI_FREERTOS
+	QueueHandle_t rx_completion;
+#else
 	volatile u8 rx_completion;
+#endif
 };
 static struct adc_fsm_param adc_fsm_parameter;
 
@@ -56,15 +65,22 @@ static struct mtk_adc_controller_rtos *_mtk_os_hal_adc_get_ctlr(void)
 	return &g_adc_ctlr_rtos;
 }
 
-static int _mtk_os_hal_adc_irq_handler(struct mtk_adc_controller *ctlr)
+static int _mtk_os_hal_adc_irq_handler(
+	struct mtk_adc_controller_rtos *ctlr_rtos)
 {
-	if (!ctlr)
-		return -ADC_EPTR;
+#ifdef OSAI_FREERTOS
+	BaseType_t x_higher_priority_task_woken = pdFALSE;
+#endif
 
-	if (ctlr->adc_fsm_parameter->fifo_mode != ADC_FIFO_DIRECT)
-		return -ADC_EPARAMETER;
+	mtk_mhal_adc_fifo_handle_rx(ctlr_rtos->ctlr);
 
-	mtk_mhal_adc_fifo_handle_rx(ctlr);
+#ifdef OSAI_FREERTOS
+	xSemaphoreGiveFromISR(ctlr_rtos->rx_completion,
+				  &x_higher_priority_task_woken);
+	portYIELD_FROM_ISR(x_higher_priority_task_woken);
+#else
+	ctlr_rtos->rx_completion++;
+#endif
 
 	return 0;
 }
@@ -73,68 +89,51 @@ static void _mtk_os_hal_adc_irq_event(void)
 {
 	struct mtk_adc_controller_rtos *ctlr_rtos =
 		_mtk_os_hal_adc_get_ctlr();
-	struct mtk_adc_controller *ctlr;
 
-	ctlr = ctlr_rtos->ctlr;
-	_mtk_os_hal_adc_irq_handler(ctlr);
-
+	_mtk_os_hal_adc_irq_handler(ctlr_rtos);
 }
-
 
 static int _mtk_os_hal_adc_request_irq(struct mtk_adc_controller *ctlr)
 {
-	if (!ctlr)
-		return -ADC_EPTR;
-
 	CM4_Install_NVIC(CM4_IRQ_ADC, CM4_ADC_PRI, IRQ_LEVEL_TRIGGER,
 		_mtk_os_hal_adc_irq_event, TRUE);
-
 
 	return 0;
 }
 
 static int _mtk_os_hal_adc_wait_for_completion_timeout(
-				struct mtk_adc_controller_rtos
-				*ctlr_rtos, int time_ms)
+				struct mtk_adc_controller_rtos *ctlr_rtos,
+				int time_ms)
 {
-	while(ctlr_rtos->rx_completion==0){}
+#ifdef OSAI_FREERTOS
+	if (pdTRUE != xSemaphoreTake(ctlr_rtos->rx_completion,
+				     time_ms / portTICK_RATE_MS))
+		return -1;
+#else
+	extern volatile u32 sys_tick_in_ms;
+	uint32_t start_tick = sys_tick_in_ms;
+
+	while (ctlr_rtos->rx_completion == 0) {
+		if (sys_tick_in_ms - start_tick > time_ms)
+			return -1;
+	}
 	ctlr_rtos->rx_completion--;
+#endif
 
 	return 0;
 }
 
-static int _mtk_os_hal_adc_rx_done_callback(void *data)
-{
-	struct mtk_adc_controller_rtos *ctlr_rtos = data;
-
-	ctlr_rtos->rx_completion++;
-
-	return 0;
-}
-
-int mtk_os_hal_adc_ctlr_init(adc_pmode pmode, adc_fifo_mode fifo_mode,
-					u16 bit_map)
+int mtk_os_hal_adc_ctlr_init(void)
 {
 	struct mtk_adc_controller_rtos *ctlr_rtos;
 	struct mtk_adc_controller *ctlr;
-	u32 channel_index = 0;
 	int ret = 0;
 
 	ctlr_rtos =	_mtk_os_hal_adc_get_ctlr();
 	if (!ctlr_rtos)
 		return -ADC_EPTR;
 
-	if ((pmode != ADC_PMODE_ONE_TIME) && (pmode != ADC_PMODE_PERIODIC))
-		return -ADC_EPARAMETER;
-
-	if ((fifo_mode != ADC_FIFO_DIRECT) && (fifo_mode != ADC_FIFO_DMA))
-		return -ADC_EPARAMETER;
-
-
 	ctlr_rtos->ctlr = &adc_controller;
-
-	if (!ctlr_rtos->ctlr)
-		return -ADC_EPTR;
 
 	ctlr = ctlr_rtos->ctlr;
 
@@ -147,72 +146,22 @@ int mtk_os_hal_adc_ctlr_init(adc_pmode pmode, adc_fifo_mode fifo_mode,
 	if (ret)
 		return ret;
 
-	ctlr->adc_fsm_parameter->pmode = pmode;
-	ctlr->adc_fsm_parameter->avg_mode = ADC_AVG_32_SAMPLE;
-	ctlr->adc_fsm_parameter->channel_map = bit_map;
-	ctlr->adc_fsm_parameter->period = PMODE_PERIOD;
-	ctlr->adc_fsm_parameter->fifo_mode = fifo_mode;
-	ctlr->adc_fsm_parameter->ier_mode = ADC_FIFO_IER_RXFULL;
-	if (ctlr->adc_fsm_parameter->fifo_mode == ADC_FIFO_DMA) {
-		ctlr->adc_fsm_parameter->dma_vfifo_len = ADC_DMA_BUF_WORD_SIZE;
-
-		ctlr->dma_channel = VDMA_ADC_RX_CH29;
-		ctlr->use_dma = 1;
-	}
-
-	for (channel_index = 0; channel_index < ADC_CHANNEL_MAX;
-			channel_index++) {
-		ctlr->current_xfer[channel_index].count = 0;
-		ctlr->current_xfer[channel_index].write_point = 0;
-		ctlr->current_xfer[channel_index].read_point = 0;
-	}
+#ifdef OSAI_FREERTOS
+	if (!ctlr_rtos->rx_completion)
+		ctlr_rtos->rx_completion = xSemaphoreCreateBinary();
+#else
+	ctlr_rtos->rx_completion = 0;
+#endif
 
 	ret = mtk_mhal_adc_init(ctlr);
 	if (ret)
 		return ret;
 
-	if (fifo_mode == ADC_FIFO_DIRECT) {
-		ctlr->use_dma = 0;
-		ret = _mtk_os_hal_adc_request_irq(ctlr);
-		if (ret)
-			return ret;
-	}
-
-	ctlr_rtos->rx_completion = 1;
-
-	ret = mtk_mhal_adc_rx_notify_callback_register(ctlr,
-					 _mtk_os_hal_adc_rx_done_callback,
-					 (void *)ctlr_rtos);
-	if (ret)
-		return ret;
-
-	ret = mtk_mhal_adc_fsm_param_set(ctlr, ctlr->adc_fsm_parameter);
+	ret = _mtk_os_hal_adc_request_irq(ctlr);
 	if (ret)
 		return ret;
 
 	return ret;
-}
-
-int mtk_os_hal_adc_start(void)
-{
-	struct mtk_adc_controller_rtos *ctlr_rtos =
-		_mtk_os_hal_adc_get_ctlr();
-
-	if (!ctlr_rtos)
-		return -ADC_EPTR;
-
-	return mtk_mhal_adc_start(ctlr_rtos->ctlr);
-}
-
-int mtk_os_hal_adc_start_ch(u16 ch_bit_map)
-{
-	struct mtk_adc_controller_rtos *ctlr_rtos =
-		_mtk_os_hal_adc_get_ctlr();
-
-	if (!ctlr_rtos)
-		return -ADC_EPTR;
-
-	 return mtk_mhal_adc_start_ch(ctlr_rtos->ctlr, ch_bit_map);
 }
 
 int mtk_os_hal_adc_ctlr_deinit(void)
@@ -220,6 +169,7 @@ int mtk_os_hal_adc_ctlr_deinit(void)
 	int ret = 0;
 	struct mtk_adc_controller_rtos *ctlr_rtos =
 		_mtk_os_hal_adc_get_ctlr();
+	struct mtk_adc_controller *ctlr;
 
 	if (!ctlr_rtos)
 		return -ADC_EPTR;
@@ -227,19 +177,26 @@ int mtk_os_hal_adc_ctlr_deinit(void)
 	if (!ctlr_rtos->ctlr)
 		return -ADC_EPTR;
 
-	if (ctlr_rtos->ctlr->adc_fsm_parameter->fifo_mode == ADC_FIFO_DIRECT) {
-		/* Disable ADC IRQ */
-		NVIC_DisableIRQ((IRQn_Type)CM4_IRQ_ADC);
-	}
-	ret = mtk_mhal_adc_stop(ctlr_rtos->ctlr);
+	ctlr = ctlr_rtos->ctlr;
+
+	/* Disable ADC IRQ */
+	NVIC_DisableIRQ((IRQn_Type)CM4_IRQ_ADC);
+#ifdef OSAI_FREERTOS
+	vSemaphoreDelete(ctlr_rtos->rx_completion);
+	ctlr_rtos->rx_completion = NULL;
+#else
+	ctlr_rtos->rx_completion = 0;
+#endif
+
+	ret = mtk_mhal_adc_stop(ctlr);
 	if (ret)
 		return ret;
 
-	ret = mtk_mhal_adc_deinit(ctlr_rtos->ctlr);
+	ret = mtk_mhal_adc_deinit(ctlr);
 	if (ret)
 		return ret;
 
-	ret = mtk_mhal_adc_disable_clk(ctlr_rtos->ctlr);
+	ret = mtk_mhal_adc_disable_clk(ctlr);
 	if (ret)
 		return ret;
 
@@ -250,7 +207,9 @@ int mtk_os_hal_adc_fsm_param_set(struct adc_fsm_param *adc_fsm_parameter)
 {
 	struct mtk_adc_controller_rtos *ctlr_rtos;
 	struct mtk_adc_controller *ctlr;
-	u32 channel_index = 0;
+	struct adc_fsm_param *adc_fsm_params;
+	int channel_num = 0;
+	u32 adc_no = 0;
 	int ret = 0;
 
 	ctlr_rtos =	_mtk_os_hal_adc_get_ctlr();
@@ -259,34 +218,63 @@ int mtk_os_hal_adc_fsm_param_set(struct adc_fsm_param *adc_fsm_parameter)
 
 	ctlr = ctlr_rtos->ctlr;
 
-	ctlr->adc_fsm_parameter->pmode = adc_fsm_parameter->pmode;
-	ctlr->adc_fsm_parameter->avg_mode = adc_fsm_parameter->avg_mode;
-	ctlr->adc_fsm_parameter->channel_map = adc_fsm_parameter->channel_map;
-	ctlr->adc_fsm_parameter->period = adc_fsm_parameter->period;
-	ctlr->adc_fsm_parameter->fifo_mode = adc_fsm_parameter->fifo_mode;
-	ctlr->adc_fsm_parameter->ier_mode = adc_fsm_parameter->ier_mode;
+	if (ctlr->adc_fsm_parameter == NULL)
+		return -ADC_EPTR;
 
-	if (ctlr->adc_fsm_parameter->fifo_mode == ADC_FIFO_DMA)
-		ctlr->adc_fsm_parameter->dma_vfifo_len = ADC_DMA_BUF_WORD_SIZE;
+	adc_fsm_params = ctlr->adc_fsm_parameter;
 
-	for (channel_index = 0; channel_index < ADC_CHANNEL_MAX;
-		channel_index++) {
-		ctlr->current_xfer[channel_index].count = 0;
-		ctlr->current_xfer[channel_index].write_point = 0;
-		ctlr->current_xfer[channel_index].read_point = 0;
+	for (adc_no = 0; adc_no < ADC_CHANNEL_MAX; adc_no++) {
+		if (adc_fsm_parameter->channel_map & BIT(adc_no))
+			channel_num++;
 	}
 
-	ret = mtk_mhal_adc_fsm_param_set(ctlr, adc_fsm_parameter);
+	adc_fsm_params->pmode = adc_fsm_parameter->pmode;
+	adc_fsm_params->channel_map = adc_fsm_parameter->channel_map;
+	adc_fsm_params->fifo_mode = adc_fsm_parameter->fifo_mode;
+	adc_fsm_params->ier_mode = adc_fsm_parameter->ier_mode;
+	adc_fsm_params->vfifo_addr =
+		adc_fsm_parameter->vfifo_addr;
+
+	if (adc_fsm_params->pmode == ADC_PMODE_ONE_TIME) {
+		adc_fsm_params->rx_period_len = channel_num;
+		adc_fsm_params->fifo_mode = ADC_FIFO_DIRECT;
+		adc_fsm_params->vfifo_len =
+			adc_fsm_parameter->vfifo_len;
+		if (adc_fsm_params->vfifo_len != adc_fsm_params->rx_period_len)
+			return -ADC_EPARAMETER;
+
+	} else {
+		adc_fsm_params->sample_rate = adc_fsm_parameter->sample_rate;
+		adc_fsm_params->rx_period_len =
+			adc_fsm_parameter->rx_period_len * 4;
+		adc_fsm_params->vfifo_len =
+			adc_fsm_parameter->vfifo_len * 4;
+		adc_fsm_params->fifo_mode = ADC_FIFO_DMA;
+		if (adc_fsm_params->vfifo_len < adc_fsm_params->rx_period_len ||
+			(adc_fsm_params->rx_period_len % channel_num) != 0)
+			return -ADC_EPARAMETER;
+	}
+
+	if (adc_fsm_params->fifo_mode == ADC_FIFO_DMA) {
+		adc_fsm_params->rx_callback_func =
+			adc_fsm_parameter->rx_callback_func;
+		adc_fsm_params->rx_callback_data =
+			adc_fsm_parameter->rx_callback_data;
+		ctlr->dma_channel = VDMA_ADC_RX_CH29;
+	}
+	ret = mtk_mhal_adc_fsm_param_set(ctlr, adc_fsm_params);
 	if (ret)
 		return ret;
 
 	return 0;
 }
-int mtk_os_hal_adc_one_shot_get_data(adc_channel sample_channel, u32 *data)
+
+int mtk_os_hal_adc_trigger_one_shot_once(void)
 {
+	int ret = 0;
 	struct mtk_adc_controller_rtos *ctlr_rtos;
 	struct mtk_adc_controller *ctlr;
-	int ret = 0;
+	struct adc_fsm_param *adc_fsm_params;
 
 	ctlr_rtos =	_mtk_os_hal_adc_get_ctlr();
 	if (!ctlr_rtos)
@@ -294,61 +282,83 @@ int mtk_os_hal_adc_one_shot_get_data(adc_channel sample_channel, u32 *data)
 
 	ctlr = ctlr_rtos->ctlr;
 
-	if ((ctlr == NULL) || (ctlr->adc_fsm_parameter == NULL))
+	if (ctlr->adc_fsm_parameter == NULL)
 		return -ADC_EPTR;
 
-	if (sample_channel > ADC_CHANNEL_7)
+	adc_fsm_params = ctlr->adc_fsm_parameter;
+
+	if (adc_fsm_params->pmode != ADC_PMODE_ONE_TIME)
 		return -ADC_EPARAMETER;
 
-	if ((ctlr->adc_fsm_parameter->pmode != ADC_PMODE_ONE_TIME) ||
-		(ctlr->adc_fsm_parameter->fifo_mode != ADC_FIFO_DIRECT))
-		return -ADC_EPARAMETER;
-
-	ret = mtk_mhal_adc_one_shot_get_data(ctlr_rtos->ctlr,
-		sample_channel, data);
+	ret = mtk_mhal_adc_start(ctlr);
 	if (ret)
 		return ret;
 
-	return 0;
-}
-
-int mtk_os_hal_adc_period_get_data(adc_channel sample_channel)
-{
-	struct mtk_adc_controller_rtos *ctlr_rtos;
-	struct mtk_adc_controller *ctlr;
-	int ret = 0;
-
-	ctlr_rtos =	_mtk_os_hal_adc_get_ctlr();
-	if (!ctlr_rtos)
-		return -ADC_EPTR;
-
-	ctlr = ctlr_rtos->ctlr;
-	if ((ctlr == NULL) || (ctlr->adc_fsm_parameter == NULL))
-		return -ADC_EPTR;
-
-	ret = mtk_mhal_adc_start(ctlr_rtos->ctlr);
-	if (ret)
-		return ret;
-
-	ret = _mtk_os_hal_adc_wait_for_completion_timeout(ctlr_rtos, 1000);
-	if (ret)
+	ret = _mtk_os_hal_adc_wait_for_completion_timeout(ctlr_rtos,
+		1000);
+	if (ret) {
 		printf("Take adc master Semaphore timeout!\n");
+		return ret;
+	}
 
-	ret = mtk_mhal_adc_period_get_data(ctlr, sample_channel);
+	return ret;
+}
+
+int mtk_os_hal_adc_period_start(void)
+{
+	int ret = 0;
+	struct mtk_adc_controller_rtos *ctlr_rtos;
+	struct mtk_adc_controller *ctlr;
+	struct adc_fsm_param *adc_fsm_params;
+
+	ctlr_rtos =	_mtk_os_hal_adc_get_ctlr();
+	if (!ctlr_rtos)
+		return -ADC_EPTR;
+
+	ctlr = ctlr_rtos->ctlr;
+
+	if (ctlr->adc_fsm_parameter == NULL)
+		return -ADC_EPTR;
+
+	adc_fsm_params = ctlr->adc_fsm_parameter;
+
+	if ((adc_fsm_params->pmode != ADC_PMODE_PERIODIC) ||
+		(adc_fsm_params->fifo_mode != ADC_FIFO_DMA))
+		return -ADC_EPARAMETER;
+
+	ret = mtk_mhal_adc_start(ctlr);
 	if (ret)
 		return ret;
+
+	return ret;
+}
+
+int mtk_os_hal_adc_period_stop(void)
+{
+	int ret = 0;
+	struct mtk_adc_controller_rtos *ctlr_rtos;
+	struct mtk_adc_controller *ctlr;
+	struct adc_fsm_param *adc_fsm_params;
+
+	ctlr_rtos =	_mtk_os_hal_adc_get_ctlr();
+	if (!ctlr_rtos)
+		return -ADC_EPTR;
+
+	ctlr = ctlr_rtos->ctlr;
+
+	if (ctlr->adc_fsm_parameter == NULL)
+		return -ADC_EPTR;
+
+	adc_fsm_params = ctlr->adc_fsm_parameter;
+
+	if ((adc_fsm_params->pmode != ADC_PMODE_PERIODIC) ||
+		(adc_fsm_params->fifo_mode != ADC_FIFO_DMA))
+		return -ADC_EPARAMETER;
 
 	ret = mtk_mhal_adc_stop(ctlr);
 	if (ret)
 		return ret;
 
-	if (ctlr->adc_fsm_parameter->fifo_mode == ADC_FIFO_DMA) {
-		ret = mtk_mhal_adc_stop_dma(ctlr);
-		if (ret)
-			return ret;
-	}
-
-	return 0;
+	return ret;
 }
-
 

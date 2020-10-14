@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -40,8 +40,10 @@
 #include <string.h>
 #include <stdbool.h>
 
-#ifdef OSAI_FREERTOS
 #include "printf.h"
+
+#ifdef __cplusplus
+extern "C" {
 #endif
 
 /**
@@ -86,69 +88,70 @@ typedef unsigned long long u64;
 #endif /* BIT */
 
 /**
- *@brief  This function is used to delay miscrosecond.\n
- *@brief Usage:
+ * @brief  This function is used to delay miscrosecond.\n
+ * @brief Usage:
  * It will delay us miscrosecond after call this function.
- *@param [in] us : The delay time, unit is miscrosecond.
+ * @param [in] us : The delay time, unit is miscrosecond.
  *
- *@return None
+ * @return None
  */
 void osai_delay_us(u32 us);
 
 /**
- *@brief  This function is used to delay millisecond.\n
- *@brief Usage:
+ * @brief  This function is used to delay millisecond.\n
+ * @brief Usage:
  * It will delay ms millisecond after call this function.
- *@param [in] ms : The delay time, unit is millisecond.
+ * @param [in] ms : The delay time, unit is millisecond.
  *
- *@return None
+ * @return None
  */
 void osai_delay_ms(u32 ms);
 
 /**
- *@brief  This function is used to read I/O memory.\n
- *@param [in] addr : The I/O memory address.
+ * @brief  This function is used to read I/O memory.\n
+ * @param [in] addr : The I/O memory address.
  *
- *@return The value of the address.
+ * @return The value of the address.
  */
 u32 osai_readl(void __iomem *addr);
 
 /**
- *@brief  This function is used to write I/O memory.\n
- *@param [in] data : The data needs to be written to I/O memory.
- *@param [in] addr : The I/O memory address.
+ * @brief  This function is used to write I/O memory.\n
+ * @param [in] data : The data needs to be written to I/O memory.
+ * @param [in] addr : The I/O memory address.
  *
- *@return None.
+ * @return None.
  */
 void osai_writel(u32 data, void __iomem *addr);
 
 /**
- *@brief  This function is used to get the physical address
+ * @brief  This function is used to get the physical address
  * from the virtual address.
- *@param [in] vir_addr : The virtual address.
+ * @param [in] vir_addr : The virtual address.
  *
- *@return Return the converted physical address.
+ * @return Return the converted physical address.
  */
 unsigned long osai_get_phyaddr(void *vir_addr);
 
 /**
- *@brief  This function is used to sync cache data to DRAM.
- *@param [in] vir_addr : The address of the operating memory.
- *@param [in] len : The size of the operating memory.
+ * @brief  This function is used to sync cache data to DRAM.
+ * @param [in] vir_addr : The address of the operating memory.
+ * @param [in] len : The size of the operating memory.
  *
- *@return None.
+ * @return None.
  */
 void osai_clean_cache(void *vir_addr, u32 len);
 
 /**
- *@brief  This function is used to invalid cache data,
+ * @brief  This function is used to invalid cache data,
  * the next data read will from DRAM.
- *@param [in] vir_addr : The address of the operating memory.
- *@param [in] len : The size of the operating memory.
+ * @param [in] vir_addr : The address of the operating memory.
+ * @param [in] len : The size of the operating memory.
  *
- *@return None.
+ * @return None.
  */
 void osai_invalid_cache(void *vir_addr, u32 len);
+
 
 /** @brief DMA parameter-type definition.
  * Sometimes users want to set or get some parameters
@@ -266,61 +269,61 @@ struct osai_dma_config {
 };
 
 /**
- *@brief This function is used to allocate one DMA channel.
- *@brief Usage: user should call it to allocate DMA channel
+ * @brief This function is used to allocate one DMA channel.
+ * @brief Usage: user should call it to allocate DMA channel
  * successfully before using DMA channel to transfer data.
- *@param [in] chn : The dma channel number.
- *@return
+ * @param [in] chn : The dma channel number.
+ * @return
  * Return 0 if users allocate DMA channel successfully.\n
  * Return negative value if errors occur.
  */
 int osai_dma_allocate_chan(u8 chn);
 
 /**
- *@brief This function is used to configure one DMA channel.
- *@brief Usage: user should call it before starting DMA. According to
+ * @brief This function is used to configure one DMA channel.
+ * @brief Usage: user should call it before starting DMA. According to
  * the DMA channel type,\n users should set right configuration values.
- *@param [in] chn : The dma channel number.
- *@param [in] cfg_params: the dma channel configuration structure
+ * @param [in] chn : The dma channel number.
+ * @param [in] cfg_params: the dma channel configuration structure
  * osai_dma_config.
- *@return
+ * @return
  * Return 0 if users configure DMA channel successfully.\n
  * Return negative value if errors occur.
  */
 int osai_dma_config(u8 chn, struct osai_dma_config *cfg_params);
 
 /**
- *@brief This function is used to start one DMA channel.
- *@brief Usage: user should call it after configure DMA
+ * @brief This function is used to start one DMA channel.
+ * @brief Usage: user should call it after configure DMA
  * successfully.
- *@param [in] chn : The dma channel number.
- *@return
+ * @param [in] chn : The dma channel number.
+ * @return
  * Return 0 if users start DMA channel successfully.\n
  * Return negative value if errors occur.
  */
 int osai_dma_start(u8 chn);
 
 /**
- *@brief This function is used to stop one DMA channel.
- *@brief Usage: user should call it after starting DMA.
+ * @brief This function is used to stop one DMA channel.
+ * @brief Usage: user should call it after starting DMA.
  * Calling this function will stop transfer immediately and
  * DMA channel will return idle status.
- *@param [in] chn : The dma channel number.
- *@return
+ * @param [in] chn : The dma channel number.
+ * @return
  * Return 0 if users stop DMA channel successfully.\n
  * Return negative value if errors occur.
  */
 int osai_dma_stop(u8 chn);
 
 /**
- *@brief This function is used to set DMA parameter which is
+ * @brief This function is used to set DMA parameter which is
  * defined in the #dma_param.
- *@brief Usage: User only can set the value of parameters defined
+ * @brief Usage: User only can set the value of parameters defined
  * in #osai_dma_param_type.
- *@param [in] chn : The dma channel number.
- *@param [in] param_type: The type of parameter.
- *@param [in] value: The value of parameter.
- *@return
+ * @param [in] chn : The dma channel number.
+ * @param [in] param_type: The type of parameter.
+ * @param [in] value: The value of parameter.
+ * @return
  * Return 0 if users set DMA channel parameter successfully.\n
   * Return negative value if errors occur.
  */
@@ -328,37 +331,37 @@ int osai_dma_set_param(u8 chn, enum osai_dma_param_type param_type,
 			     u32 value);
 
 /**
- *@brief This function is used to get DMA parameter which is
+ * @brief This function is used to get DMA parameter which is
  * defined in the #dma_param.
- *@brief Usage: User only can get the value of parameters defined
+ * @brief Usage: User only can get the value of parameters defined
  * in #osai_dma_param_type.
- *@param [in] chn : The dma channel number.
- *@param [in] param_type: The type of parameter.
- *@return
+ * @param [in] chn : The dma channel number.
+ * @param [in] param_type: The type of parameter.
+ * @return
  * Return the parameter value if users get DMA parameters successfully.\n
  * Return negative value if errors occur.
  */
 int osai_dma_get_param(u8 chn, enum osai_dma_param_type param_type);
 
 /**
- *@brief This function is used to release DMA channel.
- *@brief Usage: If DMA channel has been done and user can not trigger it
+ * @brief This function is used to release DMA channel.
+ * @brief Usage: If DMA channel has been done and user can not trigger it
  * again, user should call this api to release DMA channel.
- *@param [in] chn : The dma channel number.
+ * @param [in] chn : The dma channel number.
  *
- *@return
+ * @return
  * Return 0 if users release DMA channel successfully.\n
  * Return negative value if errors occur.
  */
 int osai_dma_release_chan(u8 chn);
 
 /**
- *@brief This function is used to update Virtual FIFO DMA fifo swptr.
- *@brief Usage: If user read data from fifo or write data into fifo,
+ * @brief This function is used to update Virtual FIFO DMA fifo swptr.
+ * @brief Usage: If user read data from fifo or write data into fifo,
  * user should call this api to updata fifo swptr.
- *@param [in] chn : The dma channel number.
- *@param [in] length_byte : the updated data length.
- *@return
+ * @param [in] chn : The dma channel number.
+ * @param [in] length_byte : the updated data length.
+ * @return
  * Return 0 if updata fifo swptr successfully.\n
  * Return negative value if errors occur.
  */
@@ -366,37 +369,42 @@ int osai_dma_update_vfifo_swptr(u8 chn, u32 length_byte);
 
 
 /**
- *@brief This function is used to read data from Virtual FIFO.
- *@brief Usage: For RX case, if virtual fifo is full, user can
+ * @brief This function is used to read data from Virtual FIFO.
+ * @brief Usage: For RX case, if virtual fifo is full, user can
  * use this api to read data and updata fifo swptr.
- *@param [in] chn : The dma channel number.
- *@param [in] buffer: the data buffer.
- *@param [in] length: the read data length.
- *@return
+ * @param [in] chn : The dma channel number.
+ * @param [out] buffer: the data buffer.
+ * @param [in] length: the read data length.
+ * @return
  * Return actual read data count if successfully.\n
  * Return -1 value if errors occur.
  */
 int osai_dma_vff_read_data(u8 chn, u8 *buffer, u32 length);
 
 /**
- *@brief This function is used to reset one DMA channel.
- *@brief Usage: Calling this function will reset DMA channel
+ * @brief This function is used to reset one DMA channel.
+ * @brief Usage: Calling this function will reset DMA channel
  * registers and DMA channel will return idle status.
- *@param [in] chn : The dma channel number.
- *@return
+ * @param [in] chn : The dma channel number.
+ * @return
  * Return 0 if users reset DMA channel successfully.\n
  * Return negative value if errors occur.
  */
 int osai_dma_reset(u8 chn);
 
 /**
- *@brief This function is used to clear dreq signal of DMA channel.
- *@brief Usage: Calling this function will clear dreq signal of DMA channel.
+ * @brief This function is used to clear dreq signal of DMA channel.
+ * @brief Usage: Calling this function will clear dreq signal of DMA channel.
  * Some peripheral module need to call this api before start dma transfer.
- *@param [in] chn : The dma channel number.
- *@return
+ * @param [in] chn : The dma channel number.
+ * @return
  * Return 0 if users clear dreq signal of DMA channel successfully.\n
  * Return negative value if errors occur.
  */
 int osai_dma_clr_dreq(u8 chn);
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif

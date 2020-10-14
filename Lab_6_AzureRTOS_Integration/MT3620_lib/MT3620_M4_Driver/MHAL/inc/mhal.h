@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -53,11 +53,12 @@
  * |\b GPIOIF               | General-Purpose Inputs-Outputs Interface
  * |\b GPT                  | Generic purpose timer
  * |\b I2C                  | Inter-integrated circuit
- * |\b I2S                  | Inter-integrated sound
+ * |\b I2S                  | Integrated Interchip Sound
  * |\b PWM                  | Pulse-Width Modulation
  * |\b SPI                  | Serial Peripheral Interface
  * |\b UART                 | Universal asynchronous receiver/transmitter
  * |\b WDT                  | Watchdog timer
+ * |\b MBOX                 | Mailbox
  *
  * @section MHAL_Overview_2_Chapter    Overview of M-HAL SW Architecture
  *
@@ -112,22 +113,16 @@
  *       such as hdl_spim.h.\n
  *       The HDL driver files are named as hdl_{module name}.c,
  *       such as hdl_spim.c.\n
- *       The HDL header and driver files are all in driver/chip/mtxxxx/inc
- *       and driver/chip/mtxxxx/src/common.
  *	 - M-HAL\n
  *       The M-HAL header files are named as mhal_{module name}.h,
  *       such as mhal_spim.h.\n
  *       The M-HAL driver files are named as mhal_{module name}.c,
  *       such as mhal_spim.c.\n
- *       The M-HAL header and driver files are all in driver/chip/mtxxxx/inc
- *       and driver/chip/mtxxxx/src/common.
  *	 - OS-HAL\n
  *       The OS-HAL header files are named as os_hal_{module name}.h,
  *       such as os_hal_spim.h.\n
  *       The OS-HAL driver files are named as os_hal_{module name}.c,
  *       such as os_hal_spim.c.\n
- *       The OS-HAL header and driver files are all in driver/chip/inc
- *       and driver/chip/mtxxxx/src.
  *
  *  - \b API \b naming \b convention \n
  *	 - External function names\n

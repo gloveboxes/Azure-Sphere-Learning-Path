@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -56,7 +56,7 @@
  * |\b ISR                        | Interrupt Service Routine.|
  * |\b I2S                        | Integrated Interchip Sound.|
  *
- * @section Features_Chapter Supported Features
+ * @section MHAL_I2S_Features_Chapter Supported Features
  * - Two I2S interfaces share the same XPLL clock source.\n
  * - Slave mode, only used to communicate with the external codec.\n
  * - 16MHz master clock provided.\n
@@ -81,7 +81,7 @@
  * @addtogroup I2S
  * @{
  *
- * @section Driver_Usage_Chapter How to Use This Driver
+ * @section MHAL_I2S_Driver_Usage_Chapter How to Use This Driver
  *
  * - Use I2S transmit/receive (Tx/Rx) data for external codec
  *   functionality. \n
@@ -103,324 +103,6 @@
  *  - Step6:   Call #mtk_mhal_i2s_enable_audio_top(),
  *             #mtk_mhal_i2s_enable_tx() and #mtk_mhal_i2s_enable_rx()
  *             functions to start Tx and Rx link data flows. \n
- *  - Sample code:
- *    @code
- *	#define MTK_I2S_MAX_PORT_NUMBER	2
- *	#define I2S0_BASE_ADDR	0x380D0000
- *	#define I2S1_BASE_ADDR	0x380E0000
- *	#define I2S0_FIFO_PORT_ADDR	0x380F0000
- *	#define I2S1_FIFO_PORT_ADDR	0x38100000
- *
- *	static unsigned long i2s_base_addr[MTK_I2S_MAX_PORT_NUMBER] = {
- *		I2S0_BASE_ADDR,
- *		I2S1_BASE_ADDR,
- *	};
- *	static unsigned long i2s_fifo_port_addr[MTK_I2S_MAX_PORT_NUMBER][2] = {
- *		// [0]:tx, [1]:rx
- *		{I2S0_FIFO_PORT_ADDR, I2S0_FIFO_PORT_ADDR},
- *		{I2S1_FIFO_PORT_ADDR, I2S1_FIFO_PORT_ADDR},
- *	};
- *	static unsigned long i2s_dma_ch_num[MTK_I2S_MAX_PORT_NUMBER][2] = {
- *		// [0]:tx, [1]:rx
- *		{VDMA_I2S0_TX_CH25, VDMA_I2S0_RX_CH26},
- *		{VDMA_I2S1_TX_CH27, VDMA_I2S1_RX_CH28},
- *	};
- *
- *	struct mtk_i2s_ctlr_cfg {
- *		struct mtk_i2s_ctlr i2s_ctrl;
- *		unsigned int tx_dma_ch_num;
- *		unsigned int rx_dma_ch_num;
- *		unsigned int tx_period_len;
- *		unsigned int rx_period_len;
- *		i2s_dma_callback_func tx_callback_func;
- *		i2s_dma_callback_func rx_callback_func;
- *	};
- *
- *	static struct mtk_i2s_ctlr_cfg i2s0_ctlr_cfg;
- *	static struct mtk_i2s_ctlr_cfg i2s1_ctlr_cfg;
- *	static struct mtk_i2s_private	i2s0_mdata;
- *	static struct mtk_i2s_private	i2s1_mdata;
- *
- *	void _mtk_os_hal_i2s0_tx_callback(void *data)
- *	{
- *		mtk_mhal_i2s_move_tx_point(&i2s0_ctlr_cfg.i2s_ctrl,
- *					   i2s0_ctlr_cfg.tx_period_len);
- *		if (i2s0_ctlr_cfg.tx_callback_func != NULL)
- *			i2s0_ctlr_cfg.tx_callback_func(
- *				i2s0_ctlr_cfg.tx_callback_data);
- *	}
- *	void _mtk_os_hal_i2s0_rx_callback(void *data)
- *	{
- *		mtk_mhal_i2s_move_rx_point(&i2s0_ctlr_cfg.i2s_ctrl,
- *					   i2s0_ctlr_cfg.rx_period_len);
- *		if (i2s0_ctlr_cfg.rx_callback_func != NULL)
- *			i2s0_ctlr_cfg.rx_callback_func(
- *				i2s0_ctlr_cfg.rx_callback_data);
- *	}
- *	void _mtk_os_hal_i2s1_tx_callback(void *data)
- *	{
- *		mtk_mhal_i2s_move_tx_point(&i2s1_ctlr_cfg.i2s_ctrl,
- *					   i2s1_ctlr_cfg.tx_period_len);
- *		if (i2s1_ctlr_cfg.tx_callback_func != NULL)
- *			i2s1_ctlr_cfg.tx_callback_func(
- *				i2s1_ctlr_cfg.tx_callback_data);
- *	}
- *	void _mtk_os_hal_i2s1_rx_callback(void *data)
- *	{
- *		mtk_mhal_i2s_move_rx_point(&i2s1_ctlr_cfg.i2s_ctrl,
- *					   i2s1_ctlr_cfg.rx_period_len);
- *		if (i2s1_ctlr_cfg.rx_callback_func != NULL)
- *			i2s1_ctlr_cfg.rx_callback_func(NULL);
- *				i2s1_ctlr_cfg.rx_callback_data);
- *	}
- *
- *	int mtk_os_hal_request_i2s(i2s_no i2s_port)
- *	{
- *		struct mtk_i2s_ctlr_cfg *i2s_ctrl_cfg;
- *		int result = 0;
- *
- *		if (i2s_port >= MTK_I2S_MAX_PORT_NUMBER)
- *			return -I2S_EPTR;
- *		if (i2s_port == MHAL_I2S0) {
- *			i2s_ctrl_cfg = &i2s0_ctlr_cfg;
- *			i2s_ctrl_cfg->i2s_ctrl.mdata = &i2s0_mdata;
- *		} else {
- *			i2s_ctrl_cfg = &i2s1_ctlr_cfg;
- *			i2s_ctrl_cfg->i2s_ctrl.mdata = &i2s1_mdata;
- *		}
- *		i2s_ctrl_cfg->i2s_ctrl.base =
- *				(void __iomem *)i2s_base_addr[i2s_port];
- *		i2s_ctrl_cfg->i2s_ctrl.i2s_no = i2s_port;
- *		i2s_ctrl_cfg->i2s_ctrl.i2s_txdma_chnum =
- *				i2s_dma_ch_num[i2s_port][0];
- *		i2s_ctrl_cfg->i2s_ctrl.i2s_rxdma_chnum =
- *				i2s_dma_ch_num[i2s_port][1];
- *		result = mtk_mhal_i2s_alloc_vfifo_ch(&i2s_ctrl_cfg->i2s_ctrl);
- *		if (result != 0) {
- *			return -I2S_EPTR;
- *		}
- *
- *		return 0;
- *	}
- *
- *	int mtk_os_hal_free_i2s(i2s_no i2s_port)
- *	{
- *		struct mtk_i2s_ctlr_cfg *i2s_ctrl_cfg;
- *		int result = 0;
- *
- *		if (i2s_port >= MTK_I2S_MAX_PORT_NUMBER)
- *			return -I2S_EPTR;
- *		if (i2s_port == MHAL_I2S0) {
- *			i2s_ctrl_cfg = &i2s0_ctlr_cfg;
- *			i2s_ctrl_cfg->i2s_ctrl.mdata = &i2s0_mdata;
- *		} else {
- *			i2s_ctrl_cfg = &i2s1_ctlr_cfg;
- *			i2s_ctrl_cfg->i2s_ctrl.mdata = &i2s1_mdata;
- *		}
- *		i2s_ctrl_cfg->i2s_ctrl.i2s_txdma_chnum =
- *					i2s_dma_ch_num[i2s_port][0];
- *		i2s_ctrl_cfg->i2s_ctrl.i2s_rxdma_chnum =
- *					i2s_dma_ch_num[i2s_port][1];
- *		result = mtk_mhal_i2s_release_vfifo_ch(&i2s_ctrl_cfg->i2s_ctrl);
- *		if (result != 0) {
- *			return -I2S_EPTR;
- *		}
- *
- *		return 0;
- *	}
- *	int mtk_os_hal_config_i2s(i2s_no i2s_port, audio_parameter *parameter)
- *	{
- *		struct hal_i2s_config i2s_config;
- *		struct mtk_i2s_ctlr_cfg *i2s_ctrl_cfg;
- *		int result = 0;
- *
- *		if (i2s_port >= MTK_I2S_MAX_PORT_NUMBER || !parameter)
- *			return -I2S_EPTR;
- *		if (i2s_port == MHAL_I2S0) {
- *			i2s_ctrl_cfg = &i2s0_ctlr_cfg;
- *			i2s_ctrl_cfg->i2s_ctrl.mdata = &i2s0_mdata;
- *		} else {
- *			i2s_ctrl_cfg = &i2s1_ctlr_cfg;
- *			i2s_ctrl_cfg->i2s_ctrl.mdata = &i2s1_mdata;
- *		}
- *		i2s_ctrl_cfg->i2s_ctrl.base =
- *				(void __iomem *)i2s_base_addr[i2s_port];
- *		i2s_ctrl_cfg->i2s_ctrl.i2s_no = i2s_port;
- *		i2s_ctrl_cfg->i2s_ctrl.i2s_txdma_chnum =
- *				i2s_dma_ch_num[i2s_port][0];
- *		i2s_ctrl_cfg->i2s_ctrl.i2s_rxdma_chnum =
- *				i2s_dma_ch_num[i2s_port][1];
- *		i2s_ctrl_cfg->i2s_ctrl.i2s_tx_fifo_port =
- *				(void __iomem *)i2s_fifo_port_addr[i2s_port][0];
- *		i2s_ctrl_cfg->i2s_ctrl.i2s_rx_fifo_port =
- *				(void __iomem *)i2s_fifo_port_addr[i2s_port][1];
- *		result = mtk_mhal_i2s_cfg_type(&i2s_ctrl_cfg->i2s_ctrl,
- *					       parameter->i2s_initial_type);
- *		if (result != 0) {
- *			return result;
- *		}
- *
- *		//configure RX settings
- *		i2s_config.i2s_in.sample_rate = parameter->sample_rate;
- *		i2s_config.i2s_in.bits_per_sample = parameter->bits_per_sample;
- *		i2s_config.i2s_in.channel_number = parameter->channel_number;
- *		i2s_config.i2s_in.channels_per_sample =
- *					parameter->channels_per_sample;
- *		i2s_config.i2s_in.msb_offset = parameter->msb_offset;
- *		i2s_config.i2s_in.word_select_inverse =
- *					parameter->word_select_inverse;
- *		i2s_config.i2s_in.lr_swap = parameter->lr_swap;
- *		i2s_config.rx_down_rate = parameter->rx_down_rate;
- *
- *		//configure TX settings
- *		i2s_config.i2s_out.sample_rate = parameter->sample_rate;
- *		i2s_config.i2s_out.bits_per_sample =
- *						parameter->bits_per_sample;
- *		i2s_config.i2s_out.channel_number = parameter->channel_number;
- *		i2s_config.i2s_out.channels_per_sample
- *				= parameter->channels_per_sample;
- *		i2s_config.i2s_out.msb_offset = parameter->msb_offset;
- *		i2s_config.i2s_out.word_select_inverse =
- *					parameter->word_select_inverse;
- *		i2s_config.i2s_out.lr_swap = parameter->lr_swap;
- *		i2s_config.tx_mode = parameter->tx_mode;
- *
- *		result = mtk_mhal_i2s_set_config
- *					(&i2s_ctrl_cfg->i2s_ctrl, &i2s_config);
- *		if (result != 0) {
- *			return result;
- *		}
- *		//configure VFIFO
- *
- *		i2s_ctrl_cfg->tx_period_len = parameter->tx_period_len;
- *		i2s_ctrl_cfg->rx_period_len = parameter->rx_period_len;
- *		if (parameter->tx_callback_func == NULL ||
- *		    parameter->rx_callback_func == NULL) {
- *			return -I2S_EPTR;
- *		}
- *		i2s_ctrl_cfg->tx_callback_func = parameter->tx_callback_func;
- *		i2s_ctrl_cfg->rx_callback_func = parameter->rx_callback_func;
- *		i2s_ctrl_cfg->tx_callback_data = parameter->tx_callback_data;
- *		i2s_ctrl_cfg->rx_callback_data = parameter->rx_callback_data;
- *
- *		if (i2s_port == MHAL_I2S0)
- *			result = mtk_mhal_i2s_cfg_tx_dma_irq_enable(
- *						&i2s_ctrl_cfg->i2s_ctrl,
- *						_mtk_os_hal_i2s0_tx_callback);
- *		else
- *			result = mtk_mhal_i2s_cfg_tx_dma_irq_enable(
- *						&i2s_ctrl_cfg->i2s_ctrl,
- *						_mtk_os_hal_i2s1_tx_callback);
- *
- *		if (result != 0) {
- *			return result;
- *		}
- *		if (i2s_port == MHAL_I2S0)
- *			result = mtk_mhal_i2s_cfg_rx_dma_irq_enable(
- *						&i2s_ctrl_cfg->i2s_ctrl,
- *						_mtk_os_hal_i2s0_rx_callback);
- *		else
- *			result = mtk_mhal_i2s_cfg_rx_dma_irq_enable(
- *						&i2s_ctrl_cfg->i2s_ctrl,
- *						_mtk_os_hal_i2s1_rx_callback);
- *		if (result != 0) {
- *			return result;
- *		}
- *		result = mtk_mhal_i2s_start_tx_vfifo(&i2s_ctrl_cfg->i2s_ctrl,
- *						     parameter->tx_buffer_addr,
- *						     1,
- *						     parameter->tx_buffer_len);
- *		if (result != 0) {
- *			return result;
- *		}
- *
- *		result = mtk_mhal_i2s_start_rx_vfifo(&i2s_ctrl_cfg->i2s_ctrl,
- *						parameter->rx_buffer_addr,
- *						parameter->rx_period_len - 1,
- *						parameter->rx_buffer_len);
- *		if (result != 0) {
- *			return result;
- *		}
- *
- *		return 0;
- *	}
- *	int mtk_os_hal_enable_i2s(i2s_no i2s_port)
- *	{
- *		struct mtk_i2s_ctlr_cfg *i2s_ctrl_cfg;
- *		int result = 0;
- *
- *		if (i2s_port >= MTK_I2S_MAX_PORT_NUMBER)
- *			return -I2S_EPTR;
- *		if (i2s_port == MHAL_I2S0) {
- *			i2s_ctrl_cfg = &i2s0_ctlr_cfg;
- *			i2s_ctrl_cfg->i2s_ctrl.mdata = &i2s0_mdata;
- *		} else {
- *			i2s_ctrl_cfg = &i2s1_ctlr_cfg;
- *			i2s_ctrl_cfg->i2s_ctrl.mdata = &i2s1_mdata;
- *		}
- *		i2s_ctrl_cfg->i2s_ctrl.base =
- *					(void __iomem *)i2s_base_addr[i2s_port];
- *		i2s_ctrl_cfg->i2s_ctrl.i2s_no = i2s_port;
- *
- *		result = mtk_mhal_i2s_enable_audio_top(&i2s_ctrl_cfg->i2s_ctrl);
- *		if (result != 0) {
- *			return result;
- *		}
- *		result = mtk_mhal_i2s_enable_tx(&i2s_ctrl_cfg->i2s_ctrl);
- *		if (result != 0) {
- *			return result;
- *		}
- *		result = mtk_mhal_i2s_enable_rx(&i2s_ctrl_cfg->i2s_ctrl);
- *		if (result != 0) {
- *			return result;
- *		}
- *		return 0;
- *	}
- *	int mtk_os_hal_disable_i2s(i2s_no i2s_port)
- *	{
- *		struct mtk_i2s_ctlr_cfg *i2s_ctrl_cfg;
- *		int result = 0;
- *
- *		if (i2s_port >= MTK_I2S_MAX_PORT_NUMBER)
- *			return -I2S_EPTR;
- *		if (i2s_port == MHAL_I2S0) {
- *			i2s_ctrl_cfg = &i2s0_ctlr_cfg;
- *			i2s_ctrl_cfg->i2s_ctrl.mdata = &i2s0_mdata;
- *		} else {
- *			i2s_ctrl_cfg = &i2s1_ctlr_cfg;
- *			i2s_ctrl_cfg->i2s_ctrl.mdata = &i2s1_mdata;
- *		}
- *		i2s_ctrl_cfg->i2s_ctrl.base =
- *					(void __iomem *)i2s_base_addr[i2s_port];
- *		i2s_ctrl_cfg->i2s_ctrl.i2s_no = i2s_port;
- *		result = mtk_mhal_i2s_stop_tx_vfifo(&i2s_ctrl_cfg->i2s_ctrl);
- *		if (result != 0) {
- *			return result;
- *		}
- *		result = mtk_mhal_i2s_stop_rx_vfifo(&i2s_ctrl_cfg->i2s_ctrl);
- *		if (result != 0) {
- *			return result;
- *		}
- *		result = mtk_mhal_i2s_disable_tx(&i2s_ctrl_cfg->i2s_ctrl);
- *		if (result != 0) {
- *			return result;
- *		}
- *		result = mtk_mhal_i2s_disable_rx(&i2s_ctrl_cfg->i2s_ctrl);
- *		if (result != 0) {
- *			return result;
- *		}
- *		result = mtk_mhal_i2s_disable_audio_top
- *						(&i2s_ctrl_cfg->i2s_ctrl);
- *		if (result != 0) {
- *			return result;
- *		}
- *		result = mtk_mhal_i2s_reset(&i2s_ctrl_cfg->i2s_ctrl);
- *		if (result != 0) {
- *			return result;
- *		}
- *		return 0;
- *	}
- *    @endcode
  *
  * - Event handling for Tx and Rx links data transfer operations.\n
  *  - The callback functions of Tx and Rx links are always invoked
@@ -456,132 +138,11 @@
  *	}
  *    @endcode
  *
- * - Device driver sample code is as follows: \n
- *   - sample code (this is the user application sample code on freeRTos):
- *    @code
- *	#define tx_buffer_length 0x4000
- *	#define rx_buffer_length 0x4000
- *	#define tx_buffer_period tx_buffer_length / 4
- *	#define rx_buffer_period rx_buffer_length / 4
- *	unsigned int tx_buffer[tx_buffer_length / 4]
- *			__attribute__((section(".CM4SRAM")));
- *	unsigned int rx_buffer[rx_buffer_length / 4]
- *			__attribute__((section(".CM4SRAM")));
- *	unsigned int *i2stxbuf = (unsigned int *)&tx_buffer[0];
- *	unsigned int *i2srxbuf = (unsigned int *)&rx_buffer[0];
+ * - \b The \b OS-HAL \b freeRTos \b driver\n
+ * \b sample \b code \b is \b as \b follows: \n
+ * <a href="https://github.com/MediaTek-Labs/mt3620_m4_software/blob/master/MT3620_M4_Sample_Code/OS_HAL/src/os_hal_i2s.c"> freeRTos I2S sample code on github </a>
  *
- *	unsigned int i2s_rx_cnt;
- *	unsigned int i2s_tx_cnt;
- *
- *	void tx_fill_data_task(void)
- *	{
- *		//fill tx data
- *		switch (i2s_tx_cnt) {
- *		case 0:
- *			//fill tx_buffer[0] ~ tx_buffer[tx_buffer_period -1]
- *		break;
- *		case 1:
- *			//fill tx_buffer[tx_buffer_period] ~
- *			//tx_buffer[tx_buffer_period * 2 -1]
- *		break;
- *		case 2:
- *			//fill tx_buffer[tx_buffer_period * 2] ~
- *			//tx_buffer[tx_buffer_period * 3 -1]
- *		break;
- *		case 3:
- *			//fill tx_buffer[tx_buffer_period * 3] ~
- *			//tx_buffer[tx_buffer_period * 4 -1]
- *		break;
- *		}
- *		if (i2s_tx_cnt >= 3)
- *			i2s_tx_cnt = 0;
- *		else
- *			i2s_tx_cnt ++;
- *		return;
- *	}
- *	void rx_get_data_task(void)
- *	{
- *		//fill rx data
- *		switch (i2s_rx_cnt) {
- *		case 0:
- *			//get rx_buffer[0] ~ rx_buffer[rx_buffer_period -1]
- *		break;
- *		case 1:
- *			//get rx_buffer[rx_buffer_period] ~
- *			//rx_buffer[rx_buffer_period * 2 -1]
- *		break;
- *		case 2:
- *			//get rx_buffer[rx_buffer_period * 2] ~
- *			//rx_buffer[rx_buffer_period * 3 -1]
- *		break;
- *		case 3:
- *			//get rx_buffer[rx_buffer_period * 3] ~
- *			//rx_buffer[rx_buffer_period * 4 -1]
- *		break;
- *		}
- *		if (i2s_tx_cnt >= 3)
- *			i2s_rx_cnt = 0;
- *		else
- *			i2s_rx_cnt ++;
- *		return;
- *	}
- *	void tx_test_callback(void *data)
- *	{
- *		//resume tx_fill_data_task
- *	}
- *	void rx_test_callback(void *data)
- *	{
- *		//resume rx_get_data_task
- *	}
- *	audio_parameter audio_out_default_1[1] = {
- *		{MHAL_I2S_TYPE_EXTERNAL_MODE,
- *		 MHAL_I2S_SAMPLE_RATE_48K,
- *		 MHAL_I2S_BITS_PER_SAMPLE_32, MHAL_I2S_STEREO,
- *		 MHAL_I2S_LINK_CHANNLE_PER_SAMPLE_2, 0,
- *		 MHAL_FN_DIS, MHAL_FN_DIS,
- *		 MHAL_I2S_TX_MONO_DUPLICATE_DISABLE,
- *		 MHAL_I2S_RX_DOWN_RATE_DISABLE,
- *		 &tx_buffer[0],
- *		 tx_buffer_length, tx_buffer_period,
- *		 &rx_buffer[0],
- *		 rx_buffer_length, rx_buffer_period,
- *		 tx_test_callback, NULL,
- *		 rx_test_callback, NULL},
- *	};
- *	int mtk_audio_test(i2s_no i2s_port)
- *	{
- *		audio_parameter testsets[1];
- *
- *		testsets[0] = audio_out_default_1[0];
- *		i2s_tx_cnt = 0;
- *		i2s_rx_cnt = 0;
- *		mtk_os_hal_request_i2s(i2s_port);
- *
- *		mtk_os_hal_config_i2s(i2s_port, &testsets[0]);
- *
- *		//use SPI or I2C to configure audio codec
- *		//wait first period data ready
- *		while (1) {
- *			vTaskDelay(10);
- *			if (i2s_tx_cnt)
- *				break;
- *		}
- *		mtk_os_hal_enable_i2s(i2s_port);
- *
- *		//wait stop event;
- *		while (1) {
- *			vTaskDelay(1000);
- *			if (stop_event)
- *				break;
- *		}
- *		mtk_os_hal_disable_i2s(i2s_port);
- *		mtk_os_hal_free_i2s(i2s_port);
- *
- *		return 0;
- *
- *	}
- *    @endcode
- * @section Function_Group_Chapter I2S Function Groups Description
+ * @section MHAL_I2S_Function_Group_Chapter I2S Function Groups Description
  *
  * The APIs are grouped by their functionality for easier use.
  * Users can refer to the details of each function by clicking
@@ -893,7 +454,7 @@ struct mtk_i2s_ctlr {
 	/** I2S port base address */
 	void __iomem *base;
 	/** I2S port number */
-	i2s_no i2s_no;
+	i2s_no i2s_port;
 	/** I2S TX DMA channel number */
 	u8 i2s_txdma_chnum;
 	/** I2S RX DMA channel  number */
@@ -915,6 +476,10 @@ struct mtk_i2s_ctlr {
  * to fully control the MediaTek I2S HW.
  */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @brief     Configure I2S type.
  * @brief     Usage: OS-HAL driver should call it in the initialization flow.\n
@@ -928,7 +493,7 @@ struct mtk_i2s_ctlr {
  *
  *      // set I2S0 as external mode
  *      i2s_ctrl.base = i2s0_baseaddr;
- *      i2s_ctrl.i2s_no = MHAL_I2S0;
+ *      i2s_ctrl.i2s_port = MHAL_I2S0;
  *      mtk_mhal_i2s_cfg_type(&i2s_ctrl, MHAL_I2S_TYPE_EXTERNAL_MODE);
  *
  *      // configure Rx settings
@@ -1223,6 +788,10 @@ int mtk_mhal_i2s_alloc_vfifo_ch(struct mtk_i2s_ctlr *ctlr);
  *      Return -#I2S_EPTR if release channel fail or the ctlr is NULL.
  */
 int mtk_mhal_i2s_release_vfifo_ch(struct mtk_i2s_ctlr *ctlr);
+
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * @}

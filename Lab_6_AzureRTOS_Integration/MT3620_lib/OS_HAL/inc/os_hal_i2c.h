@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -41,18 +41,121 @@
 /**
  * @addtogroup OS-HAL
  * @{
- * @addtogroup I2C
+ * @addtogroup i2c
  * @{
- * This section describes the programming interfaces of the i2c os-hal
+ * This section introduces the Inter-Integrated Circuit (I2C) APIs
+ * including terms and acronyms, supported features,
+ * details on how to use this driver, enums and functions.
+ *
+ * @section OS_HAL_I2C_Terms_Chapter Terms and Acronyms
+ *
+ * |Terms                   |Details                             |
+ * |------------------------------|--|
+ * |\b DMA                        | Direct Memory Access.|
+ * |\b FIFO                       | First In, First Out.|
+ * |\b I2C                        | Inter-Integrated Circuit. |
+ *
+ * @section OS_HAL_I2C_Features_Chapter Supported Features
+ * See @ref MHAL_I2C_Features_Chapter for the details of  Supported Features.
+ *
+ * @}
+ * @}
  */
+
+/**
+ * @addtogroup OS-HAL
+ * @{
+ * @addtogroup i2c
+ * @{
+ * @section OS_HAL_I2C_Driver_Usage_Chapter How to use this driver
+ *
+ * - \b Device \b driver \b sample \b code \b is \b as \b follows: \n
+ *  - sample code (this is the user application sample code on freeRTos):
+ *    @code
+ *	- init I2C
+ *	 -Call mtk_os_hal_i2c_ctrl_init(i2c_num bus_num)
+ *	   to init i2c bus.
+ *
+ *	- set I2C master transfer speed
+ *	  -Call mtk_os_hal_i2c_speed_init(i2c_num bus_num,
+			     enum i2c_speed_kHz speed)
+ *
+ *	- I2C master read data from slave device
+ *	 -Call mtk_os_hal_i2c_read(i2c_num bus_num,
+			    u8 device_addr, u8 *buffer, u16 len)
+ *
+ *	- I2C master write data to slave device
+ *	 -Call mtk_os_hal_i2c_write(i2c_num bus_num,
+			    u8 device_addr, u8 *buffer, u16 len)
+ *
+ *	-I2C master write data to slave device then read data from device
+ *	 -Call mtk_os_hal_i2c_write_read(i2c_num bus_num,
+			    u8 device_addr, u8 *wr_buf, u8 *rd_buf,
+			    u16 wr_len, u16 rd_len)
+ *
+ *	-Set I2C controler slave address
+ *	 -Call mtk_os_hal_i2c_set_slave_addr(i2c_num bus_num,
+			    u8 slv_addr)
+ *
+ *	-Set I2C slave send data to the master
+ *	 -Call mtk_os_hal_i2c_slave_tx(i2c_num bus_num,
+			    u8 *buffer, u16 len, u32 time_out)
+ *
+ *	-Set I2C slave receive data from the master
+ *	 -Call mtk_os_hal_i2c_slave_rx(i2c_num bus_num,
+			    u8 *buffer, u16 len, u32 time_out)
+ *
+ *	- uninit I2C
+ *	 - Call  mtk_os_hal_i2c_ctrl_deinit(i2c_num bus_num) to uninit
+ *	    i2c and release resource.
+ *
+ *    @endcode
+ *
+ * @}
+ * @}
+ */
+
+/**
+* @addtogroup OS-HAL
+* @{
+* @addtogroup i2c
+* @{
+*/
+
+/** @defgroup os_hal_i2c_enum Enum
+  * @{
+  * This section introduces the enumerations
+  * that I2C uses while performing transfer.
+  */
+
 typedef enum {
+	/** Use ISU0 as I2C port */
 	OS_HAL_I2C_ISU0 = 0,
+	/** Use ISU1 as I2C port */
 	OS_HAL_I2C_ISU1 = 1,
+	/** Use ISU2 as I2C port */
 	OS_HAL_I2C_ISU2 = 2,
+	/** Use ISU3 as I2C port */
 	OS_HAL_I2C_ISU3 = 3,
+	/** Use ISU4 as I2C port */
 	OS_HAL_I2C_ISU4 = 4,
+	/** The maximum ISU number (invalid) */
 	OS_HAL_I2C_ISU_MAX
 } i2c_num;
+
+/**
+  * @}
+  */
+
+
+/** @defgroup os_hal_i2c_function Function
+  * @{
+   * This section provides high level APIs to upper layer.
+  */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  *  @brief  Init I2C controller.
@@ -206,5 +309,18 @@ int mtk_os_hal_i2c_slave_tx(i2c_num bus_num, u8 *buffer, u16 len, u32 time_out);
  *  @return "0" if i2c receive data from master successfully.
  */
 int mtk_os_hal_i2c_slave_rx(i2c_num bus_num, u8 *buffer, u16 len, u32 time_out);
+
+#ifdef __cplusplus
+}
+#endif
+
+/**
+  * @}
+  */
+
+/**
+* @}
+* @}
+*/
 
 #endif
