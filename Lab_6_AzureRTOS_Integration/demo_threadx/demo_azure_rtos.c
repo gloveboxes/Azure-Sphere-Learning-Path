@@ -10,6 +10,7 @@
 #include <stdbool.h>
 #include <time.h>
 #include <math.h>
+#include "intercore_contract.h"
 
 #define DEMO_STACK_SIZE 1024
 #define DEMO_BYTE_POOL_SIZE 9120
@@ -22,27 +23,6 @@ static uint32_t dataSize;
 static BufferHeader *outbound, *inbound;
 static uint32_t sharedBufSize = 0;
 static const size_t payloadStart = 20;
-
-enum LP_INTER_CORE_CMD
-{
-	LP_IC_UNKNOWN,
-	LP_IC_HEARTBEAT,
-	LP_IC_TEMPERATURE_PRESSURE_HUMIDITY,
-	LP_IC_EVENT_BUTTON_A,
-	LP_IC_EVENT_BUTTON_B,
-	LP_IC_SET_DESIRED_TEMPERATURE,
-	LP_IC_BLINK_RATE
-};
-
-typedef struct LP_INTER_CORE_BLOCK
-{
-	enum LP_INTER_CORE_CMD cmd;
-	float temperature;
-	float pressure;
-	float humidity;
-	int blinkRate;
-
-} LP_INTER_CORE_BLOCK;
 
 LP_INTER_CORE_BLOCK ic_control_block;
 

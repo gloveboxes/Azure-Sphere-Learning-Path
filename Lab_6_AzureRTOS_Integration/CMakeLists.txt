@@ -44,6 +44,7 @@ include_directories(${PROJECT_NAME} PUBLIC
 
 target_include_directories(${PROJECT_NAME} PUBLIC
                            ./MT3620_lib/OS_HAL/inc
+                           ../IntercoreContract
                            ./)
 
 

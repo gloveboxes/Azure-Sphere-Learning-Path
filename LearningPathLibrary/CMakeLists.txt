@@ -29,7 +29,7 @@ add_library(${PROJECT_NAME} STATIC ${ALL_FILES})
 
 
 set(ROOT_NAMESPACE azsphere_libs)
-target_include_directories(${PROJECT_NAME} PUBLIC ${AZURE_SPHERE_API_SET_DIR}/usr/include/azureiot)
+target_include_directories(${PROJECT_NAME} PUBLIC ${AZURE_SPHERE_API_SET_DIR}/usr/include/azureiot ../IntercoreContract)
 set_target_properties(${PROJECT_NAME} PROPERTIES
     VS_GLOBAL_KEYWORD "AzureSphere"
 )
