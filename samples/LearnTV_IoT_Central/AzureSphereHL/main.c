@@ -58,12 +58,14 @@
 
 // Forward signatures
 static void ReadSensorHandler(EventLoopTimer* eventLoopTimer);
+static void IntercoreHeartbeatHandler(EventLoopTimer* eventLoopTimer);
 static void SampleRateDeviceTwinHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding);
 static LP_DIRECT_METHOD_RESPONSE_CODE LightControlDirectMethodHandler(JSON_Object* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg);
 
 static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 static LP_INTER_CORE_BLOCK ic_control_block;
 static int msgId = 0;
+static int sampleRateSeconds = 4;
 
 // Telemetry message template and properties
 static const char* msgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"Light\":%d, \"MsgId\":%d }";
@@ -75,21 +77,23 @@ static LP_MESSAGE_PROPERTY messageVersion = { .key = "version", .value = "1" };
 
 static LP_MESSAGE_PROPERTY* telemetryMessageProperties[] = { &messageAppId, &telemetryMessageType, &messageFormat, &messageVersion };
 
+// primes intercore signature
+static LP_TIMER intercoreHeartbeatHandler = {
+	.period = {20, 0},
+	.name = "intercoreHeartbeatHandler",
+	.handler = IntercoreHeartbeatHandler };
+
+
 /***********************************************/
 /*****  Declare Timers, Twins and Methods  *****/
 
-// Timer
-static LP_TIMER readSensorTimer = {
-    .period = {5, 0},
-    .name = "readSensorTimer",
-    .handler = ReadSensorHandler };
 
 
 
 /****************************************/
 /*****  Initialise collection set  *****/
 
-static LP_TIMER* timerSet[] = { &readSensorTimer };
+static LP_TIMER* timerSet[] = { &intercoreHeartbeatHandler };
 static LP_PERIPHERAL_GPIO* peripheralSet[] = {  };
 static LP_DIRECT_METHOD_BINDING* directMethodBindingSet[] = {  };
 static LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = {  };
@@ -97,24 +101,12 @@ static LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = {  };
 /****************************************/
 /*****  Demo Code                   *****/
 
-/// <summary>
-/// Read sensor and send to Azure IoT
-/// </summary>
-static void ReadSensorHandler(EventLoopTimer* eventLoopTimer)
-{
-    if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
-    {
-        lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
-        return;
-    }
 
-		ic_control_block.cmd = LP_IC_HEARTBEAT;		// Prime RT Core with Component ID Signature
-	lp_sendInterCoreMessage(&ic_control_block, sizeof(ic_control_block));
 
-    // send request to Real-Time core app to read temperature, pressure, and humidity
-    ic_control_block.cmd = LP_IC_TEMPERATURE_PRESSURE_HUMIDITY;
-    lp_sendInterCoreMessage(&ic_control_block, sizeof(ic_control_block));
-}
+
+/*****************************************************************************/
+/*         Initialise and run code                                           */
+/*****************************************************************************/
 
 /// <summary>
 /// Callback handler for Inter-Core Messaging - Does Device Twin Update, and Event Message
@@ -123,11 +115,13 @@ static void InterCoreHandler(LP_INTER_CORE_BLOCK* ic_message_block)
 {
 	switch (ic_message_block->cmd)
 	{
-	case LP_IC_TEMPERATURE_PRESSURE_HUMIDITY:
+	case LP_IC_ENVIRONMENT_SENSOR:
 		if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, msgTemplate, ic_message_block->temperature, ic_message_block->humidity, ic_message_block->pressure, 0, msgId++) > 0)
 		{
 			Log_Debug(msgBuffer);
 			lp_sendMsg(msgBuffer);
+
+			lp_setOneShotTimer(&readSensorTimer, &(struct timespec){sampleRateSeconds, 0});
 		}
 		break;
 	default:
@@ -135,9 +129,17 @@ static void InterCoreHandler(LP_INTER_CORE_BLOCK* ic_message_block)
 	}
 }
 
-/*****************************************************************************/
-/*         Initialise and run code                                           */
-/*****************************************************************************/
+static void IntercoreHeartbeatHandler(EventLoopTimer* eventLoopTimer)
+{
+	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
+	{
+		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
+		return;
+	}
+
+	ic_control_block.cmd = LP_IC_HEARTBEAT;		// Prime RT Core with Component ID Signature
+	lp_sendInterCoreMessage(&ic_control_block, sizeof(ic_control_block));
+}
 
 /// <summary>
 ///  Initialize PeripheralGpios, device twins, direct methods, timers.
@@ -157,6 +159,8 @@ static void InitPeripheralAndHandlers(void)
 	lp_sendInterCoreMessage(&ic_control_block, sizeof(ic_control_block));
 
 	lp_setMessageProperties(telemetryMessageProperties, NELEMS(telemetryMessageProperties));
+
+	lp_setOneShotTimer(&readSensorTimer, &(struct timespec){1, 0});
 }
 
 /// <summary>

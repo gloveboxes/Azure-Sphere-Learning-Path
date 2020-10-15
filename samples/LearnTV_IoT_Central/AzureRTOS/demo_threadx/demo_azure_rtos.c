@@ -134,7 +134,7 @@ void thread_inter_core(ULONG thread_input)
 			{
 			case LP_IC_HEARTBEAT:
 				break;
-			case LP_IC_TEMPERATURE_PRESSURE_HUMIDITY:
+			case LP_IC_ENVIRONMENT_SENSOR:
 				// Set event flag 0 to wakeup threads read sensor and blink led
 				status = tx_event_flags_set(&event_flags_0, 0x1, TX_OR);
 
@@ -181,7 +181,7 @@ void thread_read_sensor(ULONG thread_input)
 
 		if (highLevelReady)
 		{
-			ic_control_block.cmd = LP_IC_TEMPERATURE_PRESSURE_HUMIDITY;
+			ic_control_block.cmd = LP_IC_ENVIRONMENT_SENSOR;
 			ic_control_block.temperature = get_temperature();
 
 			rand_number = (rand() % 20) - 10;

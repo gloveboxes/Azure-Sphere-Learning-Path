@@ -67,6 +67,7 @@ target_link_libraries(${PROJECT_NAME} applibs pthread gcc_s c azsphere_libs)
 
 target_include_directories(${PROJECT_NAME} PUBLIC
                            ../../../LearningPathLibrary
+                           ../IntercoreContract
                           )
 
 target_compile_options(${PROJECT_NAME} PRIVATE -Wno-unknown-pragmas)

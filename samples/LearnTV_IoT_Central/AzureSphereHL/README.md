@@ -75,7 +75,7 @@ static LP_TIMER readSensorTimer = {
 **Update gpio set**
 
 ```c
-static LP_TIMER* timerSet[] = { &readSensorTimer };
+static LP_TIMER* timerSet[] = { &intercoreHeartbeatHandler, &readSensorTimer };
 ```
 
 **Add handler**
@@ -93,7 +93,7 @@ static void ReadSensorHandler(EventLoopTimer* eventLoopTimer)
     }
 
     // send request to Real-Time core app to read temperature, pressure, and humidity
-    ic_control_block.cmd = LP_IC_TEMPERATURE_PRESSURE_HUMIDITY;
+    ic_control_block.cmd = LP_IC_ENVIRONMENT_SENSOR;
     lp_sendInterCoreMessage(&ic_control_block, sizeof(ic_control_block));
 }
 ```
@@ -148,21 +148,11 @@ static LP_DIRECT_METHOD_RESPONSE_CODE LightControlDirectMethodHandler(JSON_Objec
 {
     const char propertyName[] = "light_state";
 
-    if (!json_object_has_value_of_type(json, propertyName, JSONBoolean))
-    {
-        return LP_METHOD_FAILED;
-    }
+    if (!json_object_has_value_of_type(json, propertyName, JSONBoolean)) { return LP_METHOD_FAILED; }
 
     bool state = (bool)json_object_get_boolean(json, propertyName);
 
-    if (state)
-    {
-        lp_gpioOn(&relay);
-    }
-    else
-    {
-        lp_gpioOff(&relay);
-    }
+    lp_gpioSetState(&relay, state);
 
     return LP_METHOD_SUCCEEDED;
 }
@@ -219,11 +209,13 @@ static LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &sampleRate_DeviceTwin
 /// </summary>
 static void SampleRateDeviceTwinHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding)
 {
-    struct timespec sampleRateSeconds = { *(int*)deviceTwinBinding->twinState, 0 };
+    int sampleRate = *(int*)deviceTwinBinding->twinState;
 
-    if (sampleRateSeconds.tv_sec > 0 && sampleRateSeconds.tv_sec < (5 * 60)) // check sensible range
+    if (sampleRate > 0 && sampleRate < (5 * 60)) // check sensible range
     {
-        lp_changeTimer(&readSensorTimer, &sampleRateSeconds);
+        sampleRateSeconds = sampleRate;
+        lp_setOneShotTimer(&readSensorTimer, &(struct timespec){sampleRateSeconds, 0});
+
         lp_deviceTwinReportState(deviceTwinBinding, deviceTwinBinding->twinState);
     }
 }
