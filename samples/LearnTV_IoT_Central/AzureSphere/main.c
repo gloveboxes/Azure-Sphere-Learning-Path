@@ -78,11 +78,6 @@ static LP_MESSAGE_PROPERTY* telemetryMessageProperties[] = { &messageAppId, &tel
 /***********************************************/
 /*****  Declare Timers, Twins and Methods  *****/
 
-// Timer
-static LP_TIMER readSensorTimer = {
-    .period = {5, 0},
-    .name = "readSensorTimer",
-    .handler = ReadSensorHandler };
 
 
 /****************************************/
@@ -96,23 +91,6 @@ static LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = {  };
 /****************************************/
 /*****  Demo Code                   *****/
 
-
-
-/// <summary>
-/// Read sensor and send to Azure IoT
-/// </summary>
-static void ReadSensorHandler(EventLoopTimer* eventLoopTimer)
-{
-	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
-	{
-		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
-		return;
-	}
-
-	// send request to Real-Time core app to read temperature, pressure, and humidity
-	ic_control_block.cmd = LP_IC_TEMPERATURE_PRESSURE_HUMIDITY;
-	lp_sendInterCoreMessage(&ic_control_block, sizeof(ic_control_block));
-}
 
 
 /// <summary>
