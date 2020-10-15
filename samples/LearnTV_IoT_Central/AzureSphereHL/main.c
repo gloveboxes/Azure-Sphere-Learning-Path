@@ -79,9 +79,7 @@ static LP_MESSAGE_PROPERTY* telemetryMessageProperties[] = { &messageAppId, &tel
 
 // primes intercore signature
 static LP_TIMER intercoreHeartbeatHandler = {
-	.period = {20, 0},
-	.name = "intercoreHeartbeatHandler",
-	.handler = IntercoreHeartbeatHandler };
+	.period = {20, 0}, .name = "intercoreHeartbeatHandler", .handler = IntercoreHeartbeatHandler };
 
 
 /***********************************************/
@@ -131,14 +129,13 @@ static void InterCoreHandler(LP_INTER_CORE_BLOCK* ic_message_block)
 
 static void IntercoreHeartbeatHandler(EventLoopTimer* eventLoopTimer)
 {
-	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
-	{
+	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
 		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
-		return;
 	}
-
-	ic_control_block.cmd = LP_IC_HEARTBEAT;		// Prime RT Core with Component ID Signature
-	lp_sendInterCoreMessage(&ic_control_block, sizeof(ic_control_block));
+	else {
+		ic_control_block.cmd = LP_IC_HEARTBEAT;		// Prime RT Core with Component ID Signature
+		lp_sendInterCoreMessage(&ic_control_block, sizeof(ic_control_block));
+	}
 }
 
 /// <summary>
