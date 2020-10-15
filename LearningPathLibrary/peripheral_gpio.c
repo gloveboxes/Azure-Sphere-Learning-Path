@@ -113,6 +113,15 @@ void lp_gpioOff(LP_PERIPHERAL_GPIO* peripheral)
 	GPIO_SetValue(peripheral->fd, peripheral->invertPin ? GPIO_Value_High : GPIO_Value_Low);
 }
 
+void lp_gpioSetState(LP_PERIPHERAL_GPIO* peripheral, bool state) {
+	if (state) {
+		lp_gpioOn(peripheral);
+	}
+	else {
+		lp_gpioOff(peripheral);
+	}
+}
+
 /// <summary>
 /// Read Button LP_PERIPHERAL_GPIO returns state
 /// </summary>

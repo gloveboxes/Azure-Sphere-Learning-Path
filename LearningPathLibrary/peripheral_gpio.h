@@ -39,3 +39,4 @@ void lp_closePeripheralGpio(LP_PERIPHERAL_GPIO* peripheral);
 void lp_gpioOn(LP_PERIPHERAL_GPIO* peripheral);
 void lp_gpioOff(LP_PERIPHERAL_GPIO* peripheral);
 bool lp_gpioGetState(LP_PERIPHERAL_GPIO* peripheral, GPIO_Value_Type* oldState);
+void lp_gpioSetState(LP_PERIPHERAL_GPIO* peripheral, bool state);
