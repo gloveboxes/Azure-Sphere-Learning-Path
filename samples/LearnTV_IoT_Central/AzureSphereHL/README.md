@@ -86,15 +86,14 @@ static LP_TIMER* timerSet[] = { &intercoreHeartbeatHandler, &readSensorTimer };
 /// </summary>
 static void ReadSensorHandler(EventLoopTimer* eventLoopTimer)
 {
-    if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
-    {
-        lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
-        return;
-    }
-
-    // send request to Real-Time core app to read temperature, pressure, and humidity
-    ic_control_block.cmd = LP_IC_ENVIRONMENT_SENSOR;
-    lp_sendInterCoreMessage(&ic_control_block, sizeof(ic_control_block));
+	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
+		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
+	}
+	else {
+		// send request to Real-Time core app to read temperature, pressure, and humidity
+		ic_control_block.cmd = LP_IC_ENVIRONMENT_SENSOR;
+		lp_sendInterCoreMessage(&ic_control_block, sizeof(ic_control_block));
+	}
 }
 ```
 
@@ -240,3 +239,46 @@ static void SampleRateDeviceTwinHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBindin
     - az iot hub device-twin update --device-id "\${DEVICE_ID,,}" -n $HUB_NAME --set properties.desired='{"SampleRateSeconds":{"value":8}}'
 
 ---
+
+## Network status indicator
+
+```c
+static LP_TIMER networkConnectionStatusTimer = {
+	.period = {15, 0},
+	.name = "networkConnectionStatusTimer",
+	.handler = NetworkConnectionStatusHandler };
+```
+
+```c
+static LP_PERIPHERAL_GPIO networkConnectedLed = {
+	.pin = NETWORK_CONNECTED_LED,
+	.direction = LP_OUTPUT,
+	.initialState = GPIO_Value_Low,
+	.invertPin = true,
+	.initialise = lp_openPeripheralGpio,
+	.name = "networkConnectedLed" };
+```
+
+### Update GPIO and Timer sets**
+
+```c
+static LP_TIMER* timerSet[] = { &intercoreHeartbeatHandler, &readSensorTimer, &networkConnectionStatusTimer };
+static LP_PERIPHERAL_GPIO* peripheralSet[] = { &relay, &networkConnectedLed };
+```
+
+### Add network status handler code**
+
+```c
+/// <summary>
+/// Check status of connection to Azure IoT
+/// </summary>
+static void NetworkConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
+{
+	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
+		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
+	}
+	else {
+		lp_gpioSetState(&networkConnectedLed, lp_connectToAzureIot());
+	}
+}
+```

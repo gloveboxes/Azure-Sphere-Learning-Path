@@ -3,12 +3,21 @@
   "Name": "AzureSphereIoTCentral",
   "ComponentId": "25025d2c-66da-4448-bae1-ac26fcdd3627",
   "EntryPoint": "/bin/app",
-  "CmdArgs": [ "<Replace with your ID Scope>", "6583cf17-d321-4d72-8283-0b7c5b56442b" ],
+  "CmdArgs": [
+    "<Replace with your ID Scope>",
+    "6583cf17-d321-4d72-8283-0b7c5b56442b"
+  ],
   "Capabilities": {
-    "Gpio": [ "$RELAY" ],
-    "AllowedApplicationConnections": [ "6583cf17-d321-4d72-8283-0b7c5b56442b" ],
+    "Gpio": [
+      "$RELAY",
+      "$NETWORK_CONNECTED_LED"
+    ],
+    "AllowedApplicationConnections": [
+      "6583cf17-d321-4d72-8283-0b7c5b56442b"
+    ],
     "AllowedConnections": [
-      "global.azure-devices-provisioning.net"
+      "global.azure-devices-provisioning.net",
+      "<Azure IoT Central URLs>"
     ],
     "DeviceAuthentication": "<Replace with your Azure Sphere Tenant ID>"
   },
