@@ -1,7 +1,7 @@
 #include "hw/azure_sphere_learning_path.h"
-#include "i2c.h"
-#include "lsm6dso_driver.h"
-#include "lsm6dso_reg.h"
+// #include "i2c.h"
+// #include "lsm6dso_driver.h"
+// #include "lsm6dso_reg.h"
 #include "mt3620-intercore.h"
 #include "os_hal_gpio.h"
 #include "os_hal_uart.h"
@@ -11,6 +11,8 @@
 #include <time.h>
 #include <math.h>
 #include "intercore_contract.h"
+
+#include "../IMU_lib/imu_temp_pressure.h"
 
 #define DEMO_STACK_SIZE 1024
 #define DEMO_BYTE_POOL_SIZE 9120
@@ -155,19 +157,9 @@ void thread_read_sensor(ULONG thread_input)
 	ULONG actual_flags;
 	int rand_number;
 
-	mtk_os_hal_i2c_ctrl_init(i2c_port_num); // Initialize MT3620 I2C bus
-	i2c_enum();								// Enumerate I2C Bus
+	// tx_thread_sleep(MS_TO_TICK(5000));
 
-	if (i2c_init())
-	{
-		return;
-	}
-
-	// LSM6DSO Init - the accelerometer calibration has been commented out for faster start up
-	if (lsm6dso_init(i2c_write, i2c_read))
-	{
-		return;
-	}
+	lp_imu_initialize();
 
 	srand((unsigned int)time(NULL)); // seed the random number generator for fake telemetry
 
@@ -182,13 +174,12 @@ void thread_read_sensor(ULONG thread_input)
 		if (highLevelReady)
 		{
 			ic_control_block.cmd = LP_IC_ENVIRONMENT_SENSOR;
-			ic_control_block.temperature = get_temperature();
+
+			ic_control_block.temperature = lp_get_temperature_lps22h();
+			ic_control_block.pressure = lp_get_pressure();
 
 			rand_number = (rand() % 20) - 10;
 			ic_control_block.humidity = (float)(50.0 + rand_number);
-
-			rand_number = (rand() % 50) - 25;
-			ic_control_block.pressure = (float)(1000.0 + rand_number);
 
 			send_inter_core_msg();
 		}
