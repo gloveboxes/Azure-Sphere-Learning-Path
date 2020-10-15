@@ -5,13 +5,7 @@
   "EntryPoint": "/bin/app",
   "CmdArgs": [],
   "Capabilities": {
-    "Gpio": [
-      "$BUTTON_A",
-      "$BUTTON_B",
-      "$LED_RED",
-      "$LED_GREEN",
-      "$LED_BLUE"
-    ],
+    "Gpio": [ ],
     "I2cMaster": [ "$I2cMaster2" ],
     "AllowedApplicationConnections": [ "25025d2c-66da-4448-bae1-ac26fcdd3627" ]
   },
