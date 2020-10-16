@@ -71,12 +71,13 @@ static int sampleRateSeconds = 4;
 // Telemetry message template and properties
 static const char* msgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"Light\":%d, \"MsgId\":%d }";
 
-static LP_MESSAGE_PROPERTY messageAppId = { .key = "appid", .value = "lab-monitor" };
-static LP_MESSAGE_PROPERTY messageFormat = { .key = "format", .value = "json" };
-static LP_MESSAGE_PROPERTY telemetryMessageType = { .key = "type", .value = "telemetry" };
-static LP_MESSAGE_PROPERTY messageVersion = { .key = "version", .value = "1" };
+static LP_MESSAGE_PROPERTY* telemetryMessageProperties[] = {
+	&(LP_MESSAGE_PROPERTY) { .key = "appid", .value = "lab-monitor" },
+	&(LP_MESSAGE_PROPERTY) {.key = "format", .value = "json" },
+	&(LP_MESSAGE_PROPERTY) {.key = "type", .value = "telemetry" },
+	&(LP_MESSAGE_PROPERTY) {.key = "version", .value = "1" }
+};
 
-static LP_MESSAGE_PROPERTY* telemetryMessageProperties[] = { &messageAppId, &telemetryMessageType, &messageFormat, &messageVersion };
 
 // primes intercore signature
 static LP_TIMER intercoreHeartbeatHandler = {
@@ -85,7 +86,6 @@ static LP_TIMER intercoreHeartbeatHandler = {
 
 /***********************************************/
 /*****  Declare Timers, Twins and Methods  *****/
-
 
 
 
