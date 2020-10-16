@@ -4,7 +4,7 @@
   "ComponentId": "25025d2c-66da-4448-bae1-ac26fcdd3627",
   "EntryPoint": "/bin/app",
   "CmdArgs": [
-    "<Replace with your ID Scope>",
+    "0ne0018FD22",
     "6583cf17-d321-4d72-8283-0b7c5b56442b"
   ],
   "Capabilities": {
@@ -17,9 +17,18 @@
     ],
     "AllowedConnections": [
       "global.azure-devices-provisioning.net",
-      "<Azure IoT Central URLs>"
+      "iotc-673af06e-2162-4a8e-9c0b-f1185bfedafc.azure-devices.net",
+      "iotc-dde75bb9-01b5-49ce-b301-0fe742edacd8.azure-devices.net",
+      "iotc-55261372-51ba-4664-a87a-d13f1e80a985.azure-devices.net",
+      "iotc-bc888bc5-175f-4dbb-914a-dc40b2eec2d3.azure-devices.net",
+      "iotc-1ca42317-ae03-44b2-abcd-49451de35840.azure-devices.net",
+      "iotc-01e7c6b1-9675-4b1c-8b88-d8637db458b9.azure-devices.net",
+      "iotc-7bd6da84-b851-433e-b0e8-2d6879ced839.azure-devices.net",
+      "iotc-88c6344a-37d7-4d5f-b8dd-d51a86791bc2.azure-devices.net",
+      "iotc-d2438838-90b4-4a81-b63f-24c7f8520620.azure-devices.net",
+      "iotc-27cb7ea4-8f68-4426-97c8-fd8676176189.azure-devices.net"
     ],
-    "DeviceAuthentication": "<Replace with your Azure Sphere Tenant ID>"
+    "DeviceAuthentication": "9d7e79eb-e021-43ce-9f2b-fa944b447494"
   },
   "ApplicationType": "Default"
 }

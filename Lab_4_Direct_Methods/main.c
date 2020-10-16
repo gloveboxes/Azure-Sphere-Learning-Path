@@ -33,7 +33,7 @@
  *	   3. Click File, then Save to save the CMakeLists.txt file which will auto generate the CMake Cache.
  */
 
-// Hardware definition
+ // Hardware definition
 #include "hw/azure_sphere_learning_path.h"
 
 // Learning Path Libraries
@@ -70,58 +70,45 @@
 // Forward signatures
 static void InitPeripheralAndHandlers(void);
 static void ClosePeripheralAndHandlers(void);
-static void Led1BlinkHandler(EventLoopTimer* eventLoopTimer);
-static void NetworkConnectionStatusHandler(EventLoopTimer* eventLoopTimer);
+static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer);
 static void ResetDeviceHandler(EventLoopTimer* eventLoopTimer);
 static LP_DIRECT_METHOD_RESPONSE_CODE ResetDirectMethodHandler(JSON_Value* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg);
 
 static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 
 // GPIO
-static LP_GPIO led1 = { 
-	.pin = LED1, 
-	.direction = LP_OUTPUT, 
-	.initialState = GPIO_Value_Low, 
+static LP_GPIO azureIotConnectedLed = {
+	.pin = NETWORK_CONNECTED_LED,
+	.direction = LP_OUTPUT,
+	.initialState = GPIO_Value_Low,
 	.invertPin = true,
-	.initialise = lp_gpioOpen, .name = "led1" };
-
-static LP_GPIO networkConnectedLed = { 
-	.pin = NETWORK_CONNECTED_LED, 
-	.direction = LP_OUTPUT, 
-	.initialState = GPIO_Value_Low, 
-	.invertPin = true, 
-	.initialise = lp_gpioOpen, 
+	.initialise = lp_gpioOpen,
 	.name = "networkConnectedLed" };
 
 // Timers
-static LP_TIMER networkConnectionStatusTimer = { 
-	.period = {5, 0}, 
-	.name = "networkConnectionStatusTimer", 
-	.handler = NetworkConnectionStatusHandler };
+static LP_TIMER networkConnectionStatusTimer = {
+	.period = {5, 0},
+	.name = "networkConnectionStatusTimer",
+	.handler = AzureIoTConnectionStatusHandler };
 
-static LP_TIMER resetDeviceOneShotTimer = { 
-	.period = {0, 0}, 
-	.name = "resetDeviceOneShotTimer", 
+static LP_TIMER resetDeviceOneShotTimer = {
+	.period = {0, 0},
+	.name = "resetDeviceOneShotTimer",
 	.handler = ResetDeviceHandler };
 
-static LP_TIMER led1BlinkTimer = { 
-	.period = { 0, 125000000 }, 
-	.name = "led1BlinkTimer", 
-	.handler = Led1BlinkHandler };
-
 // Azure IoT Device Twins
-static LP_DEVICE_TWIN_BINDING deviceResetUtc = { 
-	.twinProperty = "DeviceResetUTC", 
+static LP_DEVICE_TWIN_BINDING deviceResetUtc = {
+	.twinProperty = "DeviceResetUTC",
 	.twinType = LP_TYPE_STRING };
 
 // Azure IoT Direct Methods
-static LP_DIRECT_METHOD_BINDING resetDevice = { 
-	.methodName = "ResetMethod", 
+static LP_DIRECT_METHOD_BINDING resetDevice = {
+	.methodName = "ResetMethod",
 	.handler = ResetDirectMethodHandler };
 
 // Initialize Sets
-LP_GPIO* PeripheralGpioSet[] = { &led1, &networkConnectedLed };
-LP_TIMER* timerSet[] = {&networkConnectionStatusTimer, &led1BlinkTimer, &resetDeviceOneShotTimer };
+LP_GPIO* PeripheralGpioSet[] = { &azureIotConnectedLed };
+LP_TIMER* timerSet[] = { &networkConnectionStatusTimer, &resetDeviceOneShotTimer };
 LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &deviceResetUtc };
 LP_DIRECT_METHOD_BINDING* directMethodBindingSet[] = { &resetDevice };
 
@@ -129,35 +116,22 @@ LP_DIRECT_METHOD_BINDING* directMethodBindingSet[] = { &resetDevice };
 /// <summary>
 /// Check status of connection to Azure IoT
 /// </summary>
-static void NetworkConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
+static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
 {
-	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
-	{
+	static bool toggleConnectionStatusLed = true;
+
+	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
 		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
 		return;
 	}
 
-	if (lp_connectToAzureIot()) { lp_gpioOn(&networkConnectedLed); }
-	else { lp_gpioOff(&networkConnectedLed); }
-}
-
-/// <summary>
-/// Blink Led1 Handler
-/// </summary>
-static void Led1BlinkHandler(EventLoopTimer* eventLoopTimer)
-{
-	static bool led_state = false;
-
-	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
-	{
-		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
-		return;
+	if (lp_connectToAzureIot()) {
+		lp_gpioSetState(&azureIotConnectedLed, toggleConnectionStatusLed);
+		toggleConnectionStatusLed = !toggleConnectionStatusLed;
 	}
-
-	led_state = !led_state;
-
-	if (led_state) { lp_gpioOff(&led1); }
-	else { lp_gpioOn(&led1); }
+	else {
+		lp_gpioSetState(&azureIotConnectedLed, false);
+	}
 }
 
 /// <summary>
@@ -186,7 +160,7 @@ static LP_DIRECT_METHOD_RESPONSE_CODE ResetDirectMethodHandler(JSON_Value* json,
 
 	if (json_value_get_type(json) != JSONNumber) { return LP_METHOD_FAILED; }
 
-    int seconds = (int)json_value_get_number(json);
+	int seconds = (int)json_value_get_number(json);
 
 	// leave enough time for the device twin deviceResetUtc to update before restarting the device
 	if (seconds > 2 && seconds < 10)

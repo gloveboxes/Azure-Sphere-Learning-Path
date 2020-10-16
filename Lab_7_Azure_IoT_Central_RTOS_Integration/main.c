@@ -74,7 +74,7 @@ static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer);
 static void InterCoreHandler(LP_INTER_CORE_BLOCK* ic_message_block);
 static void ResetDeviceHandler(EventLoopTimer* eventLoopTimer);
 static void DeviceTwinSetTemperatureHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding);
-static void DeviceTwinBlinkRateHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding);
+static void DeviceTwinSampleRateHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding);
 static void DeviceTwinRelay1Handler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding);
 static LP_DIRECT_METHOD_RESPONSE_CODE ResetDirectMethodHandler(JSON_Value* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg);
 
@@ -114,7 +114,7 @@ static LP_TIMER resetDeviceOneShotTimer = {
 	.name = "resetDeviceOneShotTimer",
 	.handler = ResetDeviceHandler };
 
-// Azure IoT Device Twins
+/**** Azure IoT Device Twins ****/
 static LP_DEVICE_TWIN_BINDING buttonPressed = {
 	.twinProperty = "ButtonPressed",
 	.twinType = LP_TYPE_STRING };
@@ -124,10 +124,10 @@ static LP_DEVICE_TWIN_BINDING desiredTemperature = {
 	.twinType = LP_TYPE_FLOAT,
 	.handler = DeviceTwinSetTemperatureHandler };
 
-static LP_DEVICE_TWIN_BINDING led1BlinkRate = {
-	.twinProperty = "LedBlinkRate",
+static LP_DEVICE_TWIN_BINDING desiredSampleRate = {
+	.twinProperty = "DesiredSampleRate",
 	.twinType = LP_TYPE_INT,
-	.handler = DeviceTwinBlinkRateHandler };
+	.handler = DeviceTwinSampleRateHandler };
 
 static LP_DEVICE_TWIN_BINDING relay1DeviceTwin = {
 	.twinProperty = "Relay1",
@@ -141,7 +141,7 @@ static LP_DEVICE_TWIN_BINDING deviceResetUtc = {
 // Initialize Sets
 LP_TIMER* timerSet[] = { &azureIotConnectionStatusTimer, &measureSensorTimer, &resetDeviceOneShotTimer };
 LP_GPIO* peripheralGpioSet[] = { &azureIotConnectedLed, &relay1 };
-LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &led1BlinkRate, &buttonPressed, &desiredTemperature, &relay1DeviceTwin, &deviceResetUtc };
+LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &desiredSampleRate, &buttonPressed, &desiredTemperature, &relay1DeviceTwin, &deviceResetUtc };
 
 // Azure IoT Direct Methods
 LP_DIRECT_METHOD_BINDING* directMethodBindingSet[] = {
@@ -180,6 +180,23 @@ static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
 }
 
 /// <summary>
+/// This handler called when device twin desired 'SampleRateSeconds' recieved
+/// </summary>
+static void DeviceTwinSampleRateHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding)
+{
+	int sampleRate = *(int*)deviceTwinBinding->twinState;
+
+	if (sampleRate > 0 && sampleRate < (5 * 60)) // check sensible range
+	{
+		lp_timerChange(&measureSensorTimer, &(struct timespec){sampleRate, 0});
+		lp_deviceTwinAckDesiredState(deviceTwinBinding, deviceTwinBinding->twinState, LP_DEVICE_TWIN_COMPLETED);
+	}
+	else {
+		lp_deviceTwinAckDesiredState(deviceTwinBinding, deviceTwinBinding->twinState, LP_DEVICE_TWIN_ERROR);
+	}
+}
+
+/// <summary>
 /// Device Twin Handler to set the desired temperature value on the Real-Time Core
 /// </summary>
 static void DeviceTwinSetTemperatureHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding)
@@ -197,19 +214,6 @@ static void DeviceTwinSetTemperatureHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBi
 static void DeviceTwinRelay1Handler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding)
 {
 	lp_gpioSetState(&relay1, *(bool*)deviceTwinBinding->twinState);
-	lp_deviceTwinAckDesiredState(deviceTwinBinding, deviceTwinBinding->twinState, LP_DEVICE_TWIN_COMPLETED);
-}
-
-/// <summary>
-/// Set Blink Rate using Device Twin "LedBlinkRate": {"value": 0}
-/// </summary>
-static void DeviceTwinBlinkRateHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding)
-{
-	// send request to Real-Time core app to change blink rate
-	ic_control_block.cmd = LP_IC_BLINK_RATE;
-	ic_control_block.blinkRate = *(int*)deviceTwinBinding->twinState;
-	lp_sendInterCoreMessage(&ic_control_block, sizeof(ic_control_block));
-
 	lp_deviceTwinAckDesiredState(deviceTwinBinding, deviceTwinBinding->twinState, LP_DEVICE_TWIN_COMPLETED);
 }
 
@@ -339,7 +343,6 @@ static void ClosePeripheralAndHandlers(void)
 	lp_gpioCloseSet();
 	lp_deviceTwinCloseSet();
 	lp_directMethodSetClose();
-
 
 	lp_timerStopEventLoop();
 }

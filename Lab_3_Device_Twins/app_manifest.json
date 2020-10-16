@@ -3,20 +3,26 @@
   "Name": "AzureSphereIoTCentral",
   "ComponentId": "25025d2c-66da-4448-bae1-ac26fcdd3627",
   "EntryPoint": "/bin/app",
-  "CmdArgs": [ "<Replace with your ID Scope>" ],
+  "CmdArgs": [
+    "<Replace with your ID Scope>"
+  ],
   "Capabilities": {
     "Gpio": [
       "$BUTTON_A",
-      "$BUTTON_B",
-      "$LED2",
       "$NETWORK_CONNECTED_LED",
       "$LED_RED",
       "$LED_GREEN",
       "$LED_BLUE"
     ],
-    "I2cMaster": [ "$I2cMaster2" ],
-    "PowerControls": [ "ForceReboot" ],
-    "AllowedConnections": [ "global.azure-devices-provisioning.net" ],
+    "I2cMaster": [
+      "$I2cMaster2"
+    ],
+    "PowerControls": [
+      "ForceReboot"
+    ],
+    "AllowedConnections": [
+      "global.azure-devices-provisioning.net"
+    ],
     "DeviceAuthentication": "<Replace with your Azure Sphere Tenant ID>"
   },
   "ApplicationType": "Default"
