@@ -17,7 +17,7 @@ struct _directMethodBinding {
 
 typedef struct _directMethodBinding LP_DIRECT_METHOD_BINDING;
 
-void lp_openDirectMethodSet(LP_DIRECT_METHOD_BINDING* directMethods[], size_t directMethodCount);
-void lp_closeDirectMethodSet(void);
-int lp_azureDirectMethodHandler(const char* method_name, const unsigned char* payload, size_t payloadSize,
+void lp_directMethodOpenSet(LP_DIRECT_METHOD_BINDING* directMethods[], size_t directMethodCount);
+void lp_directMethodSetClose(void);
+int lp_directMethodHandler(const char* method_name, const unsigned char* payload, size_t payloadSize,
 	unsigned char** responsePayload, size_t* responsePayloadSize, void* userContextCallback);

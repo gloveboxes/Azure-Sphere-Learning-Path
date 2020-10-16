@@ -68,112 +68,86 @@
 #define JSON_MESSAGE_BYTES 256  // Number of bytes to allocate for the JSON telemetry message for IoT Central
 
 // Forward signatures
-static void Led1BlinkHandler(EventLoopTimer* eventLoopTimer);
-static void LedOffHandler(EventLoopTimer* eventLoopTimer);
 static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer);
 static void ButtonPressCheckHandler(EventLoopTimer* eventLoopTimer);
-static void NetworkConnectionStatusHandler(EventLoopTimer* eventLoopTimer);
+static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer);
 
 static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 
-static const struct timespec sendMsgLedBlinkPeriod = { 0, 300 * 1000 * 1000 };
-
-static int led1BlinkIntervalIndex = 2;
-static const struct timespec led1BlinkIntervals[] = { {0, 125000000}, {0, 250000000}, {0, 500000000}, {0, 750000000}, {1, 0} };
-static const int led1BlinkIntervalsCount = NELEMS(led1BlinkIntervals);
-
 // GPIO Input Peripherals
-static LP_PERIPHERAL_GPIO buttonA = { .pin = BUTTON_A, .direction = LP_INPUT, .initialise = lp_openPeripheralGpio, .name = "buttonA" };
-static LP_PERIPHERAL_GPIO buttonB = { .pin = BUTTON_B, .direction = LP_INPUT, .initialise = lp_openPeripheralGpio, .name = "buttonB" };
+static LP_GPIO buttonA = { 
+	.pin = BUTTON_A, 
+	.direction = LP_INPUT, 
+	.initialise = lp_gpioOpen, 
+	.name = "buttonA" };
 
-// GPIO Output PeripheralGpios
-static LP_PERIPHERAL_GPIO led1 = { .pin = LED1, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true,
-	.initialise = lp_openPeripheralGpio, .name = "led1" };
-
-static LP_PERIPHERAL_GPIO sendMsgLed = { .pin = LED2, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true,
-	.initialise = lp_openPeripheralGpio, .name = "sendMsgLed" };
-
-static LP_PERIPHERAL_GPIO networkConnectedLed = { .pin = NETWORK_CONNECTED_LED, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true,
-	.initialise = lp_openPeripheralGpio, .name = "networkConnectedLed" };
+static LP_GPIO azureIotConnectedLed = { 
+	.pin = NETWORK_CONNECTED_LED, 
+	.direction = LP_OUTPUT, 
+	.initialState = GPIO_Value_Low, 
+	.invertPin = true,
+	.initialise = lp_gpioOpen, 
+	.name = "azureIotConnectedLed" };
 
 // Timers
-static LP_TIMER led1BlinkTimer = { .period = { 0, 125000000 }, .name = "led1BlinkTimer", .handler = Led1BlinkHandler };
-static LP_TIMER sendMsgLedOffOneShotTimer = { .period = { 0, 0 }, .name = "sendMsgLedOffOneShotTimer", .handler = LedOffHandler };
-static LP_TIMER buttonPressCheckTimer = { .period = { 0, 1000000 }, .name = "buttonPressCheckTimer", .handler = ButtonPressCheckHandler };
-static LP_TIMER networkConnectionStatusTimer = { .period = { 5, 0 }, .name = "networkConnectionStatusTimer", .handler = NetworkConnectionStatusHandler };
-static LP_TIMER measureSensorTimer = { .period = { 10, 0 }, .name = "measureSensorTimer", .handler = MeasureSensorHandler };
+static LP_TIMER buttonPressCheckTimer = { 
+	.period = { 0, 1000000 }, 
+	.name = "buttonPressCheckTimer", 
+	.handler = ButtonPressCheckHandler };
+
+static LP_TIMER azureIotConnectionStatusTimer = { 
+	.period = { 5, 0 }, 
+	.name = "azureIotConnectionStatusTimer", 
+	.handler = AzureIoTConnectionStatusHandler };
+
+static LP_TIMER measureSensorTimer = { 
+	.period = { 10, 0 }, 
+	.name = "measureSensorTimer", 
+	.handler = MeasureSensorHandler };
 
 // Initialize Sets
-LP_PERIPHERAL_GPIO* peripheralGpioSet[] = { &buttonA, &buttonB, &led1, &sendMsgLed, &networkConnectedLed };
-LP_TIMER* timerSet[] = { &led1BlinkTimer, &sendMsgLedOffOneShotTimer, &buttonPressCheckTimer, &networkConnectionStatusTimer, &measureSensorTimer };
+LP_GPIO* peripheralGpioSet[] = { &buttonA, &azureIotConnectedLed };
+LP_TIMER* timerSet[] = { &buttonPressCheckTimer, &azureIotConnectionStatusTimer, &measureSensorTimer };
 
 // Message templates and property sets
 
-// Common message properties
-static LP_MESSAGE_PROPERTY messageAppId = { .key = "appid", .value = "hvac" };
-static LP_MESSAGE_PROPERTY messageFormat = { .key = "format", .value = "json" };
-
-// Telemetry message template and properties
 static const char* MsgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"Light\":%d, \"MsgId\":%d }";
-static LP_MESSAGE_PROPERTY telemetryMessageType = { .key = "type", .value = "telemetry" };
-static LP_MESSAGE_PROPERTY messageVersion = { .key = "version", .value = "1" };
 
-// Alert message template and properties
+static LP_MESSAGE_PROPERTY* telemetryMessageProperties[] = {
+	&(LP_MESSAGE_PROPERTY) { .key = "appid", .value = "hvac" },
+	&(LP_MESSAGE_PROPERTY) {.key = "format", .value = "json" },
+	&(LP_MESSAGE_PROPERTY) {.key = "type", .value = "telemetry" },
+	&(LP_MESSAGE_PROPERTY) {.key = "version", .value = "1" }
+};
+
 static const char* AlertMsgTemplate = "{ \"%s\": \"%s\" }";
-static LP_MESSAGE_PROPERTY alertMessageType = { .key = "type", .value = "alert" };
-static LP_MESSAGE_PROPERTY alertMessageVersion = { .key = "version", .value = "1" };
 
-// Message property sets
-static LP_MESSAGE_PROPERTY* telemetryMessageProperties[] = { &messageAppId, &telemetryMessageType, &messageFormat, &messageVersion };
-static LP_MESSAGE_PROPERTY* alertMessageProperties[] = { &messageAppId, &alertMessageType, &messageFormat, &alertMessageVersion };
-
-
+static LP_MESSAGE_PROPERTY* alertMessageProperties[] = {
+	&(LP_MESSAGE_PROPERTY) { .key = "appid", .value = "hvac" },
+	&(LP_MESSAGE_PROPERTY) {.key = "format", .value = "json" },
+	&(LP_MESSAGE_PROPERTY) {.key = "type", .value = "alert" },
+	&(LP_MESSAGE_PROPERTY) {.key = "version", .value = "1" }
+};
 
 /// <summary>
 /// Check status of connection to Azure IoT
 /// </summary>
-static void NetworkConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
+static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
 {
-	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
-	{
+	static bool toggleConnectionStatusLed = true;
+
+	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
 		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
 		return;
 	}
 
-	if (lp_connectToAzureIot())
-	{
-		lp_gpioOn(&networkConnectedLed);
+	if (lp_connectToAzureIot()) {
+		lp_gpioSetState(&azureIotConnectedLed, toggleConnectionStatusLed);
+		toggleConnectionStatusLed = !toggleConnectionStatusLed;
 	}
-	else
-	{
-		lp_gpioOff(&networkConnectedLed);
+	else {
+		lp_gpioSetState(&azureIotConnectedLed, false);
 	}
-}
-
-/// <summary>
-/// Turn on LED2, send message to Azure IoT and set a one shot timer to turn LED2 off
-/// </summary>
-static void SendMsgLedOn(char* message)
-{
-	lp_gpioOn(&sendMsgLed);
-	Log_Debug("%s\n", message);
-
-	lp_sendMsg(message);
-
-	lp_setOneShotTimer(&sendMsgLedOffOneShotTimer, &sendMsgLedBlinkPeriod);
-}
-
-/// <summary>
-/// One shot timer to turn LED2 off
-/// </summary>
-static void LedOffHandler(EventLoopTimer* eventLoopTimer)
-{
-	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
-	{
-		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
-		return;
-	}
-	lp_gpioOff(&sendMsgLed);
 }
 
 /// <summary>
@@ -194,27 +168,18 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 	{
 		if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, MsgTemplate, environment.temperature, environment.humidity, environment.pressure, environment.light, msgId++) > 0)
 		{
-			// Message properties can be used for message routing in IOT Hub
-			lp_setMessageProperties(telemetryMessageProperties, NELEMS(telemetryMessageProperties));
-
-			SendMsgLedOn(msgBuffer);
-
-			// optional: clear if you are sending other message types that don't require these properties
-			lp_clearMessageProperties();
+			Log_Debug(msgBuffer);
+			lp_sendMsgWithProperties(msgBuffer, telemetryMessageProperties, NELEMS(telemetryMessageProperties));
 		}
 	}
 }
 
 void SendAlertMessage(const char* key, const char* value)
 {
-	if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, AlertMsgTemplate,key, value) > 0)
+	if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, AlertMsgTemplate, key, value) > 0)
 	{
-		lp_setMessageProperties(alertMessageProperties, NELEMS(alertMessageProperties));
-
-		SendMsgLedOn(msgBuffer);
-
-		// optional: clear if you are sending other message types that don't require these properties
-		lp_clearMessageProperties();
+		Log_Debug(msgBuffer);
+		lp_sendMsgWithProperties(msgBuffer, alertMessageProperties, NELEMS(alertMessageProperties));
 	}
 }
 
@@ -224,42 +189,17 @@ void SendAlertMessage(const char* key, const char* value)
 static void ButtonPressCheckHandler(EventLoopTimer* eventLoopTimer)
 {
 	static GPIO_Value_Type buttonAState;
-	static GPIO_Value_Type buttonBState;
 
-	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
-	{
+	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
 		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
-		return;
 	}
-
-	if (lp_gpioGetState(&buttonA, &buttonAState) || lp_gpioGetState(&buttonB, &buttonBState))
-	{
-		led1BlinkIntervalIndex = (led1BlinkIntervalIndex + 1) % led1BlinkIntervalsCount;
-		lp_changeTimer(&led1BlinkTimer, &led1BlinkIntervals[led1BlinkIntervalIndex]);
-
-		SendAlertMessage("button_a", "pressed");
+	else {
+		if (lp_gpioGetState(&buttonA, &buttonAState))
+		{
+			SendAlertMessage("button_a", "pressed");
+		}
 	}
 }
-
-/// <summary>
-/// Blink Led1 Handler
-/// </summary>
-static void Led1BlinkHandler(EventLoopTimer* eventLoopTimer)
-{
-	static bool led_state = false;
-
-	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
-	{
-		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
-		return;
-	}
-
-	led_state = !led_state;
-
-	if (led_state) { lp_gpioOff(&led1); }
-	else { lp_gpioOn(&led1); }
-}
-
 
 /// <summary>
 ///  Initialize peripherals, device twins, direct methods, timers.
@@ -269,9 +209,9 @@ static void InitPeripheralsAndHandlers(void)
 {
 	lp_initializeDevKit();
 
-	lp_openPeripheralGpioSet(peripheralGpioSet, NELEMS(peripheralGpioSet));
+	lp_gpioOpenSet(peripheralGpioSet, NELEMS(peripheralGpioSet));
 
-	lp_startTimerSet(timerSet, NELEMS(timerSet));
+	lp_timerStartSet(timerSet, NELEMS(timerSet));
 }
 
 /// <summary>
@@ -281,14 +221,14 @@ static void ClosePeripheralsAndHandlers(void)
 {
 	Log_Debug("Closing file descriptors\n");
 
-	lp_stopTimerSet();
-	lp_stopCloudToDevice();
+	lp_timerStopSet();
+	lp_cloudToDeviceStop();
 
-	lp_closePeripheralGpioSet();
+	lp_gpioCloseSet();
 
 	lp_closeDevKit();
 
-	lp_stopTimerEventLoop();
+	lp_timerStopEventLoop();
 }
 
 
@@ -308,7 +248,7 @@ int main(int argc, char* argv[])
 	// Main loop
 	while (!lp_isTerminationRequired())
 	{
-		int result = EventLoop_Run(lp_getTimerEventLoop(), -1, true);
+		int result = EventLoop_Run(lp_timerGetEventLoop(), -1, true);
 		// Continue if interrupted by signal, e.g. due to breakpoint being set.
 		if (result == -1 && errno != EINTR)
 		{

@@ -3,13 +3,13 @@
 static LP_DIRECT_METHOD_BINDING** _directMethods;
 static size_t _directMethodCount;
 
-void lp_openDirectMethodSet(LP_DIRECT_METHOD_BINDING* directMethods[], size_t directMethodCount)
+void lp_directMethodOpenSet(LP_DIRECT_METHOD_BINDING* directMethods[], size_t directMethodCount)
 {
 	_directMethods = directMethods;
 	_directMethodCount = directMethodCount;
 }
 
-void lp_closeDirectMethodSet(void)
+void lp_directMethodSetClose(void)
 {
 	_directMethods = NULL;
 	_directMethodCount = 0;
@@ -18,7 +18,7 @@ void lp_closeDirectMethodSet(void)
 /*
 This implementation of Direct Methods expects a JSON Payload Object
 */
-int lp_azureDirectMethodHandler(const char* method_name, const unsigned char* payload, size_t payloadSize,
+int lp_directMethodHandler(const char* method_name, const unsigned char* payload, size_t payloadSize,
 	unsigned char** responsePayload, size_t* responsePayloadSize, void* userContextCallback)
 {
 

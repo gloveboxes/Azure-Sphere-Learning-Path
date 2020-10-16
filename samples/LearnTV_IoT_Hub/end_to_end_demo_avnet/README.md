@@ -102,7 +102,7 @@ static void ReadSensorHandler(EventLoopTimer* eventLoopTimer)
 		if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, MsgTemplate, environment.temperature, environment.humidity, environment.pressure, environment.light, msgId++) > 0)
 		{
 			Log_Debug(msgBuffer);
-			lp_sendMsg(msgBuffer);
+			lp_sendMsgWithProperties(msgBuffer, telemetryMessageProperties, NELEMS(telemetryMessageProperties));
 		}
 	}
 }
@@ -126,7 +126,7 @@ static void ReadSensorHandler(EventLoopTimer* eventLoopTimer)
 **Add GPIO declaration**
 
 ```c
-static LP_PERIPHERAL_GPIO relay = {
+static LP_GPIO relay = {
 	.pin = RELAY,
 	.direction = LP_OUTPUT,
 	.initialState = GPIO_Value_Low,
@@ -172,14 +172,7 @@ static LP_DIRECT_METHOD_RESPONSE_CODE LightControlDirectMethodHandler(JSON_Objec
 	
 	bool state = (bool)json_object_get_boolean(json, propertyName);
 
-	if (state)
-	{
-		lp_gpioOn(&relay);
-	}
-	else
-	{
-		lp_gpioOff(&relay);
-	}
+	lp_gpioSetState(&relay, state);
 
 	return LP_METHOD_SUCCEEDED;
 }

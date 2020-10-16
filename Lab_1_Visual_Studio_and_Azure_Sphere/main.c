@@ -33,7 +33,7 @@
  *	   3. Click File, then Save to save the CMakeLists.txt file which will auto generate the CMake Cache.
  */
 
-// Hardware definition
+ // Hardware definition
 #include "hw/azure_sphere_learning_path.h"
 
 // Learning Path Libraries
@@ -86,18 +86,18 @@ static const struct timespec led1BlinkIntervals[] = { {0, 125000000}, {0, 250000
 static const int led1BlinkIntervalsCount = NELEMS(led1BlinkIntervals);
 
 // GPIO Input Peripherals
-static LP_PERIPHERAL_GPIO buttonA = { .pin = BUTTON_A, .direction = LP_INPUT, .initialise = lp_openPeripheralGpio, .name = "buttonA" };
-static LP_PERIPHERAL_GPIO buttonB = { .pin = BUTTON_B, .direction = LP_INPUT, .initialise = lp_openPeripheralGpio, .name = "buttonB" };
+static LP_GPIO buttonA = { .pin = BUTTON_A, .direction = LP_INPUT, .initialise = lp_gpioOpen, .name = "buttonA" };
+static LP_GPIO buttonB = { .pin = BUTTON_B, .direction = LP_INPUT, .initialise = lp_gpioOpen, .name = "buttonB" };
 
 // GPIO Output Peripherals
-static LP_PERIPHERAL_GPIO led1 = { .pin = LED1, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true,
-	.initialise = lp_openPeripheralGpio, .name = "led1" };
+static LP_GPIO led1 = { .pin = LED1, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true,
+	.initialise = lp_gpioOpen, .name = "led1" };
 
-static LP_PERIPHERAL_GPIO led2 = { .pin = LED2, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true,
-	.initialise = lp_openPeripheralGpio, .name = "led2" };
+static LP_GPIO led2 = { .pin = LED2, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true,
+	.initialise = lp_gpioOpen, .name = "led2" };
 
-static LP_PERIPHERAL_GPIO networkConnectedLed = { .pin = NETWORK_CONNECTED_LED, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true,
-	.initialise = lp_openPeripheralGpio, .name = "networkConnectedLed" };
+static LP_GPIO networkConnectedLed = { .pin = NETWORK_CONNECTED_LED, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true,
+	.initialise = lp_gpioOpen, .name = "networkConnectedLed" };
 
 // Timers
 static LP_TIMER led1BlinkTimer = { .period = { 0, 125000000 }, .name = "led1BlinkTimer", .handler = Led1BlinkHandler };
@@ -107,7 +107,7 @@ static LP_TIMER networkConnectionStatusTimer = { .period = { 5, 0 }, .name = "ne
 static LP_TIMER measureSensorTimer = { .period = { 10, 0 }, .name = "measureSensorTimer", .handler = MeasureSensorHandler };
 
 // Initialize Sets
-LP_PERIPHERAL_GPIO* peripheralSet[] = { &buttonA, &buttonB, &led1, &led2, &networkConnectedLed };
+LP_GPIO* peripheralSet[] = { &buttonA, &buttonB, &led1, &led2, &networkConnectedLed };
 LP_TIMER* timerSet[] = { &led1BlinkTimer, &led2BlinkOffOneShotTimer, &buttonPressCheckTimer, &networkConnectionStatusTimer, &measureSensorTimer };
 
 
@@ -120,7 +120,7 @@ int main(int argc, char* argv[])
 	// Main loop
 	while (!lp_isTerminationRequired())
 	{
-		int result = EventLoop_Run(lp_getTimerEventLoop(), -1, true);
+		int result = EventLoop_Run(lp_timerGetEventLoop(), -1, true);
 		// Continue if interrupted by signal, e.g. due to breakpoint being set.
 		if (result == -1 && errno != EINTR)
 		{
@@ -161,7 +161,7 @@ static void NetworkConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
 static void Led2On(void)
 {
 	lp_gpioOn(&led2);
-	lp_setOneShotTimer(&led2BlinkOffOneShotTimer, &led2BlinkPeriod);
+	lp_timerSetOneShot(&led2BlinkOffOneShotTimer, &led2BlinkPeriod);
 }
 
 /// <summary>
@@ -219,7 +219,7 @@ static void ButtonPressCheckHandler(EventLoopTimer* eventLoopTimer)
 	if (lp_gpioGetState(&buttonA, &buttonAState) || lp_gpioGetState(&buttonB, &buttonBState))
 	{
 		led1BlinkIntervalIndex = (led1BlinkIntervalIndex + 1) % led1BlinkIntervalsCount;
-		lp_changeTimer(&led1BlinkTimer, &led1BlinkIntervals[led1BlinkIntervalIndex]);
+		lp_timerChange(&led1BlinkTimer, &led1BlinkIntervals[led1BlinkIntervalIndex]);
 	}
 }
 
@@ -250,8 +250,8 @@ static void InitPeripheralsAndHandlers(void)
 {
 	lp_initializeDevKit();
 
-	lp_openPeripheralGpioSet(peripheralSet, NELEMS(peripheralSet));
-	lp_startTimerSet(timerSet, NELEMS(timerSet));
+	lp_gpioOpenSet(peripheralSet, NELEMS(peripheralSet));
+	lp_timerStartSet(timerSet, NELEMS(timerSet));
 }
 
 /// <summary>
@@ -261,9 +261,9 @@ static void ClosePeripheralsAndHandlers(void)
 {
 	Log_Debug("Closing file descriptors\n");
 
-	lp_stopTimerSet();
-	lp_closePeripheralGpioSet();
+	lp_timerStopSet();
+	lp_gpioCloseSet();
 	lp_closeDevKit();
 
-	lp_stopTimerEventLoop();
+	lp_timerStopEventLoop();
 }

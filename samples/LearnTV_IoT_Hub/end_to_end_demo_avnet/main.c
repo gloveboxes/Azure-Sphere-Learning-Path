@@ -77,14 +77,14 @@ static LP_DIRECT_METHOD_RESPONSE_CODE LightControlDirectMethodHandler(JSON_Objec
 static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 
 // Telemetry message template and properties
-static const char* MsgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"Light\":%d, \"MsgId\":%d }";
+static const char* msgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"Light\":%d, \"MsgId\":%d }";
 
-static LP_MESSAGE_PROPERTY messageAppId = { .key = "appid", .value = "lab-monitor" };
-static LP_MESSAGE_PROPERTY messageFormat = { .key = "format", .value = "json" };
-static LP_MESSAGE_PROPERTY telemetryMessageType = { .key = "type", .value = "telemetry" };
-static LP_MESSAGE_PROPERTY messageVersion = { .key = "version", .value = "1" };
-
-static LP_MESSAGE_PROPERTY* telemetryMessageProperties[] = { &messageAppId, &telemetryMessageType, &messageFormat, &messageVersion };
+static LP_MESSAGE_PROPERTY* msgProperties[] = {
+	&(LP_MESSAGE_PROPERTY) { .key = "appid", .value = "lab-monitor" },
+	&(LP_MESSAGE_PROPERTY) {.key = "format", .value = "json" },
+	&(LP_MESSAGE_PROPERTY) {.key = "type", .value = "telemetry" },
+	&(LP_MESSAGE_PROPERTY) {.key = "version", .value = "1" }
+};
 
 /***********************************************/
 /*****  Declare Timers, Twins and Methods  *****/
@@ -96,7 +96,7 @@ static LP_MESSAGE_PROPERTY* telemetryMessageProperties[] = { &messageAppId, &tel
 /*****  Initialise collection set  *****/
 
 static LP_TIMER* timerSet[] = {  };
-static LP_PERIPHERAL_GPIO* peripheralSet[] = {  };
+static LP_GPIO* peripheralSet[] = {  };
 static LP_DIRECT_METHOD_BINDING* directMethodBindingSet[] = {  };
 static LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = {  };
 
@@ -114,30 +114,28 @@ static void InitPeripheralsAndHandlers(void)
 {
 	lp_initializeDevKit();
 
-	lp_openPeripheralGpioSet(peripheralSet, NELEMS(peripheralSet));
-	lp_openDeviceTwinSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
-	lp_openDirectMethodSet(directMethodBindingSet, NELEMS(directMethodBindingSet));
+	lp_gpioOpenSet(peripheralSet, NELEMS(peripheralSet));
+	lp_deviceTwinOpenSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
+	lp_directMethodOpenSet(directMethodBindingSet, NELEMS(directMethodBindingSet));
 
-	lp_startTimerSet(timerSet, NELEMS(timerSet));
-	lp_startCloudToDevice();
-
-	lp_setMessageProperties(telemetryMessageProperties, NELEMS(telemetryMessageProperties));
+	lp_timerStartSet(timerSet, NELEMS(timerSet));
+	lp_cloudToDeviceStart();
 }
 
 static void ClosePeripheralsAndHandlers(void)
 {
 	Log_Debug("Closing file descriptors\n");
 
-	lp_stopTimerSet();
-	lp_stopCloudToDevice();
+	lp_timerStopSet();
+	lp_cloudToDeviceStop();
 
-	lp_closePeripheralGpioSet();
-	lp_closeDeviceTwinSet();
-	lp_closeDirectMethodSet();
+	lp_gpioCloseSet();
+	lp_deviceTwinCloseSet();
+	lp_directMethodSetClose();
 
 	lp_closeDevKit();
 
-	lp_stopTimerEventLoop();
+	lp_timerStopEventLoop();
 }
 
 int main(int argc, char* argv[])
@@ -157,7 +155,7 @@ int main(int argc, char* argv[])
 	while (!lp_isTerminationRequired())
 	{
 
-		int result = EventLoop_Run(lp_getTimerEventLoop(), -1, true);
+		int result = EventLoop_Run(lp_timerGetEventLoop(), -1, true);
 
 		// Continue if interrupted by signal, e.g. due to breakpoint being set.
 		if (result == -1 && errno != EINTR)

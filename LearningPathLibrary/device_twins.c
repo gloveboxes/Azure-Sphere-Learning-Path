@@ -8,20 +8,20 @@ static LP_DEVICE_TWIN_BINDING** _deviceTwins = NULL;
 static size_t _deviceTwinCount = 0;
 
 
-void lp_openDeviceTwinSet(LP_DEVICE_TWIN_BINDING* deviceTwins[], size_t deviceTwinCount) {
+void lp_deviceTwinOpenSet(LP_DEVICE_TWIN_BINDING* deviceTwins[], size_t deviceTwinCount) {
 	_deviceTwins = deviceTwins;
 	_deviceTwinCount = deviceTwinCount;
 
 	for (int i = 0; i < _deviceTwinCount; i++) {
-		lp_openDeviceTwin(_deviceTwins[i]);
+		lp_deviceTwinOpen(_deviceTwins[i]);
 	}
 }
 
-void lp_closeDeviceTwinSet(void) {
-	for (int i = 0; i < _deviceTwinCount; i++) { lp_closeDeviceTwin(_deviceTwins[i]); }
+void lp_deviceTwinCloseSet(void) {
+	for (int i = 0; i < _deviceTwinCount; i++) { lp_deviceTwinClose(_deviceTwins[i]); }
 }
 
-void lp_openDeviceTwin(LP_DEVICE_TWIN_BINDING* deviceTwinBinding) {
+void lp_deviceTwinOpen(LP_DEVICE_TWIN_BINDING* deviceTwinBinding) {
 	if (deviceTwinBinding->twinType == LP_TYPE_UNKNOWN) {
 		Log_Debug("\n\nDevice Twin '%s' missing type information.\nInclude .twinType option in LP_DEVICE_TWIN_BINDING definition.\nExample .twinType=LP_TYPE_BOOL. Valid types include LP_TYPE_BOOL, LP_TYPE_INT, LP_TYPE_FLOAT, LP_TYPE_STRING.\n\n", deviceTwinBinding->twinProperty);
 		lp_terminate(ExitCode_OpenDeviceTwin);
@@ -49,7 +49,7 @@ void lp_openDeviceTwin(LP_DEVICE_TWIN_BINDING* deviceTwinBinding) {
 	}
 }
 
-void lp_closeDeviceTwin(LP_DEVICE_TWIN_BINDING* deviceTwinBinding) {
+void lp_deviceTwinClose(LP_DEVICE_TWIN_BINDING* deviceTwinBinding) {
 	if (deviceTwinBinding->twinState != NULL) {
 		free(deviceTwinBinding->twinState);
 		deviceTwinBinding->twinState = NULL;

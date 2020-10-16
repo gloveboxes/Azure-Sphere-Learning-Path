@@ -25,16 +25,16 @@ static LP_TIMER cloudToDeviceTimer = {
 	.handler = &AzureCloudToDeviceHandler
 };
 
-void lp_startCloudToDevice(void) {
+void lp_cloudToDeviceStart(void) {
 	if (cloudToDeviceTimer.eventLoopTimer == NULL) {
-		lp_startTimer(&cloudToDeviceTimer);
-		lp_setOneShotTimer(&cloudToDeviceTimer, &(struct timespec){1, 0});
+		lp_timerStart(&cloudToDeviceTimer);
+		lp_timerSetOneShot(&cloudToDeviceTimer, &(struct timespec){1, 0});
 	}
 }
 
-void lp_stopCloudToDevice(void) {
+void lp_cloudToDeviceStop(void) {
 	if (cloudToDeviceTimer.eventLoopTimer != NULL) {
-		lp_stopTimer(&cloudToDeviceTimer);
+		lp_timeStop(&cloudToDeviceTimer);
 	}
 }
 
@@ -76,7 +76,7 @@ static void AzureCloudToDeviceHandler(EventLoopTimer* eventLoopTimer) {
 			if (period < maxPeriodSeconds) { period++; }
 		}
 	}
-	lp_setOneShotTimer(&cloudToDeviceTimer, &(struct timespec){period, 0});
+	lp_timerSetOneShot(&cloudToDeviceTimer, &(struct timespec){period, 0});
 }
 
 bool lp_sendMsgWithProperties(const char* msg, LP_MESSAGE_PROPERTY** messageProperties, size_t messagePropertyCount){
@@ -211,7 +211,7 @@ static bool SetupAzureClient() {
 	iothubAuthenticated = true;
 
 	IoTHubDeviceClient_LL_SetDeviceTwinCallback(iothubClientHandle, lp_twinCallback, NULL);
-	IoTHubDeviceClient_LL_SetDeviceMethodCallback(iothubClientHandle, lp_azureDirectMethodHandler, NULL);
+	IoTHubDeviceClient_LL_SetDeviceMethodCallback(iothubClientHandle, lp_directMethodHandler, NULL);
 	IoTHubDeviceClient_LL_SetConnectionStatusCallback(iothubClientHandle, HubConnectionStatusCallback, NULL);
 
 	IoTHubDeviceClient_LL_DoWork(iothubClientHandle);

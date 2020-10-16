@@ -73,28 +73,54 @@ static void ClosePeripheralAndHandlers(void);
 static void Led1BlinkHandler(EventLoopTimer* eventLoopTimer);
 static void NetworkConnectionStatusHandler(EventLoopTimer* eventLoopTimer);
 static void ResetDeviceHandler(EventLoopTimer* eventLoopTimer);
-static LP_DIRECT_METHOD_RESPONSE_CODE ResetDirectMethodHandler(JSON_Object* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg);
+static LP_DIRECT_METHOD_RESPONSE_CODE ResetDirectMethodHandler(JSON_Value* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg);
 
 static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 
 // GPIO
-static LP_PERIPHERAL_GPIO led1 = { .pin = LED1, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true,
-	.initialise = lp_openPeripheralGpio, .name = "led1" };
-static LP_PERIPHERAL_GPIO networkConnectedLed = { .pin = NETWORK_CONNECTED_LED, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true, .initialise = lp_openPeripheralGpio, .name = "networkConnectedLed" };
+static LP_GPIO led1 = { 
+	.pin = LED1, 
+	.direction = LP_OUTPUT, 
+	.initialState = GPIO_Value_Low, 
+	.invertPin = true,
+	.initialise = lp_gpioOpen, .name = "led1" };
+
+static LP_GPIO networkConnectedLed = { 
+	.pin = NETWORK_CONNECTED_LED, 
+	.direction = LP_OUTPUT, 
+	.initialState = GPIO_Value_Low, 
+	.invertPin = true, 
+	.initialise = lp_gpioOpen, 
+	.name = "networkConnectedLed" };
 
 // Timers
-static LP_TIMER networkConnectionStatusTimer = { .period = {5, 0}, .name = "networkConnectionStatusTimer", .handler = NetworkConnectionStatusHandler };
-static LP_TIMER resetDeviceOneShotTimer = { .period = {0, 0}, .name = "resetDeviceOneShotTimer", .handler = ResetDeviceHandler };
-static LP_TIMER led1BlinkTimer = { .period = { 0, 125000000 }, .name = "led1BlinkTimer", .handler = Led1BlinkHandler };
+static LP_TIMER networkConnectionStatusTimer = { 
+	.period = {5, 0}, 
+	.name = "networkConnectionStatusTimer", 
+	.handler = NetworkConnectionStatusHandler };
+
+static LP_TIMER resetDeviceOneShotTimer = { 
+	.period = {0, 0}, 
+	.name = "resetDeviceOneShotTimer", 
+	.handler = ResetDeviceHandler };
+
+static LP_TIMER led1BlinkTimer = { 
+	.period = { 0, 125000000 }, 
+	.name = "led1BlinkTimer", 
+	.handler = Led1BlinkHandler };
 
 // Azure IoT Device Twins
-static LP_DEVICE_TWIN_BINDING deviceResetUtc = { .twinProperty = "DeviceResetUTC", .twinType = LP_TYPE_STRING };
+static LP_DEVICE_TWIN_BINDING deviceResetUtc = { 
+	.twinProperty = "DeviceResetUTC", 
+	.twinType = LP_TYPE_STRING };
 
 // Azure IoT Direct Methods
-static LP_DIRECT_METHOD_BINDING resetDevice = { .methodName = "ResetMethod", .handler = ResetDirectMethodHandler };
+static LP_DIRECT_METHOD_BINDING resetDevice = { 
+	.methodName = "ResetMethod", 
+	.handler = ResetDirectMethodHandler };
 
 // Initialize Sets
-LP_PERIPHERAL_GPIO* PeripheralGpioSet[] = { &led1, &networkConnectedLed };
+LP_GPIO* PeripheralGpioSet[] = { &led1, &networkConnectedLed };
 LP_TIMER* timerSet[] = {&networkConnectionStatusTimer, &led1BlinkTimer, &resetDeviceOneShotTimer };
 LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &deviceResetUtc };
 LP_DIRECT_METHOD_BINDING* directMethodBindingSet[] = { &resetDevice };
@@ -148,22 +174,19 @@ static void ResetDeviceHandler(EventLoopTimer* eventLoopTimer)
 }
 
 /// <summary>
-/// Start Device Power Restart Direct Method 'ResetMethod' {"reset_timer":5}
+/// Start Device Power Restart Direct Method 'ResetMethod' integer seconds eg 5
 /// </summary>
-static LP_DIRECT_METHOD_RESPONSE_CODE ResetDirectMethodHandler(JSON_Object* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg)
+static LP_DIRECT_METHOD_RESPONSE_CODE ResetDirectMethodHandler(JSON_Value* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg)
 {
-	const char propertyName[] = "reset_timer";
 	const size_t responseLen = 60; // Allocate and initialize a response message buffer. The calling function is responsible for the freeing memory
 	static struct timespec period;
 
 	*responseMsg = (char*)malloc(responseLen);
 	memset(*responseMsg, 0, responseLen);
 
-	if (!json_object_has_value_of_type(json, propertyName, JSONNumber))
-	{
-		return LP_METHOD_FAILED;
-	}
-	int seconds = (int)json_object_get_number(json, propertyName);
+	if (json_value_get_type(json) != JSONNumber) { return LP_METHOD_FAILED; }
+
+    int seconds = (int)json_value_get_number(json);
 
 	// leave enough time for the device twin deviceResetUtc to update before restarting the device
 	if (seconds > 2 && seconds < 10)
@@ -176,7 +199,7 @@ static LP_DIRECT_METHOD_RESPONSE_CODE ResetDirectMethodHandler(JSON_Object* json
 
 		// Set One Shot LP_TIMER
 		period = (struct timespec){ .tv_sec = seconds, .tv_nsec = 0 };
-		lp_setOneShotTimer(&resetDeviceOneShotTimer, &period);
+		lp_timerSetOneShot(&resetDeviceOneShotTimer, &period);
 
 		return LP_METHOD_SUCCEEDED;
 	}
@@ -194,12 +217,12 @@ static void InitPeripheralAndHandlers(void)
 {
 	lp_initializeDevKit();
 
-	lp_openPeripheralGpioSet(PeripheralGpioSet, NELEMS(PeripheralGpioSet));
-	lp_openDeviceTwinSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
-	lp_openDirectMethodSet(directMethodBindingSet, NELEMS(directMethodBindingSet));
+	lp_gpioOpenSet(PeripheralGpioSet, NELEMS(PeripheralGpioSet));
+	lp_deviceTwinOpenSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
+	lp_directMethodOpenSet(directMethodBindingSet, NELEMS(directMethodBindingSet));
 
-	lp_startTimerSet(timerSet, NELEMS(timerSet));
-	lp_startCloudToDevice();
+	lp_timerStartSet(timerSet, NELEMS(timerSet));
+	lp_cloudToDeviceStart();
 }
 
 /// <summary>
@@ -209,16 +232,16 @@ static void ClosePeripheralAndHandlers(void)
 {
 	Log_Debug("Closing file descriptors\n");
 
-	lp_stopTimerSet();
-	lp_stopCloudToDevice();
+	lp_timerStopSet();
+	lp_cloudToDeviceStop();
 
-	lp_closePeripheralGpioSet();
-	lp_closeDeviceTwinSet();
-	lp_closeDirectMethodSet();
+	lp_gpioCloseSet();
+	lp_deviceTwinCloseSet();
+	lp_directMethodSetClose();
 
 	lp_closeDevKit();
 
-	lp_stopTimerEventLoop();
+	lp_timerStopEventLoop();
 }
 
 int main(int argc, char* argv[])
@@ -237,7 +260,7 @@ int main(int argc, char* argv[])
 	// Main loop
 	while (!lp_isTerminationRequired())
 	{
-		int result = EventLoop_Run(lp_getTimerEventLoop(), -1, true);
+		int result = EventLoop_Run(lp_timerGetEventLoop(), -1, true);
 		// Continue if interrupted by signal, e.g. due to breakpoint being set.
 		if (result == -1 && errno != EINTR)
 		{

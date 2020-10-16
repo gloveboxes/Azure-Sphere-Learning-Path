@@ -38,7 +38,7 @@ static bool initialise_inter_core_communications(void)
 	}
 
 	// Register handler for incoming messages from real-time capable application.
-	socketEventReg = EventLoop_RegisterIo(lp_getTimerEventLoop(), sockFd, EventLoop_Input, SocketEventHandler,
+	socketEventReg = EventLoop_RegisterIo(lp_timerGetEventLoop(), sockFd, EventLoop_Input, SocketEventHandler,
 										  /* context */ NULL);
 	if (socketEventReg == NULL)
 	{

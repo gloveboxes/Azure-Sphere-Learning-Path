@@ -18,25 +18,25 @@ typedef enum
 	LP_OUTPUT
 } LP_GPIO_DIRECTION;
 
-struct _peripheralGpio
+struct _lp_gpio
 {
 	int fd;
 	int pin;
 	GPIO_Value initialState;
 	bool invertPin;
-	bool (*initialise)(struct _peripheralGpio* peripheralGpio);
+	bool (*initialise)(struct _lp_gpio* gpio);
 	char* name;
 	LP_GPIO_DIRECTION direction;
 	bool opened;
 };
 
-typedef struct _peripheralGpio LP_PERIPHERAL_GPIO;
+typedef struct _lp_gpio LP_GPIO;
 
-bool lp_openPeripheralGpio(LP_PERIPHERAL_GPIO* peripheral);
-void lp_openPeripheralGpioSet(LP_PERIPHERAL_GPIO** peripheralSet, size_t peripheralSetCount);
-void lp_closePeripheralGpioSet(void);
-void lp_closePeripheralGpio(LP_PERIPHERAL_GPIO* peripheral);
-void lp_gpioOn(LP_PERIPHERAL_GPIO* peripheral);
-void lp_gpioOff(LP_PERIPHERAL_GPIO* peripheral);
-bool lp_gpioGetState(LP_PERIPHERAL_GPIO* peripheral, GPIO_Value_Type* oldState);
-void lp_gpioSetState(LP_PERIPHERAL_GPIO* peripheral, bool state);
+bool lp_gpioOpen(LP_GPIO* gpio);
+void lp_gpioOpenSet(LP_GPIO** gpioSet, size_t gpioSetCount);
+void lp_gpioCloseSet(void);
+void lp_gpioClose(LP_GPIO* gpio);
+void lp_gpioOn(LP_GPIO* gpio);
+void lp_gpioOff(LP_GPIO* gpio);
+bool lp_gpioGetState(LP_GPIO* gpio, GPIO_Value_Type* oldState);
+void lp_gpioSetState(LP_GPIO* gpio, bool state);

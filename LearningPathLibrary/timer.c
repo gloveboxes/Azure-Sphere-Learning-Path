@@ -5,14 +5,14 @@ static size_t _timerCount = 0;
 static EventLoop* eventLoop = NULL;
 
 
-EventLoop* lp_getTimerEventLoop(void) {
+EventLoop* lp_timerGetEventLoop(void) {
 	if (eventLoop == NULL) {
 		eventLoop = EventLoop_Create();
 	}
 	return eventLoop;
 }
 
-bool lp_changeTimer(LP_TIMER* timer, const struct timespec* period) {
+bool lp_timerChange(LP_TIMER* timer, const struct timespec* period) {
 	if (timer->eventLoopTimer == NULL) { return false; }
 	timer->period.tv_nsec = period->tv_nsec;
 	timer->period.tv_sec = period->tv_sec;
@@ -21,8 +21,8 @@ bool lp_changeTimer(LP_TIMER* timer, const struct timespec* period) {
 	return result == 0 ? true : false;
 }
 
-bool lp_startTimer(LP_TIMER* timer) {
-	EventLoop* eventLoop = lp_getTimerEventLoop();
+bool lp_timerStart(LP_TIMER* timer) {
+	EventLoop* eventLoop = lp_timerGetEventLoop();
 	if (eventLoop == NULL) {
 		return false;
 	}
@@ -48,39 +48,39 @@ bool lp_startTimer(LP_TIMER* timer) {
 	return true;
 }
 
-void lp_stopTimer(LP_TIMER* timer) {
+void lp_timeStop(LP_TIMER* timer) {
 	if (timer->eventLoopTimer != NULL) {
 		DisposeEventLoopTimer(timer->eventLoopTimer);
 		timer->eventLoopTimer = NULL;
 	}
 }
 
-void lp_startTimerSet(LP_TIMER* timerSet[], size_t timerCount) {
+void lp_timerStartSet(LP_TIMER* timerSet[], size_t timerCount) {
 	_timers = timerSet;
 	_timerCount = timerCount;
 
 	for (int i = 0; i < _timerCount; i++) {
-		if (!lp_startTimer(_timers[i])) {
+		if (!lp_timerStart(_timers[i])) {
 			break;
 		};
 	}
 }
 
-void lp_stopTimerSet(void) {
+void lp_timerStopSet(void) {
 	for (int i = 0; i < _timerCount; i++) {
-		lp_stopTimer(_timers[i]);
+		lp_timeStop(_timers[i]);
 	}
 }
 
-void lp_stopTimerEventLoop(void) {
-	EventLoop* eventLoop = lp_getTimerEventLoop();
+void lp_timerStopEventLoop(void) {
+	EventLoop* eventLoop = lp_timerGetEventLoop();
 	if (eventLoop != NULL) {
 		EventLoop_Close(eventLoop);
 	}
 }
 
-bool lp_setOneShotTimer(LP_TIMER* timer, const struct timespec* period) {
-	EventLoop* eventLoop = lp_getTimerEventLoop();
+bool lp_timerSetOneShot(LP_TIMER* timer, const struct timespec* period) {
+	EventLoop* eventLoop = lp_timerGetEventLoop();
 	if (eventLoop == NULL) {
 		return false;
 	}

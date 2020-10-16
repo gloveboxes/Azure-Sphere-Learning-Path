@@ -1,9 +1,9 @@
 #include "peripheral_gpio.h"
 
-static LP_PERIPHERAL_GPIO** _peripheralSet = NULL;
+static LP_GPIO** _peripheralSet = NULL;
 static size_t _peripheralSetCount = 0;
 
-bool lp_openPeripheralGpio(LP_PERIPHERAL_GPIO* peripheral)
+bool lp_gpioOpen(LP_GPIO* peripheral)
 {
 	if (peripheral == NULL || peripheral->pin < 0) { return false; }
 
@@ -53,9 +53,9 @@ bool lp_openPeripheralGpio(LP_PERIPHERAL_GPIO* peripheral)
 	return true;
 }
 
-void lp_openPeripheralGpioSet(LP_PERIPHERAL_GPIO** peripheralSet, size_t peripheralSetCount)
+void lp_gpioOpenSet(LP_GPIO** gpioSet, size_t peripheralSetCount)
 {
-	_peripheralSet = peripheralSet;
+	_peripheralSet = gpioSet;
 	_peripheralSetCount = peripheralSetCount;
 
 	for (int i = 0; i < _peripheralSetCount; i++)
@@ -77,7 +77,7 @@ void lp_openPeripheralGpioSet(LP_PERIPHERAL_GPIO** peripheralSet, size_t periphe
 /// </summary>
 /// <param name="fd">File descriptor to close</param>
 /// <param name="fdName">File descriptor name to use in error message</param>
-void lp_closePeripheralGpio(LP_PERIPHERAL_GPIO* peripheral)
+void lp_gpioClose(LP_GPIO* peripheral)
 {
 	if (peripheral->opened && peripheral->fd >= 0)
 	{
@@ -91,29 +91,29 @@ void lp_closePeripheralGpio(LP_PERIPHERAL_GPIO* peripheral)
 	peripheral->opened = false;
 }
 
-void lp_closePeripheralGpioSet(void)
+void lp_gpioCloseSet(void)
 {
 	for (int i = 0; i < _peripheralSetCount; i++)
 	{
-		lp_closePeripheralGpio(_peripheralSet[i]);
+		lp_gpioClose(_peripheralSet[i]);
 	}
 }
 
-void lp_gpioOn(LP_PERIPHERAL_GPIO* peripheral)
+void lp_gpioOn(LP_GPIO* peripheral)
 {
 	if (peripheral == NULL || peripheral->fd < 0 || peripheral->pin < 0 || !peripheral->opened) { return; }
 
 	GPIO_SetValue(peripheral->fd, peripheral->invertPin ? GPIO_Value_Low : GPIO_Value_High);
 }
 
-void lp_gpioOff(LP_PERIPHERAL_GPIO* peripheral)
+void lp_gpioOff(LP_GPIO* peripheral)
 {
 	if (peripheral == NULL || peripheral->fd < 0 || peripheral->pin < 0 || !peripheral->opened) { return; }
 
 	GPIO_SetValue(peripheral->fd, peripheral->invertPin ? GPIO_Value_High : GPIO_Value_Low);
 }
 
-void lp_gpioSetState(LP_PERIPHERAL_GPIO* peripheral, bool state) {
+void lp_gpioSetState(LP_GPIO* peripheral, bool state) {
 	if (state) {
 		lp_gpioOn(peripheral);
 	}
@@ -123,9 +123,9 @@ void lp_gpioSetState(LP_PERIPHERAL_GPIO* peripheral, bool state) {
 }
 
 /// <summary>
-/// Read Button LP_PERIPHERAL_GPIO returns state
+/// Read Button LP_GPIO returns state
 /// </summary>
-bool lp_gpioGetState(LP_PERIPHERAL_GPIO* peripheral, GPIO_Value_Type* oldState)
+bool lp_gpioGetState(LP_GPIO* peripheral, GPIO_Value_Type* oldState)
 {
 	bool isGpioOn = false;
 	GPIO_Value_Type newState;

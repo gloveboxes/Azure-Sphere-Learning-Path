@@ -128,13 +128,13 @@ static void SampleRateHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding)
 
 	if (sampleRateSeconds.tv_sec > 0 && sampleRateSeconds.tv_sec < (5 * 60))
 	{
-		lp_changeTimer(&readSensorTimer, &sampleRateSeconds);
+		lp_timerChange(&readSensorTimer, &sampleRateSeconds);
 	}
 }
 
 // Sets
 static LP_TIMER* timerSet[] = { &readSensorTimer };
-static LP_PERIPHERAL_GPIO* peripheralSet[] = { };
+static LP_GPIO* peripheralSet[] = { };
 static LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &sampleRate_DeviceTwin };
 
 
@@ -142,11 +142,11 @@ static void InitPeripheralsAndHandlers(void)
 {
 	lp_initializeDevKit();
 
-	lp_openPeripheralGpioSet(peripheralSet, NELEMS(peripheralSet));
-	lp_openDeviceTwinSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
+	lp_gpioOpenSet(peripheralSet, NELEMS(peripheralSet));
+	lp_deviceTwinOpenSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
 
 	lp_startTimerSet(timerSet, NELEMS(timerSet));
-	lp_startCloudToDevice();
+	lp_cloudToDeviceStart();
 
 	lp_setMessageProperties(telemetryMessageProperties, NELEMS(telemetryMessageProperties));
 }
@@ -155,15 +155,15 @@ static void ClosePeripheralsAndHandlers(void)
 {
 	Log_Debug("Closing file descriptors\n");
 
-	lp_stopTimerSet();
-	lp_stopCloudToDevice();
+	lp_timerStopSet();
+	lp_cloudToDeviceStop();
 
-	lp_closePeripheralGpioSet();
-	lp_closeDeviceTwinSet();
+	lp_gpioCloseSet();
+	lp_deviceTwinCloseSet();
 
 	lp_closeDevKit();
 
-	lp_stopTimerEventLoop();
+	lp_timerStopEventLoop();
 }
 
 int main(int argc, char* argv[])
@@ -183,7 +183,7 @@ int main(int argc, char* argv[])
 	while (!lp_isTerminationRequired())
 	{
 
-		int result = EventLoop_Run(lp_getTimerEventLoop(), -1, true);
+		int result = EventLoop_Run(lp_timerGetEventLoop(), -1, true);
 
 		// Continue if interrupted by signal, e.g. due to breakpoint being set.
 		if (result == -1 && errno != EINTR)

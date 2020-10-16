@@ -86,22 +86,122 @@ static LP_TIMER intercoreHeartbeatHandler = {
 /***********************************************/
 /*****  Declare Timers, Twins and Methods  *****/
 
+// Timer
+static LP_TIMER readSensorTimer = {
+    .period = {5, 0},
+    .name = "readSensorTimer",
+    .handler = ReadSensorHandler };
+
+static LP_GPIO relay = {
+    .pin = RELAY,
+    .direction = LP_OUTPUT,
+    .initialState = GPIO_Value_Low,
+    .invertPin = false,
+    .initialise = lp_gpioOpen,
+    .name = "relay" };
+
+static LP_DIRECT_METHOD_BINDING lightControl = {
+    .methodName = "LightControl",
+    .handler = LightControlDirectMethodHandler };
+
+static LP_DEVICE_TWIN_BINDING sampleRate_DeviceTwin = {
+    .twinProperty = "SampleRateSeconds",
+    .twinType = LP_TYPE_INT,
+    .handler = SampleRateDeviceTwinHandler };
+
+static LP_TIMER azureIotConnectionStatusTimer = {
+	.period = {5, 0},
+	.name = "azureIotConnectionStatusTimer",
+	.handler = AzureIotConnectionStatusHandler };
+
+static LP_GPIO azureIotConnectedLed = {
+	.pin = NETWORK_CONNECTED_LED,
+	.direction = LP_OUTPUT,
+	.initialState = GPIO_Value_Low,
+	.invertPin = true,
+	.initialise = lp_gpioOpen,
+	.name = "azureIotConnectedLed" };
 
 
 
 /****************************************/
 /*****  Initialise collection set  *****/
 
-static LP_TIMER* timerSet[] = { &intercoreHeartbeatHandler };
-static LP_PERIPHERAL_GPIO* peripheralSet[] = {  };
-static LP_DIRECT_METHOD_BINDING* directMethodBindingSet[] = {  };
-static LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = {  };
+static LP_TIMER* timerSet[] = { &intercoreHeartbeatHandler, &readSensorTimer, &azureIotConnectionStatusTimer };
+static LP_GPIO* gpioSet[] = { &relay, &azureIotConnectedLed };
+static LP_DIRECT_METHOD_BINDING* directMethodBindingSet[] = { &lightControl };
+static LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &sampleRate_DeviceTwin };
 
 /****************************************/
 /*****  Demo Code                   *****/
 
+/// <summary>
+/// Check status of connection to Azure IoT
+/// </summary>
+static void AzureIotConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
+{
+	static bool toggleStatusLed = true;
+
+	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
+		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
+		return;
+	}
+
+	if (lp_connectToAzureIot()) {
+		lp_gpioSetState(&azureIotConnectedLed, toggleStatusLed);
+		toggleStatusLed = !toggleStatusLed;
+	}
+	else {
+		lp_gpioSetState(&azureIotConnectedLed, false);
+	}
+}
+
+/// <summary>
+/// This handler called when device twin desired 'SampleRateSeconds' recieved
+/// </summary>
+static void SampleRateDeviceTwinHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding)
+{
+    int sampleRate = *(int*)deviceTwinBinding->twinState;
+
+    if (sampleRate > 0 && sampleRate < (5 * 60)) // check sensible range
+    {
+        lp_timerChange(&readSensorTimer, &(struct timespec){sampleRate, 0});
+        lp_deviceTwinAckDesiredState(deviceTwinBinding, deviceTwinBinding->twinState, LP_DEVICE_TWIN_COMPLETED);
+    }
+    else {
+        lp_deviceTwinAckDesiredState(deviceTwinBinding, deviceTwinBinding->twinState, LP_DEVICE_TWIN_ERROR);
+    }
+}
 
 
+/// <summary>
+/// Remote control lab light Direct Method 'LightControl' true or false
+/// </summary>
+static LP_DIRECT_METHOD_RESPONSE_CODE LightControlDirectMethodHandler(JSON_Value* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg)
+{
+    if (json_value_get_type(json) != JSONBoolean) { return LP_METHOD_FAILED; }
+
+    bool state = (bool)json_value_get_boolean(json);
+
+    lp_gpioSetState(&relay, state);
+
+    return LP_METHOD_SUCCEEDED;
+}
+
+/// <summary>
+/// Read sensor and send to Azure IoT
+/// </summary>
+static void ReadSensorHandler(EventLoopTimer* eventLoopTimer)
+{
+    if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
+        lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
+    }
+    else {
+        // send request to Real-Time core app to read temperature, pressure, and humidity
+        ic_control_block.cmd = LP_IC_ENVIRONMENT_SENSOR;
+        lp_sendInterCoreMessage(&ic_control_block, sizeof(ic_control_block));
+    }
+}
 
 /*****************************************************************************/
 /*         Initialise and run code                                           */
@@ -142,19 +242,19 @@ static void IntercoreHeartbeatHandler(EventLoopTimer* eventLoopTimer)
 /// </summary>
 static void InitPeripheralAndHandlers(void)
 {
-	lp_openPeripheralGpioSet(peripheralSet, NELEMS(peripheralSet));
-	lp_openDeviceTwinSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
-	lp_openDirectMethodSet(directMethodBindingSet, NELEMS(directMethodBindingSet));
+	lp_gpioOpenSet(gpioSet, NELEMS(gpioSet));
+	lp_deviceTwinOpenSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
+	lp_directMethodOpenSet(directMethodBindingSet, NELEMS(directMethodBindingSet));
 
-	lp_startTimerSet(timerSet, NELEMS(timerSet));
-	lp_startCloudToDevice();
+	lp_timerStartSet(timerSet, NELEMS(timerSet));
+	lp_cloudToDeviceStart();
 
 	lp_enableInterCoreCommunications(rtAppComponentId, InterCoreHandler);  // Initialize Inter Core Communications
 
 	ic_control_block.cmd = LP_IC_HEARTBEAT;		// Prime RT Core with Component ID Signature
 	lp_sendInterCoreMessage(&ic_control_block, sizeof(ic_control_block));
 
-	lp_setOneShotTimer(&readSensorTimer, &(struct timespec){1, 0});
+	lp_timerSetOneShot(&readSensorTimer, &(struct timespec){1, 0});
 }
 
 /// <summary>
@@ -164,14 +264,14 @@ static void ClosePeripheralAndHandlers(void)
 {
 	Log_Debug("Closing file descriptors\n");
 
-	lp_stopTimerSet();
-	lp_stopCloudToDevice();
+	lp_timerStopSet();
+	lp_cloudToDeviceStop();
 
-	lp_closePeripheralGpioSet();
-	lp_closeDeviceTwinSet();
-	lp_closeDirectMethodSet();
+	lp_gpioCloseSet();
+	lp_deviceTwinCloseSet();
+	lp_directMethodSetClose();
 
-	lp_stopTimerEventLoop();
+	lp_timerStopEventLoop();
 }
 
 int main(int argc, char* argv[])
@@ -190,7 +290,7 @@ int main(int argc, char* argv[])
 	// Main loop
 	while (!lp_isTerminationRequired())
 	{
-		int result = EventLoop_Run(lp_getTimerEventLoop(), -1, true);
+		int result = EventLoop_Run(lp_timerGetEventLoop(), -1, true);
 		// Continue if interrupted by signal, e.g. due to breakpoint being set.
 		if (result == -1 && errno != EINTR)
 		{

@@ -33,7 +33,7 @@
  *	   3. Click File, then Save to save the CMakeLists.txt file which will auto generate the CMake Cache.
  */
 
-// Hardware definition
+ // Hardware definition
 #include "hw/azure_sphere_learning_path.h"
 
 // Learning Path Libraries
@@ -69,80 +69,113 @@
 #define JSON_MESSAGE_BYTES 256  // Number of bytes to allocate for the JSON telemetry message for IoT Central
 
 // Forward signatures
-static void Led2OffHandler(EventLoopTimer* eventLoopTimer);
 static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer);
-static void NetworkConnectionStatusHandler(EventLoopTimer* eventLoopTimer);
+static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer);
 static void InterCoreHandler(LP_INTER_CORE_BLOCK* ic_message_block);
 static void ResetDeviceHandler(EventLoopTimer* eventLoopTimer);
 static void DeviceTwinSetTemperatureHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding);
 static void DeviceTwinBlinkRateHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding);
 static void DeviceTwinRelay1Handler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding);
-static LP_DIRECT_METHOD_RESPONSE_CODE ResetDirectMethodHandler(JSON_Object* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg);
+static LP_DIRECT_METHOD_RESPONSE_CODE ResetDirectMethodHandler(JSON_Value* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg);
 
 static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 static const char cstrJsonEvent[] = "{\"%s\":\"occurred\"}";
-static const struct timespec sendMsgLedBlinkPeriod = { 0, 500 * 1000 * 1000 };
 LP_INTER_CORE_BLOCK ic_control_block;
 
+static LP_GPIO azureIotConnectedLed = {
+	.pin = NETWORK_CONNECTED_LED,
+	.direction = LP_OUTPUT,
+	.initialState = GPIO_Value_Low,
+	.invertPin = true,
+	.initialise = lp_gpioOpen,
+	.name = "azureIotConnectedLed" };
 
-// GPIO Output PeripheralGpios
-static LP_PERIPHERAL_GPIO led2 = { .pin = LED2, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true,
-	.initialise = lp_openPeripheralGpio, .name = "led2" };
-
-static LP_PERIPHERAL_GPIO networkConnectedLed = { .pin = NETWORK_CONNECTED_LED, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true,
-	.initialise = lp_openPeripheralGpio, .name = "networkConnectedLed" };
-
-static LP_PERIPHERAL_GPIO relay1 = { .pin = RELAY, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = false,
-	.initialise = lp_openPeripheralGpio, .name = "relay1" };
+static LP_GPIO relay1 = {
+	.pin = RELAY,
+	.direction = LP_OUTPUT,
+	.initialState = GPIO_Value_Low,
+	.invertPin = false,
+	.initialise = lp_gpioOpen,
+	.name = "relay1" };
 
 // Timers
-static LP_TIMER led2BlinkOffOneShotTimer = { .period = { 0, 0 }, .name = "led2BlinkOffOneShotTimer", .handler = Led2OffHandler };
-static LP_TIMER networkConnectionStatusTimer = { .period = { 5, 0 }, .name = "networkConnectionStatusTimer", .handler = NetworkConnectionStatusHandler };
-static LP_TIMER measureSensorTimer = { .period = { 10, 0 }, .name = "measureSensorTimer", .handler = MeasureSensorHandler };
-static LP_TIMER resetDeviceOneShotTimer = { .period = { 0, 0 }, .name = "resetDeviceOneShotTimer", .handler = ResetDeviceHandler };
+static LP_TIMER azureIotConnectionStatusTimer = {
+	.period = { 5, 0 },
+	.name = "azureIotConnectionStatusTimer",
+	.handler = AzureIoTConnectionStatusHandler };
+
+static LP_TIMER measureSensorTimer = {
+	.period = { 10, 0 },
+	.name = "measureSensorTimer",
+	.handler = MeasureSensorHandler };
+
+static LP_TIMER resetDeviceOneShotTimer = {
+	.period = { 0, 0 },
+	.name = "resetDeviceOneShotTimer",
+	.handler = ResetDeviceHandler };
 
 // Azure IoT Device Twins
-static LP_DEVICE_TWIN_BINDING buttonPressed = { .twinProperty = "ButtonPressed", .twinType = LP_TYPE_STRING };
-static LP_DEVICE_TWIN_BINDING desiredTemperature = { .twinProperty = "DesiredTemperature", .twinType = LP_TYPE_FLOAT, .handler = DeviceTwinSetTemperatureHandler };
-static LP_DEVICE_TWIN_BINDING led1BlinkRate = { .twinProperty = "LedBlinkRate", .twinType = LP_TYPE_INT, .handler = DeviceTwinBlinkRateHandler };
-static LP_DEVICE_TWIN_BINDING relay1DeviceTwin = { .twinProperty = "Relay1", .twinType = LP_TYPE_BOOL, .handler = DeviceTwinRelay1Handler };
-static LP_DEVICE_TWIN_BINDING deviceResetUtc = { .twinProperty = "DeviceResetUTC", .twinType = LP_TYPE_STRING };
+static LP_DEVICE_TWIN_BINDING buttonPressed = {
+	.twinProperty = "ButtonPressed",
+	.twinType = LP_TYPE_STRING };
 
-// Azure IoT Direct Methods
-static LP_DIRECT_METHOD_BINDING resetDevice = { .methodName = "ResetMethod", .handler = ResetDirectMethodHandler };
+static LP_DEVICE_TWIN_BINDING desiredTemperature = {
+	.twinProperty = "DesiredTemperature",
+	.twinType = LP_TYPE_FLOAT,
+	.handler = DeviceTwinSetTemperatureHandler };
+
+static LP_DEVICE_TWIN_BINDING led1BlinkRate = {
+	.twinProperty = "LedBlinkRate",
+	.twinType = LP_TYPE_INT,
+	.handler = DeviceTwinBlinkRateHandler };
+
+static LP_DEVICE_TWIN_BINDING relay1DeviceTwin = {
+	.twinProperty = "Relay1",
+	.twinType = LP_TYPE_BOOL,
+	.handler = DeviceTwinRelay1Handler };
+
+static LP_DEVICE_TWIN_BINDING deviceResetUtc = {
+	.twinProperty = "DeviceResetUTC",
+	.twinType = LP_TYPE_STRING };
 
 // Initialize Sets
-LP_PERIPHERAL_GPIO* peripheralGpioSet[] = { &networkConnectedLed, &led2, &relay1 };
-LP_TIMER* timerSet[] = { &led2BlinkOffOneShotTimer, &networkConnectionStatusTimer, &measureSensorTimer, &resetDeviceOneShotTimer };
+LP_TIMER* timerSet[] = { &azureIotConnectionStatusTimer, &measureSensorTimer, &resetDeviceOneShotTimer };
+LP_GPIO* peripheralGpioSet[] = { &azureIotConnectedLed, &relay1 };
 LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &led1BlinkRate, &buttonPressed, &desiredTemperature, &relay1DeviceTwin, &deviceResetUtc };
-LP_DIRECT_METHOD_BINDING* directMethodBindingSet[] = { &resetDevice };
 
-// Message property set
-static LP_MESSAGE_PROPERTY messageAppId = { .key = "appid", .value = "hvac" };
-static LP_MESSAGE_PROPERTY messageType = { .key = "type", .value = "telemetry" };
-static LP_MESSAGE_PROPERTY messageFormat = { .key = "format", .value = "json" };
-static LP_MESSAGE_PROPERTY messageVersion = { .key = "version", .value = "1" };
-static LP_MESSAGE_PROPERTY* telemetryMessageProperties[] = { &messageAppId, &messageType, &messageFormat, &messageVersion };
+// Azure IoT Direct Methods
+LP_DIRECT_METHOD_BINDING* directMethodBindingSet[] = {
+	&(LP_DIRECT_METHOD_BINDING) { .methodName = "ResetMethod",.handler = ResetDirectMethodHandler }
+};
 
+// Telemetry message template and properties
+static const char* msgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"Light\":%d, \"MsgId\":%d }";
+
+static LP_MESSAGE_PROPERTY* telemetryMessageProperties[] = {
+	&(LP_MESSAGE_PROPERTY) { .key = "appid", .value = "lab-monitor" },
+	&(LP_MESSAGE_PROPERTY) {.key = "format", .value = "json" },
+	&(LP_MESSAGE_PROPERTY) {.key = "type", .value = "telemetry" },
+	&(LP_MESSAGE_PROPERTY) {.key = "version", .value = "1" }
+};
 
 /// <summary>
 /// Check status of connection to Azure IoT
 /// </summary>
-static void NetworkConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
+static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
 {
-	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
-	{
+	static bool toggleConnectionStatusLed = true;
+
+	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
 		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
 		return;
 	}
 
-	if (lp_connectToAzureIot())
-	{
-		lp_gpioOn(&networkConnectedLed);
+	if (lp_connectToAzureIot()) {
+		lp_gpioSetState(&azureIotConnectedLed, toggleConnectionStatusLed);
+		toggleConnectionStatusLed = !toggleConnectionStatusLed;
 	}
-	else
-	{
-		lp_gpioOff(&networkConnectedLed);
+	else {
+		lp_gpioSetState(&azureIotConnectedLed, false);
 	}
 }
 
@@ -154,15 +187,17 @@ static void DeviceTwinSetTemperatureHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBi
 	ic_control_block.cmd = LP_IC_SET_DESIRED_TEMPERATURE;
 	ic_control_block.temperature = *(float*)deviceTwinBinding->twinState;
 	lp_sendInterCoreMessage(&ic_control_block, sizeof(ic_control_block));
+
+	lp_deviceTwinAckDesiredState(deviceTwinBinding, deviceTwinBinding->twinState, LP_DEVICE_TWIN_COMPLETED);
 }
 
 /// <summary>
-/// Device Twin to control relay "Relay1": {"value": true }, "Relay1": {"value": false },
+/// Device Twin to control relay "Relay1": true or false
 /// </summary>
 static void DeviceTwinRelay1Handler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding)
 {
-	if (*(bool*)deviceTwinBinding->twinState) { lp_gpioOn(&relay1); }
-	else { lp_gpioOff(&relay1); }
+	lp_gpioSetState(&relay1, *(bool*)deviceTwinBinding->twinState);
+	lp_deviceTwinAckDesiredState(deviceTwinBinding, deviceTwinBinding->twinState, LP_DEVICE_TWIN_COMPLETED);
 }
 
 /// <summary>
@@ -174,38 +209,8 @@ static void DeviceTwinBlinkRateHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding
 	ic_control_block.cmd = LP_IC_BLINK_RATE;
 	ic_control_block.blinkRate = *(int*)deviceTwinBinding->twinState;
 	lp_sendInterCoreMessage(&ic_control_block, sizeof(ic_control_block));
-}
 
-/// <summary>
-/// Turn on LED2, send message to Azure IoT and set a one shot timer to turn LED2 off
-/// </summary>
-static void SendMsgLed2On(char* message)
-{
-	lp_gpioOn(&led2);
-	Log_Debug("%s\n", message);
-
-	// optional: message properties can be used for message routing in IOT Hub
-	lp_setMessageProperties(telemetryMessageProperties, NELEMS(telemetryMessageProperties));
-
-	lp_sendMsg(message);
-
-	// optional: clear if you are sending other message types that don't require these properties
-	lp_clearMessageProperties();
-
-	lp_setOneShotTimer(&led2BlinkOffOneShotTimer, &sendMsgLedBlinkPeriod);
-}
-
-/// <summary>
-/// One shot timer to turn LED2 off
-/// </summary>
-static void Led2OffHandler(EventLoopTimer* eventLoopTimer)
-{
-	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
-	{
-		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
-		return;
-	}
-	lp_gpioOff(&led2);
+	lp_deviceTwinAckDesiredState(deviceTwinBinding, deviceTwinBinding->twinState, LP_DEVICE_TWIN_COMPLETED);
 }
 
 /// <summary>
@@ -229,7 +234,6 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 /// </summary>
 static void InterCoreHandler(LP_INTER_CORE_BLOCK* ic_message_block)
 {
-	static const char* msgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"Light\":%d, \"MsgId\":%d }";
 	static int msgId = 0;
 	int len = 0;
 
@@ -239,15 +243,8 @@ static void InterCoreHandler(LP_INTER_CORE_BLOCK* ic_message_block)
 		len = snprintf(msgBuffer, JSON_MESSAGE_BYTES, cstrJsonEvent, "ButtonA");
 		lp_deviceTwinReportState(&buttonPressed, "ButtonA");					// TwinType = TYPE_STRING
 		break;
-	case LP_IC_EVENT_BUTTON_B:
-		len = snprintf(msgBuffer, JSON_MESSAGE_BYTES, cstrJsonEvent, "ButtonB");
-		lp_deviceTwinReportState(&buttonPressed, "ButtonB");					// TwinType = TYPE_STRING
-		break;
 	case LP_IC_TEMPERATURE_PRESSURE_HUMIDITY:
 		len = snprintf(msgBuffer, JSON_MESSAGE_BYTES, msgTemplate, ic_message_block->temperature, ic_message_block->humidity, ic_message_block->pressure, 0, msgId++);
-		break;
-	case LP_IC_BLINK_RATE:
-		lp_deviceTwinReportState(&led1BlinkRate, &ic_message_block->blinkRate);
 		break;
 	default:
 		break;
@@ -255,7 +252,8 @@ static void InterCoreHandler(LP_INTER_CORE_BLOCK* ic_message_block)
 
 	if (len > 0)
 	{
-		SendMsgLed2On(msgBuffer);
+		Log_Debug("%s\n", msgBuffer);
+		lp_sendMsgWithProperties(msgBuffer, telemetryMessageProperties, NELEMS(telemetryMessageProperties));
 	}
 }
 
@@ -273,35 +271,32 @@ static void ResetDeviceHandler(EventLoopTimer* eventLoopTimer)
 }
 
 /// <summary>
-/// Start Device Power Restart Direct Method 'ResetMethod' {"reset_timer":5}
+/// Start Device Power Restart Direct Method 'ResetMethod' integer seconds eg 5
 /// </summary>
-static LP_DIRECT_METHOD_RESPONSE_CODE ResetDirectMethodHandler(JSON_Object* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg)
+static LP_DIRECT_METHOD_RESPONSE_CODE ResetDirectMethodHandler(JSON_Value* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg)
 {
-	const char propertyName[] = "reset_timer";
 	const size_t responseLen = 60; // Allocate and initialize a response message buffer. The calling function is responsible for the freeing memory
 	static struct timespec period;
 
 	*responseMsg = (char*)malloc(responseLen);
 	memset(*responseMsg, 0, responseLen);
 
-	if (!json_object_has_value_of_type(json, propertyName, JSONNumber))
-	{
-		return LP_METHOD_FAILED;
-	}
-	int seconds = (int)json_object_get_number(json, propertyName);
+	if (json_value_get_type(json) != JSONNumber) { return LP_METHOD_FAILED; }
+
+	int seconds = (int)json_value_get_number(json);
 
 	// leave enough time for the device twin deviceResetUtc to update before restarting the device
 	if (seconds > 2 && seconds < 10)
 	{
 		// Report Device Reset UTC
-		lp_deviceTwinReportState(&deviceResetUtc, lp_getCurrentUtc(msgBuffer, sizeof(msgBuffer)));			// LP_TYPE_STRING
+		lp_deviceTwinReportState(&deviceResetUtc, lp_getCurrentUtc(msgBuffer, sizeof(msgBuffer))); // LP_TYPE_STRING
 
 		// Create Direct Method Response
 		snprintf(*responseMsg, responseLen, "%s called. Reset in %d seconds", directMethodBinding->methodName, seconds);
 
 		// Set One Shot LP_TIMER
 		period = (struct timespec){ .tv_sec = seconds, .tv_nsec = 0 };
-		lp_setOneShotTimer(&resetDeviceOneShotTimer, &period);
+		lp_timerSetOneShot(&resetDeviceOneShotTimer, &period);
 
 		return LP_METHOD_SUCCEEDED;
 	}
@@ -318,12 +313,12 @@ static LP_DIRECT_METHOD_RESPONSE_CODE ResetDirectMethodHandler(JSON_Object* json
 /// <returns>0 on success, or -1 on failure</returns>
 static void InitPeripheralAndHandlers(void)
 {
-	lp_openPeripheralGpioSet(peripheralGpioSet, NELEMS(peripheralGpioSet));
-	lp_openDeviceTwinSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
-	lp_openDirectMethodSet(directMethodBindingSet, NELEMS(directMethodBindingSet));
+	lp_gpioOpenSet(peripheralGpioSet, NELEMS(peripheralGpioSet));
+	lp_deviceTwinOpenSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
+	lp_directMethodOpenSet(directMethodBindingSet, NELEMS(directMethodBindingSet));
 
-	lp_startTimerSet(timerSet, NELEMS(timerSet));
-	lp_startCloudToDevice();
+	lp_timerStartSet(timerSet, NELEMS(timerSet));
+	lp_cloudToDeviceStart();
 
 	lp_enableInterCoreCommunications(rtAppComponentId, InterCoreHandler);  // Initialize Inter Core Communications
 
@@ -338,15 +333,15 @@ static void ClosePeripheralAndHandlers(void)
 {
 	Log_Debug("Closing file descriptors\n");
 
-	lp_stopTimerSet();
-	lp_stopCloudToDevice();
+	lp_timerStopSet();
+	lp_cloudToDeviceStop();
 
-	lp_closePeripheralGpioSet();
-	lp_closeDeviceTwinSet();
-	lp_closeDirectMethodSet();
+	lp_gpioCloseSet();
+	lp_deviceTwinCloseSet();
+	lp_directMethodSetClose();
 
 
-	lp_stopTimerEventLoop();
+	lp_timerStopEventLoop();
 }
 
 int main(int argc, char* argv[])
@@ -365,7 +360,7 @@ int main(int argc, char* argv[])
 	// Main loop
 	while (!lp_isTerminationRequired())
 	{
-		int result = EventLoop_Run(lp_getTimerEventLoop(), -1, true);
+		int result = EventLoop_Run(lp_timerGetEventLoop(), -1, true);
 		// Continue if interrupted by signal, e.g. due to breakpoint being set.
 		if (result == -1 && errno != EINTR)
 		{

@@ -34,10 +34,9 @@ typedef struct _deviceTwinBinding LP_DEVICE_TWIN_BINDING;
 void lp_twinCallback(DEVICE_TWIN_UPDATE_STATE updateState, const unsigned char* payload, size_t payloadSize, void* userContextCallback);
 void lp_deviceTwinsReportStatusCallback(int result, void* context);
 
-void lp_openDeviceTwinSet(LP_DEVICE_TWIN_BINDING* deviceTwins[], size_t deviceTwinCount);
-void lp_closeDeviceTwinSet(void);
-
-void lp_openDeviceTwin(LP_DEVICE_TWIN_BINDING* deviceTwinBinding);
-void lp_closeDeviceTwin(LP_DEVICE_TWIN_BINDING* deviceTwinBinding);
+void lp_deviceTwinOpenSet(LP_DEVICE_TWIN_BINDING* deviceTwins[], size_t deviceTwinCount);
+void lp_deviceTwinCloseSet(void);
+void lp_deviceTwinOpen(LP_DEVICE_TWIN_BINDING* deviceTwinBinding);
+void lp_deviceTwinClose(LP_DEVICE_TWIN_BINDING* deviceTwinBinding);
 bool lp_deviceTwinReportState(LP_DEVICE_TWIN_BINDING* deviceTwinBinding, void* state);
 bool lp_deviceTwinAckDesiredState(LP_DEVICE_TWIN_BINDING* deviceTwinBinding, void* state, LP_DEVICE_TWIN_RESPONSE_CODE statusCode);
