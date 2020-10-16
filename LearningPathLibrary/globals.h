@@ -9,6 +9,7 @@
 #define RT_APP_COMPONENT_LENGTH 36 + 1  // GUID 36 Char + 1 NULL terminate)
 
 #define NELEMS(x)  (sizeof(x) / sizeof((x)[0]))
+#define LP_LOGGING_ENABLED TRUE
 
 extern char scopeId[SCOPEID_LENGTH]; // ScopeId for the Azure IoT Central application, set in app_manifest.json, CmdArgs
 extern char rtAppComponentId[RT_APP_COMPONENT_LENGTH];  //initialized from cmdline argument

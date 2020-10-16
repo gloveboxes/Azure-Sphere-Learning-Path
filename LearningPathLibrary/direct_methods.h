@@ -12,7 +12,7 @@ typedef enum
 
 struct _directMethodBinding {
 	const char* methodName;
-	LP_DIRECT_METHOD_RESPONSE_CODE(*handler)(JSON_Object* json, struct _directMethodBinding* peripheral, char** responseMsg);
+	LP_DIRECT_METHOD_RESPONSE_CODE(*handler)(JSON_Value* json, struct _directMethodBinding* peripheral, char** responseMsg);
 };
 
 typedef struct _directMethodBinding LP_DIRECT_METHOD_BINDING;

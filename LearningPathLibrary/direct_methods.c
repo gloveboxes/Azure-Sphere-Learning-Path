@@ -38,7 +38,6 @@ int lp_azureDirectMethodHandler(const char* method_name, const unsigned char* pa
 	size_t responseMessageLength;
 
 	JSON_Value* root_value = NULL;
-	JSON_Object* jsonObject = NULL;
 
 	// Prepare the payload for the response. This is a heap allocated null terminated string.
 	// The Azure IoT Hub SDK is responsible of freeing it.
@@ -64,14 +63,6 @@ int lp_azureDirectMethodHandler(const char* method_name, const unsigned char* pa
 		goto cleanup;
 	}
 
-	jsonObject = json_value_get_object(root_value);
-	if (jsonObject == NULL)
-	{
-		responseMessage = invalidJsonMsg;
-		result = LP_METHOD_FAILED;
-		goto cleanup;
-	}
-
 	// loop through array of DirectMethodBindings looking for a matching method name
 	for (int i = 0; i < _directMethodCount; i++)
 	{
@@ -85,7 +76,7 @@ int lp_azureDirectMethodHandler(const char* method_name, const unsigned char* pa
 	if (directMethodBinding != NULL && directMethodBinding->handler != NULL)
 	{	// was a LP_DIRECT_METHOD_BINDING found
 
-		responseCode = directMethodBinding->handler(jsonObject, directMethodBinding, &responseMsg);
+		responseCode = directMethodBinding->handler(root_value, directMethodBinding, &responseMsg);
 
 		result = (int)responseCode;
 

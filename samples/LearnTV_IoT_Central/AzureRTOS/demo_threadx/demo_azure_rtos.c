@@ -1,7 +1,4 @@
 #include "hw/azure_sphere_learning_path.h"
-// #include "i2c.h"
-// #include "lsm6dso_driver.h"
-// #include "lsm6dso_reg.h"
 #include "mt3620-intercore.h"
 #include "os_hal_gpio.h"
 #include "os_hal_uart.h"

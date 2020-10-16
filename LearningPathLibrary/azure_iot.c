@@ -47,7 +47,9 @@ void lp_setConnectionString(const char* connectionString) {
 /// <param name="result">Message delivery status</param>
 /// <param name="context">User specified context</param>
 static void SendMessageCallback(IOTHUB_CLIENT_CONFIRMATION_RESULT result, void* context) {
+	#if LP_LOGGING_ENABLED
 	Log_Debug("INFO: Message received by IoT Hub. Result is: %d\n", result);
+	#endif
 }
 
 /// <summary>
@@ -121,7 +123,9 @@ bool lp_sendMsg(const char* msg) {
 		return false;
 	}
 	else {
+		#if LP_LOGGING_ENABLED
 		Log_Debug("INFO: IoTHubClient accepted the message for delivery\n");
+		#endif
 	}
 
 	IoTHubMessage_Destroy(messageHandle);

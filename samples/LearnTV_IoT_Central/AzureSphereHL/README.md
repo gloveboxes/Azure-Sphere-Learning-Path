@@ -67,7 +67,7 @@ Demo flow
 ```c
 // Timer
 static LP_TIMER readSensorTimer = {
-    .period = {5, 0},
+    .period = {0, 0},
     .name = "readSensorTimer",
     .handler = ReadSensorHandler };
 ```
@@ -86,14 +86,14 @@ static LP_TIMER* timerSet[] = { &intercoreHeartbeatHandler, &readSensorTimer };
 /// </summary>
 static void ReadSensorHandler(EventLoopTimer* eventLoopTimer)
 {
-	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
-		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
-	}
-	else {
-		// send request to Real-Time core app to read temperature, pressure, and humidity
-		ic_control_block.cmd = LP_IC_ENVIRONMENT_SENSOR;
-		lp_sendInterCoreMessage(&ic_control_block, sizeof(ic_control_block));
-	}
+    if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
+        lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
+    }
+    else {
+        // send request to Real-Time core app to read temperature, pressure, and humidity
+        ic_control_block.cmd = LP_IC_ENVIRONMENT_SENSOR;
+        lp_sendInterCoreMessage(&ic_control_block, sizeof(ic_control_block));
+    }
 }
 ```
 
@@ -141,15 +141,13 @@ static LP_DIRECT_METHOD_BINDING* directMethodBindingSet[] = { &lightControl };
 
 ```c
 /// <summary>
-/// Remote control lab light Direct Method 'LightControl' {"light_state":true}
+/// Remote control lab light Direct Method 'LightControl' true or false
 /// </summary>
-static LP_DIRECT_METHOD_RESPONSE_CODE LightControlDirectMethodHandler(JSON_Object* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg)
+static LP_DIRECT_METHOD_RESPONSE_CODE LightControlDirectMethodHandler(JSON_Value* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg)
 {
-    const char propertyName[] = "light_state";
+    if (json_value_get_type(json) != JSONBoolean) { return LP_METHOD_FAILED; }
 
-    if (!json_object_has_value_of_type(json, propertyName, JSONBoolean)) { return LP_METHOD_FAILED; }
-
-    bool state = (bool)json_object_get_boolean(json, propertyName);
+    bool state = (bool)json_value_get_boolean(json);
 
     lp_gpioSetState(&relay, state);
 
@@ -215,7 +213,10 @@ static void SampleRateDeviceTwinHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBindin
         sampleRateSeconds = sampleRate;
         lp_setOneShotTimer(&readSensorTimer, &(struct timespec){sampleRateSeconds, 0});
 
-        lp_deviceTwinReportState(deviceTwinBinding, deviceTwinBinding->twinState);
+        lp_deviceTwinAckDesiredState(deviceTwinBinding, deviceTwinBinding->twinState, LP_DEVICE_TWIN_COMPLETED);
+    }
+    else {
+        lp_deviceTwinAckDesiredState(deviceTwinBinding, deviceTwinBinding->twinState, LP_DEVICE_TWIN_ERROR);
     }
 }
 ```
@@ -244,19 +245,19 @@ static void SampleRateDeviceTwinHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBindin
 
 ```c
 static LP_TIMER networkConnectionStatusTimer = {
-	.period = {15, 0},
-	.name = "networkConnectionStatusTimer",
-	.handler = NetworkConnectionStatusHandler };
+    .period = {15, 0},
+    .name = "networkConnectionStatusTimer",
+    .handler = NetworkConnectionStatusHandler };
 ```
 
 ```c
 static LP_PERIPHERAL_GPIO networkConnectedLed = {
-	.pin = NETWORK_CONNECTED_LED,
-	.direction = LP_OUTPUT,
-	.initialState = GPIO_Value_Low,
-	.invertPin = true,
-	.initialise = lp_openPeripheralGpio,
-	.name = "networkConnectedLed" };
+    .pin = NETWORK_CONNECTED_LED,
+    .direction = LP_OUTPUT,
+    .initialState = GPIO_Value_Low,
+    .invertPin = true,
+    .initialise = lp_openPeripheralGpio,
+    .name = "networkConnectedLed" };
 ```
 
 ### Update GPIO and Timer sets**
@@ -274,11 +275,11 @@ static LP_PERIPHERAL_GPIO* peripheralSet[] = { &relay, &networkConnectedLed };
 /// </summary>
 static void NetworkConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
 {
-	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
-		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
-	}
-	else {
-		lp_gpioSetState(&networkConnectedLed, lp_connectToAzureIot());
-	}
+    if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
+        lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
+    }
+    else {
+        lp_gpioSetState(&networkConnectedLed, lp_connectToAzureIot());
+    }
 }
 ```

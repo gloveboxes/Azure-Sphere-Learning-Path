@@ -16,10 +16,18 @@ typedef enum {
 struct _deviceTwinBinding {
 	const char* twinProperty;
 	void* twinState;
+	int twinVersion;
 	bool twinStateUpdated;
 	LP_DEVICE_TWIN_TYPE twinType;
 	void (*handler)(struct _deviceTwinBinding* deviceTwinBinding);
 };
+
+typedef enum
+{
+	LP_DEVICE_TWIN_COMPLETED = 200,
+	LP_DEVICE_TWIN_ERROR = 500,
+	LP_DEVICE_TWIN_INVALID = 404
+} LP_DEVICE_TWIN_RESPONSE_CODE;
 
 typedef struct _deviceTwinBinding LP_DEVICE_TWIN_BINDING;
 
@@ -32,3 +40,4 @@ void lp_closeDeviceTwinSet(void);
 void lp_openDeviceTwin(LP_DEVICE_TWIN_BINDING* deviceTwinBinding);
 void lp_closeDeviceTwin(LP_DEVICE_TWIN_BINDING* deviceTwinBinding);
 bool lp_deviceTwinReportState(LP_DEVICE_TWIN_BINDING* deviceTwinBinding, void* state);
+bool lp_deviceTwinAckDesiredState(LP_DEVICE_TWIN_BINDING* deviceTwinBinding, void* state, LP_DEVICE_TWIN_RESPONSE_CODE statusCode);
