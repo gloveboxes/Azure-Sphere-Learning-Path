@@ -7,14 +7,15 @@ static void SendMessageCallback(IOTHUB_CLIENT_CONFIRMATION_RESULT, void*);
 static bool SetupAzureClient(void);
 static void HubConnectionStatusCallback(IOTHUB_CLIENT_CONNECTION_STATUS, IOTHUB_CLIENT_CONNECTION_STATUS_REASON, void*);
 static void AzureCloudToDeviceHandler(EventLoopTimer*);
+bool sendMsg(const char* msg, LP_MESSAGE_PROPERTY** messageProperties, size_t messagePropertyCount);
 
 static IOTHUB_DEVICE_CLIENT_LL_HANDLE iothubClientHandle = NULL;
 static bool iothubAuthenticated = false;
 static const int keepalivePeriodSeconds = 20;
 static const char* _connectionString = NULL;
 
-static LP_MESSAGE_PROPERTY** _messageProperties = NULL;
-static size_t _messagePropertyCount = 0;
+// static LP_MESSAGE_PROPERTY** _messageProperties = NULL;
+// static size_t _messagePropertyCount = 0;
 
 static const int maxPeriodSeconds = 5; // defines the max back off period for DoWork with lost network
 
@@ -78,19 +79,16 @@ static void AzureCloudToDeviceHandler(EventLoopTimer* eventLoopTimer) {
 	lp_setOneShotTimer(&cloudToDeviceTimer, &(struct timespec){period, 0});
 }
 
-void lp_setMessageProperties(LP_MESSAGE_PROPERTY** messageProperties, size_t messagePropertyCount)
-{
-	_messageProperties = messageProperties;
-	_messagePropertyCount = messagePropertyCount;
+bool lp_sendMsgWithProperties(const char* msg, LP_MESSAGE_PROPERTY** messageProperties, size_t messagePropertyCount){
+	return sendMsg(msg, messageProperties, messagePropertyCount);
 }
 
-void lp_clearMessageProperties(void)
-{
-	_messageProperties = NULL;
-	_messagePropertyCount = 0;
+bool lp_sendMsg(const char* msg){
+	return sendMsg(msg, NULL, 0);
 }
 
-bool lp_sendMsg(const char* msg) {
+bool sendMsg(const char* msg, LP_MESSAGE_PROPERTY** messageProperties, size_t messagePropertyCount){
+
 	if (strlen(msg) < 1) {
 		return true;
 	}
@@ -106,13 +104,13 @@ bool lp_sendMsg(const char* msg) {
 		return false;
 	}
 
-	if (_messageProperties != NULL)
+	if (messageProperties != NULL && messagePropertyCount > 0)
 	{
-		for (size_t i = 0; i < _messagePropertyCount; i++)
+		for (size_t i = 0; i < messagePropertyCount; i++)
 		{
-			if (_messageProperties[i]->key != NULL && _messageProperties[i]->value != NULL)
+			if (messageProperties[i]->key != NULL && messageProperties[i]->value != NULL)
 			{
-				IoTHubMessage_SetProperty(messageHandle, _messageProperties[i]->key, _messageProperties[i]->value);
+				IoTHubMessage_SetProperty(messageHandle, messageProperties[i]->key, messageProperties[i]->value);
 			}
 		}
 	}

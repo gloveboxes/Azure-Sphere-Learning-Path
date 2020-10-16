@@ -23,9 +23,8 @@ typedef struct LP_MESSAGE_PROPERTY
 	const char* value;
 } LP_MESSAGE_PROPERTY;
 
-void lp_setMessageProperties(LP_MESSAGE_PROPERTY** messageProperties, size_t messagePropertyCount);
-void lp_clearMessageProperties(void);
 bool lp_sendMsg(const char* msg);
+bool lp_sendMsgWithProperties(const char* msg, LP_MESSAGE_PROPERTY** messageProperties, size_t messagePropertyCount);
 void lp_startCloudToDevice(void);
 void lp_stopCloudToDevice(void);
 void lp_setConnectionString(const char* connectionString); // Note, do not use Connection Strings for Production - this is here for lab workaround
