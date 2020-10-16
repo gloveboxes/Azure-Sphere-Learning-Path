@@ -60,8 +60,9 @@
 static void ReadSensorHandler(EventLoopTimer* eventLoopTimer);
 static void IntercoreHeartbeatHandler(EventLoopTimer* eventLoopTimer);
 static void SampleRateDeviceTwinHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding);
-static LP_DIRECT_METHOD_RESPONSE_CODE LightControlDirectMethodHandler(JSON_Value* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg);
 static void AzureIotConnectionStatusHandler(EventLoopTimer* eventLoopTimer);
+static LP_DIRECT_METHOD_RESPONSE_CODE LightControlDirectMethodHandler(JSON_Value* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg);
+
 
 static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 static LP_INTER_CORE_BLOCK ic_control_block;
