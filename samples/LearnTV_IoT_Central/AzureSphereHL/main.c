@@ -78,7 +78,6 @@ static LP_MESSAGE_PROPERTY* msgProperties[] = {
 	&(LP_MESSAGE_PROPERTY) {.key = "version", .value = "1" }
 };
 
-
 // primes intercore signature
 static LP_TIMER intercoreHeartbeatHandler = {
 	.period = {20, 0}, .name = "intercoreHeartbeatHandler", .handler = IntercoreHeartbeatHandler };
@@ -103,21 +102,6 @@ static LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = {  };
 
 
 
-
-/// <summary>
-/// Read sensor and send to Azure IoT
-/// </summary>
-static void ReadSensorHandler(EventLoopTimer* eventLoopTimer)
-{
-    if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
-        lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
-    }
-    else {
-        // send request to Real-Time core app to read temperature, pressure, and humidity
-        ic_control_block.cmd = LP_IC_ENVIRONMENT_SENSOR;
-        lp_sendInterCoreMessage(&ic_control_block, sizeof(ic_control_block));
-    }
-}
 
 /*****************************************************************************/
 /*         Initialise and run code                                           */
