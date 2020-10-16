@@ -69,70 +69,67 @@
 #define JSON_MESSAGE_BYTES 256  // Number of bytes to allocate for the JSON telemetry message for IoT Central
 
 // Forward signatures
-static void InitPeripheralsAndHandlers(void);
-static void ClosePeripheralsAndHandlers(void);
 static void Led1BlinkHandler(EventLoopTimer* eventLoopTimer);
-static void Led2OffHandler(EventLoopTimer* eventLoopTimer);
 static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer);
 static void ButtonPressCheckHandler(EventLoopTimer* eventLoopTimer);
 static void NetworkConnectionStatusHandler(EventLoopTimer* eventLoopTimer);
 
 static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 
-static const struct timespec led2BlinkPeriod = { 0, 300 * 1000 * 1000 };
-
 static int led1BlinkIntervalIndex = 2;
 static const struct timespec led1BlinkIntervals[] = { {0, 125000000}, {0, 250000000}, {0, 500000000}, {0, 750000000}, {1, 0} };
 static const int led1BlinkIntervalsCount = NELEMS(led1BlinkIntervals);
 
+static const char* MsgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"Light\":%d, \"MsgId\":%d }";
+
 // GPIO Input Peripherals
-static LP_GPIO buttonA = { .pin = BUTTON_A, .direction = LP_INPUT, .initialise = lp_gpioOpen, .name = "buttonA" };
-static LP_GPIO buttonB = { .pin = BUTTON_B, .direction = LP_INPUT, .initialise = lp_gpioOpen, .name = "buttonB" };
+static LP_GPIO buttonA = {
+	.pin = BUTTON_A,
+	.direction = LP_INPUT,
+	.initialise = lp_gpioOpen,
+	.name = "buttonA" };
 
 // GPIO Output Peripherals
-static LP_GPIO led1 = { .pin = LED1, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true,
+static LP_GPIO led1 = {
+	.pin = LED1,
+	.direction = LP_OUTPUT,
+	.initialState = GPIO_Value_Low,
+	.invertPin = true,
 	.initialise = lp_gpioOpen, .name = "led1" };
 
-static LP_GPIO led2 = { .pin = LED2, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true,
-	.initialise = lp_gpioOpen, .name = "led2" };
-
-static LP_GPIO networkConnectedLed = { .pin = NETWORK_CONNECTED_LED, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true,
-	.initialise = lp_gpioOpen, .name = "networkConnectedLed" };
+static LP_GPIO networkConnectedLed = {
+	.pin = NETWORK_CONNECTED_LED,
+	.direction = LP_OUTPUT,
+	.initialState = GPIO_Value_Low,
+	.invertPin = true,
+	.initialise = lp_gpioOpen,
+	.name = "networkConnectedLed" };
 
 // Timers
-static LP_TIMER led1BlinkTimer = { .period = { 0, 125000000 }, .name = "led1BlinkTimer", .handler = Led1BlinkHandler };
-static LP_TIMER led2BlinkOffOneShotTimer = { .period = { 0, 0 }, .name = "led2BlinkOffOneShotTimer", .handler = Led2OffHandler };
-static LP_TIMER buttonPressCheckTimer = { .period = { 0, 1000000 }, .name = "buttonPressCheckTimer", .handler = ButtonPressCheckHandler };
-static LP_TIMER networkConnectionStatusTimer = { .period = { 5, 0 }, .name = "networkConnectionStatusTimer", .handler = NetworkConnectionStatusHandler };
-static LP_TIMER measureSensorTimer = { .period = { 10, 0 }, .name = "measureSensorTimer", .handler = MeasureSensorHandler };
+static LP_TIMER led1BlinkTimer = {
+	.period = { 0, 125000000 },
+	.name = "led1BlinkTimer",
+	.handler = Led1BlinkHandler };
+
+static LP_TIMER buttonPressCheckTimer = {
+	.period = { 0, 1000000 },
+	.name = "buttonPressCheckTimer",
+	.handler = ButtonPressCheckHandler };
+
+static LP_TIMER networkConnectionStatusTimer = {
+	.period = { 5, 0 },
+	.name = "networkConnectionStatusTimer",
+	.handler = NetworkConnectionStatusHandler };
+
+static LP_TIMER measureSensorTimer = {
+	.period = { 10, 0 },
+	.name = "measureSensorTimer",
+	.handler = MeasureSensorHandler };
 
 // Initialize Sets
-LP_GPIO* peripheralSet[] = { &buttonA, &buttonB, &led1, &led2, &networkConnectedLed };
-LP_TIMER* timerSet[] = { &led1BlinkTimer, &led2BlinkOffOneShotTimer, &buttonPressCheckTimer, &networkConnectionStatusTimer, &measureSensorTimer };
+LP_GPIO* peripheralSet[] = { &buttonA, &led1, &networkConnectedLed };
+LP_TIMER* timerSet[] = { &led1BlinkTimer, &buttonPressCheckTimer, &networkConnectionStatusTimer, &measureSensorTimer };
 
-
-int main(int argc, char* argv[])
-{
-	lp_registerTerminationHandler();
-
-	InitPeripheralsAndHandlers();
-
-	// Main loop
-	while (!lp_isTerminationRequired())
-	{
-		int result = EventLoop_Run(lp_timerGetEventLoop(), -1, true);
-		// Continue if interrupted by signal, e.g. due to breakpoint being set.
-		if (result == -1 && errno != EINTR)
-		{
-			lp_terminate(ExitCode_Main_EventLoopFail);
-		}
-	}
-
-	ClosePeripheralsAndHandlers();
-
-	Log_Debug("Application exiting.\n");
-	return lp_getTerminationExitCode();
-}
 
 /// <summary>
 /// Check status of connection to Azure IoT
@@ -145,36 +142,7 @@ static void NetworkConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
 		return;
 	}
 
-	if (lp_isNetworkReady())
-	{
-		lp_gpioOn(&networkConnectedLed);
-	}
-	else
-	{
-		lp_gpioOff(&networkConnectedLed);
-	}
-}
-
-/// <summary>
-/// Turn on LED2 and set a one shot timer to turn LED2 off
-/// </summary>
-static void Led2On(void)
-{
-	lp_gpioOn(&led2);
-	lp_timerSetOneShot(&led2BlinkOffOneShotTimer, &led2BlinkPeriod);
-}
-
-/// <summary>
-/// One shot timer to turn LED2 off
-/// </summary>
-static void Led2OffHandler(EventLoopTimer* eventLoopTimer)
-{
-	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
-	{
-		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
-		return;
-	}
-	lp_gpioOff(&led2);
+	lp_gpioSetState(&networkConnectedLed, lp_isNetworkReady());
 }
 
 /// <summary>
@@ -184,7 +152,6 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 {
 	static int msgId = 0;
 	static LP_ENVIRONMENT environment;
-	static const char* MsgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"Light\":%d, \"MsgId\":%d }";
 
 	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
 	{
@@ -197,7 +164,6 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 		if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, MsgTemplate, environment.temperature, environment.humidity, environment.pressure, environment.light, msgId++) > 0)
 		{
 			Log_Debug("%s\n", msgBuffer);
-			Led2On();
 		}
 	}
 }
@@ -208,7 +174,6 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 static void ButtonPressCheckHandler(EventLoopTimer* eventLoopTimer)
 {
 	static GPIO_Value_Type buttonAState;
-	static GPIO_Value_Type buttonBState;
 
 	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
 	{
@@ -216,7 +181,7 @@ static void ButtonPressCheckHandler(EventLoopTimer* eventLoopTimer)
 		return;
 	}
 
-	if (lp_gpioGetState(&buttonA, &buttonAState) || lp_gpioGetState(&buttonB, &buttonBState))
+	if (lp_gpioGetState(&buttonA, &buttonAState))
 	{
 		led1BlinkIntervalIndex = (led1BlinkIntervalIndex + 1) % led1BlinkIntervalsCount;
 		lp_timerChange(&led1BlinkTimer, &led1BlinkIntervals[led1BlinkIntervalIndex]);
@@ -228,18 +193,15 @@ static void ButtonPressCheckHandler(EventLoopTimer* eventLoopTimer)
 /// </summary>
 static void Led1BlinkHandler(EventLoopTimer* eventLoopTimer)
 {
-	static bool led_state = false;
+	static bool led_state = true;
 
 	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
 	{
 		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
 		return;
 	}
-
+	lp_gpioSetState(&led1, led_state);
 	led_state = !led_state;
-
-	if (led_state) { lp_gpioOff(&led1); }
-	else { lp_gpioOn(&led1); }
 }
 
 /// <summary>
@@ -266,4 +228,27 @@ static void ClosePeripheralsAndHandlers(void)
 	lp_closeDevKit();
 
 	lp_timerStopEventLoop();
+}
+
+int main(int argc, char* argv[])
+{
+	lp_registerTerminationHandler();
+
+	InitPeripheralsAndHandlers();
+
+	// Main loop
+	while (!lp_isTerminationRequired())
+	{
+		int result = EventLoop_Run(lp_timerGetEventLoop(), -1, true);
+		// Continue if interrupted by signal, e.g. due to breakpoint being set.
+		if (result == -1 && errno != EINTR)
+		{
+			lp_terminate(ExitCode_Main_EventLoopFail);
+		}
+	}
+
+	ClosePeripheralsAndHandlers();
+
+	Log_Debug("Application exiting.\n");
+	return lp_getTerminationExitCode();
 }
