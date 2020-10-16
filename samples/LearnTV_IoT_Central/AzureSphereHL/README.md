@@ -67,7 +67,7 @@ Demo flow
 ```c
 // Timer
 static LP_TIMER readSensorTimer = {
-    .period = {0, 0},
+    .period = {5, 0},
     .name = "readSensorTimer",
     .handler = ReadSensorHandler };
 ```
@@ -210,9 +210,7 @@ static void SampleRateDeviceTwinHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBindin
 
     if (sampleRate > 0 && sampleRate < (5 * 60)) // check sensible range
     {
-        sampleRateSeconds = sampleRate;
-        lp_setOneShotTimer(&readSensorTimer, &(struct timespec){sampleRateSeconds, 0});
-
+        lp_changeTimer(&readSensorTimer, &(struct timespec){sampleRateSeconds, 0});
         lp_deviceTwinAckDesiredState(deviceTwinBinding, deviceTwinBinding->twinState, LP_DEVICE_TWIN_COMPLETED);
     }
     else {
