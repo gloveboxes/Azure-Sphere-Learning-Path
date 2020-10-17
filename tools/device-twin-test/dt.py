@@ -3,6 +3,10 @@ import json
 import time
 import os
 
+
+# Generate DEVICE_TWIN_AUTHORIZATION with 
+# az iot hub generate-sas-token --hub-name "hub name" --duration 864000 (eg 864000 = ten days)
+
 device_id = os.environ["DEVICE_TWIN_DEVICE_ID"]
 authorization = os.environ["DEVICE_TWIN_AUTHORIZATION"]
 hub_name = os.environ["DEVICE_TWIN_HUB_NAME"]
@@ -16,9 +20,7 @@ temperatures = [5, 25, 50]
 payload = {
     "properties": {
         "desired": {
-            "DesiredTemperature": {
-                "value": 20
-            }
+            "DesiredTemperature": 20            
         }
     }
 }
@@ -29,7 +31,7 @@ headers = { 'Authorization': authorization }
 
 while True:
 
-    payload["properties"]["desired"]["DesiredTemperature"]["value"] = temperatures[count % 3]
+    payload["properties"]["desired"]["DesiredTemperature"] = temperatures[count % 3]
 
     r = requests.patch(url, data=json.dumps(payload), headers=headers)
 
