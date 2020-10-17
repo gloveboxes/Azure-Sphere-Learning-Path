@@ -108,7 +108,7 @@ static LP_TIMER azureIotConnectionStatusTimer = {
 	.handler = AzureIoTConnectionStatusHandler };
 
 static LP_TIMER measureSensorTimer = {
-	.period = { 10, 0 },
+	.period = { 6, 0 },
 	.name = "measureSensorTimer",
 	.handler = MeasureSensorHandler };
 
@@ -129,7 +129,7 @@ static LP_DEVICE_TWIN_BINDING actualTemperature = {
 
 static LP_DEVICE_TWIN_BINDING actualHvacState = {
 	.twinProperty = "ActualHvacState",
-	.twinType = LP_TYPE_FLOAT };
+	.twinType = LP_TYPE_STRING };
 
 static LP_DEVICE_TWIN_BINDING deviceResetUtc = {
 	.twinProperty = "DeviceResetUTC",
