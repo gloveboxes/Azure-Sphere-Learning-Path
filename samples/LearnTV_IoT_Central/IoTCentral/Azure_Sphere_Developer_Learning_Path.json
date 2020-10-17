@@ -30,22 +30,6 @@
             "unit": "Units/Temperature/celsius"
           },
           {
-            "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:Humidity:1",
-            "@type": [
-              "Telemetry",
-              "SemanticType/Humidity"
-            ],
-            "displayName": {
-              "en": "Humidity"
-            },
-            "name": "Humidity",
-            "displayUnit": {
-              "en": "%"
-            },
-            "schema": "float",
-            "unit": "Units/Humidity/percent"
-          },
-          {
             "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:Pressure:1",
             "@type": [
               "Telemetry",

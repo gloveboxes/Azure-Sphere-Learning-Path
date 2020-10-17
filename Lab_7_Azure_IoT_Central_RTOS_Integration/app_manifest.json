@@ -9,8 +9,11 @@
   ],
   "Capabilities": {
     "Gpio": [
+      "$BUTTON_A",
       "$NETWORK_CONNECTED_LED",
-      "$RELAY"
+      "$LED_RED",
+      "$LED_GREEN",
+      "$LED_BLUE"
     ],
     "PowerControls": [
       "ForceReboot"

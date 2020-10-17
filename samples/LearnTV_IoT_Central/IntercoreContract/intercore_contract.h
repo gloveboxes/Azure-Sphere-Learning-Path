@@ -12,5 +12,4 @@ typedef struct
 	LP_INTER_CORE_CMD cmd;
 	float temperature;
 	float pressure;
-	float humidity;
 } LP_INTER_CORE_BLOCK;

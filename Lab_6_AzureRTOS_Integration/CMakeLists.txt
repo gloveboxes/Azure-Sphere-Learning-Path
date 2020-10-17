@@ -9,8 +9,8 @@
 
 # If you are NOT using the AVNET board be sure to comment out the AVNET board
 
-set(AVNET TRUE "AVNET Azure Sphere Starter Kit")                
-# set(SEEED_STUDIO_RDB TRUE "Seeed Studio Azure Sphere MT3620 Development Kit (aka Reference Design Board or rdb)")
+# set(AVNET TRUE "AVNET Azure Sphere Starter Kit")                
+ set(SEEED_STUDIO_RDB TRUE "Seeed Studio Azure Sphere MT3620 Development Kit (aka Reference Design Board or rdb)")
 # set(SEEED_STUDIO_MINI TRUE "Seeed Studio Azure Sphere MT3620 Mini Dev Board")
 
 ###################################################################################################################
@@ -30,13 +30,20 @@ add_executable (${PROJECT_NAME}
                             ./demo_threadx/rtcoremain.c
                             ./demo_threadx/mt3620-intercore.c 
                             ./demo_threadx/mt3620-uart-poll.c 
-                            ./demo_threadx/lsm6dso_reg.c 
-                            ./demo_threadx/lsm6dso_driver.c 
-                            ./demo_threadx/i2c.c
+
+
+                            #./demo_threadx/lsm6dso_reg.c 
+                            #./demo_threadx/lsm6dso_driver.c 
+                            # ./demo_threadx/i2c.c
+
                             ./MT3620_lib/OS_HAL/src/os_hal_i2c.c
                             ./MT3620_lib/OS_HAL/src/os_hal_gpio.c
                             ./MT3620_lib/OS_HAL/src/os_hal_uart.c
                             "./MT3620_lib/OS_HAL/src/os_hal_dma.c"
+
+                            ./IMU_lib/imu_temp_pressure.c
+                            ./IMU_lib/lps22hh_reg.c
+                            ./IMU_lib/lsm6dso_reg.c
 )
 
 include_directories(${PROJECT_NAME} PUBLIC
@@ -44,11 +51,14 @@ include_directories(${PROJECT_NAME} PUBLIC
 
 target_include_directories(${PROJECT_NAME} PUBLIC
                            ./MT3620_lib/OS_HAL/inc
+                           ./MT3620_lib/MHAL/inc
                            ../IntercoreContract
+                           ./imu_temp_pressure
                            ./)
 
 
 add_subdirectory(./MT3620_lib/MT3620_M4_Driver ./lib/MT3620_M4_Driver)
+
 
 set(THREADX_ARCH "cortex_m4")
 set(THREADX_TOOLCHAIN "gnu")

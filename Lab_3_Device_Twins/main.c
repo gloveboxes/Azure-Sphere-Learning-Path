@@ -94,7 +94,7 @@ static LP_GPIO buttonA = {
 static LP_GPIO ledRed = { .pin = LED_RED, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true, .initialise = lp_gpioOpen, .name = "red led" };
 static LP_GPIO ledGreen = { .pin = LED_GREEN, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true, .initialise = lp_gpioOpen, .name = "green led" };
 static LP_GPIO ledBlue = { .pin = LED_BLUE, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true, .initialise = lp_gpioOpen, .name = "blue led" };
-static LP_GPIO* rgbLed[] = { &ledRed, &ledGreen, &ledBlue };
+static LP_GPIO* ledRgb[] = { &ledRed, &ledGreen, &ledBlue };
 
 static LP_GPIO azureIotConnectedLed = {
 	.pin = NETWORK_CONNECTED_LED,
@@ -247,7 +247,7 @@ static void TemperatureStatusBlinkHandler(EventLoopTimer* eventLoopTimer)
 
 	if (previous_led != current_led)
 	{
-		lp_gpioOff(rgbLed[(int)previous_led]); // turn off old current colour
+		lp_gpioOff(ledRgb[(int)previous_led]); // turn off old current colour
 		previous_led = current_led;
 
 		// send alert message as the HVAC state has changed
@@ -256,8 +256,8 @@ static void TemperatureStatusBlinkHandler(EventLoopTimer* eventLoopTimer)
 
 	led_state = !led_state;
 
-	if (led_state) { lp_gpioOff(rgbLed[(int)current_led]); }
-	else { lp_gpioOn(rgbLed[(int)current_led]); }
+	if (led_state) { lp_gpioOff(ledRgb[(int)current_led]); }
+	else { lp_gpioOn(ledRgb[(int)current_led]); }
 }
 
 /// <summary>

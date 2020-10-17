@@ -8,7 +8,6 @@
   ],
   "Capabilities": {
     "Gpio": [
-      "$BUTTON_A",
       "$NETWORK_CONNECTED_LED",
       "$LED_RED",
       "$LED_GREEN",
