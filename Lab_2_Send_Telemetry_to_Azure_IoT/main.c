@@ -82,7 +82,7 @@ static LP_GPIO buttonA = {
 	.name = "buttonA" };
 
 static LP_GPIO alertLed = {
-	.pin = APP_STATUS_LED,
+	.pin = ALERT_LED,
 	.direction = LP_OUTPUT,
 	.initialState = GPIO_Value_Low,
 	.invertPin = true,
@@ -212,7 +212,7 @@ static void ButtonPressCheckHandler(EventLoopTimer* eventLoopTimer)
 			// set up one shot timer to turn off led after 1 second
 			lp_timerSetOneShot(&alertLedOffOneShotTimer, &(struct timespec){1, 0});
 
-			SendAlertMessage("button_a", "pressed");
+			SendAlertMessage("alert_button", "pressed");
 		}
 	}
 }
