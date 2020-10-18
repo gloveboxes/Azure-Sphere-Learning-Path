@@ -11,7 +11,8 @@
       "$NETWORK_CONNECTED_LED",
       "$LED_RED",
       "$LED_GREEN",
-      "$LED_BLUE"
+      "$LED_BLUE",
+      "$BUTTON_A"
     ],
     "I2cMaster": [
       "$I2cMaster2"

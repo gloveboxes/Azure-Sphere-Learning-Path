@@ -68,7 +68,6 @@
 #define JSON_MESSAGE_BYTES 256 // Number of bytes to allocate for the JSON telemetry message for IoT Central
 
 // Forward signatures
-static void TemperatureStatusBlinkHandler(EventLoopTimer* eventLoopTimer);
 static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer);
 static void ButtonPressCheckHandler(EventLoopTimer* eventLoopTimer);
 static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer);
@@ -80,7 +79,6 @@ enum LEDS { RED, GREEN, BLUE };
 static enum LEDS current_led = RED;
 static const char* hvacState[] = { "heating", "off", "cooling" };
 
-static float desired_temperature = 0;
 static float last_temperature = 0;
 
 // GPIO Input PeripheralGpios
@@ -90,12 +88,6 @@ static LP_GPIO buttonA = {
 	.initialise = lp_gpioOpen,
 	.name = "buttonA" };
 
-// GPIO Output PeripheralGpios
-static LP_GPIO ledRed = { .pin = LED_RED, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true, .initialise = lp_gpioOpen, .name = "red led" };
-static LP_GPIO ledGreen = { .pin = LED_GREEN, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true, .initialise = lp_gpioOpen, .name = "green led" };
-static LP_GPIO ledBlue = { .pin = LED_BLUE, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true, .initialise = lp_gpioOpen, .name = "blue led" };
-static LP_GPIO* ledRgb[] = { &ledRed, &ledGreen, &ledBlue };
-
 static LP_GPIO azureIotConnectedLed = {
 	.pin = NETWORK_CONNECTED_LED,
 	.direction = LP_OUTPUT,
@@ -104,12 +96,13 @@ static LP_GPIO azureIotConnectedLed = {
 	.initialise = lp_gpioOpen,
 	.name = "networkConnectedLed" };
 
-// Timers
-static LP_TIMER temperatureStatusBlinkTimer = {
-	.period = {0, 500000000},
-	.name = "temperatureStatusBlinkTimer",
-	.handler = TemperatureStatusBlinkHandler };
+static LP_GPIO* ledRgb[] = {
+	&(LP_GPIO) { .pin = LED_RED, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true, .initialise = lp_gpioOpen, .name = "red led" },
+	&(LP_GPIO) {.pin = LED_GREEN, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true, .initialise = lp_gpioOpen, .name = "green led" },
+	&(LP_GPIO) {.pin = LED_BLUE, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true, .initialise = lp_gpioOpen, .name = "blue led" }
+};
 
+// Timers
 static LP_TIMER azureIotConnectionStatusTimer = {
 	.period = {5, 0},
 	.name = "azureIotConnectionStatusTimer",
@@ -135,10 +128,14 @@ static LP_DEVICE_TWIN_BINDING actualTemperature = {
 	.twinProperty = "ActualTemperature",
 	.twinType = LP_TYPE_FLOAT };
 
+static LP_DEVICE_TWIN_BINDING actualHvacState = {
+	.twinProperty = "ActualHvacState",
+	.twinType = LP_TYPE_STRING };
+
 // Initialize Sets
-LP_GPIO* PeripheralGpioSet[] = { &buttonA, &ledRed, &ledGreen, &ledBlue, &azureIotConnectedLed };
-LP_TIMER* timerSet[] = { &temperatureStatusBlinkTimer, &azureIotConnectionStatusTimer, &measureSensorTimer, &buttonPressCheckTimer };
-LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &desiredTemperature, &actualTemperature };
+LP_GPIO* gpioSet[] = { &buttonA, &azureIotConnectedLed };
+LP_TIMER* timerSet[] = { &azureIotConnectionStatusTimer, &measureSensorTimer, &buttonPressCheckTimer };
+LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &desiredTemperature, &actualTemperature, &actualHvacState };
 
 // Message templates and property sets
 
@@ -189,10 +186,22 @@ static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
 /// </summary>
 void SetTemperatureStatusColour(float actual_temperature)
 {
+	static enum LEDS previous_led = RED;
+
 	int actual = (int)(actual_temperature);
-	int desired = (int)(desired_temperature);
+	int desired = (int)(*(float*)desiredTemperature.twinState);
 
 	current_led = actual == desired ? GREEN : actual > desired ? BLUE : RED;
+
+	if (previous_led != current_led)
+	{
+		lp_gpioOff(ledRgb[(int)previous_led]); // turn off old current colour
+		previous_led = current_led;
+
+		lp_deviceTwinReportState(&actualTemperature, &actual_temperature);
+		lp_deviceTwinReportState(&actualHvacState, (void*)hvacState[(int)current_led]);
+	}
+	lp_gpioOn(ledRgb[(int)current_led]);
 }
 
 /// <summary>
@@ -232,44 +241,14 @@ void SendAlertMessage(const char* key, const char* value)
 }
 
 /// <summary>
-/// Blink Temperature Status Blink Handler
-/// </summary>
-static void TemperatureStatusBlinkHandler(EventLoopTimer* eventLoopTimer)
-{
-	static enum LEDS previous_led = RED;
-	static bool led_state = false;
-
-	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
-	{
-		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
-		return;
-	}
-
-	if (previous_led != current_led)
-	{
-		lp_gpioOff(ledRgb[(int)previous_led]); // turn off old current colour
-		previous_led = current_led;
-
-		// send alert message as the HVAC state has changed
-		SendAlertMessage("hvac", hvacState[(int)current_led]);
-	}
-
-	led_state = !led_state;
-
-	if (led_state) { lp_gpioOff(ledRgb[(int)current_led]); }
-	else { lp_gpioOn(ledRgb[(int)current_led]); }
-}
-
-/// <summary>
 /// Device Twin Handler to set the desired temperature value
 /// </summary>
 static void DeviceTwinSetTemperatureHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding)
 {
 	if (deviceTwinBinding->twinType == LP_TYPE_FLOAT)
 	{
-		desired_temperature = *(float*)deviceTwinBinding->twinState;
-		SetTemperatureStatusColour(last_temperature);
 		lp_deviceTwinAckDesiredState(deviceTwinBinding, deviceTwinBinding->twinState, LP_DEVICE_TWIN_COMPLETED);
+		SetTemperatureStatusColour(last_temperature);
 	}
 
 	/*	Casting device twin state examples
@@ -309,7 +288,9 @@ static void InitPeripheralAndHandlers(void)
 {
 	lp_initializeDevKit();
 
-	lp_gpioOpenSet(PeripheralGpioSet, NELEMS(PeripheralGpioSet));
+	lp_gpioOpenSet(gpioSet, NELEMS(gpioSet));
+	lp_gpioOpenSet(ledRgb, NELEMS(ledRgb));
+
 	lp_deviceTwinOpenSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
 
 	lp_timerStartSet(timerSet, NELEMS(timerSet));
@@ -333,7 +314,6 @@ static void ClosePeripheralAndHandlers(void)
 
 	lp_timerStopEventLoop();
 }
-
 
 int main(int argc, char* argv[])
 {
