@@ -10,7 +10,7 @@
     "Gpio": [
       "$BUTTON_A",
       "$NETWORK_CONNECTED_LED",
-      "$APP_STATUS_LED"
+      "$ALERT_LED"
     ],
     "I2cMaster": [
       "$I2cMaster2"
