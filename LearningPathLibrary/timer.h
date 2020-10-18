@@ -12,7 +12,7 @@ typedef struct {
 } LP_TIMER;
 
 void lp_timerStartSet(LP_TIMER* timerSet[], size_t timerCount);
-void lp_timerStopSet(void);
+void lp_timerStopSet(LP_TIMER* timerSet[], size_t timerCount);
 bool lp_timerStart(LP_TIMER* timer);
 void lp_timeStop(LP_TIMER* timer);
 EventLoop* lp_timerGetEventLoop(void);

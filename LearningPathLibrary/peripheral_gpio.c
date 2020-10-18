@@ -1,8 +1,5 @@
 #include "peripheral_gpio.h"
 
-static LP_GPIO** _peripheralSet = NULL;
-static size_t _peripheralSetCount = 0;
-
 bool lp_gpioOpen(LP_GPIO* peripheral)
 {
 	if (peripheral == NULL || peripheral->pin < 0) { return false; }
@@ -53,21 +50,14 @@ bool lp_gpioOpen(LP_GPIO* peripheral)
 	return true;
 }
 
-void lp_gpioOpenSet(LP_GPIO** gpioSet, size_t peripheralSetCount)
+void lp_gpioOpenSet(LP_GPIO** gpioSet, size_t gpioSetCount)
 {
-	_peripheralSet = gpioSet;
-	_peripheralSetCount = peripheralSetCount;
-
-	for (int i = 0; i < _peripheralSetCount; i++)
+	for (int i = 0; i < gpioSetCount; i++)
 	{
-		_peripheralSet[i]->fd = -1;
-		if (_peripheralSet[i]->initialise != NULL)
+		if (!lp_gpioOpen(gpioSet[i]))
 		{
-			if (!_peripheralSet[i]->initialise(_peripheralSet[i]))
-			{
-				lp_terminate(ExitCode_Open_Peripheral);
-				break;
-			}
+			lp_terminate(ExitCode_Open_Peripheral);
+			break;
 		}
 	}
 }
@@ -91,11 +81,11 @@ void lp_gpioClose(LP_GPIO* peripheral)
 	peripheral->opened = false;
 }
 
-void lp_gpioCloseSet(void)
+void lp_gpioCloseSet(LP_GPIO** gpioSet, size_t gpioSetCount)
 {
-	for (int i = 0; i < _peripheralSetCount; i++)
+	for (int i = 0; i < gpioSetCount; i++)
 	{
-		lp_gpioClose(_peripheralSet[i]);
+		lp_gpioClose(gpioSet[i]);
 	}
 }
 

@@ -1,9 +1,6 @@
 #include "timer.h"
 
-static LP_TIMER** _timers = NULL;
-static size_t _timerCount = 0;
 static EventLoop* eventLoop = NULL;
-
 
 EventLoop* lp_timerGetEventLoop(void) {
 	if (eventLoop == NULL) {
@@ -43,8 +40,7 @@ bool lp_timerStart(LP_TIMER* timer) {
 			return false;
 		}
 	}
-
-
+	
 	return true;
 }
 
@@ -56,19 +52,16 @@ void lp_timeStop(LP_TIMER* timer) {
 }
 
 void lp_timerStartSet(LP_TIMER* timerSet[], size_t timerCount) {
-	_timers = timerSet;
-	_timerCount = timerCount;
-
-	for (int i = 0; i < _timerCount; i++) {
-		if (!lp_timerStart(_timers[i])) {
+	for (int i = 0; i < timerCount; i++) {
+		if (!lp_timerStart(timerSet[i])) {
 			break;
 		};
 	}
 }
 
-void lp_timerStopSet(void) {
-	for (int i = 0; i < _timerCount; i++) {
-		lp_timeStop(_timers[i]);
+void lp_timerStopSet(LP_TIMER* timerSet[], size_t timerCount) {
+	for (int i = 0; i < timerCount; i++) {
+		lp_timeStop(timerSet[i]);
 	}
 }
 

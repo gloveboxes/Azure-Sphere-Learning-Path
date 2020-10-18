@@ -24,7 +24,7 @@ struct _lp_gpio
 	int pin;
 	GPIO_Value initialState;
 	bool invertPin;
-	bool (*initialise)(struct _lp_gpio* gpio);
+	// bool (*initialise)(struct _lp_gpio* gpio);
 	char* name;
 	LP_GPIO_DIRECTION direction;
 	bool opened;
@@ -34,7 +34,7 @@ typedef struct _lp_gpio LP_GPIO;
 
 bool lp_gpioOpen(LP_GPIO* gpio);
 void lp_gpioOpenSet(LP_GPIO** gpioSet, size_t gpioSetCount);
-void lp_gpioCloseSet(void);
+void lp_gpioCloseSet(LP_GPIO** gpioSet, size_t gpioSetCount);
 void lp_gpioClose(LP_GPIO* gpio);
 void lp_gpioOn(LP_GPIO* gpio);
 void lp_gpioOff(LP_GPIO* gpio);
