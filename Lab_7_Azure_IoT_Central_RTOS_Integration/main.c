@@ -88,9 +88,9 @@ static float last_temperature = 0;
 // Declare GPIO
 
 static LP_GPIO* ledRgb[] = {
-	&(LP_GPIO) { .pin = LED_RED, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true, .initialise = lp_gpioOpen, .name = "red led" },
-	&(LP_GPIO) {.pin = LED_GREEN, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true, .initialise = lp_gpioOpen, .name = "green led" },
-	&(LP_GPIO) {.pin = LED_BLUE, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true, .initialise = lp_gpioOpen, .name = "blue led" }
+	&(LP_GPIO) { .pin = LED_RED, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true, .name = "red led" },
+	&(LP_GPIO) {.pin = LED_GREEN, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true, .name = "green led" },
+	&(LP_GPIO) {.pin = LED_BLUE, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true, .name = "blue led" }
 };
 
 static LP_GPIO azureIotConnectedLed = {
@@ -98,7 +98,6 @@ static LP_GPIO azureIotConnectedLed = {
 	.direction = LP_OUTPUT,
 	.initialState = GPIO_Value_Low,
 	.invertPin = true,
-	.initialise = lp_gpioOpen,
 	.name = "azureIotConnectedLed" };
 
 // Timers
@@ -239,7 +238,7 @@ static void InterCoreHandler(LP_INTER_CORE_BLOCK* ic_message_block)
 	{
 	case LP_IC_ENVIRONMENT_SENSOR:
 		if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, msgTemplate, ic_message_block->temperature, ic_message_block->pressure, msgId++) > 0) {
-			
+
 			Log_Debug("%s\n", msgBuffer);
 			lp_sendMsgWithProperties(msgBuffer, appProperties, NELEMS(appProperties));
 		}
@@ -331,10 +330,11 @@ static void ClosePeripheralAndHandlers(void)
 {
 	Log_Debug("Closing file descriptors\n");
 
-	lp_timerStopSet();
+	lp_timerStopSet(timerSet, NELEMS(timerSet));
 	lp_cloudToDeviceStop();
 
-	lp_gpioCloseSet();
+	lp_gpioCloseSet(gpioSet, NELEMS(gpioSet));
+	lp_gpioCloseSet(ledRgb, NELEMS(ledRgb));
 	lp_deviceTwinCloseSet();
 	lp_directMethodSetClose();
 

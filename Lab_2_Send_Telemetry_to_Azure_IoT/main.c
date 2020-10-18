@@ -71,43 +71,54 @@
 static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer);
 static void ButtonPressCheckHandler(EventLoopTimer* eventLoopTimer);
 static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer);
+static void AlertLedOffToggleHandler(EventLoopTimer* eventLoopTimer);
 
 static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 
 // GPIO Input Peripherals
-static LP_GPIO buttonA = { 
-	.pin = BUTTON_A, 
-	.direction = LP_INPUT, 
-	.initialise = lp_gpioOpen, 
+static LP_GPIO buttonA = {
+	.pin = BUTTON_A,
+	.direction = LP_INPUT,
 	.name = "buttonA" };
 
-static LP_GPIO azureIotConnectedLed = { 
-	.pin = NETWORK_CONNECTED_LED, 
-	.direction = LP_OUTPUT, 
-	.initialState = GPIO_Value_Low, 
+static LP_GPIO alertLed = {
+	.pin = LED1,
+	.direction = LP_OUTPUT,
+	.initialState = GPIO_Value_Low,
 	.invertPin = true,
-	.initialise = lp_gpioOpen, 
+	.name = "alertLed" };
+
+static LP_GPIO azureIotConnectedLed = {
+	.pin = NETWORK_CONNECTED_LED,
+	.direction = LP_OUTPUT,
+	.initialState = GPIO_Value_Low,
+	.invertPin = true,
 	.name = "azureIotConnectedLed" };
 
 // Timers
-static LP_TIMER buttonPressCheckTimer = { 
-	.period = { 0, 1000000 }, 
-	.name = "buttonPressCheckTimer", 
+static LP_TIMER buttonPressCheckTimer = {
+	.period = { 0, 1000000 },
+	.name = "buttonPressCheckTimer",
 	.handler = ButtonPressCheckHandler };
 
-static LP_TIMER azureIotConnectionStatusTimer = { 
-	.period = { 5, 0 }, 
-	.name = "azureIotConnectionStatusTimer", 
+static LP_TIMER azureIotConnectionStatusTimer = {
+	.period = { 5, 0 },
+	.name = "azureIotConnectionStatusTimer",
 	.handler = AzureIoTConnectionStatusHandler };
 
-static LP_TIMER measureSensorTimer = { 
-	.period = { 10, 0 }, 
-	.name = "measureSensorTimer", 
+static LP_TIMER measureSensorTimer = {
+	.period = { 10, 0 },
+	.name = "measureSensorTimer",
 	.handler = MeasureSensorHandler };
 
+static LP_TIMER alertLedOffOneShotTimer = {
+	.period = { 0, 0 },
+	.name = "alertLedOffOneShotTimer",
+	.handler = AlertLedOffToggleHandler };
+
 // Initialize Sets
-LP_GPIO* peripheralGpioSet[] = { &buttonA, &azureIotConnectedLed };
-LP_TIMER* timerSet[] = { &buttonPressCheckTimer, &azureIotConnectionStatusTimer, &measureSensorTimer };
+LP_GPIO* peripheralGpioSet[] = { &buttonA, &alertLed, &azureIotConnectedLed };
+LP_TIMER* timerSet[] = { &buttonPressCheckTimer, &azureIotConnectionStatusTimer, &measureSensorTimer, &alertLedOffOneShotTimer };
 
 // Message templates and property sets
 
@@ -196,15 +207,29 @@ static void ButtonPressCheckHandler(EventLoopTimer* eventLoopTimer)
 	else {
 		if (lp_gpioGetState(&buttonA, &buttonAState))
 		{
+			lp_gpioOn(&alertLed);
+			lp_timerSetOneShot(&alertLedOffOneShotTimer, &(struct timespec){1, 0});
+
 			SendAlertMessage("button_a", "pressed");
 		}
 	}
 }
 
 /// <summary>
+/// One shot timer handler to turn off Alert LED
+/// </summary>
+static void AlertLedOffToggleHandler(EventLoopTimer* eventLoopTimer) {
+	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
+		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
+	}
+	else {
+		lp_gpioOff(&alertLed);
+	}
+}
+
+/// <summary>
 ///  Initialize peripherals, device twins, direct methods, timers.
 /// </summary>
-/// <returns>0 on success, or -1 on failure</returns>
 static void InitPeripheralsAndHandlers(void)
 {
 	lp_initializeDevKit();
@@ -221,10 +246,10 @@ static void ClosePeripheralsAndHandlers(void)
 {
 	Log_Debug("Closing file descriptors\n");
 
-	lp_timerStopSet();
+	lp_timerStopSet(timerSet, NELEMS(timerSet));
 	lp_cloudToDeviceStop();
 
-	lp_gpioCloseSet();
+	lp_gpioCloseSet(peripheralGpioSet, NELEMS(peripheralGpioSet));
 
 	lp_closeDevKit();
 

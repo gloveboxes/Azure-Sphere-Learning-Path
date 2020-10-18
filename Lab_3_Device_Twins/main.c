@@ -85,13 +85,12 @@ static LP_GPIO azureIotConnectedLed = {
 	.direction = LP_OUTPUT,
 	.initialState = GPIO_Value_Low,
 	.invertPin = true,
-	.initialise = lp_gpioOpen,
 	.name = "networkConnectedLed" };
 
 static LP_GPIO* ledRgb[] = {
-	&(LP_GPIO) { .pin = LED_RED, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true, .initialise = lp_gpioOpen, .name = "red led" },
-	&(LP_GPIO) {.pin = LED_GREEN, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true, .initialise = lp_gpioOpen, .name = "green led" },
-	&(LP_GPIO) {.pin = LED_BLUE, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true, .initialise = lp_gpioOpen, .name = "blue led" }
+	&(LP_GPIO) { .pin = LED_RED, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true,.name = "red led" },
+	&(LP_GPIO) {.pin = LED_GREEN, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true, .name = "green led" },
+	&(LP_GPIO) {.pin = LED_BLUE, .direction = LP_OUTPUT, .initialState = GPIO_Value_Low, .invertPin = true, .name = "blue led" }
 };
 
 // Timers
@@ -253,10 +252,12 @@ static void ClosePeripheralAndHandlers(void)
 {
 	Log_Debug("Closing file descriptors\n");
 
-	lp_timerStopSet();
+	lp_timerStopSet(timerSet, NELEMS(timerSet));
 	lp_cloudToDeviceStop();
 
-	lp_gpioCloseSet();
+	lp_gpioCloseSet(gpioSet, NELEMS(gpioSet));
+	lp_gpioCloseSet(ledRgb, NELEMS(ledRgb));
+
 	lp_deviceTwinCloseSet();
 
 	lp_closeDevKit();

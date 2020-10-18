@@ -92,7 +92,6 @@ static LP_GPIO relay = {
     .direction = LP_OUTPUT,
     .initialState = GPIO_Value_Low,
     .invertPin = false,
-    .initialise = lp_gpioOpen,
     .name = "relay" };
 
 static LP_DIRECT_METHOD_BINDING lightControl = {
@@ -114,7 +113,6 @@ static LP_GPIO azureIotConnectedLed = {
 	.direction = LP_OUTPUT,
 	.initialState = GPIO_Value_Low,
 	.invertPin = true,
-	.initialise = lp_gpioOpen,
 	.name = "azureIotConnectedLed" };
 
 
@@ -245,10 +243,10 @@ static void ClosePeripheralAndHandlers(void)
 {
 	Log_Debug("Closing file descriptors\n");
 
-	lp_timerStopSet();
+	lp_timerStopSet(timerSet, NELEMS(timerSet));
 	lp_cloudToDeviceStop();
 
-	lp_gpioCloseSet();
+	lp_gpioCloseSet(gpioSet, NELEMS(gpioSet));
 	lp_deviceTwinCloseSet();
 	lp_directMethodSetClose();
 

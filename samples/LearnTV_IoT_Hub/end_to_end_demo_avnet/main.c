@@ -96,7 +96,7 @@ static LP_MESSAGE_PROPERTY* msgProperties[] = {
 /*****  Initialise collection set  *****/
 
 static LP_TIMER* timerSet[] = {  };
-static LP_GPIO* peripheralSet[] = {  };
+static LP_GPIO* gpioSet[] = {  };
 static LP_DIRECT_METHOD_BINDING* directMethodBindingSet[] = {  };
 static LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = {  };
 
@@ -114,7 +114,7 @@ static void InitPeripheralsAndHandlers(void)
 {
 	lp_initializeDevKit();
 
-	lp_gpioOpenSet(peripheralSet, NELEMS(peripheralSet));
+	lp_gpioOpenSet(gpioSet, NELEMS(gpioSet));
 	lp_deviceTwinOpenSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
 	lp_directMethodOpenSet(directMethodBindingSet, NELEMS(directMethodBindingSet));
 
@@ -126,10 +126,10 @@ static void ClosePeripheralsAndHandlers(void)
 {
 	Log_Debug("Closing file descriptors\n");
 
-	lp_timerStopSet();
+	lp_timerStopSet(timerSet, NELEMS(timerSet));
 	lp_cloudToDeviceStop();
 
-	lp_gpioCloseSet();
+	lp_gpioCloseSet(gpioSet, NELEMS(gpioSet));
 	lp_deviceTwinCloseSet();
 	lp_directMethodSetClose();
 

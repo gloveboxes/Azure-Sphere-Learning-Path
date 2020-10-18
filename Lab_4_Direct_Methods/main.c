@@ -82,7 +82,6 @@ static LP_GPIO azureIotConnectedLed = {
 	.direction = LP_OUTPUT,
 	.initialState = GPIO_Value_Low,
 	.invertPin = true,
-	.initialise = lp_gpioOpen,
 	.name = "networkConnectedLed" };
 
 // Timers
@@ -107,7 +106,7 @@ static LP_DIRECT_METHOD_BINDING resetDevice = {
 	.handler = ResetDirectMethodHandler };
 
 // Initialize Sets
-LP_GPIO* PeripheralGpioSet[] = { &azureIotConnectedLed };
+LP_GPIO* gpioSet[] = { &azureIotConnectedLed };
 LP_TIMER* timerSet[] = { &networkConnectionStatusTimer, &resetDeviceOneShotTimer };
 LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &deviceResetUtc };
 LP_DIRECT_METHOD_BINDING* directMethodBindingSet[] = { &resetDevice };
@@ -191,7 +190,7 @@ static void InitPeripheralAndHandlers(void)
 {
 	lp_initializeDevKit();
 
-	lp_gpioOpenSet(PeripheralGpioSet, NELEMS(PeripheralGpioSet));
+	lp_gpioOpenSet(gpioSet, NELEMS(gpioSet));
 	lp_deviceTwinOpenSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
 	lp_directMethodOpenSet(directMethodBindingSet, NELEMS(directMethodBindingSet));
 
@@ -206,10 +205,10 @@ static void ClosePeripheralAndHandlers(void)
 {
 	Log_Debug("Closing file descriptors\n");
 
-	lp_timerStopSet();
+	lp_timerStopSet(timerSet, NELEMS(timerSet));
 	lp_cloudToDeviceStop();
 
-	lp_gpioCloseSet();
+	lp_gpioCloseSet(gpioSet, NELEMS(gpioSet));
 	lp_deviceTwinCloseSet();
 	lp_directMethodSetClose();
 
