@@ -69,7 +69,6 @@
 
 // Forward signatures
 static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer);
-static void ButtonPressCheckHandler(EventLoopTimer* eventLoopTimer);
 static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer);
 static void DeviceTwinSetTemperatureHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding);
 
@@ -80,13 +79,6 @@ static enum LEDS current_led = RED;
 static const char* hvacState[] = { "heating", "off", "cooling" };
 
 static float last_temperature = 0;
-
-// GPIO Input PeripheralGpios
-static LP_GPIO buttonA = {
-	.pin = BUTTON_A,
-	.direction = LP_INPUT,
-	.initialise = lp_gpioOpen,
-	.name = "buttonA" };
 
 static LP_GPIO azureIotConnectedLed = {
 	.pin = NETWORK_CONNECTED_LED,
@@ -113,11 +105,6 @@ static LP_TIMER measureSensorTimer = {
 	.name = "measureSensorTimer",
 	.handler = MeasureSensorHandler };
 
-static LP_TIMER buttonPressCheckTimer = {
-	.period = { 0, 1000000 },
-	.name = "buttonPressCheckTimer",
-	.handler = ButtonPressCheckHandler };
-
 // Azure IoT Device Twins
 static LP_DEVICE_TWIN_BINDING desiredTemperature = {
 	.twinProperty = "DesiredTemperature",
@@ -133,8 +120,8 @@ static LP_DEVICE_TWIN_BINDING actualHvacState = {
 	.twinType = LP_TYPE_STRING };
 
 // Initialize Sets
-LP_GPIO* gpioSet[] = { &buttonA, &azureIotConnectedLed };
-LP_TIMER* timerSet[] = { &azureIotConnectionStatusTimer, &measureSensorTimer, &buttonPressCheckTimer };
+LP_GPIO* gpioSet[] = { &azureIotConnectedLed };
+LP_TIMER* timerSet[] = { &azureIotConnectionStatusTimer, &measureSensorTimer };
 LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &desiredTemperature, &actualTemperature, &actualHvacState };
 
 // Message templates and property sets
@@ -145,15 +132,6 @@ static LP_MESSAGE_PROPERTY* telemetryMessageProperties[] = {
 	&(LP_MESSAGE_PROPERTY) { .key = "appid", .value = "hvac" },
 	&(LP_MESSAGE_PROPERTY) {.key = "format", .value = "json" },
 	&(LP_MESSAGE_PROPERTY) {.key = "type", .value = "telemetry" },
-	&(LP_MESSAGE_PROPERTY) {.key = "version", .value = "1" }
-};
-
-static const char* AlertMsgTemplate = "{ \"%s\": \"%s\" }";
-
-static LP_MESSAGE_PROPERTY* alertMessageProperties[] = {
-	&(LP_MESSAGE_PROPERTY) { .key = "appid", .value = "hvac" },
-	&(LP_MESSAGE_PROPERTY) {.key = "format", .value = "json" },
-	&(LP_MESSAGE_PROPERTY) {.key = "type", .value = "alert" },
 	&(LP_MESSAGE_PROPERTY) {.key = "version", .value = "1" }
 };
 
@@ -231,15 +209,6 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 	}
 }
 
-void SendAlertMessage(const char* key, const char* value)
-{
-	if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, AlertMsgTemplate, key, value) > 0)
-	{
-		Log_Debug(msgBuffer);
-		lp_sendMsgWithProperties(msgBuffer, alertMessageProperties, NELEMS(alertMessageProperties));
-	}
-}
-
 /// <summary>
 /// Device Twin Handler to set the desired temperature value
 /// </summary>
@@ -258,26 +227,6 @@ static void DeviceTwinSetTemperatureHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBi
 		bool value = *(bool*)deviceTwinBinding->twinState;
 		char* value = (char*)deviceTwinBinding->twinState;
 	*/
-}
-
-/// <summary>
-/// Handler to check for Button Presses.
-/// </summary>
-static void ButtonPressCheckHandler(EventLoopTimer* eventLoopTimer)
-{
-	static GPIO_Value_Type buttonAState;
-
-	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
-	{
-		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
-		return;
-	}
-
-	if (lp_gpioGetState(&buttonA, &buttonAState))
-	{
-		lp_deviceTwinReportState(&actualTemperature, &last_temperature);	// TwinType = LP_TYPE_FLOAT
-		SendAlertMessage("button_a", "pressed");
-	}
 }
 
 /// <summary>
