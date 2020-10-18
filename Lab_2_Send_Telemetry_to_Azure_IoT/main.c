@@ -122,7 +122,7 @@ LP_TIMER* timerSet[] = { &buttonPressCheckTimer, &azureIotConnectionStatusTimer,
 
 // Message templates and property sets
 
-static const char* MsgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"Light\":%d, \"MsgId\":%d }";
+static const char* MsgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"MsgId\":%d }";
 
 static LP_MESSAGE_PROPERTY* telemetryMessageProperties[] = {
 	&(LP_MESSAGE_PROPERTY) { .key = "appid", .value = "hvac" },
@@ -149,15 +149,15 @@ static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
 
 	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
 		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
-		return;
-	}
-
-	if (lp_connectToAzureIot()) {
-		lp_gpioSetState(&azureIotConnectedLed, toggleConnectionStatusLed);
-		toggleConnectionStatusLed = !toggleConnectionStatusLed;
 	}
 	else {
-		lp_gpioSetState(&azureIotConnectedLed, false);
+		if (lp_connectToAzureIot()) {
+			lp_gpioSetState(&azureIotConnectedLed, toggleConnectionStatusLed);
+			toggleConnectionStatusLed = !toggleConnectionStatusLed;
+		}
+		else {
+			lp_gpioSetState(&azureIotConnectedLed, false);
+		}
 	}
 }
 
@@ -175,15 +175,15 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 		return;
 	}
 
-	if (lp_readTelemetry(&environment))
+	if (lp_readTelemetry(&environment) &&
+		snprintf(msgBuffer, JSON_MESSAGE_BYTES, MsgTemplate,
+			environment.temperature, environment.humidity, environment.pressure, msgId++) > 0)
 	{
-		if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, MsgTemplate, environment.temperature, environment.humidity, environment.pressure, environment.light, msgId++) > 0)
-		{
-			Log_Debug(msgBuffer);
-			lp_sendMsgWithProperties(msgBuffer, telemetryMessageProperties, NELEMS(telemetryMessageProperties));
-		}
+		Log_Debug(msgBuffer);
+		lp_sendMsgWithProperties(msgBuffer, telemetryMessageProperties, NELEMS(telemetryMessageProperties));
 	}
 }
+
 
 void SendAlertMessage(const char* key, const char* value)
 {
@@ -208,6 +208,8 @@ static void ButtonPressCheckHandler(EventLoopTimer* eventLoopTimer)
 		if (lp_gpioGetState(&buttonA, &buttonAState))
 		{
 			lp_gpioOn(&alertLed);
+
+			// set up one shot timer to turn off led after 1 second
 			lp_timerSetOneShot(&alertLedOffOneShotTimer, &(struct timespec){1, 0});
 
 			SendAlertMessage("button_a", "pressed");
