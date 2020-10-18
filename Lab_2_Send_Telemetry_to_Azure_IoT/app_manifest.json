@@ -9,7 +9,8 @@
   "Capabilities": {
     "Gpio": [
       "$BUTTON_A",
-      "$NETWORK_CONNECTED_LED"
+      "$NETWORK_CONNECTED_LED",
+      "$APP_STATUS_LED"
     ],
     "I2cMaster": [
       "$I2cMaster2"

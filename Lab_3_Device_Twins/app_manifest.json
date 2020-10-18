@@ -4,7 +4,7 @@
   "ComponentId": "25025d2c-66da-4448-bae1-ac26fcdd3627",
   "EntryPoint": "/bin/app",
   "CmdArgs": [
-    "<Replace with your ID Scope>"
+    "0ne0019EC86"
   ],
   "Capabilities": {
     "Gpio": [
@@ -20,9 +20,11 @@
       "ForceReboot"
     ],
     "AllowedConnections": [
-      "global.azure-devices-provisioning.net"
+      "global.azure-devices-provisioning.net",
+      "IOT-HUB-3ak5dii4imseq.azure-devices.net",
+      "DPS-3ak5dii4imseq.azure-devices-provisioning.net"
     ],
-    "DeviceAuthentication": "<Replace with your Azure Sphere Tenant ID>"
+    "DeviceAuthentication": "9d7e79eb-e021-43ce-9f2b-fa944b447494"
   },
   "ApplicationType": "Default"
 }

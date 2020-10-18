@@ -21,6 +21,7 @@
     "Peripherals": [
         {"Name": "BUTTON_A", "Type": "Gpio", "Mapping": "AVNET_MT3620_SK_USER_BUTTON_A", "Comment": "Button A"},
         {"Name": "BUTTON_B", "Type": "Gpio", "Mapping": "AVNET_MT3620_SK_USER_BUTTON_B", "Comment": "Button B"},
+        {"Name": "APP_STATUS_LED", "Type": "Gpio", "Mapping": "AVNET_MT3620_SK_APP_STATUS_LED_YELLOW", "Comment": "App status LED"},
         {"Name": "LED1", "Type": "Gpio", "Mapping": "AVNET_MT3620_SK_USER_LED_BLUE", "Comment": "LED 1"},
         {"Name": "LED2", "Type": "Gpio", "Mapping": "AVNET_MT3620_SK_APP_STATUS_LED_YELLOW", "Comment": "LED 2"},
         {"Name": "NETWORK_CONNECTED_LED", "Type": "Gpio", "Mapping": "AVNET_MT3620_SK_WLAN_STATUS_LED_YELLOW", "Comment": "AVNET: Network Connected"},
