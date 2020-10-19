@@ -128,7 +128,7 @@ LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &desiredTemperature, &actualT
 
 // Message templates and property sets
 
-static const char* MsgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"Light\":%d, \"MsgId\":%d }";
+static const char* MsgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"MsgId\":%d }";
 
 static LP_MESSAGE_PROPERTY* telemetryMessageProperties[] = {
 	&(LP_MESSAGE_PROPERTY) { .key = "appid", .value = "hvac" },
@@ -146,15 +146,15 @@ static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
 
 	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
 		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
-		return;
-	}
-
-	if (lp_azureConnect()) {
-		lp_gpioStateSet(&azureIotConnectedLed, toggleConnectionStatusLed);
-		toggleConnectionStatusLed = !toggleConnectionStatusLed;
 	}
 	else {
-		lp_gpioStateSet(&azureIotConnectedLed, false);
+		if (lp_azureConnect()) {
+			lp_gpioStateSet(&azureIotConnectedLed, toggleConnectionStatusLed);
+			toggleConnectionStatusLed = !toggleConnectionStatusLed;
+		}
+		else {
+			lp_gpioStateSet(&azureIotConnectedLed, false);
+		}
 	}
 }
 
@@ -195,15 +195,11 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
 	{
 		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
-		return;
 	}
-
-	if (lp_readTelemetry(&environment))
-	{
-		SetTemperatureStatusColour(environment.temperature);
-		last_temperature = environment.temperature;
-
-		if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, MsgTemplate, environment.temperature, environment.humidity, environment.pressure, environment.light, msgId++) > 0)
+	else {
+		if (lp_readTelemetry(&environment) &&
+			snprintf(msgBuffer, JSON_MESSAGE_BYTES, MsgTemplate,
+				environment.temperature, environment.humidity, environment.pressure, msgId++) > 0)
 		{
 			Log_Debug(msgBuffer);
 			lp_azureMsgSendWithProperties(msgBuffer, telemetryMessageProperties, NELEMS(telemetryMessageProperties));
