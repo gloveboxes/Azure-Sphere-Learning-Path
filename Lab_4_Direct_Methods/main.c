@@ -69,8 +69,7 @@
 #define JSON_MESSAGE_BYTES 256 // Number of bytes to allocate for the JSON telemetry message for IoT Central
 
 // Forward signatures
-static void InitPeripheralAndHandlers(void);
-static void ClosePeripheralAndHandlers(void);
+static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer);
 static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer);
 static void ResetDeviceHandler(EventLoopTimer* eventLoopTimer);
 static LP_DIRECT_METHOD_RESPONSE_CODE ResetDirectMethodHandler(JSON_Value* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg);
@@ -88,15 +87,20 @@ static LP_GPIO azureIotConnectedLed = {
     .name = "networkConnectedLed" };
 
 // Timers
-static LP_TIMER networkConnectionStatusTimer = {
+static LP_TIMER azureIotConnectionStatusTimer = {
     .period = {5, 0},
-    .name = "networkConnectionStatusTimer",
+    .name = "azureIotConnectionStatusTimer",
     .handler = AzureIoTConnectionStatusHandler };
 
 static LP_TIMER resetDeviceOneShotTimer = {
     .period = {0, 0},
     .name = "resetDeviceOneShotTimer",
     .handler = ResetDeviceHandler };
+
+static LP_TIMER measureSensorTimer = {
+	.period = { 6, 0 },
+	.name = "measureSensorTimer",
+	.handler = MeasureSensorHandler };
 
 // Azure IoT Device Twins
 static LP_DEVICE_TWIN_BINDING deviceResetUtc = {
@@ -110,10 +114,20 @@ static LP_DIRECT_METHOD_BINDING resetDevice = {
 
 // Initialize Sets
 LP_GPIO* gpioSet[] = { &azureIotConnectedLed };
-LP_TIMER* timerSet[] = { &networkConnectionStatusTimer, &resetDeviceOneShotTimer };
+LP_TIMER* timerSet[] = { &measureSensorTimer, &azureIotConnectionStatusTimer, &resetDeviceOneShotTimer };
 LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &deviceResetUtc };
 LP_DIRECT_METHOD_BINDING* directMethodBindingSet[] = { &resetDevice };
 
+// Message templates and property sets
+
+static const char* MsgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"MsgId\":%d }";
+
+static LP_MESSAGE_PROPERTY* telemetryMessageProperties[] = {
+	&(LP_MESSAGE_PROPERTY) { .key = "appid", .value = "hvac" },
+	&(LP_MESSAGE_PROPERTY) {.key = "format", .value = "json" },
+	&(LP_MESSAGE_PROPERTY) {.key = "type", .value = "telemetry" },
+	&(LP_MESSAGE_PROPERTY) {.key = "version", .value = "1" }
+};
 
 /// <summary>
 /// Check status of connection to Azure IoT
@@ -122,18 +136,41 @@ static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
 {
     static bool toggleConnectionStatusLed = true;
 
-    if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
-        lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
-        return;
-    }
+	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
+		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
+	}
+	else {
+		if (lp_azureConnect()) {
+			lp_gpioStateSet(&azureIotConnectedLed, toggleConnectionStatusLed);
+			toggleConnectionStatusLed = !toggleConnectionStatusLed;
+		}
+		else {
+			lp_gpioStateSet(&azureIotConnectedLed, false);
+		}
+	}
+}
 
-    if (lp_azureConnect()) {
-        lp_gpioStateSet(&azureIotConnectedLed, toggleConnectionStatusLed);
-        toggleConnectionStatusLed = !toggleConnectionStatusLed;
-    }
-    else {
-        lp_gpioStateSet(&azureIotConnectedLed, false);
-    }
+/// <summary>
+/// Read sensor and send to Azure IoT
+/// </summary>
+static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
+{
+	static int msgId = 0;
+	static LP_ENVIRONMENT environment;
+
+	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
+	{
+		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
+	}
+	else {
+		if (lp_readTelemetry(&environment) &&
+			snprintf(msgBuffer, JSON_MESSAGE_BYTES, MsgTemplate,
+				environment.temperature, environment.humidity, environment.pressure, msgId++) > 0)
+		{
+			Log_Debug(msgBuffer);
+			lp_azureMsgSendWithProperties(msgBuffer, telemetryMessageProperties, NELEMS(telemetryMessageProperties));
+		}
+	}
 }
 
 /// <summary>
@@ -197,7 +234,9 @@ static void InitPeripheralAndHandlers(void)
     lp_initializeDevKit();
 
     lp_gpioOpenSet(gpioSet, NELEMS(gpioSet));
+
     lp_deviceTwinOpenSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
+    
     lp_directMethodOpenSet(directMethodBindingSet, NELEMS(directMethodBindingSet));
 
     lp_timerStartSet(timerSet, NELEMS(timerSet));
@@ -210,8 +249,6 @@ static void InitPeripheralAndHandlers(void)
 /// </summary>
 static void ClosePeripheralAndHandlers(void)
 {
-    Log_Debug("Closing file descriptors\n");
-
     lp_timerStopSet(timerSet, NELEMS(timerSet));
     lp_azureToDeviceStop();
 
