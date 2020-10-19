@@ -9,13 +9,7 @@
   ],
   "Capabilities": {
     "Gpio": [
-      "$LED_RED",
-      "$LED_GREEN",
-      "$LED_BLUE",
       "$NETWORK_CONNECTED_LED"
-    ],
-    "PowerControls": [
-      "ForceReboot"
     ],
     "AllowedApplicationConnections": [
       "6583cf17-d321-4d72-8283-0b7c5b56442b"
