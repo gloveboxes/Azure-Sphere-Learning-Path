@@ -12,7 +12,7 @@ static const char* cmdLineArgsUsageText =
 /// <summary>
 ///     Parse the command line arguments given in the application manifest.
 /// </summary>
-void lp_parseCommandLineArguments(int argc, char* argv[], LP_USER_CONFIG* lp_config)
+void lp_configParseCmdLineArguments(int argc, char* argv[], LP_USER_CONFIG* lp_config)
 {
     int option = 0;
     static const struct option cmdLineOptions[] = {
@@ -63,7 +63,7 @@ void lp_parseCommandLineArguments(int argc, char* argv[], LP_USER_CONFIG* lp_con
 /// </summary>
 /// <returns>ExitCode_Success if the parameters were provided; otherwise another
 /// ExitCode value which indicates the specific failure.</returns>
-bool lp_validateconfiguration(LP_USER_CONFIG * lp_config)
+bool lp_configValidate(LP_USER_CONFIG * lp_config)
 {
     ExitCode validationExitCode = ExitCode_Success;
 

@@ -44,7 +44,7 @@ bool lp_timerStart(LP_TIMER* timer) {
 	return true;
 }
 
-void lp_timeStop(LP_TIMER* timer) {
+void lp_timerStop(LP_TIMER* timer) {
 	if (timer->eventLoopTimer != NULL) {
 		DisposeEventLoopTimer(timer->eventLoopTimer);
 		timer->eventLoopTimer = NULL;
@@ -61,7 +61,7 @@ void lp_timerStartSet(LP_TIMER* timerSet[], size_t timerCount) {
 
 void lp_timerStopSet(LP_TIMER* timerSet[], size_t timerCount) {
 	for (int i = 0; i < timerCount; i++) {
-		lp_timeStop(timerSet[i]);
+		lp_timerStop(timerSet[i]);
 	}
 }
 

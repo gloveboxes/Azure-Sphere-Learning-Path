@@ -103,7 +103,7 @@ void lp_gpioOff(LP_GPIO* peripheral)
 	GPIO_SetValue(peripheral->fd, peripheral->invertPin ? GPIO_Value_High : GPIO_Value_Low);
 }
 
-void lp_gpioSetState(LP_GPIO* peripheral, bool state) {
+void lp_gpioStateSet(LP_GPIO* peripheral, bool state) {
 	if (state) {
 		lp_gpioOn(peripheral);
 	}
@@ -115,7 +115,7 @@ void lp_gpioSetState(LP_GPIO* peripheral, bool state) {
 /// <summary>
 /// Read Button LP_GPIO returns state
 /// </summary>
-bool lp_gpioGetState(LP_GPIO* peripheral, GPIO_Value_Type* oldState)
+bool lp_gpioStateGet(LP_GPIO* peripheral, GPIO_Value_Type* oldState)
 {
 	bool isGpioOn = false;
 	GPIO_Value_Type newState;

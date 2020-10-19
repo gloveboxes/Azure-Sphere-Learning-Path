@@ -136,11 +136,11 @@ static void NetworkConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
 	}
 
 	if (lp_isNetworkReady()) {
-		lp_gpioSetState(&networkConnectedLed, toggleConnectionStatusLed);
+		lp_gpioStateSet(&networkConnectedLed, toggleConnectionStatusLed);
 		toggleConnectionStatusLed = !toggleConnectionStatusLed;
 	}
 	else {
-		lp_gpioSetState(&networkConnectedLed, false);
+		lp_gpioStateSet(&networkConnectedLed, false);
 	}
 }
 
@@ -178,7 +178,7 @@ static void ButtonPressCheckHandler(EventLoopTimer* eventLoopTimer)
 		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
 	}
 	else {
-		if (lp_gpioGetState(&buttonA, &buttonAState))
+		if (lp_gpioStateGet(&buttonA, &buttonAState))
 		{
 			lp_gpioOn(&alertLed);
 			lp_timerSetOneShot(&alertLedOffOneShotTimer, &(struct timespec){1, 0});

@@ -155,11 +155,11 @@ static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
 	}
 	else {
 		if (lp_azureConnect()) {
-			lp_gpioSetState(&azureIotConnectedLed, toggleConnectionStatusLed);
+			lp_gpioStateSet(&azureIotConnectedLed, toggleConnectionStatusLed);
 			toggleConnectionStatusLed = !toggleConnectionStatusLed;
 		}
 		else {
-			lp_gpioSetState(&azureIotConnectedLed, false);
+			lp_gpioStateSet(&azureIotConnectedLed, false);
 		}
 	}
 }
@@ -208,7 +208,7 @@ static void ButtonPressCheckHandler(EventLoopTimer* eventLoopTimer)
 		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
 	}
 	else {
-		if (lp_gpioGetState(&buttonA, &buttonAState))
+		if (lp_gpioStateGet(&buttonA, &buttonAState))
 		{
 			lp_gpioOn(&alertLed);
 
@@ -268,8 +268,8 @@ int main(int argc, char* argv[])
 {
 	lp_registerTerminationHandler();
 
-	lp_parseCommandLineArguments(argc, argv, &lp_config);
-	if (!lp_validateconfiguration(&lp_config)) {
+	lp_configParseCmdLineArguments(argc, argv, &lp_config);
+	if (!lp_configValidate(&lp_config)) {
 		return lp_getTerminationExitCode();
 	}
 

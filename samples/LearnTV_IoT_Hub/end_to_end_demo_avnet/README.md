@@ -172,7 +172,7 @@ static LP_DIRECT_METHOD_RESPONSE_CODE LightControlDirectMethodHandler(JSON_Objec
 	
 	bool state = (bool)json_object_get_boolean(json, propertyName);
 
-	lp_gpioSetState(&relay, state);
+	lp_gpioStateSet(&relay, state);
 
 	return LP_METHOD_SUCCEEDED;
 }

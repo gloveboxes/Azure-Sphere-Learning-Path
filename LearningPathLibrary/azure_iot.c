@@ -36,7 +36,7 @@ void lp_azureToDeviceStart(void) {
 
 void lp_azureToDeviceStop(void) {
 	if (cloudToDeviceTimer.eventLoopTimer != NULL) {
-		lp_timeStop(&cloudToDeviceTimer);
+		lp_timerStop(&cloudToDeviceTimer);
 	}
 }
 

@@ -110,7 +110,7 @@ static LP_TIMER azureIotConnectionStatusTimer = {
 	.handler = AzureIoTConnectionStatusHandler };
 
 static LP_TIMER measureSensorTimer = {
-	.period = { 6, 0 },
+	.period = { 0, 250000000 },
 	.name = "measureSensorTimer",
 	.handler = MeasureSensorHandler };
 
@@ -170,11 +170,11 @@ static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
 	}
 
 	if (lp_azureConnect()) {
-		lp_gpioSetState(&azureIotConnectedLed, toggleConnectionStatusLed);
+		lp_gpioStateSet(&azureIotConnectedLed, toggleConnectionStatusLed);
 		toggleConnectionStatusLed = !toggleConnectionStatusLed;
 	}
 	else {
-		lp_gpioSetState(&azureIotConnectedLed, false);
+		lp_gpioStateSet(&azureIotConnectedLed, false);
 	}
 }
 
@@ -195,13 +195,13 @@ void SetTemperatureStatusColour(float actual_temperature)
 
 	if (previous_led != current_led)
 	{
-		lp_gpioOff(ledRgb[(int)previous_led]); // turn off old current colour
+		lp_gpioStateSet(ledRgb[(int)previous_led], false); // turn off old current colour
 		previous_led = current_led;
 
 		lp_deviceTwinReportState(&actualTemperature, &actual_temperature);
 		lp_deviceTwinReportState(&actualHvacState, (void*)hvacState[(int)current_led]);
 	}
-	lp_gpioOn(ledRgb[(int)current_led]);
+	lp_gpioStateSet(ledRgb[(int)current_led], true);	// turn on current led colour
 }
 
 /// <summary>
@@ -341,7 +341,7 @@ static void ClosePeripheralAndHandlers(void)
 	lp_gpioCloseSet(gpioSet, NELEMS(gpioSet));
 	lp_gpioCloseSet(ledRgb, NELEMS(ledRgb));
 	lp_deviceTwinCloseSet();
-	lp_directMethodSetClose();
+	lp_directMethodCloseSet();
 
 	lp_timerStopEventLoop();
 }
@@ -350,8 +350,8 @@ int main(int argc, char* argv[])
 {
 	lp_registerTerminationHandler();
 	
-	lp_parseCommandLineArguments(argc, argv, &lp_config);
-	if (!lp_validateconfiguration(&lp_config)) {
+	lp_configParseCmdLineArguments(argc, argv, &lp_config);
+	if (!lp_configValidate(&lp_config)) {
 		return lp_getTerminationExitCode();
 	}
 

@@ -33,10 +33,10 @@ struct _lp_gpio
 typedef struct _lp_gpio LP_GPIO;
 
 bool lp_gpioOpen(LP_GPIO* gpio);
-void lp_gpioOpenSet(LP_GPIO** gpioSet, size_t gpioSetCount);
-void lp_gpioCloseSet(LP_GPIO** gpioSet, size_t gpioSetCount);
+bool lp_gpioStateGet(LP_GPIO* gpio, GPIO_Value_Type* oldState);
 void lp_gpioClose(LP_GPIO* gpio);
-void lp_gpioOn(LP_GPIO* gpio);
+void lp_gpioCloseSet(LP_GPIO** gpioSet, size_t gpioSetCount);
 void lp_gpioOff(LP_GPIO* gpio);
-bool lp_gpioGetState(LP_GPIO* gpio, GPIO_Value_Type* oldState);
-void lp_gpioSetState(LP_GPIO* gpio, bool state);
+void lp_gpioOn(LP_GPIO* gpio);
+void lp_gpioOpenSet(LP_GPIO** gpioSet, size_t gpioSetCount);
+void lp_gpioStateSet(LP_GPIO* gpio, bool state);

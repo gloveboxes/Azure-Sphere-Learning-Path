@@ -131,7 +131,7 @@ static void ClosePeripheralsAndHandlers(void)
 
 	lp_gpioCloseSet(gpioSet, NELEMS(gpioSet));
 	lp_deviceTwinCloseSet();
-	lp_directMethodSetClose();
+	lp_directMethodCloseSet();
 
 	lp_closeDevKit();
 

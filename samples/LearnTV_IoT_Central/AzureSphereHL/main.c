@@ -141,11 +141,11 @@ static void AzureIotConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
 	}
 
 	if (lp_azureConnect()) {
-		lp_gpioSetState(&azureIotConnectedLed, toggleStatusLed);
+		lp_gpioStateSet(&azureIotConnectedLed, toggleStatusLed);
 		toggleStatusLed = !toggleStatusLed;
 	}
 	else {
-		lp_gpioSetState(&azureIotConnectedLed, false);
+		lp_gpioStateSet(&azureIotConnectedLed, false);
 	}
 }
 
@@ -176,7 +176,7 @@ static LP_DIRECT_METHOD_RESPONSE_CODE LightControlDirectMethodHandler(JSON_Value
 
     bool state = (bool)json_value_get_boolean(json);
 
-    lp_gpioSetState(&relay, state);
+    lp_gpioStateSet(&relay, state);
 
     return LP_METHOD_SUCCEEDED;
 }
@@ -248,7 +248,7 @@ static void ClosePeripheralAndHandlers(void)
 
 	lp_gpioCloseSet(gpioSet, NELEMS(gpioSet));
 	lp_deviceTwinCloseSet();
-	lp_directMethodSetClose();
+	lp_directMethodCloseSet();
 
 	lp_timerStopEventLoop();
 }

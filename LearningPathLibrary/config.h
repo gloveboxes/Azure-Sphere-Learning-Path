@@ -24,5 +24,5 @@ typedef struct {
 
 
 
-void lp_parseCommandLineArguments(int argc, char* argv[], LP_USER_CONFIG *lp_config);
-bool lp_validateconfiguration(LP_USER_CONFIG *lp_config);
+void lp_configParseCmdLineArguments(int argc, char* argv[], LP_USER_CONFIG *lp_config);
+bool lp_configValidate(LP_USER_CONFIG *lp_config);

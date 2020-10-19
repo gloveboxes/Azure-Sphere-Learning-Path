@@ -9,7 +9,7 @@ void lp_directMethodOpenSet(LP_DIRECT_METHOD_BINDING* directMethods[], size_t di
 	_directMethodCount = directMethodCount;
 }
 
-void lp_directMethodSetClose(void)
+void lp_directMethodCloseSet(void)
 {
 	_directMethods = NULL;
 	_directMethodCount = 0;
