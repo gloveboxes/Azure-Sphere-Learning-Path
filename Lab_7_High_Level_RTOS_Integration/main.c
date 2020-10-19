@@ -101,10 +101,6 @@ static LP_TIMER measureSensorTimer = {
 // Initialize Sets
 LP_TIMER* timerSet[] = { &azureIotConnectionStatusTimer, &measureSensorTimer };
 LP_GPIO* gpioSet[] = { &azureIotConnectedLed };
-LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { };
-
-// Azure IoT Direct Methods
-LP_DIRECT_METHOD_BINDING* directMethodBindingSet[] = { };
 
 // Telemetry message template and properties
 static const char* msgTemplate = "{ \"Temperature\": \"%3.2f\", \"Pressure\":\"%3.1f\", \"MsgId\":%d }";
@@ -174,8 +170,6 @@ static void InterCoreHandler(LP_INTER_CORE_BLOCK* ic_message_block)
 	}
 }
 
-
-
 /// <summary>
 ///  Initialize PeripheralGpios, device twins, direct methods, timers.
 /// </summary>
@@ -186,10 +180,8 @@ static void InitPeripheralAndHandlers(void)
 
 	lp_gpioOpenSet(gpioSet, NELEMS(gpioSet));
 
-	lp_deviceTwinOpenSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
-	lp_directMethodOpenSet(directMethodBindingSet, NELEMS(directMethodBindingSet));
-
 	lp_timerStartSet(timerSet, NELEMS(timerSet));
+
 	lp_azureToDeviceStart();
 
 	lp_interCoreCommunicationsEnable(lp_config.rtComponentId, InterCoreHandler);  // Initialize Inter Core Communications
@@ -209,9 +201,6 @@ static void ClosePeripheralAndHandlers(void)
 	lp_azureToDeviceStop();
 
 	lp_gpioCloseSet(gpioSet, NELEMS(gpioSet));
-
-	lp_deviceTwinCloseSet();
-	lp_directMethodCloseSet();
 
 	lp_timerStopEventLoop();
 }
