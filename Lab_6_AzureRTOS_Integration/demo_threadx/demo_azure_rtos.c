@@ -152,7 +152,7 @@ void thread_read_sensor(ULONG thread_input)
 {
 	UINT status;
 	ULONG actual_flags;
-
+	int rand_number;
 
 	lp_imu_initialize();
 
@@ -172,6 +172,9 @@ void thread_read_sensor(ULONG thread_input)
 
 			ic_control_block.temperature = lp_get_temperature_lps22h();
 			ic_control_block.pressure = lp_get_pressure();
+
+			rand_number = (rand() % 20);
+			ic_control_block.humidity = (float)(40.0 + rand_number);
 
 			send_inter_core_msg();
 		}

@@ -125,7 +125,7 @@ LP_TIMER* timerSet[] = { &buttonPressCheckTimer, &azureIotConnectionStatusTimer,
 
 // Message templates and property sets
 
-static const char* MsgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"MsgId\":%d }";
+static const char* msgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"MsgId\":%d }";
 
 static LP_MESSAGE_PROPERTY* telemetryMessageProperties[] = {
 	&(LP_MESSAGE_PROPERTY) { .key = "appid", .value = "hvac" },
@@ -134,7 +134,7 @@ static LP_MESSAGE_PROPERTY* telemetryMessageProperties[] = {
 	&(LP_MESSAGE_PROPERTY) {.key = "version", .value = "1" }
 };
 
-static const char* AlertMsgTemplate = "{ \"%s\": \"%s\" }";
+static const char* alertMsgTemplate = "{ \"%s\": \"%s\" }";
 
 static LP_MESSAGE_PROPERTY* alertMessageProperties[] = {
 	&(LP_MESSAGE_PROPERTY) { .key = "appid", .value = "hvac" },
@@ -178,7 +178,7 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 	}
 	else {
 		if (lp_readTelemetry(&environment) &&
-			snprintf(msgBuffer, JSON_MESSAGE_BYTES, MsgTemplate,
+			snprintf(msgBuffer, JSON_MESSAGE_BYTES, msgTemplate,
 				environment.temperature, environment.humidity, environment.pressure, msgId++) > 0)
 		{
 			Log_Debug(msgBuffer);
@@ -190,7 +190,7 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 
 void SendAlertMessage(const char* key, const char* value)
 {
-	if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, AlertMsgTemplate, key, value) > 0)
+	if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, alertMsgTemplate, key, value) > 0)
 	{
 		Log_Debug(msgBuffer);
 		lp_azureMsgSendWithProperties(msgBuffer, alertMessageProperties, NELEMS(alertMessageProperties));

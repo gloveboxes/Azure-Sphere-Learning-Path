@@ -75,7 +75,7 @@ static void AlertLedOffToggleHandler(EventLoopTimer* eventLoopTimer);
 
 static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 
-static const char* MsgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"MsgId\":%d }";
+static const char* msgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"MsgId\":%d }";
 
 // GPIO Input Peripherals
 static LP_GPIO buttonA = {
@@ -158,7 +158,7 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 	}
 	else {
 		if (lp_readTelemetry(&environment) &&
-			snprintf(msgBuffer, JSON_MESSAGE_BYTES, MsgTemplate,
+			snprintf(msgBuffer, JSON_MESSAGE_BYTES, msgTemplate,
 				environment.temperature, environment.humidity, environment.pressure, msgId++) > 0)
 		{
 			Log_Debug(msgBuffer);
