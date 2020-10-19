@@ -7,7 +7,7 @@
   "Capabilities": {
     "Gpio": [
       "$BUTTON_A",
-      "$LED1",
+      "$ALERT_LED",
       "$NETWORK_CONNECTED_LED"
     ],
     "I2cMaster": [ "$I2cMaster2" ],
