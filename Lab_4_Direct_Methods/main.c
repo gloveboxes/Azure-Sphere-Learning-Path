@@ -120,7 +120,7 @@ LP_DIRECT_METHOD_BINDING* directMethodBindingSet[] = { &resetDevice };
 
 // Message templates and property sets
 
-static const char* MsgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"MsgId\":%d }";
+static const char* msgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"MsgId\":%d }";
 
 static LP_MESSAGE_PROPERTY* telemetryMessageProperties[] = {
 	&(LP_MESSAGE_PROPERTY) { .key = "appid", .value = "hvac" },
@@ -164,7 +164,7 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 	}
 	else {
 		if (lp_readTelemetry(&environment) &&
-			snprintf(msgBuffer, JSON_MESSAGE_BYTES, MsgTemplate,
+			snprintf(msgBuffer, JSON_MESSAGE_BYTES, msgTemplate,
 				environment.temperature, environment.humidity, environment.pressure, msgId++) > 0)
 		{
 			Log_Debug(msgBuffer);
