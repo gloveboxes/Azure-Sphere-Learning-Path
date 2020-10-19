@@ -17,7 +17,7 @@ bool lp_readTelemetry(LP_ENVIRONMENT* environment)
 	environment->temperature = lp_get_temperature();
 	environment->pressure = lp_get_pressure();
 
-	//light = lp_GetLightLevel();
+	// environment->light = lp_GetLightLevel();
 	environment->light = 0;
 
 	int rnd = (rand() % 10) - 5;

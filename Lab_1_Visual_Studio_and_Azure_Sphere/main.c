@@ -55,8 +55,8 @@
 // Hardware specific
 #ifdef OEM_AVNET
 #include "AVNET/board.h"
-#include "AVNET/imu_temp_pressure.h"
-#include "AVNET/light_sensor.h"
+#include "imu_temp_pressure.h"
+#include "light_sensor.h"
 #endif // OEM_AVNET
 
 // Hardware specific
