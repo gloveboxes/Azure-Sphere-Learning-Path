@@ -23,6 +23,10 @@ typedef enum {
 	ExitCode_ButtonPressCheckHandler = 21,
 	ExitCode_Led2OffHandler = 22,
 
-	ExitCode_MissingRealTimeComponentId = 23
+	ExitCode_MissingRealTimeComponentId = 23,
+
+	ExitCode_Validate_ConnectionType = 30,
+    ExitCode_Validate_ScopeId = 31,
+    ExitCode_Validate_IotHubConnectionString = 32
 
 } ExitCode;

@@ -21,7 +21,7 @@ static bool initialise_inter_core_communications(void)
 	}
 
 	// Open connection to real-time capable application.
-	sockFd = Application_Connect(rtAppComponentId);
+	sockFd = Application_Connect(_rtAppComponentId);
 	if (sockFd == -1)
 	{
 		Log_Debug("ERROR: Unable to create socket: %d (%s)\n", errno, strerror(errno));

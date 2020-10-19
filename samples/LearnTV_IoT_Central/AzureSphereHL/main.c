@@ -140,7 +140,7 @@ static void AzureIotConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
 		return;
 	}
 
-	if (lp_connectToAzureIot()) {
+	if (lp_azureConnect()) {
 		lp_gpioSetState(&azureIotConnectedLed, toggleStatusLed);
 		toggleStatusLed = !toggleStatusLed;
 	}
@@ -211,7 +211,7 @@ static void InterCoreHandler(LP_INTER_CORE_BLOCK* ic_message_block)
 		if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, msgTemplate, ic_message_block->temperature, ic_message_block->pressure, msgId++) > 0)
 		{
 			Log_Debug(msgBuffer);
-			lp_sendMsgWithProperties(msgBuffer, msgProperties, NELEMS(msgProperties));
+			lp_azureMsgSendWithProperties(msgBuffer, msgProperties, NELEMS(msgProperties));
 		}
 		break;
 	default:
@@ -229,7 +229,7 @@ static void InitPeripheralAndHandlers(void)
 	lp_directMethodOpenSet(directMethodBindingSet, NELEMS(directMethodBindingSet));
 
 	lp_timerStartSet(timerSet, NELEMS(timerSet));
-	lp_cloudToDeviceStart();
+	lp_azureToDeviceStart();
 
 	lp_enableInterCoreCommunications(rtAppComponentId, InterCoreHandler);  // Initialize Inter Core Communications
 
@@ -244,7 +244,7 @@ static void ClosePeripheralAndHandlers(void)
 	Log_Debug("Closing file descriptors\n");
 
 	lp_timerStopSet(timerSet, NELEMS(timerSet));
-	lp_cloudToDeviceStop();
+	lp_azureToDeviceStop();
 
 	lp_gpioCloseSet(gpioSet, NELEMS(gpioSet));
 	lp_deviceTwinCloseSet();

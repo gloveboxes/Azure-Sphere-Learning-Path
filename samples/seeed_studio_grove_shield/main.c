@@ -109,7 +109,7 @@ static void ReadSensorHandler(EventLoopTimer* eventLoopTimer)
 	{
 		if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, MsgTemplate, environment.temperature, environment.humidity, environment.pressure, environment.light, msgId++) > 0)
 		{
-			lp_sendMsgWithProperties(msgBuffer, telemetryMessageProperties, NELEMS(telemetryMessageProperties));
+			lp_azureMsgSendWithProperties(msgBuffer, telemetryMessageProperties, NELEMS(telemetryMessageProperties));
 		}
 	}
 }
@@ -146,7 +146,7 @@ static void InitPeripheralsAndHandlers(void)
 	lp_deviceTwinOpenSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
 
 	lp_timerStartSet(timerSet, NELEMS(timerSet));
-	lp_cloudToDeviceStart();
+	lp_azureToDeviceStart();
 }
 
 static void ClosePeripheralsAndHandlers(void)
@@ -154,7 +154,7 @@ static void ClosePeripheralsAndHandlers(void)
 	Log_Debug("Closing file descriptors\n");
 
 	lp_timerStopSet(timerSet, NELEMS(timerSet));
-	lp_cloudToDeviceStop();
+	lp_azureToDeviceStop();
 
 	lp_gpioCloseSet(gpioSet, NELEMS(gpioSet));
 	lp_deviceTwinCloseSet();

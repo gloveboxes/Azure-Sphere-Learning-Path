@@ -443,7 +443,7 @@ static void SendMsgLedOn(char* message)
 {
 	lp_gpioOn(&sendMsgLed);
 	Log_Debug("%s\n", message);
-	lp_sendMsg(message);
+	lp_azureMsgSend(message);
 	lp_setOneShotTimer(&sendMsgLedOffOneShotTimer, &led2BlinkPeriod);
 }
 ```

@@ -280,7 +280,7 @@ static void AzureIotConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
         return;
     }
 
-    if (lp_connectToAzureIot()) {
+    if (lp_azureConnect()) {
         lp_gpioSetState(&azureIotConnectedLed, toggleStatusLed);
         toggleStatusLed = !toggleStatusLed;
     }

@@ -193,7 +193,7 @@ static bool deviceTwinReportState(LP_DEVICE_TWIN_BINDING* deviceTwinBinding, voi
 		return false;
 	}
 
-	if (!lp_connectToAzureIot()) {
+	if (!lp_azureConnect()) {
 		return false;
 	}
 
@@ -293,7 +293,7 @@ static bool deviceTwinReportState(LP_DEVICE_TWIN_BINDING* deviceTwinBinding, voi
 
 static bool deviceTwinUpdateReportedState(char* reportedPropertiesString) {
 	if (IoTHubDeviceClient_LL_SendReportedState(
-		lp_getAzureIotClientHandle(), (unsigned char*)reportedPropertiesString,
+		lp_azureClientHandleGet(), (unsigned char*)reportedPropertiesString,
 		strlen(reportedPropertiesString), lp_deviceTwinsReportStatusCallback, 0) != IOTHUB_CLIENT_OK)
 	{
 #if LP_LOGGING_ENABLED
@@ -310,7 +310,7 @@ static bool deviceTwinUpdateReportedState(char* reportedPropertiesString) {
 		return true;
 	}
 
-	IoTHubDeviceClient_LL_DoWork(lp_getAzureIotClientHandle());
+	IoTHubDeviceClient_LL_DoWork(lp_azureClientHandleGet());
 }
 
 /// <summary>

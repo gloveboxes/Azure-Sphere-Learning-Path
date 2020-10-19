@@ -1,7 +1,13 @@
 #pragma once
 
-#include "globals.h"
 #include "exit_codes.h"
+#include "globals.h"
+#include <signal.h>
+#include <stdbool.h>
+#include <string.h>
+#include <time.h>
+
+// volatile sig_atomic_t terminationRequired = false;
 
 void lp_registerTerminationHandler(void);
 void lp_terminationHandler(int signalNumber);

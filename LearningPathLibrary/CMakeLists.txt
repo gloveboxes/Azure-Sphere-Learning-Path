@@ -5,16 +5,18 @@ PROJECT(azsphere_libs C)
 # Source groups
 ################################################################################
 set(Source
-    "globals.c"
     "azure_iot.c"
-    "peripheral_gpio.c"
     "device_twins.c"
     "direct_methods.c"
-    "timer.c"
-    "terminate.c"
     "eventloop_timer_utilities.c"
-    "parson.c"
+    "globals.c"
     "inter_core.c"
+    "parson.c"
+    "peripheral_gpio.c"
+    "terminate.c"
+    "timer.c"
+    "user_config.c"
+    "utilities.c"
 )
 source_group("Source" FILES ${Source})
 

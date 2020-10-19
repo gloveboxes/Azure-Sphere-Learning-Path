@@ -146,7 +146,7 @@ static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
 		return;
 	}
 
-	if (lp_connectToAzureIot()) {
+	if (lp_azureConnect()) {
 		lp_gpioSetState(&azureIotConnectedLed, toggleConnectionStatusLed);
 		toggleConnectionStatusLed = !toggleConnectionStatusLed;
 	}
@@ -203,7 +203,7 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 		if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, MsgTemplate, environment.temperature, environment.humidity, environment.pressure, environment.light, msgId++) > 0)
 		{
 			Log_Debug(msgBuffer);
-			lp_sendMsgWithProperties(msgBuffer, telemetryMessageProperties, NELEMS(telemetryMessageProperties));
+			lp_azureMsgSendWithProperties(msgBuffer, telemetryMessageProperties, NELEMS(telemetryMessageProperties));
 		}
 	}
 }
@@ -242,7 +242,7 @@ static void InitPeripheralAndHandlers(void)
 	lp_deviceTwinOpenSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
 
 	lp_timerStartSet(timerSet, NELEMS(timerSet));
-	lp_cloudToDeviceStart();
+	lp_azureToDeviceStart();
 }
 
 /// <summary>
@@ -253,7 +253,7 @@ static void ClosePeripheralAndHandlers(void)
 	Log_Debug("Closing file descriptors\n");
 
 	lp_timerStopSet(timerSet, NELEMS(timerSet));
-	lp_cloudToDeviceStop();
+	lp_azureToDeviceStop();
 
 	lp_gpioCloseSet(gpioSet, NELEMS(gpioSet));
 	lp_gpioCloseSet(ledRgb, NELEMS(ledRgb));

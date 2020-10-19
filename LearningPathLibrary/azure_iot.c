@@ -1,5 +1,5 @@
 #include "azure_iot.h"
-#include <time.h>
+
 
 static const char* getAzureSphereProvisioningResultString(AZURE_SPHERE_PROV_RETURN_VALUE provisioningResult);
 static const char* GetReasonString(IOTHUB_CLIENT_CONNECTION_STATUS_REASON reason);
@@ -12,6 +12,8 @@ bool sendMsg(const char* msg, LP_MESSAGE_PROPERTY** messageProperties, size_t me
 static IOTHUB_DEVICE_CLIENT_LL_HANDLE iothubClientHandle = NULL;
 static bool iothubAuthenticated = false;
 static const int keepalivePeriodSeconds = 20;
+
+static const char*	_idScope = NULL;
 static const char* _connectionString = NULL;
 
 // static LP_MESSAGE_PROPERTY** _messageProperties = NULL;
@@ -25,21 +27,24 @@ static LP_TIMER cloudToDeviceTimer = {
 	.handler = &AzureCloudToDeviceHandler
 };
 
-void lp_cloudToDeviceStart(void) {
+void lp_azureToDeviceStart(void) {
 	if (cloudToDeviceTimer.eventLoopTimer == NULL) {
 		lp_timerStart(&cloudToDeviceTimer);
 		lp_timerSetOneShot(&cloudToDeviceTimer, &(struct timespec){1, 0});
 	}
 }
 
-void lp_cloudToDeviceStop(void) {
+void lp_azureToDeviceStop(void) {
 	if (cloudToDeviceTimer.eventLoopTimer != NULL) {
 		lp_timeStop(&cloudToDeviceTimer);
 	}
 }
 
-void lp_setConnectionString(const char* connectionString) {
+void lp_azureConnectionStringSet(const char* connectionString){
 	_connectionString = connectionString;
+}
+void lp_azureIdScopeSet(const char * idScope){
+	_idScope = idScope;
 }
 
 /// <summary>
@@ -69,7 +74,7 @@ static void AzureCloudToDeviceHandler(EventLoopTimer* eventLoopTimer) {
 		period = 1;
 	}
 	else {
-		if (lp_connectToAzureIot()) {
+		if (lp_azureConnect()) {
 			period = 1;
 		}
 		else {
@@ -79,11 +84,11 @@ static void AzureCloudToDeviceHandler(EventLoopTimer* eventLoopTimer) {
 	lp_timerSetOneShot(&cloudToDeviceTimer, &(struct timespec){period, 0});
 }
 
-bool lp_sendMsgWithProperties(const char* msg, LP_MESSAGE_PROPERTY** messageProperties, size_t messagePropertyCount){
+bool lp_azureMsgSendWithProperties(const char* msg, LP_MESSAGE_PROPERTY** messageProperties, size_t messagePropertyCount){
 	return sendMsg(msg, messageProperties, messagePropertyCount);
 }
 
-bool lp_sendMsg(const char* msg){
+bool lp_azureMsgSend(const char* msg){
 	return sendMsg(msg, NULL, 0);
 }
 
@@ -93,7 +98,7 @@ bool sendMsg(const char* msg, LP_MESSAGE_PROPERTY** messageProperties, size_t me
 		return true;
 	}
 
-	if (!lp_connectToAzureIot()) {
+	if (!lp_azureConnect()) {
 		return false;
 	}
 
@@ -133,25 +138,10 @@ bool sendMsg(const char* msg, LP_MESSAGE_PROPERTY** messageProperties, size_t me
 	return true;
 }
 
-bool lp_isNetworkReady(void) {
-	bool isNetworkReady = false;
-	if (Networking_IsNetworkingReady(&isNetworkReady) != -1) {
-		if (isNetworkReady) {
-			return true;
-		}
-		else {
-			Log_Debug("\nNetwork not ready.\nFrom azure sphere command prompt, run azsphere device wifi show-status\n\n");
-			return false;
-		}
-	}
-	else {
-		Log_Debug("Failed to get Network state\n");
-		return false;
-	}
-}
 
 
-IOTHUB_DEVICE_CLIENT_LL_HANDLE lp_getAzureIotClientHandle(void) {
+
+IOTHUB_DEVICE_CLIENT_LL_HANDLE lp_azureClientHandleGet(void) {
 	return iothubClientHandle;
 }
 
@@ -159,7 +149,7 @@ IOTHUB_DEVICE_CLIENT_LL_HANDLE lp_getAzureIotClientHandle(void) {
 /// <summary>
 ///     Check if network connected or already connected, else sets up connection to Azure IoT
 /// </summary>
-bool lp_connectToAzureIot(void) {
+bool lp_azureConnect(void) {
 	if (!lp_isNetworkReady()) {
 		return false;
 	}
@@ -195,7 +185,7 @@ static bool SetupAzureClient() {
 		}
 	}
 	else {
-		AZURE_SPHERE_PROV_RETURN_VALUE provResult = IoTHubDeviceClient_LL_CreateWithAzureSphereDeviceAuthProvisioning(scopeId, 10000, &iothubClientHandle);
+		AZURE_SPHERE_PROV_RETURN_VALUE provResult = IoTHubDeviceClient_LL_CreateWithAzureSphereDeviceAuthProvisioning(_idScope, 10000, &iothubClientHandle);
 		Log_Debug("IoTHubDeviceClient_LL_CreateWithAzureSphereDeviceAuthProvisioning returned '%s'.\n", getAzureSphereProvisioningResultString(provResult));
 		if (provResult.result != AZURE_SPHERE_PROV_RESULT_OK) {
 			Log_Debug("ERROR: failure to create IoTHub Handle.\n");

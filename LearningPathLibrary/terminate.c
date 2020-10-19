@@ -1,7 +1,9 @@
 #include "terminate.h"
 
+
 static volatile sig_atomic_t terminationRequired = false;
 static volatile sig_atomic_t _exitCode = 0;
+
 
 void lp_registerTerminationHandler(void) {
 	struct sigaction action;

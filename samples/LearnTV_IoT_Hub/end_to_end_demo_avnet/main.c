@@ -119,7 +119,7 @@ static void InitPeripheralsAndHandlers(void)
 	lp_directMethodOpenSet(directMethodBindingSet, NELEMS(directMethodBindingSet));
 
 	lp_timerStartSet(timerSet, NELEMS(timerSet));
-	lp_cloudToDeviceStart();
+	lp_azureToDeviceStart();
 }
 
 static void ClosePeripheralsAndHandlers(void)
@@ -127,7 +127,7 @@ static void ClosePeripheralsAndHandlers(void)
 	Log_Debug("Closing file descriptors\n");
 
 	lp_timerStopSet(timerSet, NELEMS(timerSet));
-	lp_cloudToDeviceStop();
+	lp_azureToDeviceStop();
 
 	lp_gpioCloseSet(gpioSet, NELEMS(gpioSet));
 	lp_deviceTwinCloseSet();

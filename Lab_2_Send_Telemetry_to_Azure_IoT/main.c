@@ -43,6 +43,7 @@
 #include "peripheral_gpio.h"
 #include "terminate.h"
 #include "timer.h"
+#include "user_config.h"
 
 // System Libraries
 #include "applibs_versions.h"
@@ -65,6 +66,7 @@
 #include "SEEED_STUDIO/board.h"
 #endif // SEEED_STUDIO
 
+#define LP_LOGGING_ENABLED FALSE
 #define JSON_MESSAGE_BYTES 256  // Number of bytes to allocate for the JSON telemetry message for IoT Central
 
 // Forward signatures
@@ -151,7 +153,7 @@ static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
 		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
 	}
 	else {
-		if (lp_connectToAzureIot()) {
+		if (lp_azureConnect()) {
 			lp_gpioSetState(&azureIotConnectedLed, toggleConnectionStatusLed);
 			toggleConnectionStatusLed = !toggleConnectionStatusLed;
 		}
@@ -180,7 +182,7 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 			environment.temperature, environment.humidity, environment.pressure, msgId++) > 0)
 	{
 		Log_Debug(msgBuffer);
-		lp_sendMsgWithProperties(msgBuffer, telemetryMessageProperties, NELEMS(telemetryMessageProperties));
+		lp_azureMsgSendWithProperties(msgBuffer, telemetryMessageProperties, NELEMS(telemetryMessageProperties));
 	}
 }
 
@@ -190,7 +192,7 @@ void SendAlertMessage(const char* key, const char* value)
 	if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, AlertMsgTemplate, key, value) > 0)
 	{
 		Log_Debug(msgBuffer);
-		lp_sendMsgWithProperties(msgBuffer, alertMessageProperties, NELEMS(alertMessageProperties));
+		lp_azureMsgSendWithProperties(msgBuffer, alertMessageProperties, NELEMS(alertMessageProperties));
 	}
 }
 
@@ -234,6 +236,8 @@ static void AlertLedOffToggleHandler(EventLoopTimer* eventLoopTimer) {
 /// </summary>
 static void InitPeripheralsAndHandlers(void)
 {
+	lp_azureIdScopeSet(lp_userConfig.scopeId);
+
 	lp_initializeDevKit();
 
 	lp_gpioOpenSet(peripheralGpioSet, NELEMS(peripheralGpioSet));
@@ -249,7 +253,7 @@ static void ClosePeripheralsAndHandlers(void)
 	Log_Debug("Closing file descriptors\n");
 
 	lp_timerStopSet(timerSet, NELEMS(timerSet));
-	lp_cloudToDeviceStop();
+	lp_azureToDeviceStop();
 
 	lp_gpioCloseSet(peripheralGpioSet, NELEMS(peripheralGpioSet));
 
@@ -262,12 +266,10 @@ static void ClosePeripheralsAndHandlers(void)
 int main(int argc, char* argv[])
 {
 	lp_registerTerminationHandler();
-	lp_processCmdArgs(argc, argv);
 
-	if (strlen(scopeId) == 0)
-	{
-		Log_Debug("ScopeId needs to be set in the app_manifest CmdArgs\n");
-		return ExitCode_Missing_ID_Scope;
+	lp_parseCommandLineArguments(argc, argv);
+	if (!lp_validateUserConfiguration()){
+		return lp_getTerminationExitCode();
 	}
 
 	InitPeripheralsAndHandlers();
