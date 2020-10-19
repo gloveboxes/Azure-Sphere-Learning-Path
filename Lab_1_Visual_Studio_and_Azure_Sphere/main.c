@@ -132,15 +132,15 @@ static void NetworkConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
 
 	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
 		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
-		return;
-	}
-
-	if (lp_isNetworkReady()) {
-		lp_gpioStateSet(&networkConnectedLed, toggleConnectionStatusLed);
-		toggleConnectionStatusLed = !toggleConnectionStatusLed;
 	}
 	else {
-		lp_gpioStateSet(&networkConnectedLed, false);
+		if (lp_isNetworkReady()) {
+			lp_gpioStateSet(&networkConnectedLed, toggleConnectionStatusLed);
+			toggleConnectionStatusLed = !toggleConnectionStatusLed;
+		}
+		else {
+			lp_gpioStateSet(&networkConnectedLed, false);
+		}
 	}
 }
 
@@ -155,14 +155,13 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
 	{
 		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
-		return;
 	}
-
-	if (lp_readTelemetry(&environment))
-	{
-		if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, MsgTemplate, environment.temperature, environment.humidity, environment.pressure, msgId++) > 0)
+	else {
+		if (lp_readTelemetry(&environment) &&
+			snprintf(msgBuffer, JSON_MESSAGE_BYTES, MsgTemplate,
+				environment.temperature, environment.humidity, environment.pressure, msgId++) > 0)
 		{
-			Log_Debug("%s\n", msgBuffer);
+			Log_Debug(msgBuffer);
 		}
 	}
 }
