@@ -4,14 +4,13 @@
   "ComponentId": "25025d2c-66da-4448-bae1-ac26fcdd3627",
   "EntryPoint": "/bin/app",
   "CmdArgs": [
-    "0ne0019EC86"
+    "-c DPS -s ID Scope"
   ],
   "Capabilities": {
     "Gpio": [
+      "$BUTTON_A",
       "$NETWORK_CONNECTED_LED",
-      "$LED_RED",
-      "$LED_GREEN",
-      "$LED_BLUE"
+      "$ALERT_LED"
     ],
     "I2cMaster": [
       "$I2cMaster2"
@@ -20,11 +19,9 @@
       "ForceReboot"
     ],
     "AllowedConnections": [
-      "global.azure-devices-provisioning.net",
-      "IOT-HUB-3ak5dii4imseq.azure-devices.net",
-      "DPS-3ak5dii4imseq.azure-devices-provisioning.net"
+      "global.azure-devices-provisioning.net"
     ],
-    "DeviceAuthentication": "9d7e79eb-e021-43ce-9f2b-fa944b447494"
+    "DeviceAuthentication": "<Replace with your Azure Sphere Tenant ID>"
   },
   "ApplicationType": "Default"
 }

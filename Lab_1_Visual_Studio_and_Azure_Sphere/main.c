@@ -84,7 +84,7 @@ static LP_GPIO buttonA = {
 	.name = "buttonA" };
 
 static LP_GPIO alertLed = {
-	.pin = LED1,
+	.pin = ALERT_LED,
 	.direction = LP_OUTPUT,
 	.initialState = GPIO_Value_Low,
 	.invertPin = true,
