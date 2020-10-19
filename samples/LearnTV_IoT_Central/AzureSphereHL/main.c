@@ -231,7 +231,7 @@ static void InitPeripheralAndHandlers(void)
 	lp_timerStartSet(timerSet, NELEMS(timerSet));
 	lp_azureToDeviceStart();
 
-	lp_enableInterCoreCommunications(rtAppComponentId, InterCoreHandler);  // Initialize Inter Core Communications
+	lp_interCoreCommunicationsEnable(rtAppComponentId, InterCoreHandler);  // Initialize Inter Core Communications
 
 	lp_timerSetOneShot(&readSensorTimer, &(struct timespec){1, 0});
 }

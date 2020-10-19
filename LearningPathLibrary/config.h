@@ -22,7 +22,7 @@ typedef struct {
     ConnectionType connectionType;
 } LP_USER_CONFIG;
 
-LP_USER_CONFIG lp_userConfig;
+LP_USER_CONFIG lp_config;
 
 void lp_parseCommandLineArguments(int argc, char* argv[]);
-bool lp_validateUserConfiguration(void);
+bool lp_validateconfiguration(void);

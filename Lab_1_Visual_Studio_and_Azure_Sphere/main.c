@@ -39,7 +39,6 @@
 // Learning Path Libraries
 #include "azure_iot.h"
 #include "exit_codes.h"
-#include "globals.h"
 #include "peripheral_gpio.h"
 #include "terminate.h"
 #include "timer.h"

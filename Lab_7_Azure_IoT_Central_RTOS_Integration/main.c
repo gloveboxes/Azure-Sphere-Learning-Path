@@ -38,8 +38,8 @@
 
 // Learning Path Libraries
 #include "azure_iot.h"
+#include "config.h"
 #include "exit_codes.h"
-#include "globals.h"
 #include "inter_core.h"
 #include "peripheral_gpio.h"
 #include "terminate.h"
@@ -308,6 +308,8 @@ static LP_DIRECT_METHOD_RESPONSE_CODE ResetDirectMethodHandler(JSON_Value* json,
 /// <returns>0 on success, or -1 on failure</returns>
 static void InitPeripheralAndHandlers(void)
 {
+	lp_azureIdScopeSet(lp_config.scopeId);
+
 	lp_gpioOpenSet(gpioSet, NELEMS(gpioSet));
 	lp_gpioOpenSet(ledRgb, NELEMS(ledRgb));
 
@@ -317,7 +319,7 @@ static void InitPeripheralAndHandlers(void)
 	lp_timerStartSet(timerSet, NELEMS(timerSet));
 	lp_azureToDeviceStart();
 
-	lp_enableInterCoreCommunications(rtAppComponentId, InterCoreHandler);  // Initialize Inter Core Communications
+	lp_interCoreCommunicationsEnable(lp_config.rtComponentId, InterCoreHandler);  // Initialize Inter Core Communications
 
 	ic_control_block.cmd = LP_IC_HEARTBEAT;		// Prime RT Core with Component ID Signature
 	lp_sendInterCoreMessage(&ic_control_block, sizeof(ic_control_block));
@@ -344,12 +346,10 @@ static void ClosePeripheralAndHandlers(void)
 int main(int argc, char* argv[])
 {
 	lp_registerTerminationHandler();
-	lp_processCmdArgs(argc, argv);
-
-	if (strlen(scopeId) == 0)
-	{
-		Log_Debug("ScopeId needs to be set in the app_manifest CmdArgs\n");
-		return ExitCode_Missing_ID_Scope;
+	
+	lp_parseCommandLineArguments(argc, argv);
+	if (!lp_validateconfiguration()){
+		return lp_getTerminationExitCode();
 	}
 
 	InitPeripheralAndHandlers();

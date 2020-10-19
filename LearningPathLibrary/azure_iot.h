@@ -2,7 +2,6 @@
 
 #include "device_twins.h"
 #include "direct_methods.h"
-#include "globals.h"
 #include "iothubtransportmqtt.h"
 #include "terminate.h"
 #include "timer.h"

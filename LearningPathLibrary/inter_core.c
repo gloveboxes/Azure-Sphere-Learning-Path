@@ -69,7 +69,7 @@ bool lp_sendInterCoreMessage(LP_INTER_CORE_BLOCK *control_block, size_t len)
 	return true;
 }
 
-int lp_enableInterCoreCommunications(char *rtAppComponentId, void (*interCoreCallback)(LP_INTER_CORE_BLOCK *))
+int lp_interCoreCommunicationsEnable(char *rtAppComponentId, void (*interCoreCallback)(LP_INTER_CORE_BLOCK *))
 {
 	_interCoreCallback = interCoreCallback;
 	_rtAppComponentId = rtAppComponentId;

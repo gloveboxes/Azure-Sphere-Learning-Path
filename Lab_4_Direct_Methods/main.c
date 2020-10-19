@@ -38,8 +38,8 @@
 
 // Learning Path Libraries
 #include "azure_iot.h"
+#include "config.h"
 #include "exit_codes.h"
-#include "globals.h"
 #include "peripheral_gpio.h"
 #include "terminate.h"
 #include "timer.h"
@@ -188,6 +188,8 @@ static LP_DIRECT_METHOD_RESPONSE_CODE ResetDirectMethodHandler(JSON_Value* json,
 /// </summary>
 static void InitPeripheralAndHandlers(void)
 {
+	lp_azureIdScopeSet(lp_config.scopeId);
+
 	lp_initializeDevKit();
 
 	lp_gpioOpenSet(gpioSet, NELEMS(gpioSet));
@@ -220,12 +222,10 @@ static void ClosePeripheralAndHandlers(void)
 int main(int argc, char* argv[])
 {
 	lp_registerTerminationHandler();
-	lp_processCmdArgs(argc, argv);
 
-	if (strlen(scopeId) == 0)
-	{
-		Log_Debug("ScopeId needs to be set in the app_manifest CmdArgs\n");
-		return ExitCode_Missing_ID_Scope;
+	lp_parseCommandLineArguments(argc, argv);
+	if (!lp_validateconfiguration()) {
+		return lp_getTerminationExitCode();
 	}
 
 	InitPeripheralAndHandlers();

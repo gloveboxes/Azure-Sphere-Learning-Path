@@ -1,7 +1,6 @@
 #pragma once
 
 #include "exit_codes.h"
-#include "globals.h"
 #include <signal.h>
 #include <stdbool.h>
 #include <string.h>

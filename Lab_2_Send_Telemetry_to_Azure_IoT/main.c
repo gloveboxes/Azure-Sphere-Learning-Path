@@ -38,12 +38,11 @@
 
 // Learning Path Libraries
 #include "azure_iot.h"
+#include "config.h"
 #include "exit_codes.h"
-#include "globals.h"
 #include "peripheral_gpio.h"
 #include "terminate.h"
 #include "timer.h"
-#include "user_config.h"
 
 // System Libraries
 #include "applibs_versions.h"
@@ -236,7 +235,7 @@ static void AlertLedOffToggleHandler(EventLoopTimer* eventLoopTimer) {
 /// </summary>
 static void InitPeripheralsAndHandlers(void)
 {
-	lp_azureIdScopeSet(lp_userConfig.scopeId);
+	lp_azureIdScopeSet(lp_config.scopeId);
 
 	lp_initializeDevKit();
 
@@ -268,7 +267,7 @@ int main(int argc, char* argv[])
 	lp_registerTerminationHandler();
 
 	lp_parseCommandLineArguments(argc, argv);
-	if (!lp_validateUserConfiguration()){
+	if (!lp_validateconfiguration()){
 		return lp_getTerminationExitCode();
 	}
 
