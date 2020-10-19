@@ -103,7 +103,7 @@ static LP_TIMER azureIotConnectionStatusTimer = {
 	.handler = AzureIoTConnectionStatusHandler };
 
 static LP_TIMER measureSensorTimer = {
-	.period = {0, 500000000},
+	.period = {6, 0},
 	.name = "measureSensorTimer",
 	.handler = MeasureSensorHandler };
 
@@ -204,6 +204,9 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 			Log_Debug(msgBuffer);
 			lp_azureMsgSendWithProperties(msgBuffer, telemetryMessageProperties, NELEMS(telemetryMessageProperties));
 		}
+
+		SetTemperatureStatusColour(environment.temperature);
+		last_temperature = environment.temperature;
 	}
 }
 
