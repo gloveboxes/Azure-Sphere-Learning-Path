@@ -148,10 +148,10 @@ LP_DIRECT_METHOD_BINDING* directMethodBindingSet[] = {
 };
 
 // Telemetry message template and properties
-static const char* msgTemplate = "{ \"Temperature\": \"%3.2f\", \"Pressure\":\"%3.1f\", \"MsgId\":%d }";
+static const char* msgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"MsgId\":%d }";
 
-static LP_MESSAGE_PROPERTY* appProperties[] = {
-	&(LP_MESSAGE_PROPERTY) { .key = "appid", .value = "lab-monitor" },
+static LP_MESSAGE_PROPERTY* telemetryMessageProperties[] = {
+	&(LP_MESSAGE_PROPERTY) { .key = "appid", .value = "hvac" },
 	&(LP_MESSAGE_PROPERTY) {.key = "format", .value = "json" },
 	&(LP_MESSAGE_PROPERTY) {.key = "type", .value = "telemetry" },
 	&(LP_MESSAGE_PROPERTY) {.key = "version", .value = "1" }
@@ -166,15 +166,15 @@ static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
 
 	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
 		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
-		return;
-	}
-
-	if (lp_azureConnect()) {
-		lp_gpioStateSet(&azureIotConnectedLed, toggleConnectionStatusLed);
-		toggleConnectionStatusLed = !toggleConnectionStatusLed;
 	}
 	else {
-		lp_gpioStateSet(&azureIotConnectedLed, false);
+		if (lp_azureConnect()) {
+			lp_gpioStateSet(&azureIotConnectedLed, toggleConnectionStatusLed);
+			toggleConnectionStatusLed = !toggleConnectionStatusLed;
+		}
+		else {
+			lp_gpioStateSet(&azureIotConnectedLed, false);
+		}
 	}
 }
 
@@ -210,7 +210,6 @@ void SetTemperatureStatusColour(float actual_temperature)
 static void DeviceTwinSetTemperatureHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding)
 {
 	lp_deviceTwinAckDesiredState(deviceTwinBinding, deviceTwinBinding->twinState, LP_DEVICE_TWIN_COMPLETED);
-
 	SetTemperatureStatusColour(last_temperature);
 }
 
@@ -222,12 +221,12 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
 	{
 		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
-		return;
 	}
-
-	// send request to Real-Time core app to read temperature, pressure, and humidity
-	ic_control_block.cmd = LP_IC_ENVIRONMENT_SENSOR;
-	lp_sendInterCoreMessage(&ic_control_block, sizeof(ic_control_block));
+	else {
+		// send request to Real-Time core app to read temperature, pressure, and humidity
+		ic_control_block.cmd = LP_IC_ENVIRONMENT_SENSOR;
+		lp_sendInterCoreMessage(&ic_control_block, sizeof(ic_control_block));
+	}
 }
 
 /// <summary>
@@ -240,10 +239,11 @@ static void InterCoreHandler(LP_INTER_CORE_BLOCK* ic_message_block)
 	switch (ic_message_block->cmd)
 	{
 	case LP_IC_ENVIRONMENT_SENSOR:
-		if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, msgTemplate, ic_message_block->temperature, ic_message_block->pressure, msgId++) > 0) {
+		if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, msgTemplate, ic_message_block->temperature, 
+			ic_message_block->humidity, ic_message_block->pressure, msgId++) > 0) {
 
-			Log_Debug("%s\n", msgBuffer);
-			lp_azureMsgSendWithProperties(msgBuffer, appProperties, NELEMS(appProperties));
+			Log_Debug("%s", msgBuffer);
+			lp_azureMsgSendWithProperties(msgBuffer, telemetryMessageProperties, NELEMS(telemetryMessageProperties));
 		}
 
 		SetTemperatureStatusColour(ic_message_block->temperature);
@@ -263,9 +263,10 @@ static void ResetDeviceHandler(EventLoopTimer* eventLoopTimer)
 	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
 	{
 		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
-		return;
 	}
-	PowerManagement_ForceSystemReboot();
+	else {
+		PowerManagement_ForceSystemReboot();
+	}
 }
 
 /// <summary>
