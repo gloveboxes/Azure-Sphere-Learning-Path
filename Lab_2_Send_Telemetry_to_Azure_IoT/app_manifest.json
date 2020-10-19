@@ -19,7 +19,7 @@
     "AllowedConnections": [
       "global.azure-devices-provisioning.net"
     ],
-    "DeviceAuthentication": "<Replace with your Azure Sphere Tenant ID>"
+    "DeviceAuthentication": "Replace_with_your_Azure_Sphere_Tenant_ID"
   },
   "ApplicationType": "Default"
 }

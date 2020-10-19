@@ -64,7 +64,7 @@
 #include "SEEED_STUDIO/board.h"
 #endif // SEEED_STUDIO
 
-
+#define LP_LOGGING_ENABLED FALSE
 #define JSON_MESSAGE_BYTES 256  // Number of bytes to allocate for the JSON telemetry message for IoT Central
 
 // Forward signatures
