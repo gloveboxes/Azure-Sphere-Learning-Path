@@ -32,13 +32,10 @@ source_group("Source" FILES ${Source})
 if(AVNET)
 
     set(Oem
-        "../LearningPathLibrary/AVNET/lps22hh_reg.c"
-        "../LearningPathLibrary/AVNET/lsm6dso_reg.c"
-        "../LearningPathLibrary/AVNET/imu_temp_pressure.c"
-        "../LearningPathLibrary/AVNET/light_sensor.c"
+
         "../LearningPathLibrary/AVNET/board.c"
     )
-    source_group("Oem" FILES ${Oem})
+    source_group("Oem" FILES ${Oem})    
 
     add_definitions( -DOEM_AVNET=TRUE )
 
@@ -62,23 +59,23 @@ set(ALL_FILES
 
 # Create executable
 add_executable(${PROJECT_NAME} ${ALL_FILES})
-target_compile_definitions(${PROJECT_NAME} PUBLIC AZURE_IOT_HUB_CONFIGURED)
-target_link_libraries(${PROJECT_NAME} applibs pthread gcc_s c azsphere_libs)
 
-target_include_directories(${PROJECT_NAME} PUBLIC
-                           ../LearningPathLibrary
-                          )
+target_compile_definitions(${PROJECT_NAME} PUBLIC AZURE_IOT_HUB_CONFIGURED)
+target_link_libraries(${PROJECT_NAME} applibs pthread gcc_s c azsphere_libs )
+
+target_include_directories(${PROJECT_NAME} PUBLIC ../LearningPathLibrary )
 
 target_compile_options(${PROJECT_NAME} PRIVATE -Wno-unknown-pragmas)
-set_source_files_properties(../LearningPathLibrary/AVNET/lsm6dso_reg.c PROPERTIES COMPILE_FLAGS -Wno-conversion)
-set_source_files_properties(../LearningPathLibrary/AVNET/lps22hh_reg.c PROPERTIES COMPILE_FLAGS -Wno-conversion)
-
-set_source_files_properties(../LearningPathLibrary/AVNET/imu_temp_pressure.c PROPERTIES COMPILE_FLAGS -Wno-float-conversion)
-set_source_files_properties(../LearningPathLibrary/AVNET/imu_temp_pressure.c PROPERTIES COMPILE_FLAGS -Wno-incompatible-pointer-types)
-set_source_files_properties(../LearningPathLibrary/AVNET/imu_temp_pressure.c PROPERTIES COMPILE_FLAGS -Wno-conversion)
-
 
 if(AVNET)
+    add_subdirectory("../Drivers/AVNET_SK/HighLevel" drivers)
+    target_link_libraries(${PROJECT_NAME} avnet_drivers)
+    target_include_directories(${PROJECT_NAME} PUBLIC 
+                            ../LearningPathLibrary/AVNET
+                            ../Drivers/AVNET_SK/HighLevel
+                            ../Drivers/AVNET_SK/Common 
+                            )
+
     azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../HardwareDefinitions/avnet_mt3620_sk" TARGET_DEFINITION "azure_sphere_learning_path.json")
 endif(AVNET)
 
