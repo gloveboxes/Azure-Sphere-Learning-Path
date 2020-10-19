@@ -16,13 +16,13 @@ typedef enum {
 } ConnectionType;
 
 typedef struct {
-    char* scopeId;                                      // ID Scope for DPS.
-    char* connectionString;                             // Fallback to Connection string (not recommended)
-    char* rtComponentId;                                // Real time app component id
+    const char* scopeId;                                      // ID Scope for DPS.
+    const char* connectionString;                             // Fallback to Connection string (not recommended)
+    const char* rtComponentId;                                // Real time app component id
     ConnectionType connectionType;
 } LP_USER_CONFIG;
 
-LP_USER_CONFIG lp_config;
 
-void lp_parseCommandLineArguments(int argc, char* argv[]);
-bool lp_validateconfiguration(void);
+
+void lp_parseCommandLineArguments(int argc, char* argv[], LP_USER_CONFIG *lp_config);
+bool lp_validateconfiguration(LP_USER_CONFIG *lp_config);

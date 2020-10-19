@@ -3,9 +3,8 @@
   "Name": "AzureSphereIoTCentral",
   "ComponentId": "25025d2c-66da-4448-bae1-ac26fcdd3627",
   "EntryPoint": "/bin/app",
-  "CmdArgs": [
-    "-c DPS -s ID Scope",
-    "-r 6583cf17-d321-4d72-8283-0b7c5b56442b"
+  "CmdArgs": [ "--ConnectionType", "DPS", "--ScopeID", "Your_ID_Scope",
+      "-r", "6583cf17-d321-4d72-8283-0b7c5b56442b"
   ],
   "Capabilities": {
     "Gpio": [
@@ -23,7 +22,7 @@
     "AllowedConnections": [
       "global.azure-devices-provisioning.net"
     ],
-    "DeviceAuthentication": "<Replace with your Azure Sphere Tenant ID>"
+    "DeviceAuthentication": "Replace_with_your_Azure_Sphere_Tenant_ID"
   },
   "ApplicationType": "Default"
 }

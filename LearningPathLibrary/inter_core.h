@@ -17,4 +17,4 @@
 #include "intercore_contract.h"
 
 bool lp_sendInterCoreMessage(LP_INTER_CORE_BLOCK* control_block, size_t len);
-int lp_interCoreCommunicationsEnable(char* rtAppComponentId, void (*interCoreCallback)(LP_INTER_CORE_BLOCK*));
+int lp_interCoreCommunicationsEnable(const char* rtAppComponentId, void (*interCoreCallback)(LP_INTER_CORE_BLOCK*));

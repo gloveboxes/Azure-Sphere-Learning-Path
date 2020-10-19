@@ -66,6 +66,7 @@
 #include "SEEED_STUDIO/board.h"
 #endif // SEEED_STUDIO
 
+#define LP_LOGGING_ENABLED FALSE
 #define JSON_MESSAGE_BYTES 256  // Number of bytes to allocate for the JSON telemetry message for IoT Central
 
 // Forward signatures
@@ -75,6 +76,8 @@ static void InterCoreHandler(LP_INTER_CORE_BLOCK* ic_message_block);
 static void ResetDeviceHandler(EventLoopTimer* eventLoopTimer);
 static void DeviceTwinSetTemperatureHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding);
 static LP_DIRECT_METHOD_RESPONSE_CODE ResetDirectMethodHandler(JSON_Value* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg);
+
+LP_USER_CONFIG lp_config;
 
 static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 LP_INTER_CORE_BLOCK ic_control_block;
@@ -347,8 +350,8 @@ int main(int argc, char* argv[])
 {
 	lp_registerTerminationHandler();
 	
-	lp_parseCommandLineArguments(argc, argv);
-	if (!lp_validateconfiguration()){
+	lp_parseCommandLineArguments(argc, argv, &lp_config);
+	if (!lp_validateconfiguration(&lp_config)) {
 		return lp_getTerminationExitCode();
 	}
 

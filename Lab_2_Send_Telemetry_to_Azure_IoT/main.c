@@ -74,6 +74,8 @@ static void ButtonPressCheckHandler(EventLoopTimer* eventLoopTimer);
 static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer);
 static void AlertLedOffToggleHandler(EventLoopTimer* eventLoopTimer);
 
+LP_USER_CONFIG lp_config;
+
 static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 
 // GPIO Input Peripherals
@@ -108,7 +110,7 @@ static LP_TIMER azureIotConnectionStatusTimer = {
 	.handler = AzureIoTConnectionStatusHandler };
 
 static LP_TIMER measureSensorTimer = {
-	.period = { 10, 0 },
+	.period = { 6, 0 },
 	.name = "measureSensorTimer",
 	.handler = MeasureSensorHandler };
 
@@ -266,8 +268,8 @@ int main(int argc, char* argv[])
 {
 	lp_registerTerminationHandler();
 
-	lp_parseCommandLineArguments(argc, argv);
-	if (!lp_validateconfiguration()){
+	lp_parseCommandLineArguments(argc, argv, &lp_config);
+	if (!lp_validateconfiguration(&lp_config)) {
 		return lp_getTerminationExitCode();
 	}
 

@@ -12,7 +12,7 @@ static const char* cmdLineArgsUsageText =
 /// <summary>
 ///     Parse the command line arguments given in the application manifest.
 /// </summary>
-void lp_parseCommandLineArguments(int argc, char* argv[])
+void lp_parseCommandLineArguments(int argc, char* argv[], LP_USER_CONFIG* lp_config)
 {
     int option = 0;
     static const struct option cmdLineOptions[] = {
@@ -33,23 +33,23 @@ void lp_parseCommandLineArguments(int argc, char* argv[])
         case 'c':
             Log_Debug("ConnectionType: %s\n", optarg);
             if (strcmp(optarg, "DPS") == 0) {
-                lp_config.connectionType = ConnectionType_DPS;
+                lp_config->connectionType = ConnectionType_DPS;
             }
             else if (strcmp(optarg, "Direct") == 0) {
-                lp_config.connectionType = ConnectionType_Direct;
+                lp_config->connectionType = ConnectionType_Direct;
             }
             break;
         case 's':
             Log_Debug("ScopeId: %s\n", optarg);
-            lp_config.scopeId = optarg;
+            lp_config->scopeId = optarg;
             break;
         case 'r':
             Log_Debug("RTComponentId: %s\n", optarg);
-            lp_config.rtComponentId = optarg;
+            lp_config->rtComponentId = optarg;
             break;
         case 'z':
             Log_Debug("Connection String: %s\n", optarg);
-            lp_config.connectionString = optarg;
+            lp_config->connectionString = optarg;
             break;
         default:
             // Unknown options are ignored.
@@ -63,29 +63,29 @@ void lp_parseCommandLineArguments(int argc, char* argv[])
 /// </summary>
 /// <returns>ExitCode_Success if the parameters were provided; otherwise another
 /// ExitCode value which indicates the specific failure.</returns>
-bool lp_validateconfiguration(void)
+bool lp_validateconfiguration(LP_USER_CONFIG * lp_config)
 {
     ExitCode validationExitCode = ExitCode_Success;
 
-    if (lp_config.connectionType < ConnectionType_DPS || lp_config.connectionType > ConnectionType_Direct) {
+    if (lp_config->connectionType < ConnectionType_DPS || lp_config->connectionType > ConnectionType_Direct) {
         lp_terminate(ExitCode_Validate_ConnectionType);
     }
 
-    if (lp_config.connectionType == ConnectionType_DPS) {
-        if (lp_config.scopeId == NULL) {
+    if (lp_config->connectionType == ConnectionType_DPS) {
+        if (lp_config->scopeId == NULL) {
             validationExitCode = ExitCode_Validate_ScopeId;
         }
         else {
-            Log_Debug("Using DPS Connection: Azure IoT DPS Scope ID %s\n", lp_config.scopeId);
+            Log_Debug("Using DPS Connection: Azure IoT DPS Scope ID %s\n", lp_config->scopeId);
         }
     }
 
-    if (lp_config.connectionType == ConnectionType_Direct) {
-        if (lp_config.connectionString == NULL) {
+    if (lp_config->connectionType == ConnectionType_Direct) {
+        if (lp_config->connectionString == NULL) {
             lp_terminate(ExitCode_Validate_IotHubConnectionString);
         }        
         if (validationExitCode == ExitCode_Success) {
-            Log_Debug("Using Direct Connection: Azure IoT Hub %s\n", lp_config.connectionString);
+            Log_Debug("Using Direct Connection: Azure IoT Hub %s\n", lp_config->connectionString);
         }
     }
 

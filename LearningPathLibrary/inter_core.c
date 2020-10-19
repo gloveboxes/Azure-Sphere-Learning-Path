@@ -3,7 +3,7 @@
 static void SocketEventHandler(EventLoop *el, int fd, EventLoop_IoEvents events, void *context);
 static bool ProcessMsg(void);
 static void (*_interCoreCallback)(LP_INTER_CORE_BLOCK *);
-static char *_rtAppComponentId = NULL;
+static const char *_rtAppComponentId = NULL;
 static int sockFd = -1;
 static EventRegistration *socketEventReg = NULL;
 
@@ -69,7 +69,7 @@ bool lp_sendInterCoreMessage(LP_INTER_CORE_BLOCK *control_block, size_t len)
 	return true;
 }
 
-int lp_interCoreCommunicationsEnable(char *rtAppComponentId, void (*interCoreCallback)(LP_INTER_CORE_BLOCK *))
+int lp_interCoreCommunicationsEnable(const char *rtAppComponentId, void (*interCoreCallback)(LP_INTER_CORE_BLOCK *))
 {
 	_interCoreCallback = interCoreCallback;
 	_rtAppComponentId = rtAppComponentId;

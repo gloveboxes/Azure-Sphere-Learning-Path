@@ -74,6 +74,8 @@ static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer);
 static void ResetDeviceHandler(EventLoopTimer* eventLoopTimer);
 static LP_DIRECT_METHOD_RESPONSE_CODE ResetDirectMethodHandler(JSON_Value* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg);
 
+LP_USER_CONFIG lp_config;
+
 static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 
 // GPIO
@@ -223,8 +225,8 @@ int main(int argc, char* argv[])
 {
 	lp_registerTerminationHandler();
 
-	lp_parseCommandLineArguments(argc, argv);
-	if (!lp_validateconfiguration()) {
+	lp_parseCommandLineArguments(argc, argv, &lp_config);
+	if (!lp_validateconfiguration(&lp_config)) {
 		return lp_getTerminationExitCode();
 	}
 

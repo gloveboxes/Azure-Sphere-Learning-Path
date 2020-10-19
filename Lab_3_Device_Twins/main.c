@@ -38,11 +38,11 @@
 
 // Learning Path Libraries
 #include "azure_iot.h"
+#include "config.h"
 #include "exit_codes.h"
 #include "peripheral_gpio.h"
 #include "terminate.h"
 #include "timer.h"
-#include "config.h"
 
 // System Libraries
 #include "applibs_versions.h"
@@ -72,6 +72,8 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer);
 static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer);
 static void DeviceTwinSetTemperatureHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding);
 
+LP_USER_CONFIG lp_config;
+
 static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 
 enum LEDS { RED, GREEN, BLUE };
@@ -100,7 +102,7 @@ static LP_TIMER azureIotConnectionStatusTimer = {
 	.handler = AzureIoTConnectionStatusHandler };
 
 static LP_TIMER measureSensorTimer = {
-	.period = {10, 0},
+	.period = {0, 500000000},
 	.name = "measureSensorTimer",
 	.handler = MeasureSensorHandler };
 
@@ -271,8 +273,8 @@ int main(int argc, char* argv[])
 {
 	lp_registerTerminationHandler();
 
-	lp_parseCommandLineArguments(argc, argv);
-	if (!lp_validateconfiguration()){
+	lp_parseCommandLineArguments(argc, argv, &lp_config);
+	if (!lp_validateconfiguration(&lp_config)) {
 		return lp_getTerminationExitCode();
 	}
 
