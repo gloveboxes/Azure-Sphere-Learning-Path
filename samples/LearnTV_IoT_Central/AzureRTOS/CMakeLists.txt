@@ -41,12 +41,10 @@ add_executable (${PROJECT_NAME}
                             ./MT3620_lib/OS_HAL/src/os_hal_uart.c
                             "./MT3620_lib/OS_HAL/src/os_hal_dma.c"
 
-                            #./IMU_lib/imu_temp_pressure.c
-                            #./IMU_lib/lps22hh_reg.c
-                            #./IMU_lib/lsm6dso_reg.c
+                            ./IMU_lib/imu_temp_pressure.c
+                            ./IMU_lib/lps22hh_reg.c
+                            ./IMU_lib/lsm6dso_reg.c
 )
-
-
 
 include_directories(${PROJECT_NAME} PUBLIC
                     ./)
@@ -60,7 +58,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 
 
 add_subdirectory(./MT3620_lib/MT3620_M4_Driver ./lib/MT3620_M4_Driver)
-add_subdirectory("../../../Drivers/AVNET_SK/RealTime" drivers)
+
 
 set(THREADX_ARCH "cortex_m4")
 set(THREADX_TOOLCHAIN "gnu")
@@ -70,13 +68,6 @@ target_link_libraries(${PROJECT_NAME} MT3620_M4_Driver MT3620_M4_BSP)
 target_link_libraries(${PROJECT_NAME} tx)
 target_link_libraries(${PROJECT_NAME} m)
 
-if(AVNET)
-target_link_libraries(${PROJECT_NAME} avnet_drivers)
-target_include_directories(${PROJECT_NAME} PUBLIC
-                           ../../../Drivers/AVNET_SK/RealTime
-                           ../../../Drivers/AVNET_SK/Common
-                          )
-endif(AVNET)
 
 set_target_properties (${PROJECT_NAME} PROPERTIES LINK_DEPENDS ${PROJECT_SOURCE_DIR}/linker.ld)
 
@@ -99,4 +90,3 @@ if (SEEED_STUDIO_MINI)
 endif(SEEED_STUDIO_MINI)
 
 azsphere_target_add_image_package(${PROJECT_NAME})
-
