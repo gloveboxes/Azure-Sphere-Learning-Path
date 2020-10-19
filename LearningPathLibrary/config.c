@@ -7,7 +7,9 @@ static const char* cmdLineArgsUsageText =
 "DPS connection type: \" CmdArgs \": [\"--ConnectionType\", \"DPS\", \"--ScopeID\", "
 "\"<scope_id>\"]\n"
 "Direction connection type: \" CmdArgs \": [\"--ConnectionType\", \"Direct\", "
-"\"--Hostname\", \"<azureiothub_hostname>\", \"--DeviceID\", \"<device_id>\"]\n";
+"\"--ConnectionString\" \"]\n"
+"Real-time Compontent ID: \" CmdArgs \": [\"--RTComponentId\" \"]"
+;
 
 /// <summary>
 ///     Parse the command line arguments given in the application manifest.
