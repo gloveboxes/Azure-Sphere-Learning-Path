@@ -78,32 +78,32 @@ static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 
 // GPIO
 static LP_GPIO azureIotConnectedLed = {
-	.pin = NETWORK_CONNECTED_LED,
-	.direction = LP_OUTPUT,
-	.initialState = GPIO_Value_Low,
-	.invertPin = true,
-	.name = "networkConnectedLed" };
+    .pin = NETWORK_CONNECTED_LED,
+    .direction = LP_OUTPUT,
+    .initialState = GPIO_Value_Low,
+    .invertPin = true,
+    .name = "networkConnectedLed" };
 
 // Timers
 static LP_TIMER networkConnectionStatusTimer = {
-	.period = {5, 0},
-	.name = "networkConnectionStatusTimer",
-	.handler = AzureIoTConnectionStatusHandler };
+    .period = {5, 0},
+    .name = "networkConnectionStatusTimer",
+    .handler = AzureIoTConnectionStatusHandler };
 
 static LP_TIMER resetDeviceOneShotTimer = {
-	.period = {0, 0},
-	.name = "resetDeviceOneShotTimer",
-	.handler = ResetDeviceHandler };
+    .period = {0, 0},
+    .name = "resetDeviceOneShotTimer",
+    .handler = ResetDeviceHandler };
 
 // Azure IoT Device Twins
 static LP_DEVICE_TWIN_BINDING deviceResetUtc = {
-	.twinProperty = "DeviceResetUTC",
-	.twinType = LP_TYPE_STRING };
+    .twinProperty = "DeviceResetUTC",
+    .twinType = LP_TYPE_STRING };
 
 // Azure IoT Direct Methods
 static LP_DIRECT_METHOD_BINDING resetDevice = {
-	.methodName = "ResetMethod",
-	.handler = ResetDirectMethodHandler };
+    .methodName = "ResetMethod",
+    .handler = ResetDirectMethodHandler };
 
 // Initialize Sets
 LP_GPIO* gpioSet[] = { &azureIotConnectedLed };
@@ -117,20 +117,20 @@ LP_DIRECT_METHOD_BINDING* directMethodBindingSet[] = { &resetDevice };
 /// </summary>
 static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
 {
-	static bool toggleConnectionStatusLed = true;
+    static bool toggleConnectionStatusLed = true;
 
-	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
-		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
-		return;
-	}
+    if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
+        lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
+        return;
+    }
 
-	if (lp_azureConnect()) {
-		lp_gpioSetState(&azureIotConnectedLed, toggleConnectionStatusLed);
-		toggleConnectionStatusLed = !toggleConnectionStatusLed;
-	}
-	else {
-		lp_gpioSetState(&azureIotConnectedLed, false);
-	}
+    if (lp_azureConnect()) {
+        lp_gpioSetState(&azureIotConnectedLed, toggleConnectionStatusLed);
+        toggleConnectionStatusLed = !toggleConnectionStatusLed;
+    }
+    else {
+        lp_gpioSetState(&azureIotConnectedLed, false);
+    }
 }
 
 /// <summary>
@@ -138,12 +138,13 @@ static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
 /// </summary>
 static void ResetDeviceHandler(EventLoopTimer* eventLoopTimer)
 {
-	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
-	{
-		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
-		return;
-	}
-	PowerManagement_ForceSystemReboot();
+    if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
+    {
+        lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
+    }
+    else {
+        PowerManagement_ForceSystemReboot();
+    }
 }
 
 /// <summary>
@@ -151,36 +152,36 @@ static void ResetDeviceHandler(EventLoopTimer* eventLoopTimer)
 /// </summary>
 static LP_DIRECT_METHOD_RESPONSE_CODE ResetDirectMethodHandler(JSON_Value* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg)
 {
-	const size_t responseLen = 60; // Allocate and initialize a response message buffer. The calling function is responsible for the freeing memory
-	static struct timespec period;
+    const size_t responseLen = 60; // Allocate and initialize a response message buffer. The calling function is responsible for the freeing memory
+    static struct timespec period;
 
-	*responseMsg = (char*)malloc(responseLen);
-	memset(*responseMsg, 0, responseLen);
+    *responseMsg = (char*)malloc(responseLen);
+    memset(*responseMsg, 0, responseLen);
 
-	if (json_value_get_type(json) != JSONNumber) { return LP_METHOD_FAILED; }
+    if (json_value_get_type(json) != JSONNumber) { return LP_METHOD_FAILED; }
 
-	int seconds = (int)json_value_get_number(json);
+    int seconds = (int)json_value_get_number(json);
 
-	// leave enough time for the device twin deviceResetUtc to update before restarting the device
-	if (seconds > 2 && seconds < 10)
-	{
-		// Report Device Reset UTC
-		lp_deviceTwinReportState(&deviceResetUtc, lp_getCurrentUtc(msgBuffer, sizeof(msgBuffer))); // LP_TYPE_STRING
+    // leave enough time for the device twin deviceResetUtc to update before restarting the device
+    if (seconds > 2 && seconds < 10)
+    {
+        // Report Device Reset UTC
+        lp_deviceTwinReportState(&deviceResetUtc, lp_getCurrentUtc(msgBuffer, sizeof(msgBuffer))); // LP_TYPE_STRING
 
-		// Create Direct Method Response
-		snprintf(*responseMsg, responseLen, "%s called. Reset in %d seconds", directMethodBinding->methodName, seconds);
+        // Create Direct Method Response
+        snprintf(*responseMsg, responseLen, "%s called. Reset in %d seconds", directMethodBinding->methodName, seconds);
 
-		// Set One Shot LP_TIMER
-		period = (struct timespec){ .tv_sec = seconds, .tv_nsec = 0 };
-		lp_timerSetOneShot(&resetDeviceOneShotTimer, &period);
+        // Set One Shot LP_TIMER
+        period = (struct timespec){ .tv_sec = seconds, .tv_nsec = 0 };
+        lp_timerSetOneShot(&resetDeviceOneShotTimer, &period);
 
-		return LP_METHOD_SUCCEEDED;
-	}
-	else
-	{
-		snprintf(*responseMsg, responseLen, "%s called. Reset Failed. Seconds out of range: %d", directMethodBinding->methodName, seconds);
-		return LP_METHOD_FAILED;
-	}
+        return LP_METHOD_SUCCEEDED;
+    }
+    else
+    {
+        snprintf(*responseMsg, responseLen, "%s called. Reset Failed. Seconds out of range: %d", directMethodBinding->methodName, seconds);
+        return LP_METHOD_FAILED;
+    }
 }
 
 /// <summary>
@@ -188,16 +189,17 @@ static LP_DIRECT_METHOD_RESPONSE_CODE ResetDirectMethodHandler(JSON_Value* json,
 /// </summary>
 static void InitPeripheralAndHandlers(void)
 {
-	lp_azureIdScopeSet(lp_config.scopeId);
+    lp_azureIdScopeSet(lp_config.scopeId);
 
-	lp_initializeDevKit();
+    lp_initializeDevKit();
 
-	lp_gpioOpenSet(gpioSet, NELEMS(gpioSet));
-	lp_deviceTwinOpenSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
-	lp_directMethodOpenSet(directMethodBindingSet, NELEMS(directMethodBindingSet));
+    lp_gpioOpenSet(gpioSet, NELEMS(gpioSet));
+    lp_deviceTwinOpenSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
+    lp_directMethodOpenSet(directMethodBindingSet, NELEMS(directMethodBindingSet));
 
-	lp_timerStartSet(timerSet, NELEMS(timerSet));
-	lp_azureToDeviceStart();
+    lp_timerStartSet(timerSet, NELEMS(timerSet));
+    
+    lp_azureToDeviceStart();
 }
 
 /// <summary>
@@ -205,44 +207,44 @@ static void InitPeripheralAndHandlers(void)
 /// </summary>
 static void ClosePeripheralAndHandlers(void)
 {
-	Log_Debug("Closing file descriptors\n");
+    Log_Debug("Closing file descriptors\n");
 
-	lp_timerStopSet(timerSet, NELEMS(timerSet));
-	lp_azureToDeviceStop();
+    lp_timerStopSet(timerSet, NELEMS(timerSet));
+    lp_azureToDeviceStop();
 
-	lp_gpioCloseSet(gpioSet, NELEMS(gpioSet));
-	lp_deviceTwinCloseSet();
-	lp_directMethodSetClose();
+    lp_gpioCloseSet(gpioSet, NELEMS(gpioSet));
+    lp_deviceTwinCloseSet();
+    lp_directMethodSetClose();
 
-	lp_closeDevKit();
+    lp_closeDevKit();
 
-	lp_timerStopEventLoop();
+    lp_timerStopEventLoop();
 }
 
 int main(int argc, char* argv[])
 {
-	lp_registerTerminationHandler();
+    lp_registerTerminationHandler();
 
-	lp_parseCommandLineArguments(argc, argv);
-	if (!lp_validateconfiguration()) {
-		return lp_getTerminationExitCode();
-	}
+    lp_parseCommandLineArguments(argc, argv);
+    if (!lp_validateconfiguration()) {
+        return lp_getTerminationExitCode();
+    }
 
-	InitPeripheralAndHandlers();
+    InitPeripheralAndHandlers();
 
-	// Main loop
-	while (!lp_isTerminationRequired())
-	{
-		int result = EventLoop_Run(lp_timerGetEventLoop(), -1, true);
-		// Continue if interrupted by signal, e.g. due to breakpoint being set.
-		if (result == -1 && errno != EINTR)
-		{
-			lp_terminate(ExitCode_Main_EventLoopFail);
-		}
-	}
+    // Main loop
+    while (!lp_isTerminationRequired())
+    {
+        int result = EventLoop_Run(lp_timerGetEventLoop(), -1, true);
+        // Continue if interrupted by signal, e.g. due to breakpoint being set.
+        if (result == -1 && errno != EINTR)
+        {
+            lp_terminate(ExitCode_Main_EventLoopFail);
+        }
+    }
 
-	ClosePeripheralAndHandlers();
+    ClosePeripheralAndHandlers();
 
-	Log_Debug("Application exiting.\n");
-	return lp_getTerminationExitCode();
+    Log_Debug("Application exiting.\n");
+    return lp_getTerminationExitCode();
 }
