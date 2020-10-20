@@ -64,6 +64,12 @@ Acknowledgment: Built from ST Micro samples
 // 1 tick = 10ms. It is configurable.
 #define MS_TO_TICK(ms)  ((ms) * (TX_TIMER_TICKS_PER_SECOND) / 1000)
 
+#define I2C_MAX_LEN 64
+static uint8_t i2c_tx_buf[I2C_MAX_LEN];
+static uint8_t i2c_rx_buf[I2C_MAX_LEN];
+
+static uint8_t i2cHandle = OS_HAL_I2C_ISU2;
+
 typedef union
 {
 	int16_t i16bit[3];

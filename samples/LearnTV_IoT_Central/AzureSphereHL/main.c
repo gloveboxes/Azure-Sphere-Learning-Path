@@ -39,7 +39,7 @@
 // Learning Path Libraries
 #include "azure_iot.h"
 #include "exit_codes.h"
-#include "globals.h"
+#include "config.h"
 #include "inter_core.h"
 #include "peripheral_gpio.h"
 #include "terminate.h"
@@ -62,16 +62,17 @@ static void SampleRateDeviceTwinHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBindin
 static void AzureIotConnectionStatusHandler(EventLoopTimer* eventLoopTimer);
 static LP_DIRECT_METHOD_RESPONSE_CODE LightControlDirectMethodHandler(JSON_Value* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg);
 
+LP_USER_CONFIG lp_config;
 
 static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 static LP_INTER_CORE_BLOCK ic_control_block;
 static int msgId = 0;
 
 // Telemetry message template and properties
-static const char* msgTemplate = "{ \"Temperature\": \"%3.2f\", \"Pressure\":\"%3.1f\", \"MsgId\":%d }";
+static const char* msgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"MsgId\":%d }";
 
-static LP_MESSAGE_PROPERTY* msgProperties[] = {
-	&(LP_MESSAGE_PROPERTY) { .key = "appid", .value = "lab-monitor" },
+static LP_MESSAGE_PROPERTY* telemetryMessageProperties[] = {
+	&(LP_MESSAGE_PROPERTY) { .key = "appid", .value = "hvac" },
 	&(LP_MESSAGE_PROPERTY) {.key = "format", .value = "json" },
 	&(LP_MESSAGE_PROPERTY) {.key = "type", .value = "telemetry" },
 	&(LP_MESSAGE_PROPERTY) {.key = "version", .value = "1" }
@@ -133,19 +134,19 @@ static LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &sampleRate_DeviceTwin
 /// </summary>
 static void AzureIotConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
 {
-	static bool toggleStatusLed = true;
+	static bool toggleConnectionStatusLed = true;
 
 	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
 		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
-		return;
-	}
-
-	if (lp_azureConnect()) {
-		lp_gpioStateSet(&azureIotConnectedLed, toggleStatusLed);
-		toggleStatusLed = !toggleStatusLed;
 	}
 	else {
-		lp_gpioStateSet(&azureIotConnectedLed, false);
+		if (lp_azureConnect()) {
+			lp_gpioStateSet(&azureIotConnectedLed, toggleConnectionStatusLed);
+			toggleConnectionStatusLed = !toggleConnectionStatusLed;
+		}
+		else {
+			lp_gpioStateSet(&azureIotConnectedLed, false);
+		}
 	}
 }
 
@@ -208,10 +209,11 @@ static void InterCoreHandler(LP_INTER_CORE_BLOCK* ic_message_block)
 	switch (ic_message_block->cmd)
 	{
 	case LP_IC_ENVIRONMENT_SENSOR:
-		if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, msgTemplate, ic_message_block->temperature, ic_message_block->pressure, msgId++) > 0)
-		{
-			Log_Debug(msgBuffer);
-			lp_azureMsgSendWithProperties(msgBuffer, msgProperties, NELEMS(msgProperties));
+		if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, msgTemplate, ic_message_block->temperature, 
+			ic_message_block->humidity, ic_message_block->pressure, msgId++) > 0) {
+
+			Log_Debug("%s", msgBuffer);
+			lp_azureMsgSendWithProperties(msgBuffer, telemetryMessageProperties, NELEMS(telemetryMessageProperties));
 		}
 		break;
 	default:
@@ -224,6 +226,8 @@ static void InterCoreHandler(LP_INTER_CORE_BLOCK* ic_message_block)
 /// </summary>
 static void InitPeripheralAndHandlers(void)
 {
+	lp_azureIdScopeSet(lp_config.scopeId);
+
 	lp_gpioOpenSet(gpioSet, NELEMS(gpioSet));
 	lp_deviceTwinOpenSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
 	lp_directMethodOpenSet(directMethodBindingSet, NELEMS(directMethodBindingSet));
@@ -231,7 +235,7 @@ static void InitPeripheralAndHandlers(void)
 	lp_timerStartSet(timerSet, NELEMS(timerSet));
 	lp_azureToDeviceStart();
 
-	lp_interCoreCommunicationsEnable(rtAppComponentId, InterCoreHandler);  // Initialize Inter Core Communications
+	lp_interCoreCommunicationsEnable(lp_config.rtComponentId, InterCoreHandler);  // Initialize Inter Core Communications
 
 	lp_timerSetOneShot(&readSensorTimer, &(struct timespec){1, 0});
 }
@@ -256,12 +260,10 @@ static void ClosePeripheralAndHandlers(void)
 int main(int argc, char* argv[])
 {
 	lp_registerTerminationHandler();
-	lp_processCmdArgs(argc, argv);
 
-	if (strlen(scopeId) == 0)
-	{
-		Log_Debug("ScopeId needs to be set in the app_manifest CmdArgs\n");
-		return ExitCode_Missing_ID_Scope;
+	lp_configParseCmdLineArguments(argc, argv, &lp_config);
+	if (!lp_configValidate(&lp_config)) {
+		return lp_getTerminationExitCode();
 	}
 
 	InitPeripheralAndHandlers();

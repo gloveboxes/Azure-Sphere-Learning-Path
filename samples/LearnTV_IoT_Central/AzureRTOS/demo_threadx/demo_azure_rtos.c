@@ -75,8 +75,7 @@ void* malloc(size_t size)
 	if (size > 0)
 	{
 		// We simply wrap the threadX call into a standard form
-		uint8_t r = tx_byte_allocate(&byte_pool_0, &ptr, size,
-			TX_WAIT_FOREVER);
+		uint8_t r = tx_byte_allocate(&byte_pool_0, &ptr, size, TX_WAIT_FOREVER);
 
 		if (r != TX_SUCCESS)
 		{
@@ -148,10 +147,12 @@ void thread_inter_core(ULONG thread_input)
 	}
 }
 
+#if defined(OEM_AVNET)
 void thread_read_sensor(ULONG thread_input)
 {
 	UINT status;
 	ULONG actual_flags;
+	int rand_number;
 
 	lp_imu_initialize();
 
@@ -172,7 +173,46 @@ void thread_read_sensor(ULONG thread_input)
 			ic_control_block.temperature = lp_get_temperature_lps22h();
 			ic_control_block.pressure = lp_get_pressure();
 
+			rand_number = (rand() % 20);
+			ic_control_block.humidity = (float)(40.0 + rand_number);
+
 			send_inter_core_msg();
 		}
 	}
 }
+#endif
+
+#if !defined(OEM_AVNET)
+void thread_read_sensor(ULONG thread_input)
+{
+	UINT status;
+	ULONG actual_flags;
+	int rand_number;
+
+	lp_imu_initialize();
+
+	srand((unsigned int)time(NULL)); // seed the random number generator for fake telemetry
+
+	while (true)
+	{
+		// waits here until flag set in inter core thread
+		status = tx_event_flags_get(&event_flags_0, 0x1, TX_OR_CLEAR, &actual_flags, TX_WAIT_FOREVER); // wait until event set in the thread_inter_core thread
+
+		if ((status != TX_SUCCESS) || (actual_flags != 0x1))
+			break;
+
+		if (highLevelReady)
+		{
+			ic_control_block.cmd = LP_IC_ENVIRONMENT_SENSOR;
+
+			rand_number = (rand() % 20) - 10;
+			ic_control_block.temperature = (float)(20.0 + rand_number);
+
+			rand_number = (rand() % 50) - 25;
+			ic_control_block.pressure = (float)(1000.0 + rand_number);
+
+			send_inter_core_msg();
+		}
+	}
+}
+#endif
