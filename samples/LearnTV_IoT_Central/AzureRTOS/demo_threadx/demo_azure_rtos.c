@@ -153,10 +153,20 @@ void thread_read_sensor(ULONG thread_input)
 	UINT status;
 	ULONG actual_flags;
 	int rand_number;
+	float temperature, pressure;
 
 	lp_imu_initialize();
 
 	srand((unsigned int)time(NULL)); // seed the random number generator for fake telemetry
+
+	tx_thread_sleep(MS_TO_TICK(100));
+
+	// prime the senors
+	for (size_t i = 0; i < 10; i++) {
+		temperature = lp_get_temperature_lps22h();
+		pressure = lp_get_pressure();
+		tx_thread_sleep(MS_TO_TICK(100));
+	}
 
 	while (true)
 	{

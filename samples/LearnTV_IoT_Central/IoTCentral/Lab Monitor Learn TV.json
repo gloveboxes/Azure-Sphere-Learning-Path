@@ -1,0 +1,96 @@
+{
+    "@id": "urn:azureSphereLeanTV:AzureSphere_5gb:1",
+    "@type": "CapabilityModel",
+    "implements": [
+      {
+        "@id": "urn:azureSphereLeanTV:AzureSphere_5gb:z_8hhxlqe:1",
+        "@type": "InterfaceInstance",
+        "name": "Interface_29k",
+        "schema": {
+          "@id": "urn:azureSphereLeanTV:AzureSphere_7mm:3",
+          "@type": "Interface",
+          "displayName": {
+            "en": "Interface"
+          },
+          "contents": [
+            {
+              "@id": "urn:azureSphereLeanTV:AzureSphere_7mm:Temperature:1",
+              "@type": [
+                "Telemetry",
+                "SemanticType/Temperature"
+              ],
+              "displayName": {
+                "en": "Temperature"
+              },
+              "name": "Temperature",
+              "displayUnit": {
+                "en": "C"
+              },
+              "schema": "float",
+              "unit": "Units/Temperature/celsius"
+            },
+            {
+              "@id": "urn:azureSphereLeanTV:AzureSphere_7mm:Pressure:1",
+              "@type": [
+                "Telemetry",
+                "SemanticType/Pressure"
+              ],
+              "displayName": {
+                "en": "Pressure"
+              },
+              "name": "Pressure",
+              "displayUnit": {
+                "en": "hPa"
+              },
+              "schema": "float"
+            },
+            {
+              "@id": "urn:azureSphereLeanTV:AzureSphere_7mm:MsgId:1",
+              "@type": "Telemetry",
+              "displayName": {
+                "en": "Msg Id"
+              },
+              "name": "MsgId",
+              "displayUnit": {
+                "en": "Int"
+              },
+              "schema": "integer"
+            },
+            {
+              "@id": "urn:azureSphereLeanTV:AzureSphere_7mm:SampleRateSeconds:1",
+              "@type": "Property",
+              "displayName": {
+                "en": "Sample Rate Seconds"
+              },
+              "name": "SampleRateSeconds",
+              "writable": true,
+              "schema": "integer"
+            },
+            {
+              "@type": "Command",
+              "commandType": "synchronous",
+              "displayName": {
+                "en": "Control Lab light"
+              },
+              "name": "LightControl",
+              "request": {
+                "@type": "SchemaField",
+                "displayName": {
+                  "en": "Light Control"
+                },
+                "name": "LightControl",
+                "schema": "boolean"
+              },
+              "durable": false
+            }
+          ]
+        }
+      }
+    ],
+    "displayName": {
+      "en": "Azure Sphere"
+    },
+    "@context": [
+      "http://azureiot.com/v1/contexts/IoTModel.json"
+    ]
+  }
