@@ -129,13 +129,13 @@ static void InterCoreHandler(LP_INTER_CORE_BLOCK* ic_message_block)
 /// </summary>
 static void InitPeripheralAndHandlers(void)
 {
-	lp_azureIdScopeSet(lp_config.scopeId);
+	lp_azureInitialize(lp_config.scopeId);
 
-	lp_gpioOpenSet(gpioSet, NELEMS(gpioSet));
-	lp_deviceTwinOpenSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
-	lp_directMethodOpenSet(directMethodBindingSet, NELEMS(directMethodBindingSet));
+	lp_gpioSetOpen(gpioSet, NELEMS(gpioSet));
+	lp_deviceTwinSetOpen(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
+	lp_directMethodSetOpen(directMethodBindingSet, NELEMS(directMethodBindingSet));
 
-	lp_timerStartSet(timerSet, NELEMS(timerSet));
+	lp_timerSetStart(timerSet, NELEMS(timerSet));
 	lp_azureToDeviceStart();
 
 	lp_interCoreCommunicationsEnable(lp_config.rtComponentId, InterCoreHandler);  // Initialize Inter Core Communications
@@ -149,14 +149,14 @@ static void ClosePeripheralAndHandlers(void)
 {
 	Log_Debug("Closing file descriptors\n");
 
-	lp_timerStopSet(timerSet, NELEMS(timerSet));
+	lp_timerSetStop(timerSet, NELEMS(timerSet));
 	lp_azureToDeviceStop();
 
-	lp_gpioCloseSet(gpioSet, NELEMS(gpioSet));
-	lp_deviceTwinCloseSet();
-	lp_directMethodCloseSet();
+	lp_gpioSetClose(gpioSet, NELEMS(gpioSet));
+	lp_deviceTwinSetClose();
+	lp_directMethodSetClose();
 
-	lp_timerStopEventLoop();
+	lp_timerEventLoopStop();
 }
 
 int main(int argc, char* argv[])
