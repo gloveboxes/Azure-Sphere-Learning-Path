@@ -213,7 +213,7 @@ static void ButtonPressCheckHandler(EventLoopTimer* eventLoopTimer)
 			lp_gpioOn(&alertLed);
 
 			// set up one shot timer to turn off led after 1 second
-			lp_timerSetOneShot(&alertLedOffOneShotTimer, &(struct timespec){1, 0});
+			lp_timerOneShotSet(&alertLedOffOneShotTimer, &(struct timespec){1, 0});
 
 			SendAlertMessage("alert_button", "pressed");
 		}
@@ -237,13 +237,13 @@ static void AlertLedOffToggleHandler(EventLoopTimer* eventLoopTimer) {
 /// </summary>
 static void InitPeripheralsAndHandlers(void)
 {
-	lp_azureIdScopeSet(lp_config.scopeId);
+	lp_azureInitialize(lp_config.scopeId);
 
 	lp_initializeDevKit();
 
-	lp_gpioOpenSet(peripheralGpioSet, NELEMS(peripheralGpioSet));
+	lp_gpioSetOpen(peripheralGpioSet, NELEMS(peripheralGpioSet));
 
-	lp_timerStartSet(timerSet, NELEMS(timerSet));
+	lp_timerSetStart(timerSet, NELEMS(timerSet));
 }
 
 /// <summary>
@@ -253,14 +253,14 @@ static void ClosePeripheralsAndHandlers(void)
 {
 	Log_Debug("Closing file descriptors\n");
 
-	lp_timerStopSet(timerSet, NELEMS(timerSet));
+	lp_timerSetStop(timerSet, NELEMS(timerSet));
 	lp_azureToDeviceStop();
 
-	lp_gpioCloseSet(peripheralGpioSet, NELEMS(peripheralGpioSet));
+	lp_gpioSetClose(peripheralGpioSet, NELEMS(peripheralGpioSet));
 
 	lp_closeDevKit();
 
-	lp_timerStopEventLoop();
+	lp_timerEventLoopStop();
 }
 
 

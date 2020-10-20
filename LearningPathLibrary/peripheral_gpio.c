@@ -50,7 +50,7 @@ bool lp_gpioOpen(LP_GPIO* peripheral)
 	return true;
 }
 
-void lp_gpioOpenSet(LP_GPIO** gpioSet, size_t gpioSetCount)
+void lp_gpioSetOpen(LP_GPIO** gpioSet, size_t gpioSetCount)
 {
 	for (int i = 0; i < gpioSetCount; i++)
 	{
@@ -81,7 +81,7 @@ void lp_gpioClose(LP_GPIO* peripheral)
 	peripheral->opened = false;
 }
 
-void lp_gpioCloseSet(LP_GPIO** gpioSet, size_t gpioSetCount)
+void lp_gpioSetClose(LP_GPIO** gpioSet, size_t gpioSetCount)
 {
 	for (int i = 0; i < gpioSetCount; i++)
 	{

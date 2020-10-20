@@ -180,7 +180,7 @@ static void ButtonPressCheckHandler(EventLoopTimer* eventLoopTimer)
 		if (lp_gpioStateGet(&buttonA, &buttonAState))
 		{
 			lp_gpioOn(&alertLed);
-			lp_timerSetOneShot(&alertLedOffOneShotTimer, &(struct timespec){1, 0});
+			lp_timerOneShotSet(&alertLedOffOneShotTimer, &(struct timespec){1, 0});
 		}
 	}
 }
@@ -204,8 +204,8 @@ static void InitPeripheralsAndHandlers(void)
 {
 	lp_initializeDevKit();
 
-	lp_gpioOpenSet(gpioSet, NELEMS(gpioSet));
-	lp_timerStartSet(timerSet, NELEMS(timerSet));
+	lp_gpioSetOpen(gpioSet, NELEMS(gpioSet));
+	lp_timerSetStart(timerSet, NELEMS(timerSet));
 }
 
 /// <summary>
@@ -215,12 +215,12 @@ static void ClosePeripheralsAndHandlers(void)
 {
 	Log_Debug("Closing file descriptors\n");
 
-	lp_timerStopSet(timerSet, NELEMS(timerSet));
-	lp_gpioCloseSet(gpioSet, NELEMS(gpioSet));
+	lp_timerSetStop(timerSet, NELEMS(timerSet));
+	lp_gpioSetClose(gpioSet, NELEMS(gpioSet));
 
 	lp_closeDevKit();
 
-	lp_timerStopEventLoop();
+	lp_timerEventLoopStop();
 }
 
 int main(int argc, char* argv[])

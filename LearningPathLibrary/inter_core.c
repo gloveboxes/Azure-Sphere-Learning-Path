@@ -49,7 +49,7 @@ static bool initialise_inter_core_communications(void)
 	return true;
 }
 
-bool lp_sendInterCoreMessage(LP_INTER_CORE_BLOCK *control_block, size_t len)
+bool lp_interCoreSendMessage(LP_INTER_CORE_BLOCK *control_block, size_t len)
 {
 	initialise_inter_core_communications();
 

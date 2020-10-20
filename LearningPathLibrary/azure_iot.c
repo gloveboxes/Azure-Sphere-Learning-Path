@@ -30,7 +30,7 @@ static LP_TIMER cloudToDeviceTimer = {
 void lp_azureToDeviceStart(void) {
 	if (cloudToDeviceTimer.eventLoopTimer == NULL) {
 		lp_timerStart(&cloudToDeviceTimer);
-		lp_timerSetOneShot(&cloudToDeviceTimer, &(struct timespec){1, 0});
+		lp_timerOneShotSet(&cloudToDeviceTimer, &(struct timespec){1, 0});
 	}
 }
 
@@ -43,7 +43,7 @@ void lp_azureToDeviceStop(void) {
 void lp_azureConnectionStringSet(const char* connectionString){
 	_connectionString = connectionString;
 }
-void lp_azureIdScopeSet(const char * idScope){
+void lp_azureInitialize(const char * idScope){
 	_idScope = idScope;
 }
 
@@ -81,7 +81,7 @@ static void AzureCloudToDeviceHandler(EventLoopTimer* eventLoopTimer) {
 			if (period < maxPeriodSeconds) { period++; }
 		}
 	}
-	lp_timerSetOneShot(&cloudToDeviceTimer, &(struct timespec){period, 0});
+	lp_timerOneShotSet(&cloudToDeviceTimer, &(struct timespec){period, 0});
 }
 
 bool lp_azureMsgSendWithProperties(const char* msg, LP_MESSAGE_PROPERTY** messageProperties, size_t messagePropertyCount){

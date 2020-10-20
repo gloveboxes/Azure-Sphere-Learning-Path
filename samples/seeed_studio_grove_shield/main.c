@@ -142,10 +142,10 @@ static void InitPeripheralsAndHandlers(void)
 {
 	lp_initializeDevKit();
 
-	lp_gpioOpenSet(gpioSet, NELEMS(gpioSet));
-	lp_deviceTwinOpenSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
+	lp_gpioSetOpen(gpioSet, NELEMS(gpioSet));
+	lp_deviceTwinSetOpen(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
 
-	lp_timerStartSet(timerSet, NELEMS(timerSet));
+	lp_timerSetStart(timerSet, NELEMS(timerSet));
 	lp_azureToDeviceStart();
 }
 
@@ -153,15 +153,15 @@ static void ClosePeripheralsAndHandlers(void)
 {
 	Log_Debug("Closing file descriptors\n");
 
-	lp_timerStopSet(timerSet, NELEMS(timerSet));
+	lp_timerSetStop(timerSet, NELEMS(timerSet));
 	lp_azureToDeviceStop();
 
-	lp_gpioCloseSet(gpioSet, NELEMS(gpioSet));
-	lp_deviceTwinCloseSet();
+	lp_gpioSetClose(gpioSet, NELEMS(gpioSet));
+	lp_deviceTwinSetClose();
 
 	lp_closeDevKit();
 
-	lp_timerStopEventLoop();
+	lp_timerEventLoopStop();
 }
 
 int main(int argc, char* argv[])

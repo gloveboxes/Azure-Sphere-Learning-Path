@@ -213,7 +213,7 @@ static LP_DIRECT_METHOD_RESPONSE_CODE ResetDirectMethodHandler(JSON_Value* json,
 
         // Set One Shot LP_TIMER
         period = (struct timespec){ .tv_sec = seconds, .tv_nsec = 0 };
-        lp_timerSetOneShot(&resetDeviceOneShotTimer, &period);
+        lp_timerOneShotSet(&resetDeviceOneShotTimer, &period);
 
         return LP_METHOD_SUCCEEDED;
     }
@@ -229,17 +229,17 @@ static LP_DIRECT_METHOD_RESPONSE_CODE ResetDirectMethodHandler(JSON_Value* json,
 /// </summary>
 static void InitPeripheralAndHandlers(void)
 {
-    lp_azureIdScopeSet(lp_config.scopeId);
+    lp_azureInitialize(lp_config.scopeId);
 
     lp_initializeDevKit();
 
-    lp_gpioOpenSet(gpioSet, NELEMS(gpioSet));
+    lp_gpioSetOpen(gpioSet, NELEMS(gpioSet));
 
-    lp_deviceTwinOpenSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
+    lp_deviceTwinSetOpen(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
     
-    lp_directMethodOpenSet(directMethodBindingSet, NELEMS(directMethodBindingSet));
+    lp_directMethodSetOpen(directMethodBindingSet, NELEMS(directMethodBindingSet));
 
-    lp_timerStartSet(timerSet, NELEMS(timerSet));
+    lp_timerSetStart(timerSet, NELEMS(timerSet));
     
     lp_azureToDeviceStart();
 }
@@ -249,16 +249,16 @@ static void InitPeripheralAndHandlers(void)
 /// </summary>
 static void ClosePeripheralAndHandlers(void)
 {
-    lp_timerStopSet(timerSet, NELEMS(timerSet));
+    lp_timerSetStop(timerSet, NELEMS(timerSet));
     lp_azureToDeviceStop();
 
-    lp_gpioCloseSet(gpioSet, NELEMS(gpioSet));
-    lp_deviceTwinCloseSet();
-    lp_directMethodCloseSet();
+    lp_gpioSetClose(gpioSet, NELEMS(gpioSet));
+    lp_deviceTwinSetClose();
+    lp_directMethodSetClose();
 
     lp_closeDevKit();
 
-    lp_timerStopEventLoop();
+    lp_timerEventLoopStop();
 }
 
 int main(int argc, char* argv[])

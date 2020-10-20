@@ -92,7 +92,7 @@ static void ReadSensorHandler(EventLoopTimer* eventLoopTimer)
     else {
         // send request to Real-Time core app to read temperature, pressure, and humidity
         ic_control_block.cmd = LP_IC_ENVIRONMENT_SENSOR;
-        lp_sendInterCoreMessage(&ic_control_block, sizeof(ic_control_block));
+        lp_interCoreSendMessage(&ic_control_block, sizeof(ic_control_block));
     }
 }
 ```
@@ -269,7 +269,7 @@ static LP_GPIO* gpioSet[] = { &relay, &azureIotConnectedLed };
 /// <summary>
 /// Check status of connection to Azure IoT
 /// </summary>
-static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
+static void AzureIotConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
 {
 	static bool toggleConnectionStatusLed = true;
 

@@ -145,7 +145,7 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 	else {
 		// send request to Real-Time core app to read temperature, pressure, and humidity
 		ic_control_block.cmd = LP_IC_ENVIRONMENT_SENSOR;
-		lp_sendInterCoreMessage(&ic_control_block, sizeof(ic_control_block));
+		lp_interCoreSendMessage(&ic_control_block, sizeof(ic_control_block));
 	}
 }
 
@@ -177,18 +177,18 @@ static void InterCoreHandler(LP_INTER_CORE_BLOCK* ic_message_block)
 /// <returns>0 on success, or -1 on failure</returns>
 static void InitPeripheralAndHandlers(void)
 {
-	lp_azureIdScopeSet(lp_config.scopeId);
+	lp_azureInitialize(lp_config.scopeId);
 
-	lp_gpioOpenSet(gpioSet, NELEMS(gpioSet));
+	lp_gpioSetOpen(gpioSet, NELEMS(gpioSet));
 
-	lp_timerStartSet(timerSet, NELEMS(timerSet));
+	lp_timerSetStart(timerSet, NELEMS(timerSet));
 
 	lp_azureToDeviceStart();
 
 	lp_interCoreCommunicationsEnable(lp_config.rtComponentId, InterCoreHandler);  // Initialize Inter Core Communications
 
 	ic_control_block.cmd = LP_IC_HEARTBEAT;		// Prime RT Core with Component ID Signature
-	lp_sendInterCoreMessage(&ic_control_block, sizeof(ic_control_block));
+	lp_interCoreSendMessage(&ic_control_block, sizeof(ic_control_block));
 }
 
 /// <summary>
@@ -198,12 +198,12 @@ static void ClosePeripheralAndHandlers(void)
 {
 	Log_Debug("Closing file descriptors\n");
 
-	lp_timerStopSet(timerSet, NELEMS(timerSet));
+	lp_timerSetStop(timerSet, NELEMS(timerSet));
 	lp_azureToDeviceStop();
 
-	lp_gpioCloseSet(gpioSet, NELEMS(gpioSet));
+	lp_gpioSetClose(gpioSet, NELEMS(gpioSet));
 
-	lp_timerStopEventLoop();
+	lp_timerEventLoopStop();
 }
 
 int main(int argc, char* argv[])

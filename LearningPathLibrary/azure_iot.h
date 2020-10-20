@@ -26,6 +26,6 @@ bool lp_azureMsgSendWithProperties(const char* msg, LP_MESSAGE_PROPERTY** messag
 void lp_azureToDeviceStart(void);
 void lp_azureToDeviceStop(void);
 void lp_azureConnectionStringSet(const char* connectionString); // Note, do not use Connection Strings for Production - this is here for lab workaround
-void lp_azureIdScopeSet(const char* IdScope);
+void lp_azureInitialize(const char* IdScope);
 bool lp_azureConnect(void);
 IOTHUB_DEVICE_CLIENT_LL_HANDLE lp_azureClientHandleGet(void);

@@ -3,13 +3,13 @@
 static LP_DIRECT_METHOD_BINDING** _directMethods;
 static size_t _directMethodCount;
 
-void lp_directMethodOpenSet(LP_DIRECT_METHOD_BINDING* directMethods[], size_t directMethodCount)
+void lp_directMethodSetOpen(LP_DIRECT_METHOD_BINDING* directMethods[], size_t directMethodCount)
 {
 	_directMethods = directMethods;
 	_directMethodCount = directMethodCount;
 }
 
-void lp_directMethodCloseSet(void)
+void lp_directMethodSetClose(void)
 {
 	_directMethods = NULL;
 	_directMethodCount = 0;

@@ -51,7 +51,7 @@ void lp_timerStop(LP_TIMER* timer) {
 	}
 }
 
-void lp_timerStartSet(LP_TIMER* timerSet[], size_t timerCount) {
+void lp_timerSetStart(LP_TIMER* timerSet[], size_t timerCount) {
 	for (int i = 0; i < timerCount; i++) {
 		if (!lp_timerStart(timerSet[i])) {
 			break;
@@ -59,20 +59,20 @@ void lp_timerStartSet(LP_TIMER* timerSet[], size_t timerCount) {
 	}
 }
 
-void lp_timerStopSet(LP_TIMER* timerSet[], size_t timerCount) {
+void lp_timerSetStop(LP_TIMER* timerSet[], size_t timerCount) {
 	for (int i = 0; i < timerCount; i++) {
 		lp_timerStop(timerSet[i]);
 	}
 }
 
-void lp_timerStopEventLoop(void) {
+void lp_timerEventLoopStop(void) {
 	EventLoop* eventLoop = lp_timerGetEventLoop();
 	if (eventLoop != NULL) {
 		EventLoop_Close(eventLoop);
 	}
 }
 
-bool lp_timerSetOneShot(LP_TIMER* timer, const struct timespec* period) {
+bool lp_timerOneShotSet(LP_TIMER* timer, const struct timespec* period) {
 	EventLoop* eventLoop = lp_timerGetEventLoop();
 	if (eventLoop == NULL) {
 		return false;

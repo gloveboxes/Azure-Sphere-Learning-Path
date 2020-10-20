@@ -9,7 +9,7 @@ static LP_DEVICE_TWIN_BINDING** _deviceTwins = NULL;
 static size_t _deviceTwinCount = 0;
 
 
-void lp_deviceTwinOpenSet(LP_DEVICE_TWIN_BINDING* deviceTwins[], size_t deviceTwinCount) {
+void lp_deviceTwinSetOpen(LP_DEVICE_TWIN_BINDING* deviceTwins[], size_t deviceTwinCount) {
 	_deviceTwins = deviceTwins;
 	_deviceTwinCount = deviceTwinCount;
 
@@ -18,7 +18,7 @@ void lp_deviceTwinOpenSet(LP_DEVICE_TWIN_BINDING* deviceTwins[], size_t deviceTw
 	}
 }
 
-void lp_deviceTwinCloseSet(void) {
+void lp_deviceTwinSetClose(void) {
 	for (int i = 0; i < _deviceTwinCount; i++) { lp_deviceTwinClose(_deviceTwins[i]); }
 }
 

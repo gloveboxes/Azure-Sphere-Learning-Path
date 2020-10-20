@@ -13,9 +13,9 @@ typedef struct {
 
 EventLoop* lp_timerGetEventLoop(void);
 bool lp_timerChange(LP_TIMER* timer, const struct timespec* period);
-bool lp_timerSetOneShot(LP_TIMER* timer, const struct timespec* delay);
+bool lp_timerOneShotSet(LP_TIMER* timer, const struct timespec* delay);
 bool lp_timerStart(LP_TIMER* timer);
-void lp_timerStartSet(LP_TIMER* timerSet[], size_t timerCount);
+void lp_timerSetStart(LP_TIMER* timerSet[], size_t timerCount);
+void lp_timerSetStop(LP_TIMER* timerSet[], size_t timerCount);
 void lp_timerStop(LP_TIMER* timer);
-void lp_timerStopEventLoop(void);
-void lp_timerStopSet(LP_TIMER* timerSet[], size_t timerCount);
+void lp_timerEventLoopStop(void);

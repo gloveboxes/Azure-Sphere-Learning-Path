@@ -236,16 +236,16 @@ static void DeviceTwinSetTemperatureHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBi
 /// <returns>0 on success, or -1 on failure</returns>
 static void InitPeripheralAndHandlers(void)
 {
-	lp_azureIdScopeSet(lp_config.scopeId);
+	lp_azureInitialize(lp_config.scopeId);
 
 	lp_initializeDevKit();
 
-	lp_gpioOpenSet(gpioSet, NELEMS(gpioSet));
-	lp_gpioOpenSet(ledRgb, NELEMS(ledRgb));
+	lp_gpioSetOpen(gpioSet, NELEMS(gpioSet));
+	lp_gpioSetOpen(ledRgb, NELEMS(ledRgb));
 
-	lp_deviceTwinOpenSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
+	lp_deviceTwinSetOpen(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
 
-	lp_timerStartSet(timerSet, NELEMS(timerSet));
+	lp_timerSetStart(timerSet, NELEMS(timerSet));
 	lp_azureToDeviceStart();
 }
 
@@ -256,17 +256,17 @@ static void ClosePeripheralAndHandlers(void)
 {
 	Log_Debug("Closing file descriptors\n");
 
-	lp_timerStopSet(timerSet, NELEMS(timerSet));
+	lp_timerSetStop(timerSet, NELEMS(timerSet));
 	lp_azureToDeviceStop();
 
-	lp_gpioCloseSet(gpioSet, NELEMS(gpioSet));
-	lp_gpioCloseSet(ledRgb, NELEMS(ledRgb));
+	lp_gpioSetClose(gpioSet, NELEMS(gpioSet));
+	lp_gpioSetClose(ledRgb, NELEMS(ledRgb));
 
-	lp_deviceTwinCloseSet();
+	lp_deviceTwinSetClose();
 
 	lp_closeDevKit();
 
-	lp_timerStopEventLoop();
+	lp_timerEventLoopStop();
 }
 
 int main(int argc, char* argv[])
