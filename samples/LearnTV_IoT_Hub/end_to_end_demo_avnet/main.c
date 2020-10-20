@@ -39,7 +39,7 @@
 // Learning Path Libraries
 #include "azure_iot.h"
 #include "exit_codes.h"
-#include "globals.h"
+#include "config.h"
 #include "peripheral_gpio.h"
 #include "terminate.h"
 #include "timer.h"
@@ -55,9 +55,9 @@
 
 // Hardware specific
 #ifdef OEM_AVNET
-#include "AVNET/board.h"
-#include "AVNET/imu_temp_pressure.h"
-#include "AVNET/light_sensor.h"
+#include "board.h"
+#include "imu_temp_pressure.h"
+#include "light_sensor.h"
 #endif // OEM_AVNET
 
 // Hardware specific
@@ -74,6 +74,7 @@ static void SampleRateDeviceTwinHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBindin
 static LP_DIRECT_METHOD_RESPONSE_CODE LightControlDirectMethodHandler(JSON_Object* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg);
 
 // Variables
+LP_USER_CONFIG lp_config;
 static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 
 // Telemetry message template and properties
@@ -112,6 +113,8 @@ static LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = {  };
 
 static void InitPeripheralsAndHandlers(void)
 {
+	lp_azureInitialize(lp_config.scopeId);
+
 	lp_initializeDevKit();
 
 	lp_gpioSetOpen(gpioSet, NELEMS(gpioSet));
@@ -141,12 +144,10 @@ static void ClosePeripheralsAndHandlers(void)
 int main(int argc, char* argv[])
 {
 	lp_registerTerminationHandler();
-	lp_processCmdArgs(argc, argv);
 
-	if (strlen(scopeId) == 0)
-	{
-		Log_Debug("ScopeId needs to be set in the app_manifest CmdArgs\n");
-		return ExitCode_Missing_ID_Scope;
+	lp_configParseCmdLineArguments(argc, argv, &lp_config);
+	if (!lp_configValidate(&lp_config)) {
+		return lp_getTerminationExitCode();
 	}
 
 	InitPeripheralsAndHandlers();

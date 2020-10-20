@@ -32,10 +32,6 @@ source_group("Source" FILES ${Source})
 if(AVNET)
 
     set(Oem
-        "../../../LearningPathLibrary/AVNET/lps22hh_reg.c"
-        "../../../LearningPathLibrary/AVNET/lsm6dso_reg.c"
-        "../../../LearningPathLibrary/AVNET/imu_temp_pressure.c"
-        "../../../LearningPathLibrary/AVNET/light_sensor.c"
         "../../../LearningPathLibrary/AVNET/board.c"
     )
     source_group("Oem" FILES ${Oem})
@@ -70,24 +66,27 @@ target_include_directories(${PROJECT_NAME} PUBLIC
                           )
 
 target_compile_options(${PROJECT_NAME} PRIVATE -Wno-unknown-pragmas)
-set_source_files_properties(../../../LearningPathLibrary/AVNET/lsm6dso_reg.c PROPERTIES COMPILE_FLAGS -Wno-conversion)
-set_source_files_properties(../../../LearningPathLibrary/AVNET/lps22hh_reg.c PROPERTIES COMPILE_FLAGS -Wno-conversion)
-
-set_source_files_properties(../../../LearningPathLibrary/AVNET/imu_temp_pressure.c PROPERTIES COMPILE_FLAGS -Wno-float-conversion)
-set_source_files_properties(../../../LearningPathLibrary/AVNET/imu_temp_pressure.c PROPERTIES COMPILE_FLAGS -Wno-incompatible-pointer-types)
-set_source_files_properties(../../../LearningPathLibrary/AVNET/imu_temp_pressure.c PROPERTIES COMPILE_FLAGS -Wno-conversion)
 
 
 if(AVNET)
-    azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../../../HardwareDefinitions/avnet_mt3620_sk" TARGET_DEFINITION "azure_sphere_learning_path.json")
+
+    add_subdirectory("../../../Drivers/AVNET_SK/HighLevel" drivers)
+    target_link_libraries(${PROJECT_NAME} avnet_drivers)
+    target_include_directories(${PROJECT_NAME} PUBLIC 
+                            ../../../LearningPathLibrary/AVNET
+                            ../../../Drivers/AVNET_SK/HighLevel
+                            ../../../Drivers/AVNET_SK/Common 
+                            )
+
+    azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../HardwareDefinitions/avnet_mt3620_sk" TARGET_DEFINITION "azure_sphere_learning_path.json")
 endif(AVNET)
 
 if (SEEED_STUDIO_RDB)
-    azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../../../HardwareDefinitions/mt3620_rdb" TARGET_DEFINITION "azure_sphere_learning_path.json")
+    azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../HardwareDefinitions/mt3620_rdb" TARGET_DEFINITION "azure_sphere_learning_path.json")
 endif()
 
 if (SEEED_STUDIO_MINI)
-    azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../../../HardwareDefinitions/seeed_mt3620_mdb" TARGET_DEFINITION "azure_sphere_learning_path.json")
+    azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../HardwareDefinitions/seeed_mt3620_mdb" TARGET_DEFINITION "azure_sphere_learning_path.json")
 endif(SEEED_STUDIO_MINI)
 
 azsphere_target_add_image_package(${PROJECT_NAME})
