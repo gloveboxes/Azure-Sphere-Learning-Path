@@ -159,10 +159,10 @@ void thread_read_sensor(ULONG thread_input)
 
 	srand((unsigned int)time(NULL)); // seed the random number generator for fake telemetry
 
-	tx_thread_sleep(MS_TO_TICK(100));
+	tx_thread_sleep(MS_TO_TICK(200));
 
 	// prime the senors
-	for (size_t i = 0; i < 10; i++) {
+	for (size_t i = 0; i < 6; i++) {
 		temperature = lp_get_temperature_lps22h();
 		pressure = lp_get_pressure();
 		tx_thread_sleep(MS_TO_TICK(100));
