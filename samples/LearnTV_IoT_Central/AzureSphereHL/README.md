@@ -75,7 +75,7 @@ static LP_TIMER readSensorTimer = {
 **Update gpio set**
 
 ```c
-static LP_TIMER* timerSet[] = { &intercoreHeartbeatHandler, &readSensorTimer };
+static LP_TIMER* timerSet[] = { &readSensorTimer };
 ```
 
 **Add handler**
@@ -113,7 +113,6 @@ static LP_GPIO relay = {
     .direction = LP_OUTPUT,
     .initialState = GPIO_Value_Low,
     .invertPin = false,
-    .initialise = lp_gpioOpen,
     .name = "relay" };
 ```
 
@@ -210,7 +209,7 @@ static void SampleRateDeviceTwinHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBindin
 
     if (sampleRate > 0 && sampleRate < (5 * 60)) // check sensible range
     {
-        lp_changeTimer(&readSensorTimer, &(struct timespec){sampleRate, 0});
+        lp_timerChange(&readSensorTimer, &(struct timespec){sampleRate, 0});
         lp_deviceTwinAckDesiredState(deviceTwinBinding, deviceTwinBinding->twinState, LP_DEVICE_TWIN_COMPLETED);
     }
     else {
@@ -254,14 +253,13 @@ static LP_GPIO azureIotConnectedLed = {
     .direction = LP_OUTPUT,
     .initialState = GPIO_Value_Low,
     .invertPin = true,
-    .initialise = lp_gpioOpen,
     .name = "azureIotConnectedLed" };
 ```
 
 ### Update GPIO and Timer sets**
 
 ```c
-static LP_TIMER* timerSet[] = { &intercoreHeartbeatHandler, &readSensorTimer, &azureIotConnectionStatusTimer };
+static LP_TIMER* timerSet[] = { &readSensorTimer, &azureIotConnectionStatusTimer };
 static LP_GPIO* gpioSet[] = { &relay, &azureIotConnectedLed };
 ```
 
@@ -271,21 +269,21 @@ static LP_GPIO* gpioSet[] = { &relay, &azureIotConnectedLed };
 /// <summary>
 /// Check status of connection to Azure IoT
 /// </summary>
-static void AzureIotConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
+static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
 {
-    static bool toggleStatusLed = true;
+	static bool toggleConnectionStatusLed = true;
 
-    if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
-        lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
-        return;
-    }
-
-    if (lp_azureConnect()) {
-        lp_gpioStateSet(&azureIotConnectedLed, toggleStatusLed);
-        toggleStatusLed = !toggleStatusLed;
-    }
-    else {
-        lp_gpioStateSet(&azureIotConnectedLed, false);
-    }
+	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
+		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
+	}
+	else {
+		if (lp_azureConnect()) {
+			lp_gpioStateSet(&azureIotConnectedLed, toggleConnectionStatusLed);
+			toggleConnectionStatusLed = !toggleConnectionStatusLed;
+		}
+		else {
+			lp_gpioStateSet(&azureIotConnectedLed, false);
+		}
+	}
 }
 ```

@@ -4,7 +4,7 @@
   "ComponentId": "25025d2c-66da-4448-bae1-ac26fcdd3627",
   "EntryPoint": "/bin/app",
   "CmdArgs": [
-    "--ConnectionType", "DPS", "--ScopeID", "0ne0019EC86",
+    "--ConnectionType", "DPS", "--ScopeID", "Your_ID_Scope",
     "--RTComponentId", "6583cf17-d321-4d72-8283-0b7c5b56442b"
   ],
   "Capabilities": {
@@ -16,11 +16,9 @@
       "6583cf17-d321-4d72-8283-0b7c5b56442b"
     ],
     "AllowedConnections": [
-      "global.azure-devices-provisioning.net",
-      "DPS-3ak5dii4imseq.azure-devices-provisioning.net",
-      "IOT-HUB-3ak5dii4imseq.azure-devices.net"
+      "global.azure-devices-provisioning.net"
     ],
-    "DeviceAuthentication": "9d7e79eb-e021-43ce-9f2b-fa944b447494"
+    "DeviceAuthentication": "Replace_with_your_Azure_Sphere_Tenant_ID"
   },
   "ApplicationType": "Default"
 }

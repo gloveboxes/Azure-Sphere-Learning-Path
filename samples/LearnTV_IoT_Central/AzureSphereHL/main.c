@@ -82,120 +82,23 @@ static LP_MESSAGE_PROPERTY* telemetryMessageProperties[] = {
 /***********************************************/
 /*****  Declare Timers, Twins and Methods  *****/
 
-// Timer
-static LP_TIMER readSensorTimer = {
-    .period = {5, 0},
-    .name = "readSensorTimer",
-    .handler = ReadSensorHandler };
-
-static LP_GPIO relay = {
-    .pin = RELAY,
-    .direction = LP_OUTPUT,
-    .initialState = GPIO_Value_Low,
-    .invertPin = false,
-    .name = "relay" };
-
-static LP_DIRECT_METHOD_BINDING lightControl = {
-    .methodName = "LightControl",
-    .handler = LightControlDirectMethodHandler };
-
-static LP_DEVICE_TWIN_BINDING sampleRate_DeviceTwin = {
-    .twinProperty = "SampleRateSeconds",
-    .twinType = LP_TYPE_INT,
-    .handler = SampleRateDeviceTwinHandler };
-
-static LP_TIMER azureIotConnectionStatusTimer = {
-	.period = {5, 0},
-	.name = "azureIotConnectionStatusTimer",
-	.handler = AzureIotConnectionStatusHandler };
-
-static LP_GPIO azureIotConnectedLed = {
-	.pin = NETWORK_CONNECTED_LED,
-	.direction = LP_OUTPUT,
-	.initialState = GPIO_Value_Low,
-	.invertPin = true,
-	.name = "azureIotConnectedLed" };
 
 
 
 /****************************************/
 /*****  Initialise collection set  *****/
 
-static LP_TIMER* timerSet[] = { &readSensorTimer, &azureIotConnectionStatusTimer };
-static LP_GPIO* gpioSet[] = { &relay, &azureIotConnectedLed };
-static LP_DIRECT_METHOD_BINDING* directMethodBindingSet[] = { &lightControl };
-static LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &sampleRate_DeviceTwin };
+static LP_TIMER* timerSet[] = {  };
+static LP_GPIO* gpioSet[] = {  };
+static LP_DIRECT_METHOD_BINDING* directMethodBindingSet[] = {  };
+static LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = {  };
 
 /****************************************/
 /*****  Demo Code                   *****/
 
-/// <summary>
-/// Check status of connection to Azure IoT
-/// </summary>
-static void AzureIotConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
-{
-	static bool toggleConnectionStatusLed = true;
-
-	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
-		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
-	}
-	else {
-		if (lp_azureConnect()) {
-			lp_gpioStateSet(&azureIotConnectedLed, toggleConnectionStatusLed);
-			toggleConnectionStatusLed = !toggleConnectionStatusLed;
-		}
-		else {
-			lp_gpioStateSet(&azureIotConnectedLed, false);
-		}
-	}
-}
-
-/// <summary>
-/// This handler called when device twin desired 'SampleRateSeconds' recieved
-/// </summary>
-static void SampleRateDeviceTwinHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding)
-{
-    int sampleRate = *(int*)deviceTwinBinding->twinState;
-
-    if (sampleRate > 0 && sampleRate < (5 * 60)) // check sensible range
-    {
-        lp_timerChange(&readSensorTimer, &(struct timespec){sampleRate, 0});
-        lp_deviceTwinAckDesiredState(deviceTwinBinding, deviceTwinBinding->twinState, LP_DEVICE_TWIN_COMPLETED);
-    }
-    else {
-        lp_deviceTwinAckDesiredState(deviceTwinBinding, deviceTwinBinding->twinState, LP_DEVICE_TWIN_ERROR);
-    }
-}
 
 
-/// <summary>
-/// Remote control lab light Direct Method 'LightControl' true or false
-/// </summary>
-static LP_DIRECT_METHOD_RESPONSE_CODE LightControlDirectMethodHandler(JSON_Value* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg)
-{
-    if (json_value_get_type(json) != JSONBoolean) { return LP_METHOD_FAILED; }
 
-    bool state = (bool)json_value_get_boolean(json);
-
-    lp_gpioStateSet(&relay, state);
-
-    return LP_METHOD_SUCCEEDED;
-}
-
-/// <summary>
-/// Read sensor and send to Azure IoT
-/// </summary>
-static void ReadSensorHandler(EventLoopTimer* eventLoopTimer)
-{
-    if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
-        lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
-    }
-    else {
-        // send request to Real-Time core app to read temperature, pressure, and humidity
-        ic_control_block.cmd = LP_IC_ENVIRONMENT_SENSOR;
-        lp_sendInterCoreMessage(&ic_control_block, sizeof(ic_control_block));
-    }
-}
 
 /*****************************************************************************/
 /*         Initialise and run code                                           */
@@ -237,7 +140,6 @@ static void InitPeripheralAndHandlers(void)
 
 	lp_interCoreCommunicationsEnable(lp_config.rtComponentId, InterCoreHandler);  // Initialize Inter Core Communications
 
-	lp_timerSetOneShot(&readSensorTimer, &(struct timespec){1, 0});
 }
 
 /// <summary>
