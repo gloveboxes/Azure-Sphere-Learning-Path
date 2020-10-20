@@ -15,6 +15,7 @@ static const int keepalivePeriodSeconds = 20;
 
 static const char*	_idScope = NULL;
 static const char* _connectionString = NULL;
+static const char* _deviceTwinModelId = NULL;
 
 // static LP_MESSAGE_PROPERTY** _messageProperties = NULL;
 // static size_t _messagePropertyCount = 0;
@@ -43,8 +44,10 @@ void lp_azureToDeviceStop(void) {
 void lp_azureConnectionStringSet(const char* connectionString){
 	_connectionString = connectionString;
 }
-void lp_azureInitialize(const char * idScope){
+
+void lp_azureInitialize(const char* idScope, const char* deviceTwinModelId){
 	_idScope = idScope;
+	_deviceTwinModelId = deviceTwinModelId;
 }
 
 /// <summary>

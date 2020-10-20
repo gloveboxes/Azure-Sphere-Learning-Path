@@ -129,7 +129,7 @@ static void InterCoreHandler(LP_INTER_CORE_BLOCK* ic_message_block)
 /// </summary>
 static void InitPeripheralAndHandlers(void)
 {
-	lp_azureInitialize(lp_config.scopeId);
+	lp_azureInitialize(lp_config.scopeId, lp_config.deviceTwinModelId);
 
 	lp_gpioSetOpen(gpioSet, NELEMS(gpioSet));
 	lp_deviceTwinSetOpen(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));

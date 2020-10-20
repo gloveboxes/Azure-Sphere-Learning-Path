@@ -229,7 +229,7 @@ static LP_DIRECT_METHOD_RESPONSE_CODE ResetDirectMethodHandler(JSON_Value* json,
 /// </summary>
 static void InitPeripheralAndHandlers(void)
 {
-    lp_azureInitialize(lp_config.scopeId);
+    lp_azureInitialize(lp_config.scopeId, lp_config.deviceTwinModelId);
 
     lp_initializeDevKit();
 

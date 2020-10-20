@@ -19,6 +19,7 @@ typedef struct {
     const char* scopeId;                                      // ID Scope for DPS.
     const char* connectionString;                             // Fallback to Connection string (not recommended)
     const char* rtComponentId;                                // Real time app component id
+    const char* deviceTwinModelId;                            // Device Twin Model ID
     ConnectionType connectionType;
 } LP_USER_CONFIG;
 

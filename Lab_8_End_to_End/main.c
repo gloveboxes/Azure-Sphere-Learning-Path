@@ -312,7 +312,7 @@ static LP_DIRECT_METHOD_RESPONSE_CODE ResetDirectMethodHandler(JSON_Value* json,
 /// <returns>0 on success, or -1 on failure</returns>
 static void InitPeripheralAndHandlers(void)
 {
-	lp_azureInitialize(lp_config.scopeId);
+	lp_azureInitialize(lp_config.scopeId, lp_config.deviceTwinModelId);
 
 	lp_gpioSetOpen(gpioSet, NELEMS(gpioSet));
 	lp_gpioSetOpen(ledRgb, NELEMS(ledRgb));

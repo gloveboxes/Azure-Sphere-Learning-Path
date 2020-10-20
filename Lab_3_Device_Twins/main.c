@@ -236,7 +236,7 @@ static void DeviceTwinSetTemperatureHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBi
 /// <returns>0 on success, or -1 on failure</returns>
 static void InitPeripheralAndHandlers(void)
 {
-	lp_azureInitialize(lp_config.scopeId);
+	lp_azureInitialize(lp_config.scopeId, lp_config.deviceTwinModelId);
 
 	lp_initializeDevKit();
 

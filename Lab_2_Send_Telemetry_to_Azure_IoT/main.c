@@ -237,7 +237,7 @@ static void AlertLedOffToggleHandler(EventLoopTimer* eventLoopTimer) {
 /// </summary>
 static void InitPeripheralsAndHandlers(void)
 {
-	lp_azureInitialize(lp_config.scopeId);
+	lp_azureInitialize(lp_config.scopeId, lp_config.deviceTwinModelId);
 
 	lp_initializeDevKit();
 

@@ -9,6 +9,7 @@ static const char* cmdLineArgsUsageText =
 "Direction connection type: \" CmdArgs \": [\"--ConnectionType\", \"Direct\", "
 "\"--ConnectionString\" \"]\n"
 "Real-time Compontent ID: \" CmdArgs \": [\"--RTComponentId\" \"]"
+"Device Twin Model ID: \" CmdArgs \": [\"--DeviceTwinModelId\" \"]"
 ;
 
 /// <summary>
@@ -22,10 +23,11 @@ void lp_configParseCmdLineArguments(int argc, char* argv[], LP_USER_CONFIG* lp_c
         {"ScopeID", required_argument, NULL, 's'},
         {"RTComponentId", required_argument, NULL, 'r'},
         {"ConnectionString", required_argument, NULL, 'z'},
+        {"DeviceTwinModelId", required_argument, NULL, 'd'},
         {NULL, 0, NULL, 0} };
 
     // Loop over all of the options.
-    while ((option = getopt_long(argc, argv, "c:s:r:z:", cmdLineOptions, NULL)) != -1) {
+    while ((option = getopt_long(argc, argv, "c:s:r:z:d:", cmdLineOptions, NULL)) != -1) {
         // Check if arguments are missing. Every option requires an argument.
         if (optarg != NULL && optarg[0] == '-') {
             Log_Debug("WARNING: Option %c requires an argument\n", option);
@@ -53,6 +55,10 @@ void lp_configParseCmdLineArguments(int argc, char* argv[], LP_USER_CONFIG* lp_c
             Log_Debug("Connection String: %s\n", optarg);
             lp_config->connectionString = optarg;
             break;
+        case 'd':
+            Log_Debug("Device Twin Model ID: %s\n", optarg);
+            lp_config->deviceTwinModelId = optarg;
+            break;
         default:
             // Unknown options are ignored.
             break;
@@ -65,7 +71,7 @@ void lp_configParseCmdLineArguments(int argc, char* argv[], LP_USER_CONFIG* lp_c
 /// </summary>
 /// <returns>ExitCode_Success if the parameters were provided; otherwise another
 /// ExitCode value which indicates the specific failure.</returns>
-bool lp_configValidate(LP_USER_CONFIG * lp_config)
+bool lp_configValidate(LP_USER_CONFIG* lp_config)
 {
     ExitCode validationExitCode = ExitCode_Success;
 
@@ -85,7 +91,7 @@ bool lp_configValidate(LP_USER_CONFIG * lp_config)
     if (lp_config->connectionType == ConnectionType_Direct) {
         if (lp_config->connectionString == NULL) {
             lp_terminate(ExitCode_Validate_IotHubConnectionString);
-        }        
+        }
         if (validationExitCode == ExitCode_Success) {
             Log_Debug("Using Direct Connection: Azure IoT Hub %s\n", lp_config->connectionString);
         }
