@@ -1,29 +1,29 @@
 {
   "@context": "dtmi:dtdl:context;2",
-  "@id": "dtmi:Glovebox:Hvac;1",
+  "@id": "dtmi:LearningPath:Hvac;1",
   "@type": "Interface",
   "displayName": "Hvac",
   "contents": [
     {
-      "@type": "Telemetry",
+      "@type": ["Telemetry", "Temperature"],
       "name": "Temperature",
       "displayName": "Room temperature",
       "schema": "double",
-      "unit": "Celsius"
+      "unit": "degreeCelsius"
     },
     {
-      "@type": "Telemetry",
+      "@type": ["Telemetry", "Pressure"],
       "name": "Pressure",
       "displayName": "Ambient air pressure",
       "schema": "double",
       "unit": "hPa"
     },
     {
-      "@type": "Telemetry",
+      "@type": ["Telemetry", "Humidity"],
       "name": "Humidity",
       "displayName": "Room humidity",
       "schema": "double",
-      "unit": "%rH"
+      "unit": "%"
     },
     {
       "@type": "Telemetry",
@@ -41,21 +41,43 @@
       "unit": "Heating, Cooling, Off"
     },
     {
-      "@type": "Property",
+      "@type": ["Property", "Temperature"],
       "name": "ActualTemperature",
       "schema": "double",
       "displayName": "Current room temperature",
       "description": "Last reported temperature",
-      "unit": "Celsius"
+      "unit": "degreeCelsius"
     },
     {
-      "@type": "Property",
+      "@type": ["Property", "Temperature"],
       "name": "DesiredTemperature",
       "schema": "double",
       "displayName": "Desired room temperature",
       "description": "Set room temperature",
-      "unit": "Celsius",
+      "unit": "degreeCelsius",
       "writable": true
+    },
+    {
+      "@type": "Property",
+      "name": "DeviceResetUTC",
+      "schema": "dateTime",
+      "displayName": "Last device restart",
+      "description": "Universal Time Coordinated (UTC)",
+      "unit":"UTC"
+    },    
+    {
+      "@type": "Command",
+      "name": "ResetMethod",
+      "request": {
+        "name": "ResetMethod",        
+        "schema": "integer"
+      },
+      "response": {
+        "name": "payload",
+        "schema": "string"
+      },
+      "displayName": "Reboot Device",
+      "description": "Specify reboot time in seconds [3..9]"
     }
   ]
 }
