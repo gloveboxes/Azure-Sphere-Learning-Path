@@ -120,7 +120,7 @@ LP_DIRECT_METHOD_BINDING* directMethodBindingSet[] = { &resetDevice };
 
 // Message templates and property sets
 
-static const char* msgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"MsgId\":%d }";
+static const char* msgTemplate = "{ \"Temperature\":%3.2f, \"Humidity\":%3.1f, \"Pressure\":%3.1f, \"MsgId\":%d }";
 
 static LP_MESSAGE_PROPERTY* telemetryMessageProperties[] = {
 	&(LP_MESSAGE_PROPERTY) { .key = "appid", .value = "hvac" },

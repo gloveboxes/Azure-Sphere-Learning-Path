@@ -75,7 +75,7 @@ static void AlertLedOffToggleHandler(EventLoopTimer* eventLoopTimer);
 
 static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 
-static const char* msgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"MsgId\":%d }";
+static const char* msgTemplate = "{ \"Temperature\":%3.2f, \"Humidity\":%3.1f, \"Pressure\":%3.1f, \"MsgId\":%d }";
 
 // GPIO Input Peripherals
 static LP_GPIO buttonA = {

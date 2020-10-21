@@ -99,7 +99,7 @@ static void ReadSensorHandler(EventLoopTimer* eventLoopTimer)
 
 	if (lp_readTelemetry(&environment))
 	{
-		if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, MsgTemplate, environment.temperature, environment.humidity, environment.pressure, environment.light, msgId++) > 0)
+		if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, MsgTemplate, environment.temperature, environment.humidity, environment.pressure, msgId++) > 0)
 		{
 			Log_Debug(msgBuffer);
 			lp_azureMsgSendWithProperties(msgBuffer, telemetryMessageProperties, NELEMS(telemetryMessageProperties));

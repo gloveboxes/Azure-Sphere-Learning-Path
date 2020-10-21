@@ -78,7 +78,7 @@ LP_USER_CONFIG lp_config;
 static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 
 // Telemetry message template and properties
-static const char* msgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"Light\":%d, \"MsgId\":%d }";
+static const char* msgTemplate = "{ \"Temperature\":%3.2f, \"Humidity\":%3.1f, \"Pressure\":%3.1f, \"MsgId\":%d }";
 
 static LP_MESSAGE_PROPERTY* msgProperties[] = {
 	&(LP_MESSAGE_PROPERTY) { .key = "appid", .value = "lab-monitor" },
