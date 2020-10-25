@@ -103,7 +103,7 @@ static LP_TIMER azureIotConnectionStatusTimer = {
 	.handler = AzureIoTConnectionStatusHandler };
 
 static LP_TIMER measureSensorTimer = {
-	.period = {6, 0},
+	.period = {4, 0},
 	.name = "measureSensorTimer",
 	.handler = MeasureSensorHandler };
 
