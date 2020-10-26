@@ -38,7 +38,7 @@ This lab assumes you have completed [Connect a room environment monitor to Azure
 
 ## Introduction to the Learning Path Labs
 
-There are a number of Learning Path libraries that support these labs. These Learning Path C functions are prefixed with **lp_**, typedefs and enums are prefixed with **LP_**. 
+There are a number of Learning Path libraries that support these labs. These Learning Path C functions are prefixed with **lp_**, typedefs and enums are prefixed with **LP_**.
 
 The Learning Path libraries are open source and contributions are welcome.
 
@@ -50,7 +50,7 @@ The Learning Path libraries are **not** part of the official Azure Sphere librar
 
 ## Tutorial Overview
 
-There are three options for Azure IoT cloud to device communications: 
+There are three options for Azure IoT cloud to device communications:
 
 1. [Direct Methods](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods?WT.mc_id=julyot-azd-dglover) for communications that require immediate confirmation of the result. Direct methods are often used for interactive control of devices, such as turning on a fan.
 
@@ -78,22 +78,22 @@ You can use device twins as follows:
 
 1. Cloud to device updates.
 
-	A user sets an Azure IoT Central device property. For example, to set the temperature of the room. IoT Central sends a desired property device twin message to the device. The device implements the desired property, and then the device responds with a reported property device twin message. Azure IoT Hub stores the reported property. 
+    A user sets an Azure IoT Central device property. For example, to set the temperature of the room. IoT Central sends a desired property device twin message to the device. The device implements the desired property, and then the device responds with a reported property device twin message. Azure IoT Hub stores the reported property.
 2. Device to cloud updates.
 
-	A device can send a reported property device twin message to Azure. For example, a device could report its firmware level on startup.  Azure IoT Hub stores the reported property. 
+    A device can send a reported property device twin message to Azure. For example, a device could report its firmware level on startup.  Azure IoT Hub stores the reported property.
 
 3. Querying reported properties.
 
-	With device twins reported state stored in Azure, it is possible to query the stored device twin properties cloud side. For example, list all devices with a firmware version less than 2.0, as these devices require an update. Or, list all rooms with a temperature setting higher than 25 degrees Celsius.
+    With device twins reported state stored in Azure, it is possible to query the stored device twin properties cloud side. For example, list all devices with a firmware version less than 2.0, as these devices require an update. Or, list all rooms with a temperature setting higher than 25 degrees Celsius.
 
-The following outlines how Azure IoT Central uses Device Twins to set properties on a device: 
+The following outlines how Azure IoT Central uses Device Twins to set properties on a device:
 
 1. A user sets the value of a property in Azure IoT Central. For example, set the desired room temperature.
-2. Azure IoT Hub sends a desired property message to the device. 
+2. Azure IoT Hub sends a desired property message to the device.
 3. The device implements the desired property; in this case, turn on the heater or cooler to bring the room to the desired temperature.
 4. The device sends a reported property message back to Azure IoT. In this example, the device would report the new desired temperate.
-5. Azure IoT Central queries and displays the devices reported property data. 
+5. Azure IoT Central queries and displays the devices reported property data.
 
 ![](resources/device-twin-configuration-pattern.png)
 
@@ -110,14 +110,14 @@ Azure IoT Central properties are implemented on Azure IoT Hub device twins. Devi
 The following example declares a variable named **desiredTemperature** of type **LP_DEVICE_TWIN_BINDING**. This variable maps the Azure IoT Central **DesiredTemperature** property with a handler function named **DeviceTwinSetTemperatureHandler**.
 
 ```c
-static LP_DEVICE_TWIN_BINDING desiredTemperature = { 
-	.twinProperty = "DesiredTemperature", 
-	.twinType = LP_TYPE_FLOAT, 
-	.handler = DeviceTwinSetTemperatureHandler 
+static LP_DEVICE_TWIN_BINDING desiredTemperature = {
+    .twinProperty = "DesiredTemperature",
+    .twinType = LP_TYPE_FLOAT,
+    .handler = DeviceTwinSetTemperatureHandler
 };
 ```
 
-The following example declares a variable named **desiredTemperature** of type **LP_DEVICE_TWIN_BINDING**. This variable maps the Azure IoT Central *DesiredTemperature* property with a handler function named **DeviceTwinSetTemperatureHandler**.
+The following is the implementation of the **DeviceTwinSetTemperatureHandler** function. Note, as part of the [IoT Plug and Play](https://docs.microsoft.com/en-us/azure/iot-pnp/concepts-convention) conventions, the device should acknowledge the device twin update with a call to **lp_deviceTwinAckDesiredState**.
 
 ```c
 /// <summary>
@@ -125,11 +125,11 @@ The following example declares a variable named **desiredTemperature** of type *
 /// </summary>
 static void DeviceTwinSetTemperatureHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding)
 {
-	if (deviceTwinBinding->twinType == LP_TYPE_FLOAT)
-	{
-		desired_temperature = *(float*)deviceTwinBinding->twinState;
-		SetTemperatureStatusColour(last_temperature);
-	}
+    if (deviceTwinBinding->twinType == LP_TYPE_FLOAT)
+    {
+        lp_deviceTwinAckDesiredState(deviceTwinBinding, deviceTwinBinding->twinState, LP_DEVICE_TWIN_COMPLETED);
+        SetTemperatureStatusColour(last_temperature);
+    }
 }
 ```
 
@@ -139,12 +139,12 @@ The following example declares an **actualTemperature** device twin property of 
 
 ```c
 static LP_DEVICE_TWIN_BINDING actualTemperature = {
-		.twinProperty = "ActualTemperature",
-		.twinType = LP_TYPE_FLOAT 
+        .twinProperty = "ActualTemperature",
+        .twinType = LP_TYPE_FLOAT
 };
 ```
 
-The ActualTemperature reported property message is sent to IoT Central by calling the DeviceTwinReportState function. You must pass a property of the correct type.
+The **ActualTemperature** reported property message is sent to IoT Central by calling the **lp_deviceTwinReportState** function. You must pass a property of the correct type.
 
 ```c
 lp_deviceTwinReportState(&actualTemperature, &last_temperature); // TwinType = LP_TYPE_FLOAT
@@ -154,7 +154,7 @@ lp_deviceTwinReportState(&actualTemperature, &last_temperature); // TwinType = L
 
 ## Azure IoT Central device properties
 
-Azure IoT Central device properties are defined in Device templates.  
+Azure IoT Central device properties are defined in Device templates.
 
 1. From Azure IoT Central, navigate to **Device template**, and select the **Azure Sphere** template.
 2. Click on **Interface** to list the interface capabilities.
@@ -170,7 +170,7 @@ Azure IoT Central device properties are defined in Device templates.
 Device twin bindings must be added to the **deviceTwinBindingSet**. When a device twin message is received from Azure, this set is checked for a matching *twinProperty* name. When a match is found, the corresponding handler function is called.
 
 ```c
-LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &desiredTemperature, &actualTemperature };
+LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &desiredTemperature, &actualTemperature, &actualHvacState };
 ```
 
 ### Opening
@@ -178,7 +178,7 @@ LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &desiredTemperature, &actualT
 Sets are initialized in the **InitPeripheralsAndHandlers** function found in **main.c**.
 
 ```c
-lp_openDeviceTwinSet(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
+lp_deviceTwinSetOpen(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
 ```
 
 ### Dispatching
@@ -190,7 +190,7 @@ When a Device Twin message is received, the deviceTwinBindingSet is checked for 
 Sets are closed in the **ClosePeripheralsAndHandlers** function found in **main.c**.
 
 ```c
-lp_closeDeviceTwinSet();
+lp_deviceTwinSetClose();
 ```
 
 ---
@@ -217,15 +217,15 @@ These labs support developer boards from AVNET and Seeed Studio. You need to set
 The default developer board configuration is for the AVENT Azure Sphere Starter Kit. If you have this board, there is no additional configuration required.
 
 1. Open CMakeList.txt
-	![](resources/vs-code-open-cmake.png)
+    ![](resources/vs-code-open-cmake.png)
 2. Add a # at the beginning of the set AVNET line to disable it.
 3. Uncomment the **set** command that corresponds to your Azure Sphere developer board.
 
-	```text
-	set(AVNET TRUE "AVNET Azure Sphere Starter Kit")                
-	# set(SEEED_STUDIO_RDB TRUE "Seeed Studio Azure Sphere MT3620 Development Kit (aka Reference Design Board or rdb)")
-	# set(SEEED_STUDIO_MINI TRUE "Seeed Studio Azure Sphere MT3620 Mini Dev Board")
-	```	
+    ```text
+    set(AVNET TRUE "AVNET Azure Sphere Starter Kit")
+    # set(SEEED_STUDIO_RDB TRUE "Seeed Studio Azure Sphere MT3620 Development Kit (aka Reference Design Board or rdb)")
+    # set(SEEED_STUDIO_MINI TRUE "Seeed Studio Azure Sphere MT3620 Mini Dev Board")
+    ```
 
 4. Save the file. This will auto-generate the CMake cache.
 
@@ -242,31 +242,29 @@ The default developer board configuration is for the AVENT Azure Sphere Starter 
         "Name": "AzureSphereIoTCentral",
         "ComponentId": "25025d2c-66da-4448-bae1-ac26fcdd3627",
         "EntryPoint": "/bin/app",
-        "CmdArgs": [ "0ne0099999D" ],
+        "CmdArgs": [ "--ConnectionType", "DPS", "--ScopeID", "0ne0099999D" ],
         "Capabilities": {
             "Gpio": [
-                "$BUTTON_A",
-                "$BUTTON_B",
-                "$LED2",
                 "$NETWORK_CONNECTED_LED",
                 "$LED_RED",
                 "$LED_GREEN",
                 "$LED_BLUE"
             ],
-            "I2cMaster": [ "$I2cMaster2" ],
-            "PowerControls": [ "ForceReboot" ],
-            "AllowedConnections": [ 
+            "I2cMaster": [
+                "$I2cMaster2"
+            ],
+                "AllowedConnections": [
                 "global.azure-devices-provisioning.net",
-                "iotc-9999bc-3305-99ba-885e-6573fc4cf701.azure-devices.net", 
-                "iotc-789999fa-8306-4994-b70a-399c46501044.azure-devices.net", 
+                "iotc-9999bc-3305-99ba-885e-6573fc4cf701.azure-devices.net",
+                "iotc-789999fa-8306-4994-b70a-399c46501044.azure-devices.net",
                 "iotc-7a099966-a8c1-4f33-b803-bf29998713787.azure-devices.net",
-                "iotc-97299997-05ab-4988-8142-e299995acdb7.azure-devices.net", 
-                "iotc-d099995-7fec-460c-b717-e99999bf4551.azure-devices.net", 
-                "iotc-789999dd-3bf5-49d7-9e12-f6999991df8c.azure-devices.net", 
-                "iotc-29999917-7344-49e4-9344-5e0cc9999d9b.azure-devices.net", 
-                "iotc-99999e59-df2a-41d8-bacd-ebb9999143ab.azure-devices.net", 
-                "iotc-c0a9999b-d256-4aaf-aa06-e90e999902b3.azure-devices.net", 
-                "iotc-f9199991-ceb1-4f38-9f1c-13199992570e.azure-devices.net" 
+                "iotc-97299997-05ab-4988-8142-e299995acdb7.azure-devices.net",
+                "iotc-d099995-7fec-460c-b717-e99999bf4551.azure-devices.net",
+                "iotc-789999dd-3bf5-49d7-9e12-f6999991df8c.azure-devices.net",
+                "iotc-29999917-7344-49e4-9344-5e0cc9999d9b.azure-devices.net",
+                "iotc-99999e59-df2a-41d8-bacd-ebb9999143ab.azure-devices.net",
+                "iotc-c0a9999b-d256-4aaf-aa06-e90e999902b3.azure-devices.net",
+                "iotc-f9199991-ceb1-4f38-9f1c-13199992570e.azure-devices.net"
             ],
             "DeviceAuthentication": "9d7e79eb-9999-43ce-9999-fa8888888894"
         },
@@ -281,7 +279,7 @@ The default developer board configuration is for the AVENT Azure Sphere Starter 
 1. Ensure main.c is open.
 2. Select **CMake: [Debug]: Ready** from the Visual Studio Code Status Bar.
 
-	![](resources/vs-code-start-application.png)
+    ![](resources/vs-code-start-application.png)
 
 3. From Visual Studio Code, press <kbd>F5</kbd> to build, deploy, start, and attached the remote debugger to the application now running the Azure Sphere device.
 
@@ -293,26 +291,21 @@ The default developer board configuration is for the AVENT Azure Sphere Starter 
 
 ![](resources/avnet-azure-sphere.jpg)
 
-1. The RGB LED5 will start to blink. In the next section, you will be setting the desired temperature which will determine the RGB LED colour.
-2. LED4 will turn yellow when connected to Azure.
-3. LED3 will blink when telemetry is sent to IoT Central
-4. Press **Button A** or **Button B** on the device to change the blink rate of LED5 and to update the **Actual Temperature** Device twin property in IoT Central.
+1. The WLAN LED will blink every 5 seconds when connected to Azure.
+1. The RGB LED will turn red if the measured temperature is less than the desired temperature, blue if the measured temperature is greater than the desired temperature and green if the measured temperature is the same as the desired temperature.
 
 ### Seeed Studio Azure Sphere MT3620 Development Kit
 
 ![](resources/seeed-studio-azure-sphere-rdb.jpg)
 
-1. The RGB LED 1 will start to blink. In the next section, you will be setting the desired temperature which will determine the RGB LED colour.
-2. The network LED will turn red when connected to Azure.
-3. LED 4 will blink blue when telemetry is sent to IoT Central
-4. Press **Button A** or **Button B** on the device to change the blink rate of RGB LED 1 and to update the **Actual Temperature** Device twin property in IoT Central.
+1. The WLAN LED will blink every 5 seconds when connected to Azure.
+1. The RGB LED will turn red if the measured temperature is less than the desired temperature, blue if the measured temperature is greater than the desired temperature and green if the measured temperature is the same as the desired temperature.
 
 ### Seeed Studio MT3620 Mini Dev Board
 
 ![](resources/seeed-studio-azure-sphere-mini.png)
 
-1. The green LED closest to the USB connector will start to blink
-2. Given this device has no builtin buttons then virtual **Button A** and **Button B** presses will be generated every 10 seconds. The blink rate will change and the **Actual Temperature** Device twin property in IoT Central will be updated.
+1. The User LED will blink every 5 seconds when connected to Azure.
 
 ---
 
@@ -323,9 +316,9 @@ The default developer board configuration is for the AVENT Azure Sphere Starter 
 3. Select the **Form** tab.
 4. Azure Sphere devices with builtin buttons, press **Button A** or **Button B** to update the **Actual Temperature** property in IoT Central.
 
-	>Note, IoT Central does not update immediately, it might take a minute or two for the Actual Temperature property to change.
+    >Note, IoT Central does not update immediately, it might take a minute or two for the Actual Temperature property to change.
 
-	Virtual button press events are generated for Azure Sphere devices that do not have builtin buttons. 
+    Virtual button press events are generated for Azure Sphere devices that do not have builtin buttons.
 
 ![](resources/iot-central-display-telemetry.png)
 
@@ -335,9 +328,9 @@ Setting the desired temperature is like setting a thermostat in a room. A desire
 
 When the temperature sensor is read on the Azure Sphere it is compared to the desired temperature.
 
-* If the temperature is greater than the desired temperature the blinking LED will turn blue to indicate the cooler needs be turned on.
-* If the temperature is less than the desired temperature then the blinking LED will turn red to indicate the heater needs to be turned on.
-* If the temperature is the same as the desired temperature then the blinking LED turns green to indicate no action required.
+* If the temperature is greater than the desired temperature the RGB LED will turn blue to indicate the cooler needs be turned on.
+* If the temperature is less than the desired temperature then the RGB LED will turn red to indicate the heater needs to be turned on.
+* If the temperature is the same as the desired temperature then the RGB LED turns green to indicate no action required.
 
 > The AVNET Azure Sphere Starter Kit has a built-in temperature sensor. For other boards, a random temperature 25 +/- 5 degrees celsius is generated.
 
@@ -345,7 +338,7 @@ To set the desired temperature:
 
 1. Update the **Desired Temperature** value.
 2. Save the Property.
-	This will send the desired temperature property to the Azure Sphere. The blinking LED colour may change depending on the desired temperature chosen.
+    This will send the desired temperature property to the Azure Sphere. The blinking LED colour may change depending on the desired temperature chosen.
 
 ![iot central device settings](resources/iot-central-display-settings.png)
 
@@ -357,7 +350,7 @@ Now close **Close Visual Studio**.
 
 ---
 
-## Finished 完了 fertig finito समाप्त terminado
+## Finished 已完成 fertig 完了 finito समाप्त terminado
 
 Congratulations you have finished lab 3.
 
