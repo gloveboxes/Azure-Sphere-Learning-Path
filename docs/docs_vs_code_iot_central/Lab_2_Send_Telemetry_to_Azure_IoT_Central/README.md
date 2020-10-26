@@ -268,7 +268,7 @@ Follow these steps:
     Find and modify the CmdArgs, AllowedConnections and DeviceAuthentication lines in your app_manifest.json so each includes the content from the below:
 
     ```json
-    "CmdArgs": [ "0ne000BDC00" ],
+    "CmdArgs": [ "--ConnectionType", "DPS", "--ScopeID", "0ne0099999D" ],
     "Capabilities": {
         "AllowedConnections": [ "global.azure-devices-provisioning.net", "iotc-9999bc-3305-99ba-885e-6573fc4cf701.azure-devices.net", "iotc-789999fa-8306-4994-b70a-399c46501044.azure-devices.net", "iotc-7a099966-a8c1-4f33-b803-bf29998713787.azure-devices.net", "iotc-97299997-05ab-4988-8142-e299995acdb7.azure-devices.net", "iotc-d099995-7fec-460c-b717-e99999bf4551.azure-devices.net", "iotc-789999dd-3bf5-49d7-9e12-f6999991df8c.azure-devices.net", "iotc-29999917-7344-49e4-9344-5e0cc9999d9b.azure-devices.net", "iotc-99999e59-df2a-41d8-bacd-ebb9999143ab.azure-devices.net", "iotc-c0a9999b-d256-4aaf-aa06-e90e999902b3.azure-devices.net", "iotc-f9199991-ceb1-4f38-9f1c-13199992570e.azure-devices.net" ],
         "DeviceAuthentication": "--- YOUR AZURE SPHERE TENANT ID---",
@@ -290,20 +290,6 @@ We need the ID of the Azure Sphere Tenant that is now trusted by Azure IoT Centr
         ```
     * The **Tenant ID** is the numeric value inside the parentheses.
 2. **Copy the Tenant ID to _Notepad_** as you will need it soon.
-
-<!-- ---
-
-## Azure IoT Central Device Templates
-
-A device template is a blueprint that defines the characteristics and behaviors of a type of device that connects to an Azure IoT Central application.
-
-For more information on device templates, review the [Define a new IoT device type in your Azure IoT Central application](https://docs.microsoft.com/en-us/azure/iot-central/core/howto-set-up-template?WT.mc_id=julyot-azd-dglover) article. 
-
-1. From Azure IoT Central, navigate to **Device templates**, and select the **Azure Sphere** template.
-2. Click on **Interfaces** to list the interface capabilities.
-3. Explore the IoT Central device template interfaces, properties, and views.
-
-![](resources/iot-central-device-template-display.png) -->
 
 ---
 
@@ -327,15 +313,15 @@ These labs support developer boards from AVNET and Seeed Studio. You need to set
 The default developer board configuration is for the AVENT Azure Sphere Starter Kit. If you have this board, there is no additional configuration required.
 
 1. Open CMakeList.txt
-	![](resources/vs-code-open-cmake.png)
+    ![](resources/vs-code-open-cmake.png)
 2. Add a # at the beginning of the set AVNET line to disable it.
 3. Uncomment the **set** command that corresponds to your Azure Sphere developer board.
 
-	```text
-	set(AVNET TRUE "AVNET Azure Sphere Starter Kit")                
-	# set(SEEED_STUDIO_RDB TRUE "Seeed Studio Azure Sphere MT3620 Development Kit (aka Reference Design Board or rdb)")
-	# set(SEEED_STUDIO_MINI TRUE "Seeed Studio Azure Sphere MT3620 Mini Dev Board")
-	```	
+    ```text
+    set(AVNET TRUE "AVNET Azure Sphere Starter Kit")                
+    # set(SEEED_STUDIO_RDB TRUE "Seeed Studio Azure Sphere MT3620 Development Kit (aka Reference Design Board or rdb)")
+    # set(SEEED_STUDIO_MINI TRUE "Seeed Studio Azure Sphere MT3620 Mini Dev Board")
+    ```	
 
 4. Save the file. This will auto-generate the CMake cache.
 
@@ -355,39 +341,36 @@ The default developer board configuration is for the AVENT Azure Sphere Starter 
 
     ```json
     {
-        "SchemaVersion": 1,
-        "Name": "AzureSphereIoTCentral",
-        "ComponentId": "25025d2c-66da-4448-bae1-ac26fcdd3627",
-        "EntryPoint": "/bin/app",
-        "CmdArgs": [ "0ne0099999D" ],
-        "Capabilities": {
-            "Gpio": [
-                "$BUTTON_A",
-                "$BUTTON_B",
-                "$LED2",
-                "$NETWORK_CONNECTED_LED",
-                "$LED_RED",
-                "$LED_GREEN",
-                "$LED_BLUE"
-            ],
-            "I2cMaster": [ "$I2cMaster2" ],
-            "PowerControls": [ "ForceReboot" ],
-            "AllowedConnections": [ 
-                "global.azure-devices-provisioning.net",
-                "iotc-9999bc-3305-99ba-885e-6573fc4cf701.azure-devices.net", 
-                "iotc-789999fa-8306-4994-b70a-399c46501044.azure-devices.net", 
-                "iotc-7a099966-a8c1-4f33-b803-bf29998713787.azure-devices.net",
-                "iotc-97299997-05ab-4988-8142-e299995acdb7.azure-devices.net", 
-                "iotc-d099995-7fec-460c-b717-e99999bf4551.azure-devices.net", 
-                "iotc-789999dd-3bf5-49d7-9e12-f6999991df8c.azure-devices.net", 
-                "iotc-29999917-7344-49e4-9344-5e0cc9999d9b.azure-devices.net", 
-                "iotc-99999e59-df2a-41d8-bacd-ebb9999143ab.azure-devices.net", 
-                "iotc-c0a9999b-d256-4aaf-aa06-e90e999902b3.azure-devices.net", 
-                "iotc-f9199991-ceb1-4f38-9f1c-13199992570e.azure-devices.net" 
-            ],
-            "DeviceAuthentication": "9d7e79eb-9999-43ce-9999-fa8888888894"
-        },
-        "ApplicationType": "Default"
+    "SchemaVersion": 1,
+    "Name": "AzureSphereIoTCentral",
+    "ComponentId": "25025d2c-66da-4448-bae1-ac26fcdd3627",
+    "EntryPoint": "/bin/app",
+    "CmdArgs": [ "--ConnectionType", "DPS", "--ScopeID", "0ne0099999D" ],
+    "Capabilities": {
+        "Gpio": [
+        "$BUTTON_A",
+        "$NETWORK_CONNECTED_LED",
+        "$ALERT_LED"
+        ],
+        "I2cMaster": [
+        "$I2cMaster2"
+        ],
+        "AllowedConnections": [
+        "global.azure-devices-provisioning.net",
+        "iotc-9999bc-3305-99ba-885e-6573fc4cf701.azure-devices.net",
+        "iotc-789999fa-8306-4994-b70a-399c46501044.azure-devices.net",
+        "iotc-7a099966-a8c1-4f33-b803-bf29998713787.azure-devices.net",
+        "iotc-97299997-05ab-4988-8142-e299995acdb7.azure-devices.net",
+        "iotc-d099995-7fec-460c-b717-e99999bf4551.azure-devices.net",
+        "iotc-789999dd-3bf5-49d7-9e12-f6999991df8c.azure-devices.net",
+        "iotc-29999917-7344-49e4-9344-5e0cc9999d9b.azure-devices.net",
+        "iotc-99999e59-df2a-41d8-bacd-ebb9999143ab.azure-devices.net",
+        "iotc-c0a9999b-d256-4aaf-aa06-e90e999902b3.azure-devices.net",
+        "iotc-f9199991-ceb1-4f38-9f1c-13199992570e.azure-devices.net"
+        ],
+        "DeviceAuthentication": "9d7e79eb-9999-43ce-9999-fa8888888894"
+    },
+    "ApplicationType": "Default"
     }
     ```
 
@@ -405,46 +388,28 @@ Open **main.c**, and scroll down to the **MeasureSensorHandler** function.
 
 ![](resources/vs-code-function-navigate-measure-sensor-telemetry.png)
 
-In the **MeasureSensorHandler** function there is a call to **SendMsgLedOn(msgBuffer);**.
-
 ```c
 /// <summary>
 /// Read sensor and send to Azure IoT
 /// </summary>
 static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 {
-	static int msgId = 0;
-	static LP_ENVIRONMENT environment;
-	static const char* MsgTemplate = "{ \"Temperature\": \"%3.2f\", \"Humidity\": \"%3.1f\", \"Pressure\":\"%3.1f\", \"Light\":%d, \"MsgId\":%d }";
+    static int msgId = 0;
+    static LP_ENVIRONMENT environment;
 
-	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
-	{
-		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
-		return;
-	}
-
-	if (lp_readTelemetry(&environment))
-	{
-		if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, MsgTemplate, environment.temperature, environment.humidity, environment.pressure, environment.light, msgId++) > 0)
-		{
-			SendMsgLedOn(msgBuffer);
-		}
-	}
-}
-```
-
-Function **SendMsgLedOn** will turn on the send message LED, then **SendMsg(message)** is called to send a JSON formatted message to Azure IoT Central.
-
-```c
-/// <summary>
-/// Turn on LED2, send message to Azure IoT and set a one shot timer to turn LED2 off
-/// </summary>
-static void SendMsgLedOn(char* message)
-{
-	lp_gpioOn(&sendMsgLed);
-	Log_Debug("%s\n", message);
-	lp_azureMsgSend(message);
-	lp_setOneShotTimer(&sendMsgLedOffOneShotTimer, &led2BlinkPeriod);
+    if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
+    {
+        lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
+    }
+    else {
+        if (lp_readTelemetry(&environment) &&
+            snprintf(msgBuffer, JSON_MESSAGE_BYTES, msgTemplate,
+                environment.temperature, environment.humidity, environment.pressure, msgId++) > 0)
+        {
+            Log_Debug(msgBuffer);
+            lp_azureMsgSendWithProperties(msgBuffer, telemetryMessageProperties, NELEMS(telemetryMessageProperties));
+        }
+    }
 }
 ```
 
@@ -463,7 +428,7 @@ Review the handler function **ButtonPressCheckHandler**. The following code send
 ```c
 // Send ButtonA Pressed Event
 if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, cstrJsonEvent, cstrEvtButtonA) > 0) {
-	SendMsgLed2On(msgBuffer);
+    SendMsgLed2On(msgBuffer);
 }
 ```
 
@@ -481,7 +446,7 @@ The Azure Sphere will send the following JSON formatted event messages to IoT Ce
 1. Ensure main.c is open.
 2. Select **CMake: [Debug]: Ready** from the Visual Studio Code Status Bar.
 
-	![](resources/vs-code-start-application.png)
+    ![](resources/vs-code-start-application.png)
 
 3. From Visual Studio Code, press <kbd>F5</kbd> to build, deploy, start, and attached the remote debugger to the application now running the Azure Sphere device.
 
@@ -490,7 +455,7 @@ The Azure Sphere will send the following JSON formatted event messages to IoT Ce
 
 1. Open the Visual Studio Code **Output** tab to view the output from **Log_Debug** statements in the code.
 
-	> Pro Tip. You can open the output window by using the Visual Studio Code <kbd>Ctrl+K Ctrl+H</kbd> shortcut or click the **Output** tab.
+    > Pro Tip. You can open the output window by using the Visual Studio Code <kbd>Ctrl+K Ctrl+H</kbd> shortcut or click the **Output** tab.
 2. You will see the device negotiating security, and then it will start sending telemetry to Azure IoT Central.
 
 #### Notes
@@ -505,23 +470,19 @@ The Azure Sphere will send the following JSON formatted event messages to IoT Ce
 
 ![](resources/avnet-azure-sphere.jpg)
 
-1. The blue LED will start to blink.
-2. LED3 will turn yellow when connected to Azure. 
-3. Press **Button A** on the device to change the blink rate.
+1. The WLAN LED will blink every 5 seconds when connected to Azure.
 
 ### Seeed Studio Azure Sphere MT3620 Development Kit
 
 ![](resources/seeed-studio-azure-sphere-rdb.jpg)
 
-1. The green LED will start to blink.
-2. The network LED will turn red when connected to Azure.
-3. Press **Button A** on the device to change the blink rate.
+1. The WLAN LED will blink every 5 seconds when connected to Azure.
 
 ### Seeed Studio MT3620 Mini Dev Board
 
 ![](resources/seeed-studio-azure-sphere-mini.png)
 
-1. The green LED closest to the USB connector will start to blink.
+1. The User LED will blink every 5 seconds when connected to Azure.
 
 ---
 

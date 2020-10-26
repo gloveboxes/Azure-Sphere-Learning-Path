@@ -10,8 +10,7 @@
       "$ALERT_LED",
       "$NETWORK_CONNECTED_LED"
     ],
-    "I2cMaster": [ "$I2cMaster2" ],
-    "PowerControls": [ "ForceReboot" ]
+    "I2cMaster": [ "$I2cMaster2" ]
   },
   "ApplicationType": "Default"
 }

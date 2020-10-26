@@ -118,25 +118,21 @@ A GPIO Peripheral variable holds the GPIO pin number, the initial state of the p
 The following example declares an LED **output** peripheral.
 
 ```c
-static LP_PERIPHERAL_GPIO led1 = {
-	.pin = LED1, // The GPIO pin number
-	.direction = LP_OUTPUT, // for OUTPUT
-	.initialState = GPIO_Value_Low, // Set the initial state on the pin when opened
-	.invertPin = true, // Should the switching logic be reverse for on/off, high/low
-	.initialise = lp_openPeripheral, // The function to be called to open the GPIO Pin
-	.name = "led1" // An arbitrary name for the peripheral
-};
+static LP_GPIO alertLed = {
+    .pin = ALERT_LED,                // The GPIO pin number
+    .direction = LP_OUTPUT,          // for OUTPUT
+    .initialState = GPIO_Value_Low,  // Set the initial state on the pin when opened
+    .invertPin = true,               // Should the switching logic be reverse for on/off, high/low
+    .name = "alertLed" };            // An arbitrary name for the peripheral
 ```
 
 The following example declares a button **input** peripheral.
 
 ```c
-static LP_PERIPHERAL_GPIO buttonA = {
-	.pin = BUTTON_A,
-	.direction = LP_INPUT, 	// for INPUT
-	.initialise = lp_openPeripheral,
-	.name = "buttonA"
-};
+static LP_GPIO buttonA = {
+    .pin = BUTTON_A,
+    .direction = LP_INPUT,
+    .name = "buttonA" };
 ```
 
 ### Event Timers
@@ -155,27 +151,35 @@ The following example is a variable named **measureSensorTimer** of type **LP_TI
 
 ```c
 static LP_TIMER measureSensorTimer = {
-	.period = { 10, 0 },	// Fire the timer event every 10 seconds + zero nanoseconds.
-	.name = "measureSensorTimer",	// An arbitrary name for the timer, used for error handling
-	.handler = MeasureSensorHandler	// The function handler called when the timer triggers.
+    .period = { 10, 0 },	// Fire the timer event every 10 seconds + zero nanoseconds.
+    .name = "measureSensorTimer",	// An arbitrary name for the timer, used for error handling
+    .handler = MeasureSensorHandler	// The function handler called when the timer triggers.
 };
 ```
 
-The following is the implementation of the **MeasureSensorHandler** handler function. This functions reads telemetry, then  calls Led2On() to turn on led2.
+The following is the implementation of the **MeasureSensorHandler** handler function. This functions reads sensor data, then serializes the data as JSON, then displays the JSON in the debug console.
 
 ```c
 /// <summary>
 /// Read sensor and send to Azure IoT
 /// </summary>
-static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer) {
-	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
-		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
-		return;
-	}
-	if (lp_readTelemetry(msgBuffer, JSON_MESSAGE_BYTES) > 0) {
-		Log_Debug("%s\n", msgBuffer);
-		Led2On();
-	}
+static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
+{
+    static int msgId = 0;
+    static LP_ENVIRONMENT environment;
+
+    if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
+    {
+        lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
+    }
+    else {
+        if (lp_readTelemetry(&environment) &&
+            snprintf(msgBuffer, JSON_MESSAGE_BYTES, msgTemplate,
+                environment.temperature, environment.humidity, environment.pressure, msgId++) > 0)
+        {
+            Log_Debug(msgBuffer);
+        }
+    }
 }
 ```
 
@@ -185,42 +189,51 @@ The following code uses a one-shot timer to blink an LED once when a button is p
 
 The advantage of this event-driven pattern is that the device can continue to service other events such as checking if a user has pressed a button.
 
-The following is an example of a one-shot timer. The variable named **led2BlinkOffOneShotTimer** is of type **LP_TIMER**. This timer is initialized with a period of { 0, 0 }. Timers initialized with a period of 0 seconds are one-shot timers.
+The following is an example of a one-shot timer. The variable named **alertLedOffOneShotTimer** is of type **LP_TIMER**. This timer is initialized with a period of { 0, 0 }. Timers initialized with a period of 0 seconds are one-shot timers.
 
 ```c
-static LP_TIMER led2BlinkOffOneShotTimer = {
-	.period = { 0, 0 },
-	.name = "led2BlinkOffOneShotTimer",
-	.handler = Led2OffHandler
-};
+static LP_TIMER alertLedOffOneShotTimer = {
+    .period = { 0, 0 },
+    .name = "alertLedOffOneShotTimer",
+    .handler = AlertLedOffToggleHandler };
 ```
 
-In the **Led2On** function, led2 is turned on, then a one-shot timer is set by calling **SetOneShotTimer**.
-
-> The variable led2BlinkPeriod is set to 300,000,000 nanoseconds (300 milliseconds). This means led2 will be turned off 300 milliseconds after it was turned on.
+In the **ButtonPressCheckHandler** function, the alert LED is turned on when button A is pressed. A one-shot timer is then set to 1 second by a call to **lp_timerOneShotSet**.
 
 ```c
 /// <summary>
-/// Turn on LED2 and set a one-shot timer to turn LED2 off
+/// Handler to check for Button Presses
 /// </summary>
-static void Led2On(void) {
-	lp_gpioOn(&led2);
-	lp_setOneShotTimer(&led2BlinkOffOneShotTimer, &led2BlinkPeriod);
+static void ButtonPressCheckHandler(EventLoopTimer* eventLoopTimer)
+{
+    static GPIO_Value_Type buttonAState;
+
+    if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
+        lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
+    }
+    else {
+        if (lp_gpioStateGet(&buttonA, &buttonAState))
+        {
+            lp_gpioOn(&alertLed);
+            lp_timerOneShotSet(&alertLedOffOneShotTimer, &(struct timespec){1, 0});
+        }
+    }
 }
 ```
 
-When the one-shot timer triggers, the handler function **Led2OffHandler** is called to turn off led2.
+When the one-shot timer triggers, the handler function **AlertLedOffToggleHandler** is called to turn off the alert LED.
 
 ```c
 /// <summary>
-/// One shot timer to turn LED2 off
+/// One shot timer handler to turn off Alert LED
 /// </summary>
-static void Led2OffHandler(EventLoopTimer* eventLoopTimer) {
-	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
-		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
-		return;
-	}
-	lp_gpioOff(&led2);
+static void AlertLedOffToggleHandler(EventLoopTimer* eventLoopTimer) {
+    if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
+        lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
+    }
+    else {
+        lp_gpioOff(&alertLed);
+    }
 }
 ```
 
@@ -229,42 +242,41 @@ static void Led2OffHandler(EventLoopTimer* eventLoopTimer) {
 Peripherals and timers referenced in a **Set** will be automatically opened and closed.
 
 ```c
-LP_PERIPHERAL_GPIO* peripheralSet[] = { &buttonA, &buttonB, &led1, &led2, &networkConnectedLed };
-LP_TIMER* timerSet[] = { &led1BlinkTimer, &led2BlinkOffOneShotTimer, &buttonPressCheckTimer, &networkConnectionStatusTimer, &measureSensorTimer };
+LP_GPIO* gpioSet[] = { &buttonA, &networkConnectedLed, &alertLed };
+LP_TIMER* timerSet[] = { &buttonPressCheckTimer, &networkConnectionStatusTimer, &measureSensorTimer, &alertLedOffOneShotTimer };
 ```
 
-These sets are referenced when calling **OpenPeripheralSet**, and **StartTimerSet** from the **InitPeripheralsAndHandlers** function. The sets are also referenced when closing the peripheral and timer sets in the **ClosePeripheralsAndHandlers** function.
+These sets are referenced when calling **lp_gpioSetOpen**, and **lp_timerSetStart** from the **InitPeripheralsAndHandlers** function. The sets are also referenced when closing the peripheral and timer sets in the **ClosePeripheralsAndHandlers** function.
 
 ```c
 static void InitPeripheralsAndHandlers(void)
 {
-	lp_initializeDevKit();  // Avnet Starter kit
+	lp_initializeDevKit();
 
-	lp_openPeripheralSet(peripheralSet, NELEMS(peripheralSet));
-	lp_startTimerSet(timerSet, NELEMS(timerSet));
+	lp_gpioSetOpen(gpioSet, NELEMS(gpioSet));
+	lp_timerSetStart(timerSet, NELEMS(timerSet));
 }
 ```
 
 ### Easy to Extend
 
-This model makes it easy to declare another peripheral or timer and add them to the **peripheral** or **timer** sets. The following is an example of adding a GPIO output peripheral.
+This model makes it easy to declare another gpio peripheral or timer and add them to the **gpio** or **timer** sets. The following is an example of adding a GPIO output peripheral.
 
 ```c
-static LP_PERIPHERAL_GPIO fanControl = {
-	.pin = FAN1, // The GPIO pin number
-	.direction = LP_OUTPUT, // for OUTPUT
-	.initialState = GPIO_Value_Low,  // Set the initial state on the pin when opened
-	.invertPin = true,  // Should the switching logic be reverse for on/off, high/low
-	.initialise = lp_openPeripheral,  // The function to be called to open the GPIO Pin
-	.name = "FanControl"  // An arbitrary name for the senor.
+static LP_GPIO fanControl = {
+    .pin = FAN1,                      // The GPIO pin number
+    .direction = LP_OUTPUT,           // for OUTPUT
+    .initialState = GPIO_Value_Low,   // Set the initial state on the pin when opened
+    .invertPin = true,                // Should the switching logic be reverse for on/off, high/low
+    .name = "FanControl"              // An arbitrary name for the senor.
 };
 
 ```
 
-Remember to add this new peripheral to the **peripheral set**. Adding the peripheral to the set ensures automatic opening and closing.
+Remember to add this new gpio peripheral to the **gpio set**. Adding the gpio peripheral to the set ensures automatic opening and closing.
 
 ```c
-Peripheral* peripheralSet[] = { &buttonA, &buttonB, &led1, &led2, &networkConnectedLed, &fanControl };
+LP_GPIO* gpioSet[] = { &buttonA, &networkConnectedLed, &alertLed, &fanControl };
 ```
 
 ---
@@ -293,15 +305,15 @@ These labs support developer boards from AVNET and Seeed Studio. You need to set
 The default developer board configuration is for the AVENT Azure Sphere Starter Kit. If you have this board, there is no additional configuration required.
 
 1. Open CMakeList.txt
-	![](resources/vs-code-open-cmake.png)
+    ![](resources/vs-code-open-cmake.png)
 2. Add a # at the beginning of the set AVNET line to disable it.
 3. Uncomment the **set** command that corresponds to your Azure Sphere developer board.
 
-	```text
-	set(AVNET TRUE "AVNET Azure Sphere Starter Kit")                
-	# set(SEEED_STUDIO_RDB TRUE "Seeed Studio Azure Sphere MT3620 Development Kit (aka Reference Design Board or rdb)")
-	# set(SEEED_STUDIO_MINI TRUE "Seeed Studio Azure Sphere MT3620 Mini Dev Board")
-	```	
+    ```text
+    set(AVNET TRUE "AVNET Azure Sphere Starter Kit")                
+    # set(SEEED_STUDIO_RDB TRUE "Seeed Studio Azure Sphere MT3620 Development Kit (aka Reference Design Board or rdb)")
+    # set(SEEED_STUDIO_MINI TRUE "Seeed Studio Azure Sphere MT3620 Mini Dev Board")
+    ```	
 
 4. Save the file. This will auto-generate the CMake cache.
 
@@ -317,13 +329,13 @@ The CMake cache automatically builds when you open a CMake project. But given th
 
 1. Right mouse click the **CMakeLists.txt** file and select **Clean Reconfigure All Projects**.
 
-	![](resources/vs-code-cmake-generate.png)
+    ![](resources/vs-code-cmake-generate.png)
 
 2. Check the **Output** window to verify that the CMake generation was successful. There should be a message to say **CMake generation finished**.
 
-	![](resources/vs-code-cmake-generate-completed.png)
+    ![](resources/vs-code-cmake-generate-completed.png)
 
-	>If the CMake Generation fails, the directory paths may be too long. Move the labs to a directory closer to the root directory on your local drive. Such as c:\labs or ~/labs.
+    >If the CMake Generation fails, the directory paths may be too long. Move the labs to a directory closer to the root directory on your local drive. Such as c:\labs or ~/labs.
 
 ---
 
@@ -349,14 +361,10 @@ From Visual Studio, open the **app_manifest.json** file. The resources this appl
   "Capabilities": {
     "Gpio": [
       "$BUTTON_A",
-      "$BUTTON_B",
-      "$LED1",
-      "$LED2",
-      "$NETWORK_CONNECTED_LED",
-      "$RELAY"
+      "$ALERT_LED",
+      "$NETWORK_CONNECTED_LED"
     ],
     "I2cMaster": [ "$I2cMaster2" ],
-    "PowerControls": [ "ForceReboot" ]
   },
   "ApplicationType": "Default"
 }
@@ -370,50 +378,50 @@ Each Azure Sphere manufacturer maps pins differently. Follow these steps to unde
 
 1. Ensure you have the **main.c** file open. Place the cursor on the line that reads **#include "hw/azure_sphere_learning_path.h"**, then press <kbd>F12</kbd> to open the header file.
 
-	<!-- ![](resources/visual-studio-open-azure-sphere-learning-path-pin-mappings.png) -->
-	</br>
+    <!-- ![](resources/visual-studio-open-azure-sphere-learning-path-pin-mappings.png) -->
+    </br>
 
-	![](resources/open-azure-sphere-learning-path-pin-mappings.png)
+    ![](resources/open-azure-sphere-learning-path-pin-mappings.png)
 
 3. Review the pin mappings set up for the Azure Sphere Learning Path using the Avnet Starter Kit.
-	
-	>Azure Sphere hardware is available from multiple vendors, and each vendor may expose features of the underlying chip in different ways. Azure Sphere applications manage hardware dependencies by using hardware definition files. For further information, review the [Managing target hardware dependencies](https://docs.microsoft.com/en-us/azure-sphere/app-development/manage-hardware-dependencies?WT.mc_id=julyot-azd-dglover) article.
+    
+    >Azure Sphere hardware is available from multiple vendors, and each vendor may expose features of the underlying chip in different ways. Azure Sphere applications manage hardware dependencies by using hardware definition files. For further information, review the [Managing target hardware dependencies](https://docs.microsoft.com/en-us/azure-sphere/app-development/manage-hardware-dependencies?WT.mc_id=julyot-azd-dglover) article.
 
-	```c
-	/* Copyright (c) Microsoft Corporation. All rights reserved.
-	Licensed under the MIT License. */
+    ```c
+    /* Copyright (c) Microsoft Corporation. All rights reserved.
+    Licensed under the MIT License. */
 
-	// This file defines the mapping from the MT3620 reference development board (RDB) to the
-	// 'sample hardware' abstraction used by the samples at https://github.com/Azure/azure-sphere-samples.
-	// Some peripherals are on-board on the RDB, while other peripherals must be attached externally if needed.
-	// https://docs.microsoft.com/en-us/azure-sphere/app-development/manage-hardware-dependencies
-	// to enable apps to work across multiple hardware variants.
+    // This file defines the mapping from the MT3620 reference development board (RDB) to the
+    // 'sample hardware' abstraction used by the samples at https://github.com/Azure/azure-sphere-samples.
+    // Some peripherals are on-board on the RDB, while other peripherals must be attached externally if needed.
+    // https://docs.microsoft.com/en-us/azure-sphere/app-development/manage-hardware-dependencies
+    // to enable apps to work across multiple hardware variants.
 
-	// This file is autogenerated from ../../azure_sphere_learning_path.json.  Do not edit it directly.
+    // This file is autogenerated from ../../azure_sphere_learning_path.json.  Do not edit it directly.
 
-	#pragma once
-	#include "avnet_mt3620_sk.h"
+    #pragma once
+    #include "avnet_mt3620_sk.h"
 
-	// Button A
-	#define BUTTON_A AVNET_MT3620_SK_USER_BUTTON_A
+    // Button A
+    #define BUTTON_A AVNET_MT3620_SK_USER_BUTTON_A
 
-	// Button B
-	#define BUTTON_B AVNET_MT3620_SK_USER_BUTTON_B
+    // Button B
+    #define BUTTON_B AVNET_MT3620_SK_USER_BUTTON_B
 
-	// LED 1
-	#define LED1 AVNET_MT3620_SK_USER_LED_BLUE
+    // LED 1
+    #define LED1 AVNET_MT3620_SK_USER_LED_BLUE
 
-	// LED 2
-	#define LED2 AVNET_MT3620_SK_APP_STATUS_LED_YELLOW
+    // LED 2
+    #define LED2 AVNET_MT3620_SK_APP_STATUS_LED_YELLOW
 
-	// AVNET: Network Connected
-	#define NETWORK_CONNECTED_LED AVNET_MT3620_SK_WLAN_STATUS_LED_YELLOW
+    // AVNET: Network Connected
+    #define NETWORK_CONNECTED_LED AVNET_MT3620_SK_WLAN_STATUS_LED_YELLOW
 
-	// Click Relay
-	#define RELAY AVNET_MT3620_SK_GPIO0
-	```
+    // Click Relay
+    #define RELAY AVNET_MT3620_SK_GPIO0
+    ```
 
-4. Next, from Visual Studio, open the main.c file to bring back into focus.
+4. Next, from Visual Studio Code, open the main.c file to bring back into focus.
 
 
 
@@ -428,19 +436,19 @@ Each Azure Sphere manufacturer maps pins differently. Follow these steps to unde
 3. Ensure you have enabled developer mode on the Azure Sphere.
 4. **For Linux users only**. Connect the Azure Sphere. From a terminal window, run the following command.
 
-	```bash
-	sudo /opt/azurespheresdk/Tools/azsphere_connect.sh
-	```
-	This command should return the following message: "**Azure Sphere device connected**".
+    ```bash
+    sudo /opt/azurespheresdk/Tools/azsphere_connect.sh
+    ```
+    This command should return the following message: "**Azure Sphere device connected**".
 
-	> Note: You need to rerun this command if you disconnect or reset the Azure Sphere or restart your computer.
+    > Note: You need to rerun this command if you disconnect or reset the Azure Sphere or restart your computer.
 
 ### Start the app build deploy process
 
 1. Ensure main.c is open.
 2. Select **CMake: [Debug]: Ready** from the Visual Studio Code Status Bar.
 
-	![](resources/vs-code-start-application.png).
+    ![](resources/vs-code-start-application.png).
 
 3. From Visual Studio, press <kbd>F5</kbd> to build, deploy, start, and attached the remote debugger to the application now running the Azure Sphere device.
 
@@ -450,11 +458,11 @@ Each Azure Sphere manufacturer maps pins differently. Follow these steps to unde
 
 1. Open the Visual Studio Code **Output** tab to view the output from **Log_Debug** statements in the code.
 
-	>You can open the output window by using the Visual Studio Code <kbd>Ctrl+K Ctrl+H</kbd> shortcut or click the **Output** tab.
+    >You can open the output window by using the Visual Studio Code <kbd>Ctrl+K Ctrl+H</kbd> shortcut or click the **Output** tab.
 
 3. Observe every 10 seconds the output window will be updated with new data. 
 
-	![Visual Studio View Output](resources/vs-code-view-output.png)
+    ![Visual Studio View Output](resources/vs-code-view-output.png)
 
 ---
 
@@ -464,7 +472,7 @@ Each Azure Sphere manufacturer maps pins differently. Follow these steps to unde
 
 2. Set a breakpoint, click in the margin to the left of the line that reads **ConsumeEventLoopTimerEvent**.
 
-	![](resources/vs-code-set-breakpoint.png)
+    ![](resources/vs-code-set-breakpoint.png)
 
 3. When the next timer event triggers, the debugger will stop at the line where you set the breakpoint.
 4. You can inspect variable values, step over code <kbd>F10</kbd>, step into code <kbd>F11</kbd>, and continue code execution <kbd>F5</kbd>. 
@@ -485,7 +493,7 @@ Now close **Close Visual Studio Code**.
 
 ---
 
-## Finished 完了 fertig finito समाप्त terminado
+## Finished 已完成 fertig 完了 finito समाप्त terminado
 
 Congratulations, you secured, built, deployed, and debugged your first Azure Sphere application.
 

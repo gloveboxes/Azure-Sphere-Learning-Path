@@ -80,10 +80,14 @@ if(AVNET)
 endif(AVNET)
 
 if (SEEED_STUDIO_RDB)
+    target_include_directories(${PROJECT_NAME} PUBLIC ../LearningPathLibrary/SEEED_STUDIO)
+
     azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../HardwareDefinitions/mt3620_rdb" TARGET_DEFINITION "azure_sphere_learning_path.json")
 endif()
 
 if (SEEED_STUDIO_MINI)
+    target_include_directories(${PROJECT_NAME} PUBLIC ../LearningPathLibrary/SEEED_STUDIO)
+
     azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../HardwareDefinitions/seeed_mt3620_mdb" TARGET_DEFINITION "azure_sphere_learning_path.json")
 endif(SEEED_STUDIO_MINI)
 
