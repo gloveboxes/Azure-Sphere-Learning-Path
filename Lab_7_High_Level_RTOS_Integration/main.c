@@ -63,7 +63,7 @@
 
 // Hardware specific
 #ifdef OEM_SEEED_STUDIO
-#include "SEEED_STUDIO/board.h"
+#include "board.h"
 #endif // SEEED_STUDIO
 
 #define LP_LOGGING_ENABLED FALSE
