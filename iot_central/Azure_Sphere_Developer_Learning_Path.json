@@ -1,20 +1,22 @@
 {
-  "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_4dg:1",
+  "@id": "urn:azureSphere:AzureSpherebb:1",
   "@type": "CapabilityModel",
+  "contents": [],
+  "displayName": {
+    "en": "Azure Sphere"
+  },
   "implements": [
     {
-      "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_4dg:z_8hhxlqe:1",
       "@type": "InterfaceInstance",
-      "name": "Interface_29k",
+      "displayName": {
+        "en": "Interface"
+      },
+      "name": "AzureSphere2tr",
       "schema": {
-        "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:3",
+        "@id": "urn:azureSphere:AzureSphere2tr:1",
         "@type": "Interface",
-        "displayName": {
-          "en": "Interface"
-        },
         "contents": [
           {
-            "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:Temperature:1",
             "@type": [
               "Telemetry",
               "SemanticType/Temperature"
@@ -23,30 +25,10 @@
               "en": "Temperature"
             },
             "name": "Temperature",
-            "displayUnit": {
-              "en": "C"
-            },
-            "schema": "float",
-            "unit": "Units/Temperature/celsius"
+            "schema": "double",
+            "unit": "celsius"
           },
           {
-            "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:Humidity:1",
-            "@type": [
-              "Telemetry",
-              "SemanticType/Humidity"
-            ],
-            "displayName": {
-              "en": "Humidity"
-            },
-            "name": "Humidity",
-            "displayUnit": {
-              "en": "%"
-            },
-            "schema": "float",
-            "unit": "Units/Humidity/percent"
-          },
-          {
-            "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:Pressure:1",
             "@type": [
               "Telemetry",
               "SemanticType/Pressure"
@@ -55,102 +37,96 @@
               "en": "Pressure"
             },
             "name": "Pressure",
+            "schema": "double",
             "displayUnit": {
               "en": "hPa"
-            },
-            "schema": "float"
+            }
           },
           {
-            "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:MsgId:1",
+            "@type": [
+              "Telemetry",
+              "SemanticType/Humidity"
+            ],
+            "displayName": {
+              "en": "Humidity"
+            },
+            "name": "Humidity",
+            "schema": "double",
+            "unit": "percent"
+          },
+          {
             "@type": "Telemetry",
             "displayName": {
-              "en": "Msg Id"
+              "en": "MsgId"
             },
             "name": "MsgId",
-            "displayUnit": {
-              "en": "Int"
-            },
             "schema": "integer"
           },
           {
-            "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:DesiredTemperature:1",
-            "@type": "Property",
+            "@type": [
+              "Property",
+              "SemanticType/Temperature"
+            ],
             "displayName": {
               "en": "Desired Temperature"
             },
             "name": "DesiredTemperature",
-            "writable": true,
-            "schema": "float"
+            "schema": "double",
+            "unit": "celsius",
+            "writable": true
           },
           {
-            "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:ActualTemperature:1",
-            "@type": "Property",
+            "@type": [
+              "Property",
+              "SemanticType/Temperature"
+            ],
             "displayName": {
-              "en": "Actual Temperature"
+              "en": "Last Temperature"
             },
             "name": "ActualTemperature",
-            "schema": "float"
+            "schema": "double",
+            "unit": "celsius"
           },
           {
-            "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:DeviceResetUTC:2",
             "@type": "Property",
             "displayName": {
-              "en": "Device Reset UTC"
+              "en": "Last Device Restart Date and Time"
             },
-            "name": "DeviceResetUTC",
-            "schema": "string"
+            "name": "DeviceRestartUTC",
+            "schema": "dateTime"
           },
           {
-            "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:HVACState:2",
             "@type": "Property",
             "displayName": {
-              "en": "HVAC State"
+              "en": "Last HVAC State"
             },
             "name": "HvacState",
             "schema": "string"
           },
           {
-            "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:ResetMethod:3",
             "@type": "Command",
             "commandType": "synchronous",
+            "displayName": {
+              "en": "Restart Device"
+            },
+            "name": "RestartDevice",
             "request": {
-              "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:ResetMethod:ResetMethod:3",
               "@type": "SchemaField",
               "displayName": {
-                "en": "Reset Device"
+                "en": "Restart Device (Between 3 and 9 seconds inclusive)"
               },
-              "name": "ResetMethod",
-              "schema": {
-                "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:ResetMethod:ResetMethod:7cdrl0fku:3",
-                "@type": "Object",
-                "displayName": {
-                  "en": "Object"
-                },
-                "fields": [
-                  {
-                    "@id": "urn:azureSphereDeveloperLearningPath:AzureSphere_7mm:ResetMethod:ResetMethod:7cdrl0fku:reset_timer:3",
-                    "@type": "SchemaField",
-                    "displayName": {
-                      "en": "Reset Azure Sphere in [3..9] seconds"
-                    },
-                    "name": "reset_timer",
-                    "schema": "integer"
-                  }
-                ]
-              }
+              "name": "RestartDevice",
+              "schema": "integer"
             },
-            "displayName": {
-              "en": "Reset Device"
-            },
-            "name": "ResetMethod"
+            "durable": false
           }
-        ]
+        ],
+        "displayName": {
+          "en": "Interface"
+        }
       }
     }
   ],
-  "displayName": {
-    "en": "Azure Sphere"
-  },
   "@context": [
     "http://azureiot.com/v1/contexts/IoTModel.json"
   ]
