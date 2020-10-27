@@ -36,7 +36,7 @@ These **Azure Sphere Learning Path** labs build on the [Azure Sphere Samples](ht
 
 Full [Azure Sphere Documentation](https://azure.microsoft.com/en-au/services/azure-sphere/?WT.mc_id=julyot-azd-dglover).
 
-### Azure Sphere (azsphere) Command Line Reference
+### Azure Sphere (azsphere) Command-Line Reference
 
 [Overview of azsphere command-line utility](https://docs.microsoft.com/en-us/azure-sphere/reference/overview?WT.mc_id=julyot-azd-dglover).
 

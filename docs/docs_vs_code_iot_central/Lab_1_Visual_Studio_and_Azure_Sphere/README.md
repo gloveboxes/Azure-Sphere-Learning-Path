@@ -40,7 +40,7 @@ This lab assumes you have completed **Lab 0: Lab set up, installation and config
 
 ## Introduction to the Learning Path Labs
 
-There are a number of Learning Path libraries that support these labs. These Learning Path C functions are prefixed with **lp_**, typedefs and enums are prefixed with **LP_**. 
+There are a number of Learning Path libraries that support these labs. These Learning Path C functions are prefixed with **lp_**, typedefs and enums are prefixed with **LP_**.
 
 The Learning Path libraries are open source and contributions are welcome.
 
@@ -52,10 +52,10 @@ The Learning Path libraries are **not** part of the official Azure Sphere librar
 
 ## Tutorial Overview
 
-1. Understand Peripheral and Event Timer concepts.
-2. Open the lab project with Visual Studio
+1. Understand GPIO peripheral and Event Timer concepts.
+2. Open the lab project with Visual Studio Code
 3. Review the High-Level (A7) Core application security requirements.
-4. Understand device manufacture pin mappings.
+4. Understand device manufacturer pin mappings.
 5. Application deployment and debugging
 
 ---
@@ -106,14 +106,13 @@ You can find detailed peripheral interface information for each board by clickin
 |-----|----|----|
 | [![](resources/avnet-pinout.jpg)](https://www.avnet.com/opasdata/d120001/medias/docus/196/Azure%20Sphere%20Starter%20Kit%20User%20Guide%20(v1.3).pdf) | [![](resources/seeed-studio-rdb-pinmap.png)](http://wiki.seeedstudio.com/Azure_Sphere_MT3620_Development_Kit/) | [![](resources/seeed-studio-mini-pinmap.jpg)](http://wiki.seeedstudio.com/MT3620_Mini_Dev_Board/) |
 
-
 ---
 
 ## Input and Output Peripherals
 
-In the Azure Sphere Learning Path labs there are several Peripheral variables declared, including LEDs, buttons, and a relay. Variables of type **LP_PERIPHERAL_GPIO** declare a GPIO model for **input** and **output** of single pin peripherals, such as LEDs, buttons, reed switches, and relays.
+In the Azure Sphere Learning Path labs there are several GPIO peripheral variables declared, including LEDs and a button. Variables of type **LP_GPIO** declare a GPIO model for **input** and **output** of single pin peripherals, such as LEDs, buttons, reed switches, and relays.
 
-A GPIO Peripheral variable holds the GPIO pin number, the initial state of the pin when the program starts, whether the pin logic needs to be inverted, and the function called to open the peripheral.
+A GPIO peripheral variable holds the GPIO pin number, the initial state of the pin when the program starts, and whether the pin logic needs to be inverted.
 
 The following example declares an LED **output** peripheral.
 
@@ -141,7 +140,7 @@ Event Timers generate events which are bound to handler functions which implemen
 
 ![](resources/timer-events.png)
 
-The labs use event timers extensively, so there is a generalized model to simplify working with timers. There are two types of timers, **periodic timers**, and **one-shot timers**.
+The labs make extensive use of timers, so there is a generalized model to simplify working with timers. There are two types of timers, **periodic timers**, and **one-shot timers**.
 
 #### Periodic Timers
 
@@ -157,7 +156,7 @@ static LP_TIMER measureSensorTimer = {
 };
 ```
 
-The following is the implementation of the **MeasureSensorHandler** handler function. This functions reads sensor data, then serializes the data as JSON, then displays the JSON in the debug console.
+The following is the implementation of the **MeasureSensorHandler** handler function. This functions reads sensor data, serializes the data as JSON, then displays the JSON in the debug console.
 
 ```c
 /// <summary>
@@ -185,7 +184,7 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 
 #### One-Shot Timers
 
-The following code uses a one-shot timer to blink an LED once when a button is pressed. The LED turns on, and then a one-shot timer is set. When the one-shot timer triggers, its handler function is called to turn off the LED.
+The following code uses a one-shot timer to blink the alert LED if button A is pressed. The LED turns on, and then a one-shot timer is set. When the one-shot timer triggers, its handler function is called to turn off the LED.
 
 The advantage of this event-driven pattern is that the device can continue to service other events such as checking if a user has pressed a button.
 
@@ -198,7 +197,7 @@ static LP_TIMER alertLedOffOneShotTimer = {
     .handler = AlertLedOffToggleHandler };
 ```
 
-In the **ButtonPressCheckHandler** function, the alert LED is turned on when button A is pressed. A one-shot timer is then set to 1 second by a call to **lp_timerOneShotSet**.
+In the **ButtonPressCheckHandler** function, the alert LED is turned on when button A is pressed. Then a call is made to the **lp_timerOneShotSet** function to set the timer to 1 second. After 1 second, the **AlertLedOffToggleHandler** function is called.
 
 ```c
 /// <summary>
@@ -237,16 +236,16 @@ static void AlertLedOffToggleHandler(EventLoopTimer* eventLoopTimer) {
 }
 ```
 
-### Automatic Initialization of Peripherals and Event Timers
+### Automatic Initialization of GPIO Peripherals and Event Timers
 
-Peripherals and timers referenced in a **Set** will be automatically opened and closed.
+GPIO peripherals and timers referenced in a **Set** will be automatically opened and closed.
 
 ```c
 LP_GPIO* gpioSet[] = { &buttonA, &networkConnectedLed, &alertLed };
 LP_TIMER* timerSet[] = { &buttonPressCheckTimer, &networkConnectionStatusTimer, &measureSensorTimer, &alertLedOffOneShotTimer };
 ```
 
-These sets are referenced when calling **lp_gpioSetOpen**, and **lp_timerSetStart** from the **InitPeripheralsAndHandlers** function. The sets are also referenced when closing the peripheral and timer sets in the **ClosePeripheralsAndHandlers** function.
+These sets are referenced when calling **lp_gpioSetOpen**, and **lp_timerSetStart** from the **InitPeripheralsAndHandlers** function. The sets are also referenced when closing the gpio peripheral and timer sets in the **ClosePeripheralsAndHandlers** function.
 
 ```c
 static void InitPeripheralsAndHandlers(void)
@@ -310,10 +309,10 @@ The default developer board configuration is for the AVENT Azure Sphere Starter 
 3. Uncomment the **set** command that corresponds to your Azure Sphere developer board.
 
     ```text
-    set(AVNET TRUE "AVNET Azure Sphere Starter Kit")                
+    set(AVNET TRUE "AVNET Azure Sphere Starter Kit")
     # set(SEEED_STUDIO_RDB TRUE "Seeed Studio Azure Sphere MT3620 Development Kit (aka Reference Design Board or rdb)")
     # set(SEEED_STUDIO_MINI TRUE "Seeed Studio Azure Sphere MT3620 Mini Dev Board")
-    ```	
+    ```
 
 4. Save the file. This will auto-generate the CMake cache.
 
@@ -343,13 +342,11 @@ The CMake cache automatically builds when you open a CMake project. But given th
 
 Applications on Azure Sphere are locked down by default. You must grant capabilities to the application. Granting capabilities is key to Azure Sphere security and is also known as the [Principle of least privilege](https://en.wikipedia.org/wiki/Principle_of_least_privilege). You should only grant the capabilities the Azure Sphere application needs to run correctly, and no more.
 
-Application capabilities include what hardware can be accessed, what internet services can be called (including Azure IoT Central and the Azure Device Provisioning Service), and what inter-core communications are allowed.
+Application capabilities include what hardware can be accessed, what network endpoints can be called (including Azure IoT Central and the Azure Device Provisioning Service), and what inter-core communications are allowed.
 
 ### Open the Application Manifest File
 
-From Visual Studio, open the **app_manifest.json** file. The resources this application can access are limited to those listed in the **Capabilities** section.
-
->**Note**, the following example is for the Avnet Azure Sphere device. The resource names and capabilities will differ depending on which Azure Sphere device you are using.
+From Visual Studio Code, open the **app_manifest.json** file. The resources this application can access are limited to those listed in the **Capabilities** section.
 
 ```json
 {
@@ -384,7 +381,7 @@ Each Azure Sphere manufacturer maps pins differently. Follow these steps to unde
     ![](resources/open-azure-sphere-learning-path-pin-mappings.png)
 
 3. Review the pin mappings set up for the Azure Sphere Learning Path using the Avnet Starter Kit.
-    
+
     >Azure Sphere hardware is available from multiple vendors, and each vendor may expose features of the underlying chip in different ways. Azure Sphere applications manage hardware dependencies by using hardware definition files. For further information, review the [Managing target hardware dependencies](https://docs.microsoft.com/en-us/azure-sphere/app-development/manage-hardware-dependencies?WT.mc_id=julyot-azd-dglover) article.
 
     ```c
@@ -450,7 +447,7 @@ Each Azure Sphere manufacturer maps pins differently. Follow these steps to unde
 
     ![](resources/vs-code-start-application.png).
 
-3. From Visual Studio, press <kbd>F5</kbd> to build, deploy, start, and attached the remote debugger to the application now running the Azure Sphere device.
+3. From Visual Studio Code, press <kbd>F5</kbd> to build, deploy, start, and attached the remote debugger to the application now running the Azure Sphere device.
 
 ---
 
@@ -460,7 +457,7 @@ Each Azure Sphere manufacturer maps pins differently. Follow these steps to unde
 
     >You can open the output window by using the Visual Studio Code <kbd>Ctrl+K Ctrl+H</kbd> shortcut or click the **Output** tab.
 
-3. Observe every 10 seconds the output window will be updated with new data. 
+3. Observe every 10 seconds the output window will be updated with new data.
 
     ![Visual Studio View Output](resources/vs-code-view-output.png)
 
@@ -475,7 +472,7 @@ Each Azure Sphere manufacturer maps pins differently. Follow these steps to unde
     ![](resources/vs-code-set-breakpoint.png)
 
 3. When the next timer event triggers, the debugger will stop at the line where you set the breakpoint.
-4. You can inspect variable values, step over code <kbd>F10</kbd>, step into code <kbd>F11</kbd>, and continue code execution <kbd>F5</kbd>. 
+4. You can inspect variable values, step over code <kbd>F10</kbd>, step into code <kbd>F11</kbd>, and continue code execution <kbd>F5</kbd>.
 5. For more information on debugging then read the [Visual Studio Code Debugger](https://code.visualstudio.com/docs/editor/debugging?WT.mc_id=julyot-azd-dglover) article.
 
 ---

@@ -71,8 +71,8 @@
 // Forward signatures
 static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer);
 static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer);
-static void ResetDeviceHandler(EventLoopTimer* eventLoopTimer);
-static LP_DIRECT_METHOD_RESPONSE_CODE ResetDirectMethodHandler(JSON_Value* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg);
+static void RestartDeviceHandler(EventLoopTimer* eventLoopTimer);
+static LP_DIRECT_METHOD_RESPONSE_CODE RestartDeviceDirectMethodHandler(JSON_Value* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg);
 
 LP_USER_CONFIG lp_config;
 
@@ -92,10 +92,10 @@ static LP_TIMER azureIotConnectionStatusTimer = {
     .name = "azureIotConnectionStatusTimer",
     .handler = AzureIoTConnectionStatusHandler };
 
-static LP_TIMER resetDeviceOneShotTimer = {
+static LP_TIMER restartDeviceOneShotTimer = {
     .period = {0, 0},
-    .name = "resetDeviceOneShotTimer",
-    .handler = ResetDeviceHandler };
+    .name = "restartDeviceOneShotTimer",
+    .handler = RestartDeviceHandler };
 
 static LP_TIMER measureSensorTimer = {
 	.period = { 6, 0 },
@@ -103,20 +103,20 @@ static LP_TIMER measureSensorTimer = {
 	.handler = MeasureSensorHandler };
 
 // Azure IoT Device Twins
-static LP_DEVICE_TWIN_BINDING deviceResetUtc = {
-    .twinProperty = "DeviceResetUTC",
+static LP_DEVICE_TWIN_BINDING deviceRestartUtc = {
+    .twinProperty = "DeviceRestartUTC",
     .twinType = LP_TYPE_STRING };
 
 // Azure IoT Direct Methods
-static LP_DIRECT_METHOD_BINDING resetDevice = {
-    .methodName = "ResetMethod",
-    .handler = ResetDirectMethodHandler };
+static LP_DIRECT_METHOD_BINDING restartDeviceDirectMethod = {
+    .methodName = "RestartDevice",
+    .handler = RestartDeviceDirectMethodHandler };
 
 // Initialize Sets
 LP_GPIO* gpioSet[] = { &azureIotConnectedLed };
-LP_TIMER* timerSet[] = { &measureSensorTimer, &azureIotConnectionStatusTimer, &resetDeviceOneShotTimer };
-LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &deviceResetUtc };
-LP_DIRECT_METHOD_BINDING* directMethodBindingSet[] = { &resetDevice };
+LP_TIMER* timerSet[] = { &measureSensorTimer, &azureIotConnectionStatusTimer, &restartDeviceOneShotTimer };
+LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &deviceRestartUtc };
+LP_DIRECT_METHOD_BINDING* directMethodBindingSet[] = { &restartDeviceDirectMethod };
 
 // Message templates and property sets
 
@@ -174,9 +174,9 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 }
 
 /// <summary>
-/// Reset the Device
+/// Restart the Device
 /// </summary>
-static void ResetDeviceHandler(EventLoopTimer* eventLoopTimer)
+static void RestartDeviceHandler(EventLoopTimer* eventLoopTimer)
 {
     if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
     {
@@ -190,7 +190,7 @@ static void ResetDeviceHandler(EventLoopTimer* eventLoopTimer)
 /// <summary>
 /// Start Device Power Restart Direct Method 'ResetMethod' integer seconds eg 5
 /// </summary>
-static LP_DIRECT_METHOD_RESPONSE_CODE ResetDirectMethodHandler(JSON_Value* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg)
+static LP_DIRECT_METHOD_RESPONSE_CODE RestartDeviceDirectMethodHandler(JSON_Value* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg)
 {
     const size_t responseLen = 60; // Allocate and initialize a response message buffer. The calling function is responsible for the freeing memory
     static struct timespec period;
@@ -202,24 +202,24 @@ static LP_DIRECT_METHOD_RESPONSE_CODE ResetDirectMethodHandler(JSON_Value* json,
 
     int seconds = (int)json_value_get_number(json);
 
-    // leave enough time for the device twin deviceResetUtc to update before restarting the device
+    // leave enough time for the device twin deviceRestartUtc to update before restarting the device
     if (seconds > 2 && seconds < 10)
     {
-        // Report Device Reset UTC
-        lp_deviceTwinReportState(&deviceResetUtc, lp_getCurrentUtc(msgBuffer, sizeof(msgBuffer))); // LP_TYPE_STRING
+        // Report Device Restart UTC
+        lp_deviceTwinReportState(&deviceRestartUtc, lp_getCurrentUtc(msgBuffer, sizeof(msgBuffer))); // LP_TYPE_STRING
 
         // Create Direct Method Response
-        snprintf(*responseMsg, responseLen, "%s called. Reset in %d seconds", directMethodBinding->methodName, seconds);
+        snprintf(*responseMsg, responseLen, "%s called. Restart in %d seconds", directMethodBinding->methodName, seconds);
 
         // Set One Shot LP_TIMER
         period = (struct timespec){ .tv_sec = seconds, .tv_nsec = 0 };
-        lp_timerOneShotSet(&resetDeviceOneShotTimer, &period);
+        lp_timerOneShotSet(&restartDeviceOneShotTimer, &period);
 
         return LP_METHOD_SUCCEEDED;
     }
     else
     {
-        snprintf(*responseMsg, responseLen, "%s called. Reset Failed. Seconds out of range: %d", directMethodBinding->methodName, seconds);
+        snprintf(*responseMsg, responseLen, "%s called. Restart Failed. Seconds out of range: %d", directMethodBinding->methodName, seconds);
         return LP_METHOD_FAILED;
     }
 }

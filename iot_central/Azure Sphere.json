@@ -1,0 +1,133 @@
+{
+  "@id": "urn:azureSphere:AzureSpherebb:1",
+  "@type": "CapabilityModel",
+  "contents": [],
+  "displayName": {
+    "en": "Azure Sphere"
+  },
+  "implements": [
+    {
+      "@type": "InterfaceInstance",
+      "displayName": {
+        "en": "Interface"
+      },
+      "name": "AzureSphere2tr",
+      "schema": {
+        "@id": "urn:azureSphere:AzureSphere2tr:1",
+        "@type": "Interface",
+        "contents": [
+          {
+            "@type": [
+              "Telemetry",
+              "SemanticType/Temperature"
+            ],
+            "displayName": {
+              "en": "Temperature"
+            },
+            "name": "Temperature",
+            "schema": "double",
+            "unit": "celsius"
+          },
+          {
+            "@type": [
+              "Telemetry",
+              "SemanticType/Pressure"
+            ],
+            "displayName": {
+              "en": "Pressure"
+            },
+            "name": "Pressure",
+            "schema": "double",
+            "displayUnit": {
+              "en": "hPa"
+            }
+          },
+          {
+            "@type": [
+              "Telemetry",
+              "SemanticType/Humidity"
+            ],
+            "displayName": {
+              "en": "Humidity"
+            },
+            "name": "Humidity",
+            "schema": "double",
+            "unit": "percent"
+          },
+          {
+            "@type": "Telemetry",
+            "displayName": {
+              "en": "MsgId"
+            },
+            "name": "MsgId",
+            "schema": "integer"
+          },
+          {
+            "@type": [
+              "Property",
+              "SemanticType/Temperature"
+            ],
+            "displayName": {
+              "en": "Desired Temperature"
+            },
+            "name": "DesiredTemperature",
+            "schema": "double",
+            "unit": "celsius",
+            "writable": true
+          },
+          {
+            "@type": [
+              "Property",
+              "SemanticType/Temperature"
+            ],
+            "displayName": {
+              "en": "Last Temperature"
+            },
+            "name": "ActualTemperature",
+            "schema": "double",
+            "unit": "celsius"
+          },
+          {
+            "@type": "Property",
+            "displayName": {
+              "en": "Last Device Restart UTC"
+            },
+            "name": "DeviceRestartUTC",
+            "schema": "dateTime"
+          },
+          {
+            "@type": "Property",
+            "displayName": {
+              "en": "Last HVAC State"
+            },
+            "name": "HvacState",
+            "schema": "string"
+          },
+          {
+            "@type": "Command",
+            "commandType": "synchronous",
+            "displayName": {
+              "en": "Restart Device"
+            },
+            "name": "RestartDevice",
+            "request": {
+              "@type": "SchemaField",
+              "displayName": {
+                "en": "Restart Device"
+              },
+              "name": "RestartDevice",
+              "schema": "integer"
+            },
+            "durable": false
+          }
+        ],
+        "displayName": {
+          "en": "Interface"
+        }
+      }
+    }
+  ],
+  "@context": [
+    "http://azureiot.com/v1/contexts/IoTModel.json"
+  ]
+}

@@ -118,7 +118,7 @@ static LP_DEVICE_TWIN_BINDING actualTemperature = {
 	.twinType = LP_TYPE_FLOAT };
 
 static LP_DEVICE_TWIN_BINDING actualHvacState = {
-	.twinProperty = "ActualHvacState",
+	.twinProperty = "HvacState",
 	.twinType = LP_TYPE_STRING };
 
 // Initialize Sets
