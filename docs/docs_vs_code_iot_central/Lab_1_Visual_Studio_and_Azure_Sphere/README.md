@@ -156,7 +156,7 @@ static LP_TIMER measureSensorTimer = {
 };
 ```
 
-The following is the implementation of the **MeasureSensorHandler** handler function. This functions reads sensor data, serializes the data as JSON, then displays the JSON in the debug console.
+The following code is the implementation of the **MeasureSensorHandler** handler function. This functions reads sensor data, serializes the data as JSON, then displays the JSON in the debug console.
 
 ```c
 /// <summary>
@@ -269,7 +269,6 @@ static LP_GPIO fanControl = {
     .invertPin = true,                // Should the switching logic be reverse for on/off, high/low
     .name = "FanControl"              // An arbitrary name for the senor.
 };
-
 ```
 
 Remember to add this new gpio peripheral to the **gpio set**. Adding the gpio peripheral to the set ensures automatic opening and closing.

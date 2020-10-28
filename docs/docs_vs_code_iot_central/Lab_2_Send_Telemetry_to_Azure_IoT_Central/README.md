@@ -40,7 +40,7 @@ The lab assumes you understand the content from [Lab 1: Introduction to Azure Sp
 
 ## Introduction to the Learning Path Labs
 
-There are a number of Learning Path libraries that support these labs. These Learning Path C functions are prefixed with **lp_**, typedefs and enums are prefixed with **LP_**. 
+There are a number of Learning Path libraries that support these labs. These Learning Path C functions are prefixed with **lp_**, typedefs and enums are prefixed with **LP_**.
 
 The Learning Path libraries are open source and contributions are welcome.
 
@@ -104,7 +104,7 @@ Take a moment to read [Your IoT journey: simplified and secure with Azure IoT Ce
 
     ![](resources/iot-central-burger-menu.png)
 
-5. Click **+ New application** to create a new Azure IoT Central application. 
+5. Click **+ New application** to create a new Azure IoT Central application.
 
 6. Select **Custom app**
 
@@ -112,7 +112,7 @@ Take a moment to read [Your IoT journey: simplified and secure with Azure IoT Ce
 
 ### Create a new application
 
-1. Specify the **Application name**, the **URL**, select the **Free** pricing plan, and complete the registration form. 
+1. Specify the **Application name**, the **URL**, select the **Free** pricing plan, and complete the registration form.
 
     ![](resources/iot-central-new-application.png)
 
@@ -122,7 +122,7 @@ Take a moment to read [Your IoT journey: simplified and secure with Azure IoT Ce
 
 A device template is a blueprint that defines the characteristics and behaviors of a type of device that connects to an Azure IoT Central application.
 
-For more information on device templates, review the [Define a new IoT device type in your Azure IoT Central application](https://docs.microsoft.com/en-us/azure/iot-central/core/howto-set-up-template?WT.mc_id=julyot-azd-dglover) article. 
+For more information on device templates, review the [Define a new IoT device type in your Azure IoT Central application](https://docs.microsoft.com/en-us/azure/iot-central/core/howto-set-up-template?WT.mc_id=julyot-azd-dglover) article.
 
 1. Click **Device templates**, then **+ New**.
     ![](resources/iot-central-template-new.png)
@@ -225,6 +225,7 @@ Devices claimed by your Azure Sphere tenant will be automatically enrolled when 
     ```bash
     azsphere ca-certificate download-proof --output ValidationCertification.cer --verificationcode <code>
     ```
+
 3. The Azure Sphere Security Service signs the validation certificate with the verification code to prove that you own the CA.
 
 ### Use the validation certificate to verify the tenant identity
@@ -318,10 +319,10 @@ The default developer board configuration is for the AVENT Azure Sphere Starter 
 3. Uncomment the **set** command that corresponds to your Azure Sphere developer board.
 
     ```text
-    set(AVNET TRUE "AVNET Azure Sphere Starter Kit")                
+    set(AVNET TRUE "AVNET Azure Sphere Starter Kit")
     # set(SEEED_STUDIO_RDB TRUE "Seeed Studio Azure Sphere MT3620 Development Kit (aka Reference Design Board or rdb)")
     # set(SEEED_STUDIO_MINI TRUE "Seeed Studio Azure Sphere MT3620 Mini Dev Board")
-    ```	
+    ```
 
 4. Save the file. This will auto-generate the CMake cache.
 
@@ -332,7 +333,7 @@ The default developer board configuration is for the AVENT Azure Sphere Starter 
     ![](resources/vs-code-open-app-manifest.png)
 
 2. Update the Azure IoT Central Application connection properties.
-    * Update **CmdArgs** with your Azure IoT Central **ID Scope**. 
+    * Update **CmdArgs** with your Azure IoT Central **ID Scope**.
     * Update **DeviceAuthentication** with your **Azure Sphere Tenant ID**. Remember, this was the numeric value output from the ```azsphere tenant show-selected``` command that you copied to Notepad.
 
 3. Update the network endpoints **AllowedConnections** with your Azure IoT Central Application endpoint URLs you copied to Notepad.
