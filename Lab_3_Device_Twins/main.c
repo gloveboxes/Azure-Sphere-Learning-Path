@@ -108,23 +108,23 @@ static LP_TIMER measureSensorTimer = {
 	.handler = MeasureSensorHandler };
 
 // Azure IoT Device Twins
-static LP_DEVICE_TWIN_BINDING desiredTemperature = {
+static LP_DEVICE_TWIN_BINDING dt_desiredTemperature = {
 	.twinProperty = "DesiredTemperature",
 	.twinType = LP_TYPE_FLOAT,
 	.handler = DeviceTwinSetTemperatureHandler };
 
-static LP_DEVICE_TWIN_BINDING actualTemperature = {
-	.twinProperty = "ActualTemperature",
+static LP_DEVICE_TWIN_BINDING dt_reportedTemperature = {
+	.twinProperty = "ReportedTemperature",
 	.twinType = LP_TYPE_FLOAT };
 
-static LP_DEVICE_TWIN_BINDING actualHvacState = {
-	.twinProperty = "HvacState",
+static LP_DEVICE_TWIN_BINDING dt_reportedHvacState = {
+	.twinProperty = "ReportedHvacState",
 	.twinType = LP_TYPE_STRING };
 
 // Initialize Sets
 LP_GPIO* gpioSet[] = { &azureIotConnectedLed };
 LP_TIMER* timerSet[] = { &azureIotConnectionStatusTimer, &measureSensorTimer };
-LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &desiredTemperature, &actualTemperature, &actualHvacState };
+LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &dt_desiredTemperature, &dt_reportedTemperature, &dt_reportedHvacState };
 
 // Message templates and property sets
 
@@ -169,7 +169,7 @@ void SetTemperatureStatusColour(float actual_temperature)
 	static enum LEDS previous_led = RED;
 
 	int actual = (int)(actual_temperature);
-	int desired = (int)(*(float*)desiredTemperature.twinState);
+	int desired = (int)(*(float*)dt_desiredTemperature.twinState);
 
 	current_led = actual == desired ? GREEN : actual > desired ? BLUE : RED;
 
@@ -178,8 +178,8 @@ void SetTemperatureStatusColour(float actual_temperature)
 		lp_gpioOff(ledRgb[(int)previous_led]); // turn off old current colour
 		previous_led = current_led;
 
-		lp_deviceTwinReportState(&actualTemperature, &actual_temperature);
-		lp_deviceTwinReportState(&actualHvacState, (void*)hvacState[(int)current_led]);
+		lp_deviceTwinReportState(&dt_reportedTemperature, &actual_temperature);
+		lp_deviceTwinReportState(&dt_reportedHvacState, (void*)hvacState[(int)current_led]);
 	}
 	lp_gpioOn(ledRgb[(int)current_led]);
 }

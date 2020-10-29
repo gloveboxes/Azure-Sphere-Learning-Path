@@ -1,5 +1,5 @@
 {
-  "@id": "urn:azureSphere:AzureSpherebb:1",
+  "@id": "urn:learningPath:LearningPathbb:1",
   "@type": "CapabilityModel",
   "contents": [],
   "displayName": {
@@ -11,9 +11,9 @@
       "displayName": {
         "en": "Interface"
       },
-      "name": "AzureSphere2tr",
+      "name": "LearningPath2tr",
       "schema": {
-        "@id": "urn:azureSphere:AzureSphere2tr:1",
+        "@id": "urn:learningPath:LearningPath2tr:1",
         "@type": "Interface",
         "contents": [
           {
@@ -81,26 +81,26 @@
               "SemanticType/Temperature"
             ],
             "displayName": {
-              "en": "Last Temperature"
+              "en": "Last reported temperature"
             },
-            "name": "ActualTemperature",
+            "name": "ReportedTemperature",
             "schema": "double",
             "unit": "celsius"
           },
           {
             "@type": "Property",
             "displayName": {
-              "en": "Last Device Restart Date and Time"
+              "en": "Last reported device restart time"
             },
-            "name": "DeviceRestartUTC",
+            "name": "ReportedRestartUTC",
             "schema": "dateTime"
           },
           {
             "@type": "Property",
             "displayName": {
-              "en": "Last HVAC State"
+              "en": "Last reported HVAC state"
             },
-            "name": "HvacState",
+            "name": "ReportedHvacState",
             "schema": "string"
           },
           {

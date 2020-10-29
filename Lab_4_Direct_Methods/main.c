@@ -71,8 +71,8 @@
 // Forward signatures
 static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer);
 static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer);
-static void RestartDeviceHandler(EventLoopTimer* eventLoopTimer);
-static LP_DIRECT_METHOD_RESPONSE_CODE RestartDeviceDirectMethodHandler(JSON_Value* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg);
+static void DelayRestartDeviceTimerHandler(EventLoopTimer* eventLoopTimer);
+static LP_DIRECT_METHOD_RESPONSE_CODE RestartDeviceHandler(JSON_Value* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg);
 
 LP_USER_CONFIG lp_config;
 
@@ -95,7 +95,7 @@ static LP_TIMER azureIotConnectionStatusTimer = {
 static LP_TIMER restartDeviceOneShotTimer = {
     .period = {0, 0},
     .name = "restartDeviceOneShotTimer",
-    .handler = RestartDeviceHandler };
+    .handler = DelayRestartDeviceTimerHandler };
 
 static LP_TIMER measureSensorTimer = {
 	.period = { 6, 0 },
@@ -103,20 +103,20 @@ static LP_TIMER measureSensorTimer = {
 	.handler = MeasureSensorHandler };
 
 // Azure IoT Device Twins
-static LP_DEVICE_TWIN_BINDING deviceRestartUtc = {
-    .twinProperty = "DeviceRestartUTC",
+static LP_DEVICE_TWIN_BINDING dt_reportedRestartUtc = {
+    .twinProperty = "ReportedRestartUTC",
     .twinType = LP_TYPE_STRING };
 
 // Azure IoT Direct Methods
-static LP_DIRECT_METHOD_BINDING restartDeviceDirectMethod = {
-    .methodName = "RestartDevice",
-    .handler = RestartDeviceDirectMethodHandler };
+static LP_DIRECT_METHOD_BINDING dm_restartDevice = {
+    .methodName = "RestartDeviceHandler",
+    .handler = RestartDeviceHandler };
 
 // Initialize Sets
 LP_GPIO* gpioSet[] = { &azureIotConnectedLed };
 LP_TIMER* timerSet[] = { &measureSensorTimer, &azureIotConnectionStatusTimer, &restartDeviceOneShotTimer };
-LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &deviceRestartUtc };
-LP_DIRECT_METHOD_BINDING* directMethodBindingSet[] = { &restartDeviceDirectMethod };
+LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &dt_reportedRestartUtc };
+LP_DIRECT_METHOD_BINDING* directMethodBindingSet[] = { &dm_restartDevice };
 
 // Message templates and property sets
 
@@ -176,7 +176,7 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 /// <summary>
 /// Restart the Device
 /// </summary>
-static void RestartDeviceHandler(EventLoopTimer* eventLoopTimer)
+static void DelayRestartDeviceTimerHandler(EventLoopTimer* eventLoopTimer)
 {
     if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
     {
@@ -190,7 +190,7 @@ static void RestartDeviceHandler(EventLoopTimer* eventLoopTimer)
 /// <summary>
 /// Start Device Power Restart Direct Method 'ResetMethod' integer seconds eg 5
 /// </summary>
-static LP_DIRECT_METHOD_RESPONSE_CODE RestartDeviceDirectMethodHandler(JSON_Value* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg)
+static LP_DIRECT_METHOD_RESPONSE_CODE RestartDeviceHandler(JSON_Value* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg)
 {
     const size_t responseLen = 60; // Allocate and initialize a response message buffer. The calling function is responsible for the freeing memory
     static struct timespec period;
@@ -202,11 +202,11 @@ static LP_DIRECT_METHOD_RESPONSE_CODE RestartDeviceDirectMethodHandler(JSON_Valu
 
     int seconds = (int)json_value_get_number(json);
 
-    // leave enough time for the device twin deviceRestartUtc to update before restarting the device
+    // leave enough time for the device twin dt_reportedRestartUtc to update before restarting the device
     if (seconds > 2 && seconds < 10)
     {
         // Report Device Restart UTC
-        lp_deviceTwinReportState(&deviceRestartUtc, lp_getCurrentUtc(msgBuffer, sizeof(msgBuffer))); // LP_TYPE_STRING
+        lp_deviceTwinReportState(&dt_reportedRestartUtc, lp_getCurrentUtc(msgBuffer, sizeof(msgBuffer))); // LP_TYPE_STRING
 
         // Create Direct Method Response
         snprintf(*responseMsg, responseLen, "%s called. Restart in %d seconds", directMethodBinding->methodName, seconds);
