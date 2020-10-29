@@ -314,11 +314,10 @@ The default developer board configuration is for the AVENT Azure Sphere Starter 
 1. Switch to Azure IoT Central in your browser.
 2. Select the **Devices**, then the **Azure Sphere** template, then your device.
 3. Select the **Form** tab.
-4. Azure Sphere devices with builtin buttons, press **Button A** or **Button B** to update the **Actual Temperature** property in IoT Central.
 
-    >Note, IoT Central does not update immediately, it might take a minute or two for the Actual Temperature property to change.
 
-    Virtual button press events are generated for Azure Sphere devices that do not have builtin buttons.
+    >Note, Azure IoT Central does not update immediately. It might take a minute or two for the device telemetry to be displayed.
+
 
 ![](resources/iot-central-display-telemetry.png)
 
@@ -338,7 +337,7 @@ To set the desired temperature:
 
 1. Update the **Desired Temperature** value.
 2. Save the Property.
-    This will send the desired temperature property to the Azure Sphere. The blinking LED colour may change depending on the desired temperature chosen.
+    This will send the desired temperature property to the Azure Sphere. The RGB LED colour will change depending on the desired temperature chosen.
 
 ![iot central device settings](resources/iot-central-display-settings.png)
 

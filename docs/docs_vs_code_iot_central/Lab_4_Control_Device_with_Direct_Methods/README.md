@@ -81,13 +81,12 @@ Direct Method Bindings map a direct method with a handler function that implemen
 
 ### Cloud to Device Commands
 
-In main.c the variable named resetDevice of type DirectMethodBinding is declared. This variable maps the Azure IoT Central ResetMethod command property with a handler function named ResetDirectMethod.
+In **main.c**, the variable named **restartDeviceDirectMethod** of type **DirectMethodBinding** is declared. This variable maps the Azure IoT Central **RestartDevice** command property with a handler function named **RestartDeviceDirectMethodHandler**.
 
-```c
-static LP_DIRECT_METHOD_BINDING resetDevice = {
-    .methodName = "ResetMethod",
-    .handler = ResetDirectMethodHandler
-};
+```
+static LP_DIRECT_METHOD_BINDING restartDeviceDirectMethod = {
+    .methodName = "RestartDevice",
+    .handler = RestartDeviceDirectMethodHandler };
 ```
 
 ---
@@ -98,9 +97,9 @@ Azure IoT Central commands are defined in Device templates.
 
 1. From Azure IoT Central, navigate to **Device template**, and select the **Azure Sphere** template.
 2. Click on **Interface** to list the interface capabilities.
-3. Scroll down and expand the **ResetMethod** capability.
-4. Review the definition of **ResetMethod**. The capability type is **Command**.
-5. The schema type is **Object**. Click on the **view** button to display the object definition. The Object definition describes the shape of the JSON payload sent with the command. In this example, the shape of the JSON payload will be the same as this example *{"reset_timer":5}*.
+3. Scroll down and expand the **RestartDevice** capability.
+4. Review the definition of **RestartDevice**. The capability type is **Command**.
+5. The schema type is **Integer**. The direct method payload is an integer which defines the number of seconds before restarting the device.
 
 ![](resources/iot-central-device-template-interface-fan1.png)
 
@@ -108,15 +107,15 @@ Azure IoT Central commands are defined in Device templates.
 
 ## Direct Method Handler Function
 
-1. From Azure IoT Central, a user invokes the **Reset Azure Sphere** command.
+1. From Azure IoT Central, a user invokes the **Restart Device** command.
 
-    A Direct Method named **ResetMethod**, along with a JSON payload, is sent to the device. The JSON payload *{"reset_timer":5}* specifies how many seconds to wait before resetting the device.
+    A direct method message named **RestartDevice**, along with the integer payload specifying how many seconds to wait before the restart is sent to the device.
 
-2. The ResetDirectMethod function handler is called.
+2. The RestartDeviceDirectMethodHandler function handler is called.
 
-    When the device receives a Direct Method message, the DirectMethodBindings Set is checked for a matching DirectMethodBinding *methodName* name. When a match is found, the associated DirectMethodBinding handler function is called.
+    When the device receives a direct method message, the **DirectMethodBindings** set is checked for a matching **DirectMethodBinding** *methodName* name. When a match is found, the associated **DirectMethodBinding** handler function is called.
 
-3. The current UTC time is reported to Azure IoT using a Device Twin Binding property named **DeviceResetUTC**.
+3. The current UTC time is reported to Azure IoT using a Device Twin Binding property named **DeviceRestartUTC**.
 
 4. The Direct Method responds back with an HTTP status code and a response message
 
@@ -130,7 +129,7 @@ Azure IoT Central commands are defined in Device templates.
 /// <summary>
 /// Start Device Power Restart Direct Method 'ResetMethod' integer seconds eg 5
 /// </summary>
-static LP_DIRECT_METHOD_RESPONSE_CODE ResetDirectMethodHandler(JSON_Value* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg)
+static LP_DIRECT_METHOD_RESPONSE_CODE RestartDeviceDirectMethodHandler(JSON_Value* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg)
 {
     const size_t responseLen = 60; // Allocate and initialize a response message buffer. The calling function is responsible for the freeing memory
     static struct timespec period;
@@ -142,27 +141,39 @@ static LP_DIRECT_METHOD_RESPONSE_CODE ResetDirectMethodHandler(JSON_Value* json,
 
     int seconds = (int)json_value_get_number(json);
 
-    // leave enough time for the device twin deviceResetUtc to update before restarting the device
+    // leave enough time for the device twin deviceRestartUtc to update before restarting the device
     if (seconds > 2 && seconds < 10)
     {
-        // Report Device Reset UTC
-        lp_deviceTwinReportState(&deviceResetUtc, lp_getCurrentUtc(msgBuffer, sizeof(msgBuffer))); // LP_TYPE_STRING
+        // Report Device Restart UTC
+        lp_deviceTwinReportState(&deviceRestartUtc, lp_getCurrentUtc(msgBuffer, sizeof(msgBuffer))); // LP_TYPE_STRING
 
         // Create Direct Method Response
-        snprintf(*responseMsg, responseLen, "%s called. Reset in %d seconds", directMethodBinding->methodName, seconds);
+        snprintf(*responseMsg, responseLen, "%s called. Restart in %d seconds", directMethodBinding->methodName, seconds);
 
         // Set One Shot LP_TIMER
         period = (struct timespec){ .tv_sec = seconds, .tv_nsec = 0 };
-        lp_timerOneShotSet(&resetDeviceOneShotTimer, &period);
+        lp_timerOneShotSet(&restartDeviceOneShotTimer, &period);
 
         return LP_METHOD_SUCCEEDED;
     }
     else
     {
-        snprintf(*responseMsg, responseLen, "%s called. Reset Failed. Seconds out of range: %d", directMethodBinding->methodName, seconds);
+        snprintf(*responseMsg, responseLen, "%s called. Restart Failed. Seconds out of range: %d", directMethodBinding->methodName, seconds);
         return LP_METHOD_FAILED;
     }
 }
+```
+
+---
+
+## Azure Sphere PowerControls Capability
+
+The **RestartDeviceDirectMethodHandler** sets up a one shot timer that invokes the **RestartDeviceHandler** function after the specified restart period measured in seconds. In the RestartDeviceHandler function a call is made to the **PowerManagement_ForceSystemReboot** API. The PowerManagement_ForceSystemReboot API requires the **PowerControls** capability to be declared  in the app_manifest.json file.
+
+```json
+"PowerControls": [
+    "ForceReboot"
+]
 ```
 
 ---
@@ -172,7 +183,7 @@ static LP_DIRECT_METHOD_RESPONSE_CODE ResetDirectMethodHandler(JSON_Value* json,
 Direct method bindings must be added to the **directMethodBindingSet**. When a direct method message is received from Azure, this set is checked for a matching *methodName* name. When a match is found, the corresponding handler function is called.
 
 ```c
-LP_DIRECT_METHOD_BINDING* directMethodBindingSet[] = { &resetDevice };
+LP_DIRECT_METHOD_BINDING* directMethodBindingSet[] = { &restartDeviceDirectMethod };
 ```
 
 ### Opening
@@ -244,7 +255,7 @@ The default developer board configuration is for the AVENT Azure Sphere Starter 
         "Name": "AzureSphereIoTCentral",
         "ComponentId": "25025d2c-66da-4448-bae1-ac26fcdd3627",
         "EntryPoint": "/bin/app",
-        "CmdArgs": [ "--ConnectionType", "DPS", "--ScopeID", "Your_ID_Scope" ],
+        "CmdArgs": [ "--ConnectionType", "DPS", "--ScopeID", "0ne0099999D" ],
         "Capabilities": {
             "Gpio": [
                 "$NETWORK_CONNECTED_LED"
@@ -294,27 +305,30 @@ The default developer board configuration is for the AVENT Azure Sphere Starter 
 ![](resources/avnet-azure-sphere.jpg)
 
 1. The WLAN LED will blink every 5 seconds when connected to Azure.
+1. When you initiate the device restart direct method you will observe the device restarting.
 
 ### Seeed Studio Azure Sphere MT3620 Development Kit
 
 ![](resources/seeed-studio-azure-sphere-rdb.jpg)
 
 1. The WLAN LED will blink every 5 seconds when connected to Azure.
+1. When you initiate the device restart direct method you will observe the device restarting.
 
 ### Seeed Studio MT3620 Mini Dev Board
 
 ![](resources/seeed-studio-azure-sphere-mini.png)
 
 1. The User LED will blink every 5 seconds when connected to Azure.
+1. When you initiate the device restart direct method you will observe the device restarting.
 
 ---
 
 ## Testing Azure IoT Central Commands
 
-1. From Visual Studio, ensure the Azure Sphere is running the application and set a breakpoint in the **ResetDirectMethod** handler function.
+1. From Visual Studio, ensure the Azure Sphere is running the application and set a breakpoint in the **RestartDeviceDirectMethodHandler** handler function.
 2. Switch to Azure IoT Central in your web browser.
 3. Select the Azure IoT Central **Commands** tab.
-4. Set the **Reset Azure Sphere** time in seconds, then click **Run**.
+4. Set the **Restart Device** time in seconds, then click **Run**.
 5. Observer the device rebooting. The LEDs will turn off for a few seconds.
     ![](resources/iot-central-device-command-run.png)
 6. Switch back to Visual Studio. The application execution should have stopped where you set the breakpoint. Step over code <kbd>F10</kbd>, step into code <kbd>F11</kbd>, and continue code execution <kbd>F5</kbd>.
