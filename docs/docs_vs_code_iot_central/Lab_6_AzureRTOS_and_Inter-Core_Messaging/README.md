@@ -145,6 +145,8 @@ In this lab and the next, you will learn about  **Intercore** messaging. Interco
 
 **UPDATE AS LIFTED FROM ULTRASONIC PROJECT**
 
+**MAYBE ADD NUMBERED SEQUENCE OF FLOW AND DO ANIMATED GIF**
+
 
 ### Real-time Azure RTOS ThreadX Application
 
