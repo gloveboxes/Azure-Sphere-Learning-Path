@@ -143,10 +143,18 @@ In this lab and the next, you will learn about  **Intercore** messaging. Interco
 
 ![](resources/Secure_IoT_with_Azure_Sphere_Azure_RTOS.gif)
 
+
+
+
+Sequence
+
+1.  
+2. 
+3. 
+4. 
+5.
+
 **UPDATE AS LIFTED FROM ULTRASONIC PROJECT**
-
-**MAYBE ADD NUMBERED SEQUENCE TO MAP TO FLOW DESCRIPTION**
-
 
 ### Real-time Azure RTOS ThreadX Application
 
