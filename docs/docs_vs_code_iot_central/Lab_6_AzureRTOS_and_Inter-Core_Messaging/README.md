@@ -184,8 +184,6 @@ To learn more about what an RTOS read the [Real-Time Operating System - What it 
 
 ## Inter-Core Messaging Security
 
-The Azure RTOS application will send **Button Pressed** events to the **Partner** High-Level application. The High-Level application will then forward the events to Azure IoT Central on behalf of the Azure RTOS application.
-
 Both the Azure RTOS application running on the Real-Time core and the High-Level application need **Inter-Core** messaging permissions. The **app_manifest.json** property **AllowedApplicationConnections** of both applications must include the _Component ID_ of the **Partner** application.
 
 ### Real-Time intercore capabilities
