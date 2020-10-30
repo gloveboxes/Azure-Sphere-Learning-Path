@@ -141,7 +141,7 @@ In this lab and the next, you will learn about  **Intercore** messaging. Interco
 
 ## Solution architecture
 
-![](resources/azure-sphere-application-architecture.png)
+![](resources/Secure_IoT_with_Azure_Sphere_Azure_RTOS.gif)
 
 **UPDATE AS LIFTED FROM ULTRASONIC PROJECT**
 
