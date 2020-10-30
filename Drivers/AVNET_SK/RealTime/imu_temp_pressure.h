@@ -13,12 +13,7 @@
 #include "os_hal_i2c.h"
 
 #define LSM6DSO_ADDRESS	   0x6A	  // I2C Address
-static uint8_t i2cHandle = OS_HAL_I2C_ISU2;
 static const uint8_t i2c_speed = I2C_SCL_1000kHz;
-
-#define I2C_MAX_LEN 64
-static uint8_t i2c_tx_buf[I2C_MAX_LEN];
-static uint8_t i2c_rx_buf[I2C_MAX_LEN];
 
 typedef struct
 {
@@ -34,7 +29,7 @@ typedef struct
 	float z;
 } AccelerationMilligForce;
 
-void lp_imu_initialize(void);
+bool lp_imu_initialize(void);
 void lp_imu_close(void);
 float lp_get_temperature(void);
 float lp_get_pressure(void);

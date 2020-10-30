@@ -32,10 +32,6 @@ add_executable (${PROJECT_NAME}
                             ./demo_threadx/mt3620-uart-poll.c 
 
 
-                            #./demo_threadx/lsm6dso_reg.c 
-                            #./demo_threadx/lsm6dso_driver.c 
-                            # ./demo_threadx/i2c.c
-
                             ./MT3620_lib/OS_HAL/src/os_hal_i2c.c
                             ./MT3620_lib/OS_HAL/src/os_hal_gpio.c
                             ./MT3620_lib/OS_HAL/src/os_hal_uart.c

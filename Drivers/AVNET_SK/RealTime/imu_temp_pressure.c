@@ -64,6 +64,12 @@ Acknowledgment: Built from ST Micro samples
 // 1 tick = 10ms. It is configurable.
 #define MS_TO_TICK(ms)  ((ms) * (TX_TIMER_TICKS_PER_SECOND) / 1000)
 
+#define I2C_MAX_LEN 64
+static uint8_t i2c_tx_buf[I2C_MAX_LEN];
+static uint8_t i2c_rx_buf[I2C_MAX_LEN];
+
+static uint8_t i2cHandle = OS_HAL_I2C_ISU2;
+
 typedef union
 {
 	int16_t i16bit[3];
@@ -517,9 +523,9 @@ static void detect_lps22hh(void)
 }
 
 
-void lp_imu_initialize(void)
+bool lp_imu_initialize(void)
 {
-	if (initialized) { return; }
+	if (initialized) { return true; }
 
 	/* Initialize mems driver interface */
 	dev_ctx.write_reg = platform_write;
@@ -542,7 +548,7 @@ void lp_imu_initialize(void)
 	if (whoamI != LSM6DSO_ID)
 	{
 		initialized = false;
-		return;
+		return false;
 	}
 
 
@@ -578,6 +584,8 @@ void lp_imu_initialize(void)
 	detect_lps22hh();
 
 	initialized = true;
+
+	return true;
 
 	//read_imu();
 

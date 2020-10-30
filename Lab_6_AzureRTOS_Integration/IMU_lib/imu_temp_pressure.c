@@ -523,9 +523,9 @@ static void detect_lps22hh(void)
 }
 
 
-void lp_imu_initialize(void)
+bool lp_imu_initialize(void)
 {
-	if (initialized) { return; }
+	if (initialized) { return true; }
 
 	/* Initialize mems driver interface */
 	dev_ctx.write_reg = platform_write;
@@ -548,7 +548,7 @@ void lp_imu_initialize(void)
 	if (whoamI != LSM6DSO_ID)
 	{
 		initialized = false;
-		return;
+		return false;
 	}
 
 
@@ -584,6 +584,8 @@ void lp_imu_initialize(void)
 	detect_lps22hh();
 
 	initialized = true;
+
+	return true;
 
 	//read_imu();
 

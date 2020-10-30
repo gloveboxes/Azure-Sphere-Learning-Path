@@ -29,7 +29,7 @@ typedef struct
 	float z;
 } AccelerationMilligForce;
 
-void lp_imu_initialize(void);
+bool lp_imu_initialize(void);
 void lp_imu_close(void);
 float lp_get_temperature(void);
 float lp_get_pressure(void);
