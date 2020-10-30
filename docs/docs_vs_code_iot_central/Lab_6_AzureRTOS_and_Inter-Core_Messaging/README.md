@@ -56,7 +56,7 @@ You should have completed the set up steps in Lab 0. You should have:
 ## How to install the real time tool chain on Linux
 
 1. Download the [GNU Arm Embedded Toolchain](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads)
-2. Install the downloaded package. I install in the /opt directory.
+2. Install the downloaded package. The following installs the toolchain in the /opt directory.
 
     ```bash
     sudo tar -xjvf gcc-arm-none-eabi-9-2020-q2-update-x86_64-linux.tar.bz2 -C /opt
