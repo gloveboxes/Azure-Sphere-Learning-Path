@@ -53,6 +53,21 @@ You should have completed the set up steps in Lab 0. You should have:
 1. Enabled the Real-Time Core debugger
 2. Enabled the Real-Time Core Floating Point Toolchain
 
+## How to install the real time tool chain on Linux
+
+1. Download the [GNU Arm Embedded Toolchain](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads)
+2. Install the downloaded package. I install in the /opt directory.
+
+    ```bash
+    sudo tar -xjvf gcc-arm-none-eabi-9-2020-q2-update-x86_64-linux.tar.bz2 -C /opt
+    ```
+
+3. Update your path. Open ~/.bashrc and at the end add.
+
+    ```bash
+    export PATH=$PATH:/opt/gcc-arm-none-eabi-9-2020-q2-update/bin
+    ```
+
 ---
 
 ## Enable Real-Time Core Development
@@ -80,6 +95,22 @@ Copy the **AzureSphereRTCoreToolchainVFP.cmake** file found in the **Azure Spher
 
 ---
 
+## Azure Sphere Architecture
+
+The Azure Sphere is built on the Mediatec MT3620. This crossover MCU consists of 5 cores. There is a dedicated communications core, a dedicated Security Subsystem core, and **three** user application cores.
+
+The **three applications cores** are as follows:
+
+* 1 x  ARM Cortex A7 core running Embedded Linux (built with Yokto), exposing a set of POSIX APIs. Developers can build and deploy a **High-level** application to this core. This core is also responsible for the TrustZone Security Monitor, threat detection reporting, and OS and Application life cycle management.
+* 2 x ARM Cortex M4Fs. Developers can build and deploy **Real-time** applications to these cores. Real-time applications can be built against the bare metal or built using  Real-time frameworks such as Azure RTOS ThreadX.
+
+With [Visual Studio](https://visualstudio.microsoft.com/downloads/?WT.mc_id=julyot-rover-dglover) (free community edition or better) or [Visual Studio Code](https://code.visualstudio.com/?WT.mc_id=julyot-rover-dglover), you can develop and debug applications running on all three cores. For example, you can simultaneously debug an app running on the A7 core and a M4 core Azure RTOS ThreadX app.
+
+![Azure Sphere architecture](resources/azure-sphere-architecture.png)
+
+---
+
+
 ## Key Concepts
 
 In this lab, you will learn how to secure, deploy, and debug a **Real-Time** Azure RTOS application running on one of the Azure Sphere **Cortex M4** Real-Time cores.
@@ -94,9 +125,22 @@ In this lab and the next, you will learn about  **Intercore** messaging. Interco
 
 ## Solution architecture
 
-Description of flow...
-
 ![](resources/azure-sphere-application-architecture.png)
+
+**UPDATE AS LIFTED FROM ULTRASONIC PROJECT**
+
+
+### Real-time Azure RTOS ThreadX Application
+
+* The Real-time Azure RTOS ThreadX application running on one of the M4 cores that is responsible for running the timing-sensitive HC-SR04 ultrasonic distance sensor.
+* Distance is measured every 20 milliseconds so the rover can decide the best route.
+* The sensor requires precise microsecond timing to trigger the distance measurement process, so it is a perfect candidate for running on the Real-time core as a Azure RTOS ThreadX thread.
+* Every 5 seconds a Azure RTOS ThreadX thread sends distance telemetry to the Azure Sphere A7 High-level application.
+
+### Azure IoT High-level Application
+
+* The application running on the Azure Sphere A7 High-level application core is responsible for less timing-sensitive tasks such as establishing WiFi/Network connectivity, negotiating security and connecting with Azure IoT Central, updating the device twin and send telemetry messages.
+
 
 ---
 
