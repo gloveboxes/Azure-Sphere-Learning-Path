@@ -51,7 +51,7 @@ static volatile bool hardwareInitOK = false;
 // Define thread prototypes.
 void thread_inter_core(ULONG thread_input);
 void thread_read_sensor(ULONG thread_input);
-void timerFn(ULONG input);
+void timer_scheduler(ULONG input);
 void read_sensor_thread(ULONG thread_input);
 void intercore_thread(ULONG thread_input);
 void hardware_init_thread(ULONG thread_input);
@@ -87,9 +87,8 @@ void tx_application_define(void* first_unused_memory)
     /* Allocate the stack for thread 0.  */
     tx_byte_allocate(&byte_pool_0, (VOID**)&pointer, DEMO_STACK_SIZE, TX_NO_WAIT);
     /* Create the main thread.  */
-    tx_thread_create(&tx_hardware_Thread, "hardware thread", read_sensor_thread, 0,
+    tx_thread_create(&tx_hardware_Thread, "read sensor thread", read_sensor_thread, 0,
         pointer, DEMO_STACK_SIZE, 1, 1, TX_NO_TIME_SLICE, TX_AUTO_START);
-
 
     tx_byte_allocate(&byte_pool_0, (VOID**)&pointer, DEMO_STACK_SIZE, TX_NO_WAIT);
     /* Create the intercore msg thread.  */
@@ -100,7 +99,6 @@ void tx_application_define(void* first_unused_memory)
     // Create a hardware init thread.
     tx_thread_create(&tx_hardware_init_thread, "hardware init thread", hardware_init_thread, 0,
         pointer, DEMO_STACK_SIZE, 1, 1, TX_NO_TIME_SLICE, TX_AUTO_START);
-
 }
 
 // https://embeddedartistry.com/blog/2017/02/17/implementing-malloc-with-threadx/
@@ -134,13 +132,14 @@ void free(void* ptr)
 }
 
 // initialize hardware here.
+#if defined(OEM_AVNET)
 bool initialize_hardware(void)
 {
-#if defined(OEM_AVNET)
     bool status = (lp_imu_initialize());
+    tx_thread_sleep(MS_TO_TICK(100));
 
     if (status) {
-        // prime the senors
+        // prime the senor
         for (size_t i = 0; i < 6; i++) {
             enviroment_control_block.temperature = lp_get_temperature_lps22h();
             enviroment_control_block.pressure = lp_get_pressure();
@@ -152,25 +151,27 @@ bool initialize_hardware(void)
         }
     }
     return status;
-#else
-    return true;
-#endif
 }
+#else
+bool initialize_hardware(void) {
+    return true;
+}
+#endif
 
 
-// using default threadX 10ms tick period
-void timerFn(ULONG input)
+// Using default threadX 10ms tick period
+void timer_scheduler(ULONG input)
 {
-    static size_t intercoreTickCounter = SIZE_MAX;
-    static size_t hardwareTickCounter = SIZE_MAX;
+    static size_t intercoreTickCounter = 0;
+    static size_t readSensorTickCounter = SIZE_MAX;
     ULONG status = TX_SUCCESS;
 
     if (hardwareInitOK == true)
     {
-        hardwareTickCounter++;
-        if (hardwareTickCounter >= 200)  // 2000ms = 2 seconds
+        readSensorTickCounter++;
+        if (readSensorTickCounter >= 200)  // 2000ms = 2 seconds
         {
-            hardwareTickCounter = 0;
+            readSensorTickCounter = 0;
             status = tx_event_flags_set(&hardware_event_flags_0, 0x1, TX_OR);
             if (status != TX_SUCCESS)
             {
@@ -210,7 +211,7 @@ void intercore_thread(ULONG thread_input)
         return; // kill the thread
     }
 
-    while (1)
+    while (true)
     {
         status = tx_event_flags_get(&Intercore_event_flags_0, 0x1, TX_OR_CLEAR, &actual_flags, TX_WAIT_FOREVER);
 
@@ -279,11 +280,14 @@ void read_sensor_thread(ULONG thread_input)
 
         enviroment_control_block.cmd = LP_IC_ENVIRONMENT_SENSOR;
 
-        rand_number = (rand() % 20) - 10;
-        enviroment_control_block.temperature = (float)(20.0 + rand_number);
+        rand_number = (rand() % 10);
+        enviroment_control_block.temperature = (float)(15.0 + rand_number);
 
-        rand_number = (rand() % 50) - 25;
-        enviroment_control_block.pressure = (float)(1000.0 + rand_number);
+        rand_number = (rand() % 100);
+        enviroment_control_block.pressure = (float)(950.0 + rand_number);
+
+        rand_number = (rand() % 20);
+        enviroment_control_block.humidity = (float)(40.0 + rand_number);
     }
 }
 #endif
@@ -296,13 +300,13 @@ void hardware_init_thread(ULONG thread_input)
     UINT status = TX_SUCCESS;
 
     // Initialize the hardware
-    bool hwInitOk = initialize_hardware();
+    // hardwareInitOK = initialize_hardware();
 
-    if (hwInitOk)
+    if (initialize_hardware())
     {
         // start the timer.
         hardwareInitOK = true;
-        status = tx_timer_create(&msTimer, "10ms Timer", timerFn, 0, 1, 1, TX_AUTO_ACTIVATE);
+        status = tx_timer_create(&msTimer, "10ms Timer", timer_scheduler, 0, 1, 1, TX_AUTO_ACTIVATE);
         if (status != TX_SUCCESS)
         {
             printf("failed to create timer\r\n");
