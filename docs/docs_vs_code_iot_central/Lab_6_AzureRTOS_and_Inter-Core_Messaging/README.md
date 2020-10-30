@@ -30,6 +30,21 @@ Each module assumes you have completed the previous module.
 
 This lab builds on the [MediaTek MT3620 M4 Driver & Real-Time Application Sample Code](https://github.com/MediaTek-Labs/mt3620_m4_software)
 
+## Learn more about Azure Sphere
+
+[Azure Sphere](https://azure.microsoft.com/en-au/services/azure-sphere/?WT.mc_id=julyot-rover-dglover) is a comprehensive IoT security solution – including hardware, OS, and cloud components – to actively protect your devices, your business, and your customers. 
+
+Azure Sphere is made up of the following components:
+
+- **Azure Sphere–certified chips** from hardware partners include built-in Microsoft security technology to provide connectivity and a dependable hardware root of trust.
+- **Azure Sphere OS** adds layers of protection and ongoing security updates to create a trustworthy platform for new IoT experiences.
+- **Azure Sphere Security Service** brokers trust for device-to-cloud communication, detects threats, and renews device security.
+- **Microsoft best-in-class security experts** monitor emerging threats, design updates, and provide a decade of ongoing servicing.
+
+Together these components implement [The Seven Properties of Highly Secure Devices](https://www.microsoft.com/en-us/research/publication/seven-properties-highly-secure-devices/).
+
+![Azure Sphere end-to-end](resources/azure-sphere-end-to-end.png)
+
 ---
 
 ## What you will learn
@@ -55,14 +70,14 @@ You should have completed the set up steps in Lab 0. You should have:
 
 ## How to install the real time tool chain on Linux
 
-1. Download the [GNU Arm Embedded Toolchain](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads)
+1. Download the [GNU Arm Embedded Toolchain](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads). At the time of writting this was *Version 9-2020-q2-update*.
 2. Install the downloaded package. The following installs the toolchain in the /opt directory.
 
     ```bash
     sudo tar -xjvf gcc-arm-none-eabi-9-2020-q2-update-x86_64-linux.tar.bz2 -C /opt
     ```
 
-3. Update your path. Open ~/.bashrc and at the end add.
+3. Update your path. Open ~/.bashrc and add to the end.
 
     ```bash
     export PATH=$PATH:/opt/gcc-arm-none-eabi-9-2020-q2-update/bin
