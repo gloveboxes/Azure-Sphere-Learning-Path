@@ -36,14 +36,30 @@ This lab builds on the [MediaTek MT3620 M4 Driver & Real-Time Application Sample
 
 Azure Sphere is made up of the following components:
 
-- **Azure Sphere–certified chips** from hardware partners include built-in Microsoft security technology to provide connectivity and a dependable hardware root of trust.
-- **Azure Sphere OS** adds layers of protection and ongoing security updates to create a trustworthy platform for new IoT experiences.
-- **Azure Sphere Security Service** brokers trust for device-to-cloud communication, detects threats, and renews device security.
-- **Microsoft best-in-class security experts** monitor emerging threats, design updates, and provide a decade of ongoing servicing.
+* **Azure Sphere–certified chips** from hardware partners include built-in Microsoft security technology to provide connectivity and a dependable hardware root of trust.
+* **Azure Sphere OS** adds layers of protection and ongoing security updates to create a trustworthy platform for new IoT experiences.
+* **Azure Sphere Security Service** brokers trust for device-to-cloud communication, detects threats, and renews device security.
 
 Together these components implement [The Seven Properties of Highly Secure Devices](https://www.microsoft.com/en-us/research/publication/seven-properties-highly-secure-devices/).
 
 ![Azure Sphere end-to-end](resources/azure-sphere-end-to-end.png)
+
+---
+
+## Azure Sphere Architecture
+
+The Azure Sphere is built on the Mediatec MT3620. This crossover MCU consists of 5 cores. There is a dedicated communications core, a dedicated Security Subsystem core, and **three** user application cores.
+
+The **three applications cores** are as follows:
+
+* 1 x  ARM Cortex A7 core running Embedded Linux (built with Yokto), exposing a set of POSIX APIs. Developers can build and deploy a **High-level** application to this core. This core is also responsible for the TrustZone Security Monitor, threat detection reporting, and OS and Application life cycle management.
+* 2 x ARM Cortex M4Fs. Developers can build and deploy **Real-time** applications to these cores. Real-time applications can be built against the bare metal or built using  Real-time frameworks such as Azure RTOS ThreadX.
+
+You can develop Azure Sphere applications from Windows and Linux. On Windows you can use either [Visual Studio](https://visualstudio.microsoft.com/downloads/?WT.mc_id=julyot-rover-dglover) (free community edition or better) or [Visual Studio Code](https://code.visualstudio.com/?WT.mc_id=julyot-rover-dglover). On Linux you use [Visual Studio Code](https://code.visualstudio.com/?WT.mc_id=julyot-rover-dglover). 
+
+You can develop and debug applications running on all three cores. For example, you can simultaneously debug an app running on the A7 core and a M4 core Azure RTOS ThreadX app.
+
+![Azure Sphere architecture](resources/azure-sphere-architecture.png)
 
 ---
 
@@ -107,21 +123,6 @@ Copy the **AzureSphereRTCoreToolchainVFP.cmake** file found in the **Azure Spher
 ## Tutorial Overview
 
 1. Deploy your first Real-Time Core Azure RTOS Application to Azure Sphere.
-
----
-
-## Azure Sphere Architecture
-
-The Azure Sphere is built on the Mediatec MT3620. This crossover MCU consists of 5 cores. There is a dedicated communications core, a dedicated Security Subsystem core, and **three** user application cores.
-
-The **three applications cores** are as follows:
-
-* 1 x  ARM Cortex A7 core running Embedded Linux (built with Yokto), exposing a set of POSIX APIs. Developers can build and deploy a **High-level** application to this core. This core is also responsible for the TrustZone Security Monitor, threat detection reporting, and OS and Application life cycle management.
-* 2 x ARM Cortex M4Fs. Developers can build and deploy **Real-time** applications to these cores. Real-time applications can be built against the bare metal or built using  Real-time frameworks such as Azure RTOS ThreadX.
-
-With [Visual Studio](https://visualstudio.microsoft.com/downloads/?WT.mc_id=julyot-rover-dglover) (free community edition or better) or [Visual Studio Code](https://code.visualstudio.com/?WT.mc_id=julyot-rover-dglover), you can develop and debug applications running on all three cores. For example, you can simultaneously debug an app running on the A7 core and a M4 core Azure RTOS ThreadX app.
-
-![Azure Sphere architecture](resources/azure-sphere-architecture.png)
 
 ---
 
