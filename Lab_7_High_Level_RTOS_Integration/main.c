@@ -225,7 +225,7 @@ static void InterCoreHandler(LP_INTER_CORE_BLOCK* ic_message_block)
 		if (snprintf(msgBuffer, JSON_MESSAGE_BYTES, msgTemplate, ic_message_block->temperature,
 			ic_message_block->humidity, ic_message_block->pressure, msgId++) > 0) {
 
-			Log_Debug("%s", msgBuffer);
+			Log_Debug("%s\n", msgBuffer);
 			lp_azureMsgSendWithProperties(msgBuffer, telemetryMessageProperties, NELEMS(telemetryMessageProperties));
 
 			SetTemperatureStatusColour(ic_message_block->temperature);
