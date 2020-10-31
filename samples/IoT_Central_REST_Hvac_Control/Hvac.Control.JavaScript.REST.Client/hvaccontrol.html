@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html
+	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<style>
+	body {
+		font-family: Arial, Helvetica, sans-serif;
+	}
+
+	#status {
+		background-color: blue;
+		font-size: 4;
+		font-weight: bold;
+		color: white;
+		line-height: 140%;
+	}
+
+	#warning {
+		color: red;
+	}
+
+	label {
+		display: inline-block;
+		float: left;
+		clear: left;
+		width: 60px;
+		text-align: right;
+	}
+
+	input {
+		display: inline-block;
+		float: left;
+	}
+
+	.button {
+		background-color: blueviolet;
+		/* Green */
+		border: none;
+		color: white;
+		padding: 20px 10px;
+		margin: 16px 10px 10px;
+		text-align: center;
+		text-decoration: none;
+		display: inline-block;
+		font-size: 16px;
+		width: 120px;
+		/* height: 80px; */
+		border-radius: 12px;
+	}
+
+	.button-green {
+		background-color: green;
+		border: none;
+		color: white;
+		padding: 10px 10px;
+		text-align: center;
+		text-decoration: none;
+		display: inline-block;
+		font-size: 32px;
+		font-weight: bold;
+		margin: 5px;
+		/* width: 240px; */
+		/* height: 120px; */
+		border-radius: 12px;
+	}
+
+	.button-red {
+		background-color: red;
+		border: none;
+		color: white;
+		padding: 30px 10px;
+		text-align: center;
+		text-decoration: none;
+		display: inline-block;
+		font-size: 32px;
+		font-weight: bold;
+		width: 120px;
+		height: 120px;
+		border-radius: 50%;
+	}
+
+
+</style>
+
+<head>
+	<title>Azure Sphere</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script type="text/javascript">
+
+		const userAction = async (cmd) => {
+			url = 'https://hvaccontrol.azurewebsites.net/api/control?cmd=' + cmd
+			const response = await fetch(url);
+		}
+
+	</script>
+</head>
+
+<body>
+	<h1>Azure Sphere HVAC Temperature Control with Azure IoT Central Properties</h1>
+
+
+	<br />
+
+
+	<h2>Set Temperature</h2>
+	<table cellpadding="10">
+		<tr>
+			<td>				
+				<div style="text-align:center;">
+					<button class="button-green" onclick="userAction('50');">50</button>
+					<br />
+					<button class="button-green" onclick="userAction('40');">40</button>
+					<br />
+					<button class="button-green" onclick="userAction('30');">30</button>
+					<br />
+					<button class="button-green" onclick="userAction('20');">20</button>
+					<br />
+					<button class="button-green" onclick="userAction('10');">10</button>
+				</div>
+			</td>
+			<td>
+				<img src="Thermometer_R.jpg" alt="Azure Sphere" height="350" >				
+			</td>
+			<td>
+				<img src="640px-HVAC_Air_Handler_Unit,_pic1.jpg" alt="Azure Sphere" height="350" >				
+			</td>
+
+		</tr>
+	</table>
+
+	<a href="https://commons.m.wikimedia.org/wiki/File:Thermometer_R.jpg" target="_blank">Thermometer image attribution</a>
+
+	<br />
+	<hr />
+	<br />
+	<h1>Solution architecture</h1>
+
+	<img src="architecture.png" />
+
+</body>
+
+</html>
