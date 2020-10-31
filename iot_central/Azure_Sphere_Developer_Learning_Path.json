@@ -1,5 +1,5 @@
 {
-  "@id": "urn:learningPath:LearningPathbb:1",
+  "@id": "urn:learningPath:LearningPathModel:1",
   "@type": "CapabilityModel",
   "contents": [],
   "displayName": {
@@ -11,9 +11,9 @@
       "displayName": {
         "en": "Interface"
       },
-      "name": "LearningPath2tr",
+      "name": "LearningPath",
       "schema": {
-        "@id": "urn:learningPath:LearningPath2tr:1",
+        "@id": "urn:learningPath:LearningPath:1",
         "@type": "Interface",
         "contents": [
           {
