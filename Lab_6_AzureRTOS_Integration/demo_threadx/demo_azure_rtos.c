@@ -1,3 +1,24 @@
+/********************************************************************************************
+ * The intercore communications labs require multiple instances of VS Code to be running
+ * 
+ * It is recommended to install the VS Code Peacock extension for the intercore communications labs.
+ * The Peacock extension allows you to change the color of your Visual Studio Code workspace. 
+ * Ideal when you have multiple VS Code instances
+ * Install the Peacock extension from https://marketplace.visualstudio.com/items?itemName=johnpapa.vscode-peacock
+ * 
+ * The following colours have been set:
+ * The VS Code instance attached to the Real-Time core will be red. Real-time is red, as in racing red. 
+ * The VS Code instance attached to the High-level core is blue. High-level is blue, as in sky is high and blue.
+ * You can change the default colours to match your preferences.
+ * 
+ * 
+ * Intercore messaging.
+ * 
+ * There needs to be a shared understanding of the data structure being shared between the real-time and high-level apps
+ * This shared understanding is declared in the intercore_contract.h file.  This file can be found in the IntercoreContract directory.
+ * 
+*********************************************************************************************/ 
+
 #include "hw/azure_sphere_learning_path.h"
 #include "mt3620-intercore.h"
 #include "os_hal_gpio.h"
@@ -49,8 +70,6 @@ UCHAR memory_area[DEMO_BYTE_POOL_SIZE];
 static volatile bool hardwareInitOK = false;
 
 // Define thread prototypes.
-void thread_inter_core(ULONG thread_input);
-void thread_read_sensor(ULONG thread_input);
 void timer_scheduler(ULONG input);
 void read_sensor_thread(ULONG thread_input);
 void intercore_thread(ULONG thread_input);
@@ -200,7 +219,12 @@ void send_intercore_msg(void)
     EnqueueData(inbound, outbound, sharedBufSize, buf, dataSize);
 }
 
-// This thread monitors intercore messages.
+/*************************************************************************************************************************************
+* This thread monitors intercore messages.
+* There needs to be a shared understanding of the data structure being shared between the real-time and high-level apps
+* This shared understanding is declared in the intercore_contract.h file.  This file can be found in the IntercoreContract directory.
+* Update to match your requirements
+*************************************************************************************************************************************/
 void intercore_thread(ULONG thread_input)
 {
     UINT status = TX_SUCCESS;
@@ -215,7 +239,7 @@ void intercore_thread(ULONG thread_input)
     {
         status = tx_event_flags_get(&Intercore_event_flags_0, 0x1, TX_OR_CLEAR, &actual_flags, TX_WAIT_FOREVER);
 
-        if ((status != TX_SUCCESS) || (actual_flags != 0x1)) { return; }
+        if ((status != TX_SUCCESS) || (actual_flags != 0x1)) { break; }
 
         dataSize = sizeof(buf);
         int r = DequeueData(outbound, inbound, sharedBufSize, buf, &dataSize);
@@ -251,7 +275,7 @@ void read_sensor_thread(ULONG thread_input)
     {
         status = tx_event_flags_get(&hardware_event_flags_0, 0x1, TX_OR_CLEAR, &actual_flags, TX_WAIT_FOREVER);
 
-        if ((status != TX_SUCCESS) || (actual_flags != 0x1)) { return; }
+        if ((status != TX_SUCCESS) || (actual_flags != 0x1)) { break; }
 
         enviroment_control_block.cmd = LP_IC_ENVIRONMENT_SENSOR;
 
@@ -276,7 +300,7 @@ void read_sensor_thread(ULONG thread_input)
         // waits here until flag set in inter core thread
         status = tx_event_flags_get(&hardware_event_flags_0, 0x1, TX_OR_CLEAR, &actual_flags, TX_WAIT_FOREVER);
 
-        if ((status != TX_SUCCESS) || (actual_flags != 0x1)) { return; }
+        if ((status != TX_SUCCESS) || (actual_flags != 0x1)) { break; }
 
         enviroment_control_block.cmd = LP_IC_ENVIRONMENT_SENSOR;
 
