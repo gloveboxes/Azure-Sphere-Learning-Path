@@ -19,18 +19,17 @@
  * 
 *************************************************************************************************************************************/ 
 
+#include "../IMU_lib/imu_temp_pressure.h"
 #include "hw/azure_sphere_learning_path.h"
+#include "intercore_contract.h"
 #include "mt3620-intercore.h"
 #include "os_hal_gpio.h"
 #include "os_hal_uart.h"
 #include "printf.h"
 #include "tx_api.h"
+#include <math.h>
 #include <stdbool.h>
 #include <time.h>
-#include <math.h>
-#include "intercore_contract.h"
-
-#include "../IMU_lib/imu_temp_pressure.h"
 
 #define DEMO_STACK_SIZE 1024
 #define DEMO_BYTE_POOL_SIZE 9120
@@ -70,10 +69,10 @@ UCHAR memory_area[DEMO_BYTE_POOL_SIZE];
 static volatile bool hardwareInitOK = false;
 
 // Define thread prototypes.
-void timer_scheduler(ULONG input);
-void read_sensor_thread(ULONG thread_input);
-void intercore_thread(ULONG thread_input);
 void hardware_init_thread(ULONG thread_input);
+void intercore_thread(ULONG thread_input);
+void read_sensor_thread(ULONG thread_input);
+void timer_scheduler(ULONG input);
 
 
 int main()
@@ -158,7 +157,8 @@ bool initialize_hardware(void)
     tx_thread_sleep(MS_TO_TICK(100));
 
     if (status) {
-        // prime the senor
+        // Prime the temperature and humidity sensors
+        // Observed the first few readings on startup may return NaN
         for (size_t i = 0; i < 6; i++) {
             enviroment_control_block.temperature = lp_get_temperature_lps22h();
             enviroment_control_block.pressure = lp_get_pressure();
