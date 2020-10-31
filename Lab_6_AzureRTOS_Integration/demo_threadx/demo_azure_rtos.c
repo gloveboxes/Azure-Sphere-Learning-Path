@@ -1,4 +1,4 @@
-/********************************************************************************************
+/*************************************************************************************************************************************
  * The intercore communications labs require multiple instances of VS Code to be running
  * 
  * It is recommended to install the VS Code Peacock extension for the intercore communications labs.
@@ -17,7 +17,7 @@
  * There needs to be a shared understanding of the data structure being shared between the real-time and high-level apps
  * This shared understanding is declared in the intercore_contract.h file.  This file can be found in the IntercoreContract directory.
  * 
-*********************************************************************************************/ 
+*************************************************************************************************************************************/ 
 
 #include "hw/azure_sphere_learning_path.h"
 #include "mt3620-intercore.h"
