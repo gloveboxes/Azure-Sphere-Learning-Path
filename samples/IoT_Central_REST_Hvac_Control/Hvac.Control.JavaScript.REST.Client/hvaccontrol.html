@@ -101,9 +101,9 @@
 
 			if (response.ok) { // if HTTP-status is 200-299
 				let json = await response.json();
-				document.getElementById("desiredTemperature").innerHTML = json.LearningPath.DesiredTemperature;
+				document.getElementById("desiredTemperature").innerHTML = json.LearningPath.DesiredTemperature.toFixed(2);
 				document.getElementById("reportedHvacState").innerHTML = json.LearningPath.ReportedHvacState;
-				document.getElementById("reportedTemperature").innerHTML = json.LearningPath.ReportedTemperature;
+				document.getElementById("reportedTemperature").innerHTML = json.LearningPath.ReportedTemperature.toFixed(2);
 				document.getElementById("lastRefreshed").innerHTML = new Date();
 
 			} else {
@@ -121,7 +121,7 @@
 	<br />
 	<hr /> -->
 
-	<h2>Current HVAC State</h2>
+	<h2>Reported HVAC State</h2>
 
 	<div id="lastRefreshed" style="margin: 20px;"></div>
 
