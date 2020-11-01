@@ -32,31 +32,31 @@
  *	   2. Uncomment the set command that matches your developer board.
  *	   3. Click File, then Save to save the CMakeLists.txt file which will auto generate the CMake Cache.
  *
- * 
- * 
+ *
+ *
  * The intercore communications labs require multiple instances of VS Code to be running
- * 
+ *
  * It is recommended to install the VS Code Peacock extension for the intercore communications labs.
- * The Peacock extension allows you to change the color of your Visual Studio Code workspace. 
+ * The Peacock extension allows you to change the color of your Visual Studio Code workspace.
  * Ideal when you have multiple VS Code instances
- * 
+ *
  * Install the Peacock extension from https://marketplace.visualstudio.com/items?itemName=johnpapa.vscode-peacock
- * 
+ *
  * The following colours have been set:
- * The VS Code instance attached to the Real-Time core will be red. Real-time is red, as in racing red. 
+ * The VS Code instance attached to the Real-Time core will be red. Real-time is red, as in racing red.
  * The VS Code instance attached to the High-level core is blue. High-level is blue, as in sky is high and blue.
  * You can change the default colours to match your preferences.
- * 
- * 
+ *
+ *
  * Intercore messaging.
- * 
+ *
  * There needs to be a shared understanding of the data structure being shared between the real-time and high-level apps
  * This shared understanding is declared in the intercore_contract.h file.  This file can be found in the IntercoreContract directory.
- * 
+ *
 *************************************************************************************************************************************/
 
 
- // Hardware definition
+// Hardware definition
 #include "hw/azure_sphere_learning_path.h"
 
 // Learning Path Libraries
@@ -101,7 +101,7 @@ static void DeviceTwinSetTemperatureHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBi
 LP_USER_CONFIG lp_config;
 LP_INTER_CORE_BLOCK ic_control_block;
 
-static float last_temperature = 0;
+static int previous_temperature = 0;
 
 enum LEDS { RED, GREEN, BLUE };
 static enum LEDS current_led = RED;
@@ -206,21 +206,18 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 /// Blue to turn on cooler. 
 /// Green equals just right, no action required.
 /// </summary>
-void SetTemperatureStatusColour(float actual_temperature)
+void SetHvacStatusColour(int temperature)
 {
 	static enum LEDS previous_led = RED;
 
-	int actual = (int)(actual_temperature);
 	int desired = (int)(*(float*)dt_desiredTemperature.twinState);
 
-	current_led = actual == desired ? GREEN : actual > desired ? BLUE : RED;
+	current_led = temperature == desired ? GREEN : temperature > desired ? BLUE : RED;
 
 	if (previous_led != current_led)
 	{
 		lp_gpioOff(ledRgb[(int)previous_led]); // turn off old current colour
 		previous_led = current_led;
-
-		lp_deviceTwinReportState(&dt_reportedTemperature, &actual_temperature);
 		lp_deviceTwinReportState(&dt_reportedHvacState, (void*)hvacState[(int)current_led]);
 	}
 	lp_gpioOn(ledRgb[(int)current_led]);
@@ -232,7 +229,7 @@ void SetTemperatureStatusColour(float actual_temperature)
 static void DeviceTwinSetTemperatureHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding)
 {
 	lp_deviceTwinAckDesiredState(deviceTwinBinding, deviceTwinBinding->twinState, LP_DEVICE_TWIN_COMPLETED);
-	SetTemperatureStatusColour(last_temperature);
+	SetHvacStatusColour(previous_temperature);
 }
 
 /// <summary>
@@ -251,8 +248,13 @@ static void InterCoreHandler(LP_INTER_CORE_BLOCK* ic_message_block)
 			Log_Debug("%s\n", msgBuffer);
 			lp_azureMsgSendWithProperties(msgBuffer, telemetryMessageProperties, NELEMS(telemetryMessageProperties));
 
-			SetTemperatureStatusColour(ic_message_block->temperature);
-			last_temperature = ic_message_block->temperature;
+			SetHvacStatusColour((int)ic_message_block->temperature);
+
+			// If the previous temperature not equal to the new temperature then update ReportedTemperature device twin
+			if (previous_temperature != (int)ic_message_block->temperature) {
+				lp_deviceTwinReportState(&dt_reportedTemperature, &ic_message_block->temperature);
+			}
+			previous_temperature = (int)ic_message_block->temperature;
 		}
 		break;
 	default:

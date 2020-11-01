@@ -81,7 +81,7 @@ enum LEDS { RED, GREEN, BLUE };
 static enum LEDS current_led = RED;
 static const char* hvacState[] = { "heating", "off", "cooling" };
 
-static float last_temperature = 0;
+static int previous_temperature = 0;
 
 static LP_GPIO azureIotConnectedLed = {
 	.pin = NETWORK_CONNECTED_LED,
@@ -164,21 +164,18 @@ static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
 /// Blue to turn on cooler. 
 /// Green equals just right, no action required.
 /// </summary>
-void SetTemperatureStatusColour(float actual_temperature)
+void SetHvacStatusColour(int temperature)
 {
 	static enum LEDS previous_led = RED;
 
-	int actual = (int)(actual_temperature);
 	int desired = (int)(*(float*)dt_desiredTemperature.twinState);
 
-	current_led = actual == desired ? GREEN : actual > desired ? BLUE : RED;
+	current_led = temperature == desired ? GREEN : temperature > desired ? BLUE : RED;
 
 	if (previous_led != current_led)
 	{
 		lp_gpioOff(ledRgb[(int)previous_led]); // turn off old current colour
 		previous_led = current_led;
-
-		lp_deviceTwinReportState(&dt_reportedTemperature, &actual_temperature);
 		lp_deviceTwinReportState(&dt_reportedHvacState, (void*)hvacState[(int)current_led]);
 	}
 	lp_gpioOn(ledRgb[(int)current_led]);
@@ -205,8 +202,13 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 			lp_azureMsgSendWithProperties(msgBuffer, telemetryMessageProperties, NELEMS(telemetryMessageProperties));
 		}
 
-		SetTemperatureStatusColour(environment.temperature);
-		last_temperature = environment.temperature;
+		SetHvacStatusColour((int)environment.temperature);
+
+		// If the previous temperature not equal to the new temperature then update ReportedTemperature device twin
+		if (previous_temperature != (int)environment.temperature) {
+			lp_deviceTwinReportState(&dt_reportedTemperature, &environment.temperature);
+		}
+		previous_temperature = (int)environment.temperature;
 	}
 }
 
@@ -218,7 +220,7 @@ static void DeviceTwinSetTemperatureHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBi
 	if (deviceTwinBinding->twinType == LP_TYPE_FLOAT)
 	{
 		lp_deviceTwinAckDesiredState(deviceTwinBinding, deviceTwinBinding->twinState, LP_DEVICE_TWIN_COMPLETED);
-		SetTemperatureStatusColour(last_temperature);
+		SetHvacStatusColour((int)previous_temperature);
 	}
 
 	/*	Casting device twin state examples
