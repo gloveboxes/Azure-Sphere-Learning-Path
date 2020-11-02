@@ -217,10 +217,14 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 /// </summary>
 static void DeviceTwinSetTemperatureHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding)
 {
-	if (deviceTwinBinding->twinType == LP_TYPE_FLOAT)
+	// validate data is sensible range before applying
+	if (deviceTwinBinding->twinType == LP_TYPE_FLOAT && *(float*)deviceTwinBinding->twinState >= -20.0f && *(float*)deviceTwinBinding->twinState <= 80.0f)
 	{
 		lp_deviceTwinAckDesiredState(deviceTwinBinding, deviceTwinBinding->twinState, LP_DEVICE_TWIN_COMPLETED);
 		SetHvacStatusColour((int)previous_temperature);
+	}
+	else {
+		lp_deviceTwinAckDesiredState(deviceTwinBinding, deviceTwinBinding->twinState, LP_DEVICE_TWIN_ERROR);
 	}
 
 	/*	Casting device twin state examples

@@ -25,7 +25,7 @@
               "en": "Temperature"
             },
             "name": "Temperature",
-            "schema": "double",
+            "schema": "float",
             "unit": "celsius"
           },
           {
@@ -37,7 +37,7 @@
               "en": "Pressure"
             },
             "name": "Pressure",
-            "schema": "double",
+            "schema": "float",
             "displayUnit": {
               "en": "hPa"
             }
@@ -51,7 +51,7 @@
               "en": "Humidity"
             },
             "name": "Humidity",
-            "schema": "double",
+            "schema": "float",
             "unit": "percent"
           },
           {
@@ -71,7 +71,7 @@
               "en": "Desired Temperature"
             },
             "name": "DesiredTemperature",
-            "schema": "double",
+            "schema": "float",
             "unit": "celsius",
             "writable": true
           },
@@ -84,7 +84,7 @@
               "en": "Last reported temperature"
             },
             "name": "ReportedTemperature",
-            "schema": "double",
+            "schema": "float",
             "unit": "celsius"
           },
           {
@@ -98,7 +98,7 @@
           {
             "@type": "Property",
             "displayName": {
-              "en": "Last reported HVAC state"
+              "en": "Last reported HVAC operating mode"
             },
             "name": "ReportedHvacState",
             "schema": "string"
