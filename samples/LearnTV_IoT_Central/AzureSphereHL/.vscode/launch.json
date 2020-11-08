@@ -13,7 +13,6 @@
             "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": true,
-            "targetCore": "HLCore",
             "partnerComponents": ["6583cf17-d321-4d72-8283-0b7c5b56442b"],
             "MIMode": "gdb",
             "setupCommands": [
