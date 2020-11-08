@@ -1,0 +1,101 @@
+{
+  "@id": "urn:azureCarbonDioxide:AzureSphere_4dg:1",
+  "@type": "CapabilityModel",
+  "implements": [
+    {
+      "@id": "urn:azureCarbonDioxide:AzureSphere_4dg:z_8hhxlqe:1",
+      "@type": "InterfaceInstance",
+      "name": "CO2",
+      "schema": {
+        "@id": "urn:azureCarbonDioxide:AzureSphere_7mm:3",
+        "@type": "Interface",
+        "displayName": {
+          "en": "Interface"
+        },
+        "contents": [
+          {
+            "@id": "urn:azureCarbonDioxide:AzureSphere_7mm:Temperature:1",
+            "@type": [
+              "Telemetry",
+              "SemanticType/Temperature"
+            ],
+            "displayName": {
+              "en": "Temperature"
+            },
+            "name": "Temperature",
+            "displayUnit": {
+              "en": "C"
+            },
+            "schema": "float",
+            "unit": "Units/Temperature/celsius"
+          }
+          ,
+          {
+            "@id": "urn:azureCarbonDioxide:AzureSphere_7mm:CarbonDioxide:1",
+            "@type": [
+              "Telemetry"
+            ],
+            "displayName": {
+              "en": "Carbon Dioxide (ppm)"
+            },
+            "name": "CO2",
+            "schema": "float"
+          },
+          {
+            "@id": "urn:azureCarbonDioxide:AzureSphere_7mm:Humidity:1",
+            "@type": [
+              "Telemetry",
+              "SemanticType/Humidity"
+            ],
+            "displayName": {
+              "en": "Humidity"
+            },
+            "name": "Humidity",
+            "displayUnit": {
+              "en": "%"
+            },
+            "schema": "float",
+            "unit": "Units/Humidity/percent"
+          },
+          {
+            "@id": "urn:azureCarbonDioxide:AzureSphere_7mm:MsgId:1",
+            "@type": "Telemetry",
+            "displayName": {
+              "en": "Msg Id"
+            },
+            "name": "MsgId",
+            "displayUnit": {
+              "en": "Int"
+            },
+            "schema": "integer"
+          },
+          {
+            "@id": "urn:azureCarbonDioxide:AzureSphere_7mm:DesiredCarbonDioxideAlert:1",
+            "@type": "Property",
+            "displayName": {
+              "en": "Set CO2 Alert Level (ppm)"
+            },
+            "name": "DesiredCO2AlertLevel",
+            "writable": true,
+            "schema": "float"
+          },
+          {
+            "@id": "urn:azureCarbonDioxide:AzureSphere_7mm:ActualCarbonDioxideLevel:1",
+            "@type": "Property",
+            "displayName": {
+              "en": "Reported CO2 (ppm)"
+            },
+            "name": "ActualCO2Level",
+            "schema": "float"
+          }
+        ]
+      }
+    }
+  ],
+  "displayName": {
+    "en": "Azure Sphere"
+  },
+  "@context": [
+    "http://azureiot.com/v1/contexts/IoTModel.json"
+  ]
+}

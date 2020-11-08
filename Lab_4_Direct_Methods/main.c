@@ -109,7 +109,7 @@ static LP_DEVICE_TWIN_BINDING dt_reportedRestartUtc = {
 
 // Azure IoT Direct Methods
 static LP_DIRECT_METHOD_BINDING dm_restartDevice = {
-    .methodName = "RestartDeviceHandler",
+    .methodName = "RestartDevice",
     .handler = RestartDeviceHandler };
 
 // Initialize Sets

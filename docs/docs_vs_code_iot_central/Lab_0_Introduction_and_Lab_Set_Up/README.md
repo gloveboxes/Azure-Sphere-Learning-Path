@@ -70,7 +70,7 @@ If you are using a shared lab device, then the lab instructor will tell you the 
 
 ## Step 1: Set up your development environment
 
-Follow the [Quickstarts to set up your Azure Sphere device](https://docs.microsoft.com/en-us/azure-sphere/install/overview?WT.mc_id=julyot-azd-dglover)
+Follow the [Quickstarts to set up your Azure Sphere device](https://docs.microsoft.com/en-us/azure-sphere/install/install-sdk?pivots=vs-code&WT.mc_id=julyot-azd-dglover)
 
 Follow the steps to:
 

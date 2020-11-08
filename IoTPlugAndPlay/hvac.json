@@ -34,7 +34,7 @@
     },
     {
       "@type": "Property",
-      "name": "ActualHvacState",
+      "name": "ReportedHvacState",
       "schema": "string",
       "displayName": "HVAC state",
       "description": "HVAC state",
@@ -42,7 +42,7 @@
     },
     {
       "@type": ["Property", "Temperature"],
-      "name": "ActualTemperature",
+      "name": "ReportedTemperature",
       "schema": "double",
       "displayName": "Current room temperature",
       "description": "Last reported temperature",
@@ -59,7 +59,7 @@
     },
     {
       "@type": "Property",
-      "name": "DeviceResetUTC",
+      "name": "ReportedRestartUTC",
       "schema": "dateTime",
       "displayName": "Last device restart",
       "description": "Universal Time Coordinated (UTC)",
@@ -67,16 +67,16 @@
     },    
     {
       "@type": "Command",
-      "name": "ResetMethod",
+      "name": "RestartDevice",
       "request": {
-        "name": "ResetMethod",        
+        "name": "RestartDevice",        
         "schema": "integer"
       },
       "response": {
         "name": "payload",
         "schema": "string"
       },
-      "displayName": "Reboot Device",
+      "displayName": "Restart Device",
       "description": "Specify reboot time in seconds [3..9]"
     }
   ]

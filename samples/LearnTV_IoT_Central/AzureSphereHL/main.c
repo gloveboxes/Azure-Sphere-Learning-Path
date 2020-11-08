@@ -82,23 +82,77 @@ static LP_MESSAGE_PROPERTY* telemetryMessageProperties[] = {
 /***********************************************/
 /*****  Declare Timers, Twins and Methods  *****/
 
+static LP_TIMER readSensorTimer = {
+    .period = {5, 0},
+    .name = "readSensorTimer",
+    .handler = ReadSensorHandler };
+
+static LP_GPIO relay = {
+    .pin = RELAY,
+    .direction = LP_OUTPUT,
+    .initialState = GPIO_Value_Low,
+    .invertPin = false,
+    .name = "relay" };
+
+
+static LP_DIRECT_METHOD_BINDING lightControl = {
+    .methodName = "LightControl",
+    .handler = LightControlDirectMethodHandler };
+
 
 
 
 /****************************************/
 /*****  Initialise collection set  *****/
 
-static LP_TIMER* timerSet[] = {  };
-static LP_GPIO* gpioSet[] = {  };
+static LP_TIMER* timerSet[] = { &readSensorTimer };
+static LP_GPIO* gpioSet[] = { &relay };
 static LP_DIRECT_METHOD_BINDING* directMethodBindingSet[] = {  };
 static LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = {  };
+
+static LP_GPIO relay = {
+    .pin = RELAY,
+    .direction = LP_OUTPUT,
+    .initialState = GPIO_Value_Low,
+    .invertPin = false,
+    .name = "relay" };
+
+
 
 /****************************************/
 /*****  Demo Code                   *****/
 
 
+/// <summary>
+/// Read sensor and send to Azure IoT
+/// </summary>
+static void ReadSensorHandler(EventLoopTimer* eventLoopTimer)
+{
+    if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
+        lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
+    }
+    else {
+        // send request to Real-Time core app to read temperature, pressure, and humidity
+        ic_control_block.cmd = LP_IC_ENVIRONMENT_SENSOR;
+        lp_interCoreSendMessage(&ic_control_block, sizeof(ic_control_block));
+    }
+}
 
 
+
+/// <summary>
+/// Remote control lab light Direct Method 'LightControl' true or false
+/// </summary>
+static LP_DIRECT_METHOD_RESPONSE_CODE LightControlDirectMethodHandler(JSON_Value* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg)
+{
+    if (json_value_get_type(json) != JSONBoolean) { return LP_METHOD_FAILED; }
+
+    bool state = (bool)json_value_get_boolean(json);
+
+    lp_gpioStateSet(&relay, state);
+
+    return LP_METHOD_SUCCEEDED;
+}
 
 /*****************************************************************************/
 /*         Initialise and run code                                           */
