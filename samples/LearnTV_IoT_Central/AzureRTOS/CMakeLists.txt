@@ -20,7 +20,7 @@ cmake_minimum_required (VERSION 3.10)
 project (demo_threadx C)
 
 #azsphere_configure_tools(TOOLS_REVISION "20.07")
-#azsphere_configure_api(TARGET_API_SET "6")
+#azsphere_configure_api(TARGET_API_SET "7")
 
 ADD_COMPILE_DEFINITIONS(OSAI_BARE_METAL)
 ADD_LINK_OPTIONS(-specs=nano.specs -specs=nosys.specs)
