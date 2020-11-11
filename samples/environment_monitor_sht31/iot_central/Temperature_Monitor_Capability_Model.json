@@ -62,30 +62,40 @@
             "@id": "urn:azureCarbonDioxide:AzureSphere_7mm:DesiredCarbonDioxideAlert:1",
             "@type": "Property",
             "displayName": {
-              "en": "Set CO2 Alert Level (ppm)"
+              "en": "Set Temperature Alert Level"
             },
             "name": "DesiredTemperatureAlertLevel",
             "writable": true,
             "schema": "float"
           },
           {
-<<<<<<< HEAD:iot_central/Temperature_Monitor_Capability_Model.json
-            "@id": "urn:azureCarbonDioxide:AzureSphere_7mm:HvacState:2",
+            "@id": "urn:azureCarbonDioxide:AzureSphere_7mm:DesiredTemperature:1",
             "@type": "Property",
             "displayName": {
-              "en": "Reported HVAC State"
+              "en": "Desired Temperature "
             },
-            "name": "ActualHvacState",
-            "schema": "string"
-=======
-            "@id": "urn:azureCarbonDioxide:AzureSphere_7mm:ActualCarbonDioxideLevel:1",
-            "@type": "Property",
-            "displayName": {
-              "en": "Reported CO2 (ppm)"
-            },
-            "name": "ActualCO2Level",
+            "name": "DesiredTemperature",
+            "writable": true,
             "schema": "float"
->>>>>>> 63887c89cc4368faca2c850a3b585d55e86a465a:iot_central/CO2_Monitor_Capability_Model.json
+          },
+          {
+            "@id": "urn:azureCarbonDioxide:ReportedHvacState:HvacState:2",
+            "@type": "Property",
+            "displayName": {
+              "en": "Last reported HVAC operating mode"
+            },
+            "name": "ReportedHvacState",
+            "schema": "string"
+          }
+          ,
+          {
+            "@id": "urn:azureCarbonDioxide:ReportedTemperature:HvacState:2",
+            "@type": "Property",
+            "displayName": {
+              "en": "Last reported temperature"
+            },
+            "name": "ReportedTemperature",
+            "schema": "string"
           }
         ]
       }

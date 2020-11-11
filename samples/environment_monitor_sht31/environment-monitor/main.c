@@ -53,7 +53,8 @@ enum HVAC { HEATING, COOLING, OFF };
 static char* hvacState[] = { "Heating", "Cooling", "Off" };
 
 static enum HVAC current_hvac_state = OFF;
-float temperature, humidity;
+static float temperature, humidity;
+static int previous_temperature = 0;
 static const struct timespec co2AlertBuzzerPeriod = { 0, 5 * 100 * 1000 };
 
 // GPIO Output PeripheralGpios
@@ -80,8 +81,8 @@ static LP_TIMER temperatureAlertBuzzerOffOneShotTimer = { .period = { 0, 0 }, .n
 // Azure IoT Device Twins
 static LP_DEVICE_TWIN_BINDING desiredTemperature = { .twinProperty = "DesiredTemperature", .twinType = LP_TYPE_FLOAT, .handler = DeviceTwinGenericHandler };
 static LP_DEVICE_TWIN_BINDING desiredTemperatureAlertLevel = { .twinProperty = "DesiredTemperatureAlertLevel", .twinType = LP_TYPE_FLOAT, .handler = DeviceTwinGenericHandler };
-static LP_DEVICE_TWIN_BINDING actualTemperature = { .twinProperty = "ActualTemperature", .twinType = LP_TYPE_FLOAT };
-static LP_DEVICE_TWIN_BINDING actualHvacState = { .twinProperty = "ActualHvacState", .twinType = LP_TYPE_STRING };
+static LP_DEVICE_TWIN_BINDING actualTemperature = { .twinProperty = "ReportedTemperature", .twinType = LP_TYPE_FLOAT };
+static LP_DEVICE_TWIN_BINDING actualHvacState = { .twinProperty = "ReportedHvacState", .twinType = LP_TYPE_STRING };
 
 // Initialize Sets
 LP_GPIO* PeripheralGpioSet[] = { &hvacHeatingLed, &hvacCoolingLed, &co2AlertPin, &azureIotConnectedLed };
@@ -127,7 +128,7 @@ static void NetworkConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
 /// Blue to turn on cooler. 
 /// Green equals just right, no action required.
 /// </summary>
-static void SetHvacStatusColour(void)
+static void SetHvacStatusColour(int temperature)
 {
 	if (!desiredTemperature.twinStateUpdated) { return; }
 
@@ -218,6 +219,14 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 			Log_Debug("%s\n", msgBuffer);
 			lp_azureMsgSendWithProperties(msgBuffer, telemetryMessageProperties, NELEMS(telemetryMessageProperties));
 		}
+
+		SetHvacStatusColour((int)temperature);
+
+		// If the previous temperature not equal to the new temperature then update ReportedTemperature device twin
+		if (previous_temperature != (int)temperature) {
+			lp_deviceTwinReportState(&actualTemperature, &temperature);
+		}
+		previous_temperature = (int)temperature;
 	}
 }
 
@@ -229,7 +238,7 @@ static void DeviceTwinGenericHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding)
 	lp_deviceTwinReportState(deviceTwinBinding, deviceTwinBinding->twinState);
 	lp_deviceTwinAckDesiredState(deviceTwinBinding, deviceTwinBinding->twinState, LP_DEVICE_TWIN_COMPLETED);
 
-	SetHvacStatusColour();
+	SetHvacStatusColour(previous_temperature);
 }
 
 static bool InitializeSht31(void)
