@@ -20,7 +20,7 @@ Learning resources: [Azure Sphere Developer Learning Path](https://github.com/gl
 
 ---
 
-## Are CO2 levels making you grumpy, sleepy, or sad
+## Is your environment making you grumpy, sleepy, or sad
 
 Working from home it is easy to close the door to shut out the noise of everyday life while we get on with work. Closing the door can lead to a build-up of CO2 gas, a by-product of our breathing, which can impact our wellbeing, concentration, and productivity levels.
 

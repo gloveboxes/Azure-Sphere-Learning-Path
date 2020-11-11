@@ -227,6 +227,7 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 static void DeviceTwinGenericHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding)
 {
 	lp_deviceTwinReportState(deviceTwinBinding, deviceTwinBinding->twinState);
+	lp_deviceTwinAckDesiredState(deviceTwinBinding, deviceTwinBinding->twinState, LP_DEVICE_TWIN_COMPLETED);
 
 	SetHvacStatusColour();
 }

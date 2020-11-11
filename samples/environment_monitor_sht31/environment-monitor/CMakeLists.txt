@@ -9,8 +9,8 @@
 
 # If you are NOT using the AVNET board be sure to comment out the AVNET board
 
-# set(AVNET TRUE "AVNET Azure Sphere Starter Kit")         
-set(SEEED_STUDIO_MINI TRUE "Seeed Studio Azure Sphere MT3620 Mini Dev Board")
+set(AVNET TRUE "AVNET Azure Sphere Starter Kit")         
+# set(SEEED_STUDIO_MINI TRUE "Seeed Studio Azure Sphere MT3620 Mini Dev Board")
 
 
 ###################################################################################################################
@@ -23,11 +23,7 @@ azsphere_configure_api(TARGET_API_SET "7")
 
 
 add_subdirectory("../../../LearningPathLibrary" out)
-<<<<<<< HEAD:environment-monitor/CMakeLists.txt
 add_subdirectory("embedded" sensirion)
-=======
-add_subdirectory("./embedded-scd" scd30)
->>>>>>> 63887c89cc4368faca2c850a3b585d55e86a465a:co2_monitor_hl/CMakeLists.txt
 
 set(Source
     "main.c"
