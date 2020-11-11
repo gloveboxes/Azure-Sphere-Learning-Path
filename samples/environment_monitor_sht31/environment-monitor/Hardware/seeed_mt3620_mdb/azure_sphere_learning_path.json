@@ -1,0 +1,29 @@
+{
+    "Metadata": {
+        "Type": "Azure Sphere Hardware Definition",
+        "Version": 1
+    },
+    "Description":
+    {
+        "Name": "Sample hardware abstraction for MT3620 RDB",
+        "MainCoreHeaderFileTopContent": [
+            "/* Copyright (c) Microsoft Corporation. All rights reserved.",
+            "   Licensed under the MIT License. */",
+            "",
+            "// This file defines the mapping from the MT3620 reference development board (RDB) to the",
+            "// 'sample hardware' abstraction used by the samples at https://github.com/Azure/azure-sphere-samples.",
+            "// Some peripherals are on-board on the RDB, while other peripherals must be attached externally if needed.",
+            "// https://docs.microsoft.com/en-us/azure-sphere/app-development/manage-hardware-dependencies",
+            "// to enable apps to work across multiple hardware variants."
+        ]
+    },
+    "Imports" : [ {"Path": "seeed_mt3620_mdb.json"} ],
+    "Peripherals": [
+        {"Name": "NETWORK_CONNECTED_LED", "Type": "Gpio", "Mapping": "SEEED_MT3620_MDB_USER_LED", "Comment": "Network Connected"},
+        {"Name": "RELAY", "Type": "Gpio", "Mapping": "AILINK_WFM620RSC1_PIN9_GPIO30", "Comment": "Relay"},
+        {"Name": "I2cMaster2", "Type": "I2cMaster", "Mapping": "SEEED_MT3620_MDB_J1J2_ISU1_I2C", "Comment": "I2C Master Bus"},
+        {"Name": "LED_RED", "Type": "Gpio", "Mapping": "SEEED_MT3620_MDB_J1_PIN3_GPIO6", "Comment": "MT3620 RDB: LED RED"},
+        {"Name": "CO2_ALERT", "Type": "Gpio", "Mapping": "AILINK_WFM620RSC1_PIN16_GPIO35", "Comment": "CO2_ALERT"},
+        {"Name": "LED_BLUE", "Type": "Gpio", "Mapping": "AILINK_WFM620RSC1_PIN7_GPIO10", "Comment": "MT3620 RDB: LED BLUE"}
+    ]
+}
