@@ -3,7 +3,7 @@
   "Name": "AzureSphereIoTCentral",
   "ComponentId": "25025d2c-66da-4448-bae1-ac26fcdd3627",
   "EntryPoint": "/bin/app",
-  "CmdArgs": [ "--ConnectionType", "DPS", "--ScopeID", "0ne000BDC00" ],
+  "CmdArgs": [ "--ConnectionType", "DPS", "--ScopeID", "Your_ID_Scope" ],
   "Capabilities": {
     "Gpio": [
       "$NETWORK_CONNECTED_LED",
@@ -13,8 +13,10 @@
       "$RELAY"
     ],
     "I2cMaster": [ "$I2cMaster2" ],
-    "AllowedConnections": [ "global.azure-devices-provisioning.net", "iotc-088280bc-3305-4cba-885e-6573fc4cf701.azure-devices.net" ],
-    "DeviceAuthentication": "9d7e79eb-e021-43ce-9f2b-fa944b447494"
+    "AllowedConnections": [
+      "global.azure-devices-provisioning.net"
+    ],
+    "DeviceAuthentication": "Replace_with_your_Azure_Sphere_Tenant_ID"
   },
   "ApplicationType": "Default"
 }

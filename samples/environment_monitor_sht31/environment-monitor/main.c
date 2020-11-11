@@ -90,7 +90,7 @@ LP_TIMER* timerSet[] = { &azureConnectedStatusTimer, &measureSensorTimer, &tempe
 
 static const char* MsgTemplate = "{ \"Temperature\": %3.2f, \"Humidity\": \"%3.1f\", \"MsgId\":%d }";
 static LP_MESSAGE_PROPERTY* telemetryMessageProperties[] = {
-	&(LP_MESSAGE_PROPERTY) { .key = "appid", .value = "co2monitor" },
+	&(LP_MESSAGE_PROPERTY) { .key = "appid", .value = "hvac" },
 	&(LP_MESSAGE_PROPERTY) {.key = "format", .value = "json" },
 	&(LP_MESSAGE_PROPERTY) {.key = "type", .value = "telemetry" },
 	&(LP_MESSAGE_PROPERTY) {.key = "version", .value = "1" }
@@ -232,7 +232,7 @@ static void DeviceTwinGenericHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding)
 	SetHvacStatusColour();
 }
 
-static bool InitializeSdc30(void)
+static bool InitializeSht31(void)
 {
 	uint16_t interval_in_seconds = 2;
 	int retry = 0;
@@ -262,7 +262,7 @@ static bool InitializeSdc30(void)
 /// <returns>0 on success, or -1 on failure</returns>
 static void InitPeripheralGpiosAndHandlers(void)
 {
-	InitializeSdc30();
+	InitializeSht31();
 
 	lp_azureInitialize(lp_config.scopeId, lp_config.deviceTwinModelId);
 

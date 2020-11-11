@@ -210,6 +210,9 @@ void SetHvacStatusColour(int temperature)
 {
 	static enum LEDS previous_led = RED;
 
+	// No desired temperature device twin update to date so return 
+	if (!dt_desiredTemperature.twinStateUpdated) { return; }
+
 	int desired = (int)(*(float*)dt_desiredTemperature.twinState);
 
 	current_led = temperature == desired ? GREEN : temperature > desired ? BLUE : RED;
