@@ -103,7 +103,7 @@ static LP_TIMER azureIotConnectionStatusTimer = {
 	.handler = AzureIoTConnectionStatusHandler };
 
 static LP_TIMER measureSensorTimer = {
-	.period = {4, 0},
+	.period = {6, 0},
 	.name = "measureSensorTimer",
 	.handler = MeasureSensorHandler };
 
@@ -201,7 +201,7 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 			snprintf(msgBuffer, JSON_MESSAGE_BYTES, msgTemplate,
 				environment.temperature, environment.humidity, environment.pressure, msgId++) > 0)
 		{
-			Log_Debug(msgBuffer);
+			Log_Debug("%s\n", msgBuffer);
 			lp_azureMsgSendWithProperties(msgBuffer, telemetryMessageProperties, NELEMS(telemetryMessageProperties));
 		}
 
