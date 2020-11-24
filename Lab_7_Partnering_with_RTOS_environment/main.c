@@ -97,13 +97,15 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer);
 static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer);
 static void InterCoreHandler(LP_INTER_CORE_BLOCK* ic_message_block);
 static void DeviceTwinSetTemperatureHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding);
+static void DeviceTwinSetSampleRateHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding);
 
 LP_USER_CONFIG lp_config;
 LP_INTER_CORE_BLOCK ic_control_block;
 
 static int previous_temperature = 0;
+static struct timespec publishRate = {6, 0};
 
-enum LEDS { RED, GREEN, BLUE };
+enum LEDS { RED, GREEN, BLUE, UNKNOWN };
 static enum LEDS current_led = RED;
 static const char* hvacState[] = { "heating", "off", "cooling" };
 
@@ -130,7 +132,7 @@ static LP_TIMER azureIotConnectionStatusTimer = {
 	.handler = AzureIoTConnectionStatusHandler };
 
 static LP_TIMER measureSensorTimer = {
-	.period = { 6, 0 },
+	.period = { 0, 0 },
 	.name = "measureSensorTimer",
 	.handler = MeasureSensorHandler };
 
@@ -140,6 +142,11 @@ static LP_DEVICE_TWIN_BINDING dt_desiredTemperature = {
 	.twinType = LP_TYPE_FLOAT,
 	.handler = DeviceTwinSetTemperatureHandler };
 
+static LP_DEVICE_TWIN_BINDING dt_desiredSampleRateInSeconds = {
+	.twinProperty = "DesiredSampleRateInSeconds",
+	.twinType = LP_TYPE_INT,
+	.handler = DeviceTwinSetSampleRateHandler };
+
 static LP_DEVICE_TWIN_BINDING dt_reportedTemperature = {
 	.twinProperty = "ReportedTemperature",
 	.twinType = LP_TYPE_FLOAT };
@@ -148,10 +155,17 @@ static LP_DEVICE_TWIN_BINDING dt_reportedHvacState = {
 	.twinProperty = "ReportedHvacState",
 	.twinType = LP_TYPE_STRING };
 
+static LP_DEVICE_TWIN_BINDING dt_reportedDeviceStartTime = {
+	.twinProperty = "ReportedDeviceStartTime",
+	.twinType = LP_TYPE_STRING };
+
 // Initialize Sets
 LP_GPIO* gpioSet[] = { &azureIotConnectedLed };
 LP_TIMER* timerSet[] = { &azureIotConnectionStatusTimer, &measureSensorTimer };
-LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &dt_desiredTemperature, &dt_reportedTemperature, &dt_reportedHvacState };
+LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = {
+	&dt_desiredTemperature, &dt_reportedTemperature, &dt_reportedHvacState,
+	&dt_reportedDeviceStartTime, &dt_desiredSampleRateInSeconds
+};
 
 // Telemetry message template and properties
 static const char* msgTemplate = "{ \"Temperature\":%3.2f, \"Humidity\":%3.1f, \"Pressure\":%3.1f, \"MsgId\":%d }";
@@ -169,6 +183,7 @@ static LP_MESSAGE_PROPERTY* telemetryMessageProperties[] = {
 static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
 {
 	static bool toggleConnectionStatusLed = true;
+	static bool firstConnect = true;
 
 	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
 		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
@@ -177,6 +192,12 @@ static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
 		if (lp_azureConnect()) {
 			lp_gpioStateSet(&azureIotConnectedLed, toggleConnectionStatusLed);
 			toggleConnectionStatusLed = !toggleConnectionStatusLed;
+
+			if (firstConnect) {
+				lp_deviceTwinReportState(&dt_reportedDeviceStartTime, lp_getCurrentUtc(msgBuffer, sizeof(msgBuffer))); // LP_TYPE_STRING
+				lp_timerOneShotSet(&measureSensorTimer, &publishRate);
+				firstConnect = false;
+			}
 		}
 		else {
 			lp_gpioStateSet(&azureIotConnectedLed, false);
@@ -197,6 +218,7 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 		// send request to Real-Time core app to read temperature, pressure, and humidity
 		ic_control_block.cmd = LP_IC_ENVIRONMENT_SENSOR;
 		lp_interCoreSendMessage(&ic_control_block, sizeof(ic_control_block));
+		lp_timerOneShotSet(&measureSensorTimer, &publishRate);
 	}
 }
 
@@ -208,7 +230,7 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 /// </summary>
 void SetHvacStatusColour(int temperature)
 {
-	static enum LEDS previous_led = RED;
+	static enum LEDS previous_led = UNKNOWN;
 
 	// No desired temperature device twin update to date so return 
 	if (!dt_desiredTemperature.twinStateUpdated) { return; }
@@ -241,6 +263,26 @@ static void DeviceTwinSetTemperatureHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBi
 		lp_deviceTwinAckDesiredState(deviceTwinBinding, deviceTwinBinding->twinState, LP_DEVICE_TWIN_ERROR);
 	}
 }
+
+/// <summary>
+/// Device Twin Handler to set the sensor sample rate on the real-time core
+/// </summary>
+static void DeviceTwinSetSampleRateHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding)
+{
+	// validate data is sensible range before applying
+	if (deviceTwinBinding->twinType == LP_TYPE_INT && *(int*)deviceTwinBinding->twinState > 0 && *(int*)deviceTwinBinding->twinState <= 60)
+	{
+		ic_control_block.cmd = LP_IC_SAMPLE_RATE;
+		ic_control_block.sample_rate = *(int*)deviceTwinBinding->twinState;
+		lp_interCoreSendMessage(&ic_control_block, sizeof(ic_control_block));
+
+		lp_deviceTwinAckDesiredState(deviceTwinBinding, deviceTwinBinding->twinState, LP_DEVICE_TWIN_COMPLETED);
+	}
+	else {
+		lp_deviceTwinAckDesiredState(deviceTwinBinding, deviceTwinBinding->twinState, LP_DEVICE_TWIN_ERROR);
+	}
+}
+
 
 /// <summary>
 /// Callback handler for Inter-Core Messaging - Does Device Twin Update, and Event Message
@@ -278,7 +320,7 @@ static void InterCoreHandler(LP_INTER_CORE_BLOCK* ic_message_block)
 /// <returns>0 on success, or -1 on failure</returns>
 static void InitPeripheralAndHandlers(void)
 {
-	lp_azureInitialize(lp_config.scopeId, lp_config.deviceTwinModelId);
+	lp_azureInitialize(lp_config.scopeId, "dtmi:com:LearningPath:LabMonitor;1");
 
 	lp_gpioSetOpen(gpioSet, NELEMS(gpioSet));
 	lp_gpioSetOpen(ledRgb, NELEMS(ledRgb));

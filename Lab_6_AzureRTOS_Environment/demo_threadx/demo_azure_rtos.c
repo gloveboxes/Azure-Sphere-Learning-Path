@@ -1,23 +1,23 @@
 /*************************************************************************************************************************************
  * The intercore communications labs require multiple instances of VS Code to be running
- * 
+ *
  * It is recommended to install the VS Code Peacock extension for the intercore communications labs.
- * The Peacock extension allows you to change the color of your Visual Studio Code workspace. 
+ * The Peacock extension allows you to change the color of your Visual Studio Code workspace.
  * Ideal when you have multiple VS Code instances
  * Install the Peacock extension from https://marketplace.visualstudio.com/items?itemName=johnpapa.vscode-peacock
- * 
+ *
  * The following colours have been set:
- * The VS Code instance attached to the Real-Time core will be red. Real-time is red, as in racing red. 
+ * The VS Code instance attached to the Real-Time core will be red. Real-time is red, as in racing red.
  * The VS Code instance attached to the High-level core is blue. High-level is blue, as in sky is high and blue.
  * You can change the default colours to match your preferences.
- * 
- * 
+ *
+ *
  * Intercore messaging.
- * 
+ *
  * There needs to be a shared understanding of the data structure being shared between the real-time and high-level apps
  * This shared understanding is declared in the intercore_contract.h file.  This file can be found in the IntercoreContract directory.
- * 
-*************************************************************************************************************************************/ 
+ *
+*************************************************************************************************************************************/
 
 #include "../IMU_lib/imu_temp_pressure.h"
 #include "hw/azure_sphere_learning_path.h"
@@ -45,6 +45,7 @@ static uint32_t dataSize;
 static BufferHeader* outbound, * inbound;
 static uint32_t sharedBufSize = 0;
 static const size_t payloadStart = 20;
+static int sensorSampleRateInSeconds = 200; // initialize to 2 seconds 200 ticks at 10ms a tick
 
 LP_INTER_CORE_BLOCK ic_control_block;
 LP_INTER_CORE_BLOCK enviroment_control_block;
@@ -188,7 +189,7 @@ void timer_scheduler(ULONG input)
     if (hardwareInitOK == true)
     {
         readSensorTickCounter++;
-        if (readSensorTickCounter >= 200)  // 2000ms = 2 seconds
+        if (readSensorTickCounter >= sensorSampleRateInSeconds)
         {
             readSensorTickCounter = 0;
             status = tx_event_flags_set(&hardware_event_flags_0, 0x1, TX_OR);
@@ -199,7 +200,7 @@ void timer_scheduler(ULONG input)
         }
 
         intercoreTickCounter++;
-        if (intercoreTickCounter >= 50)  // 500ms = 0.5 seconds.
+        if (intercoreTickCounter >= 25)  // 250ms = 0.25 seconds.
         {
             intercoreTickCounter = 0;
             status = tx_event_flags_set(&Intercore_event_flags_0, 0x1, TX_OR);
@@ -229,6 +230,7 @@ void intercore_thread(ULONG thread_input)
 {
     UINT status = TX_SUCCESS;
     ULONG actual_flags;
+    bool queuedMessages = true;
 
     if (GetIntercoreBuffers(&outbound, &inbound, &sharedBufSize) == -1)
     {
@@ -239,23 +241,38 @@ void intercore_thread(ULONG thread_input)
     {
         status = tx_event_flags_get(&Intercore_event_flags_0, 0x1, TX_OR_CLEAR, &actual_flags, TX_WAIT_FOREVER);
 
-        if ((status != TX_SUCCESS) || (actual_flags != 0x1)) { break; }
+        if ((status != TX_SUCCESS) || (actual_flags != 0x1)) { break; }    
 
-        dataSize = sizeof(buf);
-        int r = DequeueData(outbound, inbound, sharedBufSize, buf, &dataSize);
+        queuedMessages = true;  
 
-        if (r == 0 && dataSize > payloadStart)
-        {
-            memcpy((void*)&ic_control_block, (void*)&buf[payloadStart], sizeof(ic_control_block));
+        while (queuedMessages) {
 
-            switch (ic_control_block.cmd)
+            dataSize = sizeof(buf);
+
+            int r = DequeueData(outbound, inbound, sharedBufSize, buf, &dataSize);
+
+            if (r == 0 && dataSize > payloadStart)
             {
-            case LP_IC_HEARTBEAT:
-                break;
-            case LP_IC_ENVIRONMENT_SENSOR:
-                send_intercore_msg();
-            default:
-                break;
+                memcpy((void*)&ic_control_block, (void*)&buf[payloadStart], sizeof(ic_control_block));
+
+                switch (ic_control_block.cmd)
+                {
+                case LP_IC_HEARTBEAT:
+                    break;
+                case LP_IC_ENVIRONMENT_SENSOR:
+                    send_intercore_msg();
+                    break;
+                case LP_IC_SAMPLE_RATE:
+                    if (ic_control_block.sample_rate > 0 && ic_control_block.sample_rate <= 60) {
+                        sensorSampleRateInSeconds = MS_TO_TICK(ic_control_block.sample_rate * 1000);
+                    }
+                    break;
+                default:
+                    break;
+                }
+            }
+            else {
+                queuedMessages = false;
             }
         }
     }
