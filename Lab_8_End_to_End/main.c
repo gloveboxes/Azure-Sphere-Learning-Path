@@ -19,8 +19,9 @@
  *   The following developer boards are supported.
  *
  *	   1. AVNET Azure Sphere Starter Kit.
- *	   2. Seeed Studio Azure Sphere MT3620 Development Kit aka Reference Design Board or rdb.
- *	   3. Seeed Studio Seeed Studio MT3620 Mini Dev Board.
+ *     2. AVNET Azure Sphere Starter Kit Revision 2.
+ *	   3. Seeed Studio Azure Sphere MT3620 Development Kit aka Reference Design Board or rdb.
+ *	   4. Seeed Studio Seeed Studio MT3620 Mini Dev Board.
  *
  *   ENABLE YOUR DEVELOPER BOARD
  *
@@ -54,17 +55,6 @@
 #include <stdio.h>
 #include <time.h>
 
-// Hardware specific
-#ifdef OEM_AVNET
-#include "board.h"
-#include "imu_temp_pressure.h"
-#include "light_sensor.h"
-#endif // OEM_AVNET
-
-// Hardware specific
-#ifdef OEM_SEEED_STUDIO
-#include "board.h"
-#endif // SEEED_STUDIO
 
 #define LP_LOGGING_ENABLED FALSE
 #define JSON_MESSAGE_BYTES 256  // Number of bytes to allocate for the JSON telemetry message for IoT Central

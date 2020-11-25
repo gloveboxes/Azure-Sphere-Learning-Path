@@ -10,6 +10,25 @@
  * The VS Code instance attached to the Real-Time core will be red. Real-time is red, as in racing red.
  * The VS Code instance attached to the High-level core is blue. High-level is blue, as in sky is high and blue.
  * You can change the default colours to match your preferences.
+ * 
+ *   DEVELOPER BOARD SELECTION
+ *
+ *   The following developer boards are supported.
+ *
+ *	   1. AVNET Azure Sphere Starter Kit.
+ *     2. AVNET Azure Sphere Starter Kit Revision 2.
+ *	   3. Seeed Studio Azure Sphere MT3620 Development Kit aka Reference Design Board or rdb.
+ *	   4. Seeed Studio Seeed Studio MT3620 Mini Dev Board.
+ *
+ *   ENABLE YOUR DEVELOPER BOARD
+ *
+ *   Each Azure Sphere developer board manufacturer maps pins differently. You need to select the configuration that matches your board.
+ *
+ *   Follow these steps:
+ *
+ *	   1. Open CMakeLists.txt.
+ *	   2. Uncomment the set command that matches your developer board.
+ *	   3. Click File, then Save to save the CMakeLists.txt file which will auto generate the CMake Cache.
  *
  *
  * Intercore messaging.

@@ -5,11 +5,12 @@
 
 # Select your developer board by removing the # tag from the beginning of the line
 
-# The default board selected is the AVNET Starter Kit.
+# The default board selected is the AVNET Azure Sphere Starter Kit Revision 1.
 
-# If you are NOT using the AVNET board be sure to comment out the AVNET board
+# If you are NOT using the AVNET Revision 1 board be sure to comment out the AVNET board
 
-set(AVNET TRUE "AVNET Azure Sphere Starter Kit")                
+set(AVNET TRUE "AVNET Azure Sphere Starter Kit Revision 1 ")    
+# set(AVNET_REV_2 TRUE "AVNET Azure Sphere Starter Kit Revision 2 ")             
 # set(SEEED_STUDIO_RDB TRUE "Seeed Studio Azure Sphere MT3620 Development Kit (aka Reference Design Board or rdb)")
 # set(SEEED_STUDIO_MINI TRUE "Seeed Studio Azure Sphere MT3620 Mini Dev Board")
 
@@ -74,6 +75,10 @@ if(AVNET)
     azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../HardwareDefinitions/avnet_mt3620_sk" TARGET_DEFINITION "azure_sphere_learning_path.json")
     add_definitions( -DOEM_AVNET=TRUE )
 endif(AVNET)
+
+if(AVNET_REV_2)
+    azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../HardwareDefinitions/avnet_mt3620_sk_rev2" TARGET_DEFINITION "azure_sphere_learning_path.json")
+endif(AVNET_REV_2)
 
 if (SEEED_STUDIO_RDB)
     azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../HardwareDefinitions/mt3620_rdb" TARGET_DEFINITION "azure_sphere_learning_path.json")
