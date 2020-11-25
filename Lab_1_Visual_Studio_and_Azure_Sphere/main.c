@@ -20,8 +20,9 @@
  *   The following developer boards are supported.
  *
  *	   1. AVNET Azure Sphere Starter Kit.
- *	   2. Seeed Studio Azure Sphere MT3620 Development Kit aka Reference Design Board or rdb.
- *	   3. Seeed Studio Seeed Studio MT3620 Mini Dev Board.
+ *     2. AVNET Azure Sphere Starter Kit Revision 2.
+ *	   3. Seeed Studio Azure Sphere MT3620 Development Kit aka Reference Design Board or rdb.
+ *	   4. Seeed Studio Seeed Studio MT3620 Mini Dev Board.
  *
  *   ENABLE YOUR DEVELOPER BOARD
  *
