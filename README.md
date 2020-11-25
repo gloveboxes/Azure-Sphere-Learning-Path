@@ -5,13 +5,13 @@
 
 **Follow** me on **Twitter** [@dglover](https://twitter.com/dglover)
 
-|Author|[Dave Glover](https://developer.microsoft.com/en-us/advocates/dave-glover?WT.mc_id=julyot-azd-dglover), Microsoft Cloud Developer Advocate |
+|Author|[Dave Glover](https://developer.microsoft.com/advocates/dave-glover?WT.mc_id=iot-0000-dglover), Microsoft Cloud Developer Advocate |
 |:----|:---|
 |Target Platform | Azure Sphere MT3620 |
-|Target Service | [Azure IoT Central](https://azure.microsoft.com/services/iot-central/?WT.mc_id=julyot-azd-dglover) |
+|Target Service | [Azure IoT Central](https://azure.microsoft.com/services/iot-central/?WT.mc_id=iot-0000-dglover) |
 |Developer Platform | Windows 10 or Ubuntu 18.04/20.04 |
 |Azure SDK | Azure Sphere SDK 20.07 or better |
-|Developer Tools| [Visual Studio (The free Community Edition or better)](https://visualstudio.microsoft.com/vs/?WT.mc_id=julyot-azd-dglover) or [Visual Studio Code (Free OSS)](https://code.visualstudio.com?WT.mc_id=julyot-azd-dglover)|
+|Developer Tools| [Visual Studio (The free Community Edition or better)](https://visualstudio.microsoft.com/vs/?WT.mc_id=iot-0000-dglover) or [Visual Studio Code (Free OSS)](https://code.visualstudio.com/?WT.mc_id=iot-0000-dglover)|
 |Supported Hardware | [Avnet Azure Sphere MT3620 Starter Kit](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-sk-g-3074457345636825680) [Seeed Studio Azure Sphere MT3620 Development Kit](https://www.seeedstudio.com/Azure-Sphere-MT3620-Development-Kit-US-Version-p-3052.html) and the [Seeed Studio MT3620 Mini Dev Board](https://www.seeedstudio.com/MT3620-Mini-Dev-Board-p-2919.html) |
 |Source Code | [https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git](https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git) |
 |Language| C|
@@ -22,7 +22,7 @@
 
 ## Learn more about Azure Sphere
 
-[Azure Sphere](https://azure.microsoft.com/en-au/services/azure-sphere/?WT.mc_id=julyot-azd-dglover) is a comprehensive IoT security solution – including hardware, OS, and cloud components – to actively protect your devices, your business, and your customers.
+[Azure Sphere](https://azure.microsoft.com/services/azure-sphere/?WT.mc_id=iot-0000-dglover) is a comprehensive IoT security solution – including hardware, OS, and cloud components – to actively protect your devices, your business, and your customers.
 
 Azure Sphere is made up of three interrelated components:
 
@@ -73,7 +73,7 @@ As billions of new devices are connected, organizations need to secure them to h
 
 Almost a day doesn't go by without some newsworthy IoT security attack happening, and those are just the ones that make the news cycle. IoT security is fundamental and at the same time often absent from many conversations in the rush to get products to market.
 
-[The Seven Properties of Highly Secure Devices](https://www.microsoft.com/en-us/research/wp-content/uploads/2017/03/SevenPropertiesofHighlySecureDevices.pdf?WT.mc_id=julyot-azd-dglover) is highly recommended to help you understand what is required to mitigate exposure to IoT security issues. This IoT Security whitepaper draws from industry and Microsoft experience.
+[The Seven Properties of Highly Secure Devices](https://www.microsoft.com/research/wp-content/uploads/2017/03/SevenPropertiesofHighlySecureDevices.pdf?WT.mc_id=iot-0000-dglover) is highly recommended to help you understand what is required to mitigate exposure to IoT security issues. This IoT Security whitepaper draws from industry and Microsoft experience.
 
 ![Connected Fish Tank](docs/resources/fish-tank.jpg)
 
@@ -119,7 +119,7 @@ Building solutions with pre-certified Azure Sphere modules is the fastest way to
 
 ### Starbucks and the Avnet Azure Sphere Guardian Module
 
-[Starbucks turns to technology to brew up a more personal connection with its customers](https://news.microsoft.com/transform/starbucks-turns-to-technology-to-brew-up-a-more-personal-connection-with-its-customers/?WT.mc_id=julyot-azd-dglover)
+[Starbucks turns to technology to brew up a more personal connection with its customers](https://news.microsoft.com/transform/starbucks-turns-to-technology-to-brew-up-a-more-personal-connection-with-its-customers/?WT.mc_id=iot-0000-dglover)
 
 ---
 
@@ -198,11 +198,11 @@ These labs support the following Azure Sphere Kits.
 
 ### Learn about Azure Sphere
 
-1. [Azure Sphere Documentation](https://docs.microsoft.com/en-au/azure-sphere/?WT.mc_id=julyot-azd-dglover)
+1. [Azure Sphere Documentation](https://docs.microsoft.com/azure-sphere/?WT.mc_id=iot-0000-dglover)
 1. Using Yocto to Build an IoT OS Targeting a Crossover SoC. [Video](https://www.youtube.com/watch?v=-T7Et5qfqQQ), and [Slides](https://static.sched.com/hosted_files/ossna19/91/Crossover_ELC2019.pdf)
-1. [Anatomy of a secured MCU](https://azure.microsoft.com/en-au/blog/anatomy-of-a-secured-mcu/?WT.mc_id=julyot-azd-dglover)
-1. [Azure Sphere’s customized Linux-based OS](https://azure.microsoft.com/en-au/blog/azure-sphere-s-customized-linux-based-os/?WT.mc_id=julyot-azd-dglover)
-1. [Tech Communities Blog](https://techcommunity.microsoft.com/t5/internet-of-things/bg-p/IoTBlog?WT.mc_id=julyot-azd-dglover)
+1. [Anatomy of a secured MCU](https://azure.microsoft.com/blog/anatomy-of-a-secured-mcu/?WT.mc_id=iot-0000-dglover)
+1. [Azure Sphere’s customized Linux-based OS](https://azure.microsoft.com/blog/azure-sphere-s-customized-linux-based-os/?WT.mc_id=iot-0000-dglover)
+1. [Tech Communities Blog](https://techcommunity.microsoft.com/t5/internet-of-things/bg-p/IoTBlog?WT.mc_id=iot-0000-dglover)
 1. The [Azure IoT Central Sample](https://github.com/Azure/azure-sphere-samples/blob/master/Samples/AzureIoT/IoTCentral.md)
 1. [Azure Sphere Wiki](https://en.wikipedia.org/wiki/Azure_Sphere)
 
