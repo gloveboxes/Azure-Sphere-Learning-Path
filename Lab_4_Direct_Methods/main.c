@@ -193,8 +193,7 @@ static void DelayRestartDeviceTimerHandler(EventLoopTimer* eventLoopTimer)
 /// </summary>
 static LP_DIRECT_METHOD_RESPONSE_CODE RestartDeviceHandler(JSON_Value* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg)
 {
-     // Allocate and initialize a response message buffer. The calling function is responsible for the freeing memory
-    const size_t responseLen = 100;
+    const size_t responseLen = 100; // Allocate and initialize a response message buffer. The calling function is responsible for the freeing memory
     static struct timespec period;
 
     *responseMsg = (char*)malloc(responseLen);
