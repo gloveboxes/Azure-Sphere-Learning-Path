@@ -1,6 +1,6 @@
 {
   "@context": "dtmi:dtdl:context;2",
-  "@id": "dtmi:com:LearningPath:LabMonitor;1",
+  "@id": "dtmi:com:example:azursphere:learningpath;1",
   "@type": "Interface",
   "displayName": "Learning Path Lab Monitor",
   "contents": [
@@ -31,7 +31,7 @@
     {
       "@type": [
         "Telemetry",
-        "Humidity"
+        "RelativeHumidity"
       ],
       "displayName": {
         "en": "Humidity"
@@ -39,14 +39,6 @@
       "name": "Humidity",
       "schema": "float",
       "unit": "percent"
-    },
-    {
-      "@type": "Telemetry",
-      "displayName": {
-        "en": "MsgId"
-      },
-      "name": "MsgId",
-      "schema": "integer"
     },
     {
       "@type": [
@@ -59,6 +51,15 @@
       "name": "DesiredTemperature",
       "schema": "float",
       "unit": "degreeCelsius",
+      "writable": true
+    },
+    {
+      "@type": "Property",
+      "displayName": {
+        "en": "Desired Sample Rate in Seconds [1..60]"
+      },
+      "name": "DesiredSampleRateInSeconds",
+      "schema": "integer",
       "writable": true
     },
     {
@@ -100,30 +101,20 @@
       "schema": "dateTime"
     },
     {
-      "@type": "Property",
-      "displayName": {
-        "en": "Desired Sample Rate in Seconds [1..60]"
-      },
-      "name": "DesiredSampleRateInSeconds",
-      "schema": "integer",
-      "writable": true
-    },
-    {
       "@type": "Command",
       "commandType": "synchronous",
       "displayName": {
-        "en": "Restart Device"
+        "en": "RestartDevice"
       },
       "name": "RestartDevice",
       "request": {
-        "@type": "SchemaField",
+        "@type": "CommandPayload",
         "displayName": {
-          "en": "Restart Device [3..9]"
+          "en": "Restart Delay in seconds [3..9]"
         },
-        "name": "RestartDevice",
+        "name": "RestartDelay",
         "schema": "integer"
-      },
-      "durable": false
+      }
     }
   ]
 }
