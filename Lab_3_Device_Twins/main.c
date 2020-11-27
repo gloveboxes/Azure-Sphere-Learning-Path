@@ -68,6 +68,7 @@
 
 #define LP_LOGGING_ENABLED FALSE
 #define JSON_MESSAGE_BYTES 256 // Number of bytes to allocate for the JSON telemetry message for IoT Central
+#define IOT_PLUG_AND_PLAY_MODEL_ID "dtmi:com:example:azuresphere:labmonitor;1"	// https://docs.microsoft.com/en-us/azure/iot-pnp/overview-iot-plug-and-play
 
 // Forward signatures
 static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer);
@@ -211,8 +212,8 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 		// If the previous temperature not equal to the new temperature then update ReportedTemperature device twin
 		if (previous_temperature != (int)environment.temperature) {
 			lp_deviceTwinReportState(&dt_reportedTemperature, &environment.temperature);
-		}
-		previous_temperature = (int)environment.temperature;
+			previous_temperature = (int)environment.temperature;
+		}		
 	}
 }
 
@@ -246,7 +247,7 @@ static void DeviceTwinSetTemperatureHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBi
 /// <returns>0 on success, or -1 on failure</returns>
 static void InitPeripheralAndHandlers(void)
 {
-	lp_azureInitialize(lp_config.scopeId, lp_config.deviceTwinModelId);
+	lp_azureInitialize(lp_config.scopeId, IOT_PLUG_AND_PLAY_MODEL_ID);
 
 	lp_initializeDevKit();
 
