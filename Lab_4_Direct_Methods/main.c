@@ -68,6 +68,7 @@
 
 #define LP_LOGGING_ENABLED FALSE
 #define JSON_MESSAGE_BYTES 256 // Number of bytes to allocate for the JSON telemetry message for IoT Central
+#define IOT_PLUG_AND_PLAY_MODEL_ID "dtmi:com:example:azuresphere:labmonitor;1"	// https://docs.microsoft.com/en-us/azure/iot-pnp/overview-iot-plug-and-play
 
 // Forward signatures
 static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer);
@@ -230,7 +231,7 @@ static LP_DIRECT_METHOD_RESPONSE_CODE RestartDeviceHandler(JSON_Value* json, LP_
 /// </summary>
 static void InitPeripheralAndHandlers(void)
 {
-    lp_azureInitialize(lp_config.scopeId, lp_config.deviceTwinModelId);
+    lp_azureInitialize(lp_config.scopeId, IOT_PLUG_AND_PLAY_MODEL_ID);
 
     lp_initializeDevKit();
 

@@ -58,6 +58,9 @@
 
 #define LP_LOGGING_ENABLED FALSE
 #define JSON_MESSAGE_BYTES 256  // Number of bytes to allocate for the JSON telemetry message for IoT Central
+#define IOT_PLUG_AND_PLAY_MODEL_ID "dtmi:com:example:azuresphere:labmonitor;1"	// https://docs.microsoft.com/en-us/azure/iot-pnp/overview-iot-plug-and-play
+#define REAL_TIME_COMPONENT_ID "6583cf17-d321-4d72-8283-0b7c5b56442b"
+
 
 // Forward signatures
 static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer);
@@ -302,7 +305,7 @@ static LP_DIRECT_METHOD_RESPONSE_CODE ResetDirectMethodHandler(JSON_Value* json,
 /// <returns>0 on success, or -1 on failure</returns>
 static void InitPeripheralAndHandlers(void)
 {
-	lp_azureInitialize(lp_config.scopeId, lp_config.deviceTwinModelId);
+	lp_azureInitialize(lp_config.scopeId, IOT_PLUG_AND_PLAY_MODEL_ID);
 
 	lp_gpioSetOpen(gpioSet, NELEMS(gpioSet));
 	lp_gpioSetOpen(ledRgb, NELEMS(ledRgb));
@@ -313,7 +316,7 @@ static void InitPeripheralAndHandlers(void)
 	lp_timerSetStart(timerSet, NELEMS(timerSet));
 	lp_azureToDeviceStart();
 
-	lp_interCoreCommunicationsEnable(lp_config.rtComponentId, InterCoreHandler);  // Initialize Inter Core Communications
+	lp_interCoreCommunicationsEnable(REAL_TIME_COMPONENT_ID, InterCoreHandler);  // Initialize Inter Core Communications
 
 	ic_control_block.cmd = LP_IC_HEARTBEAT;		// Prime RT Core with Component ID Signature
 	lp_interCoreSendMessage(&ic_control_block, sizeof(ic_control_block));

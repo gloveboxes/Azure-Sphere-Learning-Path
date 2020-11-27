@@ -8,8 +8,6 @@ static const char* cmdLineArgsUsageText =
 "\"<scope_id>\"]\n"
 "Direction connection type: \" CmdArgs \": [\"--ConnectionType\", \"Direct\", "
 "\"--ConnectionString\" \"]\n"
-"Real-time Compontent ID: \" CmdArgs \": [\"--RTComponentId\" \"]"
-"Device Twin Model ID: \" CmdArgs \": [\"--DeviceTwinModelId\" \"]"
 ;
 
 /// <summary>
@@ -21,13 +19,11 @@ void lp_configParseCmdLineArguments(int argc, char* argv[], LP_USER_CONFIG* lp_c
     static const struct option cmdLineOptions[] = {
         {"ConnectionType", required_argument, NULL, 'c'},
         {"ScopeID", required_argument, NULL, 's'},
-        {"RTComponentId", required_argument, NULL, 'r'},
         {"ConnectionString", required_argument, NULL, 'z'},
-        {"DeviceTwinModelId", required_argument, NULL, 'd'},
         {NULL, 0, NULL, 0} };
 
     // Loop over all of the options.
-    while ((option = getopt_long(argc, argv, "c:s:r:z:d:", cmdLineOptions, NULL)) != -1) {
+    while ((option = getopt_long(argc, argv, "c:s:r:z:", cmdLineOptions, NULL)) != -1) {
         // Check if arguments are missing. Every option requires an argument.
         if (optarg != NULL && optarg[0] == '-') {
             Log_Debug("WARNING: Option %c requires an argument\n", option);
@@ -47,17 +43,9 @@ void lp_configParseCmdLineArguments(int argc, char* argv[], LP_USER_CONFIG* lp_c
             Log_Debug("ScopeId: %s\n", optarg);
             lp_config->scopeId = optarg;
             break;
-        case 'r':
-            Log_Debug("RTComponentId: %s\n", optarg);
-            lp_config->rtComponentId = optarg;
-            break;
         case 'z':
             Log_Debug("Connection String: %s\n", optarg);
             lp_config->connectionString = optarg;
-            break;
-        case 'd':
-            Log_Debug("Device Twin Model ID: %s\n", optarg);
-            lp_config->deviceTwinModelId = optarg;
             break;
         default:
             // Unknown options are ignored.

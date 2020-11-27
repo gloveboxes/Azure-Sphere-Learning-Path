@@ -1,6 +1,6 @@
 {
   "@context": "dtmi:dtdl:context;2",
-  "@id": "dtmi:com:example:azursphere:learningpath;1",
+  "@id": "dtmi:com:example:azuresphere:labmonitor;1",
   "@type": "Interface",
   "displayName": "Learning Path Lab Monitor",
   "contents": [
@@ -114,6 +114,14 @@
         },
         "name": "RestartDelay",
         "schema": "integer"
+      },
+      "response": {
+        "@type": "CommandPayload",
+        "displayName": {
+          "en": "Restart Device Result"
+        },
+        "name": "RestartDeviceResult",
+        "schema": "string"
       }
     }
   ]
