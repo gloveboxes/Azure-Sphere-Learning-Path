@@ -19,7 +19,6 @@ static const char* _deviceTwinModelId = NULL;
 
 #define dpsUrl "global.azure-devices-provisioning.net"
 
-static bool dpsRegisterCompleted;
 static PROV_DEVICE_RESULT dpsRegisterStatus = PROV_DEVICE_REG_HUB_NOT_SPECIFIED;
 
 // static LP_MESSAGE_PROPERTY** _messageProperties = NULL;
@@ -264,7 +263,6 @@ static bool SetupAzureClient()
 /// </summary>
 static void RegisterDeviceCallback(PROV_DEVICE_RESULT registerResult, const char* iothubUri, const char* deviceId, void* userContext)
 {
-	dpsRegisterCompleted = registerResult == PROV_DEVICE_RESULT_OK;
 	dpsRegisterStatus = registerResult;
 }
 
@@ -273,14 +271,11 @@ static void RegisterDeviceCallback(PROV_DEVICE_RESULT registerResult, const char
 /// </summary>
 static bool ProvisionWithDpsPnP(void)
 {
-	PROV_DEVICE_LL_HANDLE prov_handle;
+	PROV_DEVICE_LL_HANDLE prov_handle = NULL;
 	PROV_DEVICE_RESULT prov_result;
 	bool result = false;
 	char* dtdlBuffer = NULL;
-	int deviceIdForDaaCertUsage = 0;  // set DaaCertUsage to false
-
-	dpsRegisterCompleted = false;
-	dpsRegisterStatus = PROV_DEVICE_REG_HUB_NOT_SPECIFIED;
+	int deviceIdForDaaCertUsage = 0;  // set DaaCertUsage to false	
 
 	if (!lp_isNetworkReady() || !lp_isDeviceAuthReady()) {
 		return false;
@@ -343,13 +338,15 @@ static bool ProvisionWithDpsPnP(void)
 	const struct timespec sleepTime = { .tv_sec = 0, .tv_nsec = workDelayMs * 1000 * 1000 };
 	long time_elapsed = 0;
 
-	while (!dpsRegisterCompleted && time_elapsed < timeoutMs) {
+	dpsRegisterStatus = PROV_DEVICE_REG_HUB_NOT_SPECIFIED;
+
+	while (dpsRegisterStatus != PROV_DEVICE_RESULT_OK && time_elapsed < timeoutMs) {
 		Prov_Device_LL_DoWork(prov_handle);
 		nanosleep(&sleepTime, NULL);
 		time_elapsed += workDelayMs;
 	}
 
-	if (!dpsRegisterCompleted || dpsRegisterStatus != PROV_DEVICE_RESULT_OK) {
+	if (dpsRegisterStatus != PROV_DEVICE_RESULT_OK) {
 		Log_Debug("ERROR: Failed to register device with provisioning service\n");
 		goto cleanup;
 	}
