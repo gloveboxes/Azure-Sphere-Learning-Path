@@ -1,25 +1,33 @@
 #include "azure_iot.h"
 
-static const char* getAzureSphereProvisioningResultString(AZURE_SPHERE_PROV_RETURN_VALUE provisioningResult);
-static const char* GetReasonString(IOTHUB_CLIENT_CONNECTION_STATUS_REASON reason);
-static void SendMessageCallback(IOTHUB_CLIENT_CONFIRMATION_RESULT, void*);
-static bool SetupAzureClient(void);
-static void HubConnectionStatusCallback(IOTHUB_CLIENT_CONNECTION_STATUS, IOTHUB_CLIENT_CONNECTION_STATUS_REASON, void*);
-static void AzureCloudToDeviceHandler(EventLoopTimer*);
 bool sendMsg(const char* msg, LP_MESSAGE_PROPERTY** messageProperties, size_t messagePropertyCount);
+static bool ProvisionWithDpsPnP(void);
+static bool SetupAzureClient(void);
+static const char* GetReasonString(IOTHUB_CLIENT_CONNECTION_STATUS_REASON reason);
+static const char* getAzureSphereProvisioningResultString(AZURE_SPHERE_PROV_RETURN_VALUE provisioningResult);
+static void AzureCloudToDeviceHandler(EventLoopTimer*);
+static void HubConnectionStatusCallback(IOTHUB_CLIENT_CONNECTION_STATUS, IOTHUB_CLIENT_CONNECTION_STATUS_REASON, void*);
+static void SendMessageCallback(IOTHUB_CLIENT_CONFIRMATION_RESULT, void*);
 
 static IOTHUB_DEVICE_CLIENT_LL_HANDLE iothubClientHandle = NULL;
 static bool iothubAuthenticated = false;
-static const int keepalivePeriodSeconds = 20;
+// static const int keepalivePeriodSeconds = 20;
 
 static const char* _idScope = NULL;
 static const char* _connectionString = NULL;
 static const char* _deviceTwinModelId = NULL;
 
+#define dpsUrl "global.azure-devices-provisioning.net"
+
+static bool dpsRegisterCompleted;
+static PROV_DEVICE_RESULT dpsRegisterStatus = PROV_DEVICE_REG_HUB_NOT_SPECIFIED;
+
 // static LP_MESSAGE_PROPERTY** _messageProperties = NULL;
 // static size_t _messagePropertyCount = 0;
 
 static const int maxPeriodSeconds = 5; // defines the max back off period for DoWork with lost network
+// static const int deviceIdForDaaCertUsage = 1; // A constant used to direct the IoT SDK to use
+											  // the DAA cert under the hood.
 
 static LP_TIMER cloudToDeviceTimer = {
 	.period = {0, 0}, // one-shot timer
@@ -216,21 +224,20 @@ static bool SetupAzureClient()
 	}
 	else
 	{
-		AZURE_SPHERE_PROV_RETURN_VALUE provResult = IoTHubDeviceClient_LL_CreateWithAzureSphereDeviceAuthProvisioning(_idScope, 10000, &iothubClientHandle);
-		Log_Debug("IoTHubDeviceClient_LL_CreateWithAzureSphereDeviceAuthProvisioning returned '%s'.\n", getAzureSphereProvisioningResultString(provResult));
-		if (provResult.result != AZURE_SPHERE_PROV_RESULT_OK)
-		{
-			Log_Debug("ERROR: failure to create IoTHub Handle.\n");
+		if (!ProvisionWithDpsPnP()) {
 			return false;
 		}
+		else
+		{
+			AZURE_SPHERE_PROV_RETURN_VALUE provResult = IoTHubDeviceClient_LL_CreateWithAzureSphereDeviceAuthProvisioning(_idScope, 10000, &iothubClientHandle);
+			Log_Debug("IoTHubDeviceClient_LL_CreateWithAzureSphereDeviceAuthProvisioning returned '%s'.\n", getAzureSphereProvisioningResultString(provResult));
+			if (provResult.result != AZURE_SPHERE_PROV_RESULT_OK)
+			{
+				Log_Debug("ERROR: failure to create IoTHub Handle.\n");
+				return false;
+			}
+		}
 	}
-
-	if (IoTHubDeviceClient_LL_SetOption(iothubClientHandle, OPTION_KEEP_ALIVE, &keepalivePeriodSeconds) != IOTHUB_CLIENT_OK)
-	{
-		Log_Debug("ERROR: failure setting option \"%s\"\n", OPTION_KEEP_ALIVE);
-		return false;
-	}
-
 
 	if (_deviceTwinModelId != NULL && strlen(_deviceTwinModelId) > 0)
 	{
@@ -250,6 +257,117 @@ static bool SetupAzureClient()
 	IoTHubDeviceClient_LL_DoWork(iothubClientHandle);
 
 	return true;
+}
+
+/// <summary>
+///     DPS provisioning callback with status
+/// </summary>
+static void RegisterDeviceCallback(PROV_DEVICE_RESULT registerResult, const char* iothubUri, const char* deviceId, void* userContext)
+{
+	dpsRegisterCompleted = registerResult == PROV_DEVICE_RESULT_OK;
+	dpsRegisterStatus = registerResult;
+}
+
+/// <summary>
+///     Provision with DPS and assign IoT Plug and Play Model ID
+/// </summary>
+static bool ProvisionWithDpsPnP(void)
+{
+	PROV_DEVICE_LL_HANDLE prov_handle;
+	PROV_DEVICE_RESULT prov_result;
+	bool result = false;
+	char* dtdlBuffer = NULL;
+	int deviceIdForDaaCertUsage = 0;  // set DaaCertUsage to false
+
+	dpsRegisterCompleted = false;
+	dpsRegisterStatus = PROV_DEVICE_REG_HUB_NOT_SPECIFIED;
+
+	if (!lp_isNetworkReady() || !lp_isDeviceAuthReady()) {
+		return false;
+	}
+
+	if (_deviceTwinModelId != NULL && strlen(_deviceTwinModelId) > 0)
+	{
+		size_t modelIdLen = 20; // allow for JSON format "{\"modelId\":\"%s\"}", 14 char, plus null and a couple of extra :)
+		modelIdLen += strlen(_deviceTwinModelId); // allow for twin property name in JSON response
+
+		dtdlBuffer = (char*)malloc(modelIdLen);
+		if (dtdlBuffer == NULL) {
+			Log_Debug("ERROR: PnP Model ID malloc failed.\n");
+			goto cleanup;
+		}
+
+		int len = snprintf(dtdlBuffer, modelIdLen, "{\"modelId\":\"%s\"}", _deviceTwinModelId);
+		if (len < 0 || len >= modelIdLen) {
+			Log_Debug("ERROR: Cannot write Model ID to buffer.\n");
+			goto cleanup;
+		}
+	}
+
+	// Initiate security with X509 Certificate
+	if (prov_dev_security_init(SECURE_DEVICE_TYPE_X509) != 0) {
+		Log_Debug("ERROR: Failed to initiate X509 Certificate security\n");
+		goto cleanup;
+	}
+
+	// Create Provisioning Client for communication with DPS using MQTT protocol
+	if ((prov_handle = Prov_Device_LL_Create(dpsUrl, _idScope, Prov_Device_MQTT_Protocol)) == NULL) {
+		Log_Debug("ERROR: Failed to create Provisioning Client\n");
+		goto cleanup;
+	}
+
+	// Sets Device ID on Provisioning Client
+	if ((prov_result = Prov_Device_LL_SetOption(prov_handle, "SetDeviceId", &deviceIdForDaaCertUsage)) != PROV_DEVICE_RESULT_OK) {
+		Log_Debug("ERROR: Failed to set Device ID in Provisioning Client, error=%d\n", prov_result);
+		goto cleanup;
+	}
+
+	// Sets Model ID provisioning data
+	if (dtdlBuffer != NULL) {
+		if ((prov_result = Prov_Device_LL_Set_Provisioning_Payload(prov_handle, dtdlBuffer)) != PROV_DEVICE_RESULT_OK) {
+			Log_Debug("Error: Failed to set Model ID in Provisioning Client, error=%d\n", prov_result);
+			goto cleanup;
+		}
+	}
+
+	// Sets the callback function for device registration
+	if ((prov_result = Prov_Device_LL_Register_Device(prov_handle, RegisterDeviceCallback, NULL, NULL, NULL)) != PROV_DEVICE_RESULT_OK) {
+		Log_Debug("ERROR: Failed to set callback function for device registration, error=%d\n", prov_result);
+		goto cleanup;
+	}
+
+	// Begin provisioning device with DPS
+	// Initiates timer to prevent timing out
+	static const long timeoutMs = 60000; // aloow up to 60 seconds before timeout
+	static const long workDelayMs = 25;
+	const struct timespec sleepTime = { .tv_sec = 0, .tv_nsec = workDelayMs * 1000 * 1000 };
+	long time_elapsed = 0;
+
+	while (!dpsRegisterCompleted && time_elapsed < timeoutMs) {
+		Prov_Device_LL_DoWork(prov_handle);
+		nanosleep(&sleepTime, NULL);
+		time_elapsed += workDelayMs;
+	}
+
+	if (!dpsRegisterCompleted || dpsRegisterStatus != PROV_DEVICE_RESULT_OK) {
+		Log_Debug("ERROR: Failed to register device with provisioning service\n");
+		goto cleanup;
+	}
+
+	result = true;
+
+cleanup:
+	if (dtdlBuffer != NULL) {
+		free(dtdlBuffer);
+		dtdlBuffer = NULL;
+	}
+
+	if (prov_handle != NULL) {
+		Prov_Device_LL_Destroy(prov_handle);
+	}
+
+	prov_dev_security_deinit();
+	return result;
 }
 
 /// <summary>
