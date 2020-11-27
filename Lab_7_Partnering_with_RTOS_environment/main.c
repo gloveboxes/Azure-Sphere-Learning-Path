@@ -85,17 +85,20 @@
 
 
 // Forward signatures
-static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer);
+static LP_DIRECT_METHOD_RESPONSE_CODE RestartDeviceHandler(JSON_Value* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg);
 static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer);
-static void InterCoreHandler(LP_INTER_CORE_BLOCK* ic_message_block);
-static void DeviceTwinSetTemperatureHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding);
+static void DelayRestartDeviceTimerHandler(EventLoopTimer* eventLoopTimer);
 static void DeviceTwinSetSampleRateHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding);
+static void DeviceTwinSetTemperatureHandler(LP_DEVICE_TWIN_BINDING* deviceTwinBinding);
+static void InterCoreHandler(LP_INTER_CORE_BLOCK* ic_message_block);
+static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer);
+
 
 LP_USER_CONFIG lp_config;
 LP_INTER_CORE_BLOCK ic_control_block;
 
-static int previous_temperature = 0;
-static struct timespec publishRate = {6, 0};
+static int previous_temperature = 999999; 
+static struct timespec publishRate = { 6, 0 };
 
 enum LEDS { RED, GREEN, BLUE, UNKNOWN };
 static enum LEDS current_led = RED;
@@ -128,6 +131,11 @@ static LP_TIMER measureSensorTimer = {
 	.name = "measureSensorTimer",
 	.handler = MeasureSensorHandler };
 
+static LP_TIMER restartDeviceOneShotTimer = {
+	.period = {0, 0},
+	.name = "restartDeviceOneShotTimer",
+	.handler = DelayRestartDeviceTimerHandler };
+
 // Azure IoT Device Twins
 static LP_DEVICE_TWIN_BINDING dt_desiredTemperature = {
 	.twinProperty = "DesiredTemperature",
@@ -151,13 +159,23 @@ static LP_DEVICE_TWIN_BINDING dt_reportedDeviceStartTime = {
 	.twinProperty = "ReportedDeviceStartTime",
 	.twinType = LP_TYPE_STRING };
 
+static LP_DEVICE_TWIN_BINDING dt_reportedRestartUtc = {
+	.twinProperty = "ReportedRestartUTC",
+	.twinType = LP_TYPE_STRING };
+
+// Azure IoT Direct Methods
+static LP_DIRECT_METHOD_BINDING dm_restartDevice = {
+	.methodName = "RestartDevice",
+	.handler = RestartDeviceHandler };
+
 // Initialize Sets
 LP_GPIO* gpioSet[] = { &azureIotConnectedLed };
-LP_TIMER* timerSet[] = { &azureIotConnectionStatusTimer, &measureSensorTimer };
+LP_TIMER* timerSet[] = { &azureIotConnectionStatusTimer, &measureSensorTimer, &restartDeviceOneShotTimer };
 LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = {
 	&dt_desiredTemperature, &dt_reportedTemperature, &dt_reportedHvacState,
-	&dt_reportedDeviceStartTime, &dt_desiredSampleRateInSeconds
+	&dt_reportedDeviceStartTime, &dt_desiredSampleRateInSeconds, &dt_reportedRestartUtc
 };
+LP_DIRECT_METHOD_BINDING* directMethodBindingSet[] = { &dm_restartDevice };
 
 // Telemetry message template and properties
 static const char* msgTemplate = "{ \"Temperature\":%3.2f, \"Humidity\":%3.1f, \"Pressure\":%3.1f, \"MsgId\":%d }";
@@ -297,12 +315,48 @@ static void InterCoreHandler(LP_INTER_CORE_BLOCK* ic_message_block)
 			// If the previous temperature not equal to the new temperature then update ReportedTemperature device twin
 			if (previous_temperature != (int)ic_message_block->temperature) {
 				lp_deviceTwinReportState(&dt_reportedTemperature, &ic_message_block->temperature);
-			}
-			previous_temperature = (int)ic_message_block->temperature;
+				previous_temperature = (int)ic_message_block->temperature;
+			}			
 		}
 		break;
 	default:
 		break;
+	}
+}
+
+/// <summary>
+/// Restart the Device
+/// </summary>
+static void DelayRestartDeviceTimerHandler(EventLoopTimer* eventLoopTimer)
+{
+	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0)
+	{
+		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
+	}
+	else {
+		PowerManagement_ForceSystemReboot();
+	}
+}
+
+/// <summary>
+/// Start Device Power Restart Direct Method 'ResetMethod' integer seconds eg 5
+/// Update Restart UTC Device Twin
+/// Set oneshot timer to restart the device
+/// </summary>
+static LP_DIRECT_METHOD_RESPONSE_CODE RestartDeviceHandler(JSON_Value* json, LP_DIRECT_METHOD_BINDING* directMethodBinding, char** responseMsg)
+{
+	if (json_value_get_type(json) != JSONNumber) { return LP_METHOD_FAILED; }
+
+	int seconds = (int)json_value_get_number(json);
+
+	if (seconds > 2 && seconds < 10) // leave enough time for the device twin dt_reportedRestartUtc to update before restarting the device
+	{
+		lp_deviceTwinReportState(&dt_reportedRestartUtc, lp_getCurrentUtc(msgBuffer, sizeof(msgBuffer))); // LP_TYPE_STRING
+		lp_timerOneShotSet(&restartDeviceOneShotTimer, &(struct timespec){.tv_sec = seconds, .tv_nsec = 0 });
+		return LP_METHOD_SUCCEEDED;
+	}
+	else {
+		return LP_METHOD_FAILED;
 	}
 }
 
@@ -318,6 +372,7 @@ static void InitPeripheralAndHandlers(void)
 	lp_gpioSetOpen(ledRgb, NELEMS(ledRgb));
 	lp_timerSetStart(timerSet, NELEMS(timerSet));
 	lp_deviceTwinSetOpen(deviceTwinBindingSet, NELEMS(deviceTwinBindingSet));
+	lp_directMethodSetOpen(directMethodBindingSet, NELEMS(directMethodBindingSet));
 
 	lp_azureToDeviceStart();
 
@@ -332,6 +387,8 @@ static void ClosePeripheralAndHandlers(void)
 	Log_Debug("Closing file descriptors\n");
 
 	lp_deviceTwinSetClose();
+	lp_directMethodSetClose();
+
 	lp_timerSetStop(timerSet, NELEMS(timerSet));
 	lp_azureToDeviceStop();
 
