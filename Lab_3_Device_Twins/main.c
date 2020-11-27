@@ -212,8 +212,8 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 		// If the previous temperature not equal to the new temperature then update ReportedTemperature device twin
 		if (previous_temperature != (int)environment.temperature) {
 			lp_deviceTwinReportState(&dt_reportedTemperature, &environment.temperature);
-		}
-		previous_temperature = (int)environment.temperature;
+			previous_temperature = (int)environment.temperature;
+		}		
 	}
 }
 
