@@ -78,6 +78,7 @@ endif(AVNET)
 
 if(AVNET_REV_2)
     azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../HardwareDefinitions/avnet_mt3620_sk_rev2" TARGET_DEFINITION "azure_sphere_learning_path.json")
+    add_definitions( -DOEM_AVNET=TRUE )
 endif(AVNET_REV_2)
 
 if (SEEED_STUDIO_RDB)
