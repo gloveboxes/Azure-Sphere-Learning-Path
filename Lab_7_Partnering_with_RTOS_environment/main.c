@@ -97,8 +97,7 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer);
 LP_USER_CONFIG lp_config;
 LP_INTER_CORE_BLOCK ic_control_block;
 
-static int previous_temperature = 999999; 
-static struct timespec publishRate = { 6, 0 };
+static int previous_temperature = 999999;
 
 enum LEDS { RED, GREEN, BLUE, UNKNOWN };
 static enum LEDS current_led = RED;
@@ -127,7 +126,7 @@ static LP_TIMER azureIotConnectionStatusTimer = {
 	.handler = AzureIoTConnectionStatusHandler };
 
 static LP_TIMER measureSensorTimer = {
-	.period = { 0, 0 },
+	.period = { 6, 0 },
 	.name = "measureSensorTimer",
 	.handler = MeasureSensorHandler };
 
@@ -205,7 +204,6 @@ static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
 
 			if (firstConnect) {
 				lp_deviceTwinReportState(&dt_reportedDeviceStartTime, lp_getCurrentUtc(msgBuffer, sizeof(msgBuffer))); // LP_TYPE_STRING
-				lp_timerOneShotSet(&measureSensorTimer, &publishRate);
 				firstConnect = false;
 			}
 		}
@@ -228,7 +226,6 @@ static void MeasureSensorHandler(EventLoopTimer* eventLoopTimer)
 		// send request to Real-Time core app to read temperature, pressure, and humidity
 		ic_control_block.cmd = LP_IC_ENVIRONMENT_SENSOR;
 		lp_interCoreSendMessage(&ic_control_block, sizeof(ic_control_block));
-		lp_timerOneShotSet(&measureSensorTimer, &publishRate);
 	}
 }
 
