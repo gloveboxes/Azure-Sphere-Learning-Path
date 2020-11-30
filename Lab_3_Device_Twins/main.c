@@ -83,7 +83,7 @@ enum LEDS { RED, GREEN, BLUE };
 static enum LEDS current_led = RED;
 static const char* hvacState[] = { "heating", "off", "cooling" };
 
-static int previous_temperature = 0;
+static int previous_temperature = 999999;	//some random impossibly high temperature
 
 static LP_GPIO azureIotConnectedLed = {
 	.pin = NETWORK_CONNECTED_LED,
