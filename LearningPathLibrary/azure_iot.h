@@ -1,5 +1,10 @@
 #pragma once
 
+#include "azure_prov_client/prov_client_const.h"
+#include "azure_prov_client/prov_device_ll_client.h"
+#include "azure_prov_client/prov_security_factory.h"
+#include "azure_prov_client/prov_transport.h"
+#include "azure_prov_client/prov_transport_mqtt_client.h"
 #include "device_twins.h"
 #include "direct_methods.h"
 #include "iothubtransportmqtt.h"
@@ -11,14 +16,10 @@
 #include <errno.h>
 #include <iothub_client_options.h>
 #include <iothub_device_client_ll.h>
+#include <iothubtransportmqtt.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include "azure_prov_client/prov_client_const.h"
-#include "azure_prov_client/prov_device_ll_client.h"
-#include "azure_prov_client/prov_security_factory.h"
-#include "azure_prov_client/prov_transport.h"
-#include "azure_prov_client/prov_transport_mqtt_client.h"
 
 typedef struct LP_MESSAGE_PROPERTY
 {

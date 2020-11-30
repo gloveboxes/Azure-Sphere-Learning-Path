@@ -4,7 +4,7 @@ bool sendMsg(const char* msg, LP_MESSAGE_PROPERTY** messageProperties, size_t me
 static bool ProvisionWithDpsPnP(void);
 static bool SetupAzureClient(void);
 static const char* GetReasonString(IOTHUB_CLIENT_CONNECTION_STATUS_REASON reason);
-static const char* getAzureSphereProvisioningResultString(AZURE_SPHERE_PROV_RETURN_VALUE provisioningResult);
+//static const char* getAzureSphereProvisioningResultString(AZURE_SPHERE_PROV_RETURN_VALUE provisioningResult);
 static void AzureCloudToDeviceHandler(EventLoopTimer*);
 static void HubConnectionStatusCallback(IOTHUB_CLIENT_CONNECTION_STATUS, IOTHUB_CLIENT_CONNECTION_STATUS_REASON, void*);
 static void SendMessageCallback(IOTHUB_CLIENT_CONFIRMATION_RESULT, void*);
@@ -16,6 +16,7 @@ static bool iothubAuthenticated = false;
 static const char* _idScope = NULL;
 static const char* _connectionString = NULL;
 static const char* _deviceTwinModelId = NULL;
+static char* iotHubUri = NULL;
 
 #define dpsUrl "global.azure-devices-provisioning.net"
 
@@ -207,6 +208,7 @@ static bool SetupAzureClient()
 	if (iothubClientHandle != NULL)
 	{
 		IoTHubDeviceClient_LL_Destroy(iothubClientHandle);
+		iothubClientHandle = NULL;
 	}
 
 	// For lab purposes only where the device tenant and associated x500 certificate may not be available
@@ -226,25 +228,6 @@ static bool SetupAzureClient()
 		if (!ProvisionWithDpsPnP()) {
 			return false;
 		}
-		else
-		{
-			AZURE_SPHERE_PROV_RETURN_VALUE provResult = IoTHubDeviceClient_LL_CreateWithAzureSphereDeviceAuthProvisioning(_idScope, 10000, &iothubClientHandle);
-			Log_Debug("IoTHubDeviceClient_LL_CreateWithAzureSphereDeviceAuthProvisioning returned '%s'.\n", getAzureSphereProvisioningResultString(provResult));
-			if (provResult.result != AZURE_SPHERE_PROV_RESULT_OK)
-			{
-				Log_Debug("ERROR: failure to create IoTHub Handle.\n");
-				return false;
-			}
-		}
-	}
-
-	if (_deviceTwinModelId != NULL && strlen(_deviceTwinModelId) > 0)
-	{
-		if (IoTHubDeviceClient_LL_SetOption(iothubClientHandle, OPTION_MODEL_ID, _deviceTwinModelId) != IOTHUB_CLIENT_OK)
-		{
-			Log_Debug("ERROR: failure setting option \"%s\"\n", OPTION_MODEL_ID);
-			return false;
-		}
 	}
 
 	iothubAuthenticated = true;
@@ -261,9 +244,23 @@ static bool SetupAzureClient()
 /// <summary>
 ///     DPS provisioning callback with status
 /// </summary>
-static void RegisterDeviceCallback(PROV_DEVICE_RESULT registerResult, const char* iothubUri, const char* deviceId, void* userContext)
+static void RegisterDeviceCallback(PROV_DEVICE_RESULT registerResult, const char* callbackHubUri, const char* deviceId, void* userContext)
 {
 	dpsRegisterStatus = registerResult;
+
+	if (registerResult == PROV_DEVICE_RESULT_OK && callbackHubUri != NULL) {
+
+		size_t uriSize = strlen(callbackHubUri) + 1; // +1 for NULL string termination
+
+		iotHubUri = (char*)malloc(uriSize);
+
+		if (iotHubUri == NULL) {
+			Log_Debug("ERROR: IoT Hub URI malloc failed.\n");
+		}
+		else {
+			strncpy(iotHubUri, callbackHubUri, uriSize);
+		}
+	}
 }
 
 /// <summary>
@@ -275,7 +272,7 @@ static bool ProvisionWithDpsPnP(void)
 	PROV_DEVICE_RESULT prov_result;
 	bool result = false;
 	char* dtdlBuffer = NULL;
-	int deviceIdForDaaCertUsage = 0;  // set DaaCertUsage to false	
+	int deviceIdForDaaCertUsage = 0;  // set DaaCertUsage to false
 
 	if (!lp_isNetworkReady() || !lp_isDeviceAuthReady()) {
 		return false;
@@ -351,12 +348,46 @@ static bool ProvisionWithDpsPnP(void)
 		goto cleanup;
 	}
 
+	if ((iothubClientHandle = IoTHubDeviceClient_LL_CreateWithAzureSphereFromDeviceAuth(iotHubUri, MQTT_Protocol)) == NULL) {
+		Log_Debug("ERROR: Failed to create client IoT Hub Client Handle\n");
+		goto cleanup;
+	}
+
+	// IOTHUB_CLIENT_RESULT iothub_result 
+	int deviceId = 1;
+	if (IoTHubDeviceClient_LL_SetOption(iothubClientHandle, "SetDeviceId", &deviceId) != IOTHUB_CLIENT_OK) {
+		IoTHubDeviceClient_LL_Destroy(iothubClientHandle);
+		iothubClientHandle = NULL;
+		Log_Debug("ERROR: Failed to set Device ID on IoT Hub Client\n");
+		goto cleanup;
+	}
+
+	// Sets auto URL encoding on IoT Hub Client
+	bool urlAutoEncodeDecode = true;
+	if (IoTHubDeviceClient_LL_SetOption(iothubClientHandle, OPTION_AUTO_URL_ENCODE_DECODE, &urlAutoEncodeDecode) != IOTHUB_CLIENT_OK) {
+		Log_Debug("ERROR: Failed to set auto Url encode option on IoT Hub Client\n");
+		goto cleanup;
+	}
+
+	if (dtdlBuffer != NULL) {
+		if (IoTHubDeviceClient_LL_SetOption(iothubClientHandle, OPTION_MODEL_ID, _deviceTwinModelId) != IOTHUB_CLIENT_OK)
+		{
+			Log_Debug("ERROR: failure setting option \"%s\"\n", OPTION_MODEL_ID);
+			goto cleanup;
+		}
+	}
+
 	result = true;
 
 cleanup:
 	if (dtdlBuffer != NULL) {
 		free(dtdlBuffer);
 		dtdlBuffer = NULL;
+	}
+
+	if (iotHubUri != NULL) {
+		free(iotHubUri);
+		iotHubUri = NULL;
 	}
 
 	if (prov_handle != NULL) {
@@ -377,30 +408,30 @@ static void HubConnectionStatusCallback(IOTHUB_CLIENT_CONNECTION_STATUS result, 
 	Log_Debug("IoT Hub Connection Status: %s\n", GetReasonString(reason));
 }
 
-/// <summary>
-///     Converts AZURE_SPHERE_PROV_RETURN_VALUE to a string.
-/// </summary>
-static const char* getAzureSphereProvisioningResultString(
-	AZURE_SPHERE_PROV_RETURN_VALUE provisioningResult)
-{
-	switch (provisioningResult.result)
-	{
-	case AZURE_SPHERE_PROV_RESULT_OK:
-		return "AZURE_SPHERE_PROV_RESULT_OK";
-	case AZURE_SPHERE_PROV_RESULT_INVALID_PARAM:
-		return "AZURE_SPHERE_PROV_RESULT_INVALID_PARAM";
-	case AZURE_SPHERE_PROV_RESULT_NETWORK_NOT_READY:
-		return "AZURE_SPHERE_PROV_RESULT_NETWORK_NOT_READY";
-	case AZURE_SPHERE_PROV_RESULT_DEVICEAUTH_NOT_READY:
-		return "AZURE_SPHERE_PROV_RESULT_DEVICEAUTH_NOT_READY";
-	case AZURE_SPHERE_PROV_RESULT_PROV_DEVICE_ERROR:
-		return "AZURE_SPHERE_PROV_RESULT_PROV_DEVICE_ERROR";
-	case AZURE_SPHERE_PROV_RESULT_GENERIC_ERROR:
-		return "AZURE_SPHERE_PROV_RESULT_GENERIC_ERROR";
-	default:
-		return "UNKNOWN_RETURN_VALUE";
-	}
-}
+///// <summary>
+/////     Converts AZURE_SPHERE_PROV_RETURN_VALUE to a string.
+///// </summary>
+//static const char* getAzureSphereProvisioningResultString(
+//	AZURE_SPHERE_PROV_RETURN_VALUE provisioningResult)
+//{
+//	switch (provisioningResult.result)
+//	{
+//	case AZURE_SPHERE_PROV_RESULT_OK:
+//		return "AZURE_SPHERE_PROV_RESULT_OK";
+//	case AZURE_SPHERE_PROV_RESULT_INVALID_PARAM:
+//		return "AZURE_SPHERE_PROV_RESULT_INVALID_PARAM";
+//	case AZURE_SPHERE_PROV_RESULT_NETWORK_NOT_READY:
+//		return "AZURE_SPHERE_PROV_RESULT_NETWORK_NOT_READY";
+//	case AZURE_SPHERE_PROV_RESULT_DEVICEAUTH_NOT_READY:
+//		return "AZURE_SPHERE_PROV_RESULT_DEVICEAUTH_NOT_READY";
+//	case AZURE_SPHERE_PROV_RESULT_PROV_DEVICE_ERROR:
+//		return "AZURE_SPHERE_PROV_RESULT_PROV_DEVICE_ERROR";
+//	case AZURE_SPHERE_PROV_RESULT_GENERIC_ERROR:
+//		return "AZURE_SPHERE_PROV_RESULT_GENERIC_ERROR";
+//	default:
+//		return "UNKNOWN_RETURN_VALUE";
+//	}
+//}
 
 /// <summary>
 ///     Converts the IoT Hub connection status reason to a string.
