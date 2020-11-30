@@ -79,7 +79,7 @@ LP_USER_CONFIG lp_config;
 
 static char msgBuffer[JSON_MESSAGE_BYTES] = { 0 };
 
-enum LEDS { RED, GREEN, BLUE };
+enum LEDS { RED, GREEN, BLUE, UNKNOWN };
 static enum LEDS current_led = RED;
 static const char* hvacState[] = { "heating", "off", "cooling" };
 
@@ -123,10 +123,14 @@ static LP_DEVICE_TWIN_BINDING dt_reportedHvacState = {
 	.twinProperty = "ReportedHvacState",
 	.twinType = LP_TYPE_STRING };
 
+static LP_DEVICE_TWIN_BINDING dt_reportedDeviceStartTime = {
+	.twinProperty = "ReportedDeviceStartTime",
+	.twinType = LP_TYPE_STRING };
+
 // Initialize Sets
 LP_GPIO* gpioSet[] = { &azureIotConnectedLed };
 LP_TIMER* timerSet[] = { &azureIotConnectionStatusTimer, &measureSensorTimer };
-LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &dt_desiredTemperature, &dt_reportedTemperature, &dt_reportedHvacState };
+LP_DEVICE_TWIN_BINDING* deviceTwinBindingSet[] = { &dt_desiredTemperature, &dt_reportedTemperature, &dt_reportedHvacState, &dt_reportedDeviceStartTime };
 
 // Message templates and property sets
 
@@ -145,6 +149,7 @@ static LP_MESSAGE_PROPERTY* telemetryMessageProperties[] = {
 static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
 {
 	static bool toggleConnectionStatusLed = true;
+	static bool firstConnect = true;
 
 	if (ConsumeEventLoopTimerEvent(eventLoopTimer) != 0) {
 		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
@@ -153,6 +158,11 @@ static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
 		if (lp_azureConnect()) {
 			lp_gpioStateSet(&azureIotConnectedLed, toggleConnectionStatusLed);
 			toggleConnectionStatusLed = !toggleConnectionStatusLed;
+
+			if (firstConnect) {
+				lp_deviceTwinReportState(&dt_reportedDeviceStartTime, lp_getCurrentUtc(msgBuffer, sizeof(msgBuffer))); // LP_TYPE_STRING
+				firstConnect = false;
+			}
 		}
 		else {
 			lp_gpioStateSet(&azureIotConnectedLed, false);
@@ -168,7 +178,7 @@ static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
 /// </summary>
 void SetHvacStatusColour(int temperature)
 {
-	static enum LEDS previous_led = RED;
+	static enum LEDS previous_led = UNKNOWN;
 
 	// No desired temperature device twin update to date so return 
 	if (!dt_desiredTemperature.twinStateUpdated) { return; }
