@@ -330,7 +330,7 @@ static bool ProvisionWithDpsPnP(void)
 
 	// Begin provisioning device with DPS
 	// Initiates timer to prevent timing out
-	static const long timeoutMs = 60000; // aloow up to 60 seconds before timeout
+	static const long timeoutMs = 15000; // allow up to 15 seconds before timeout
 	static const long workDelayMs = 25;
 	const struct timespec sleepTime = { .tv_sec = 0, .tv_nsec = workDelayMs * 1000 * 1000 };
 	long time_elapsed = 0;
