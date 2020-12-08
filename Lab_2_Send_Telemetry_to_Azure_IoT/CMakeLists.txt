@@ -68,6 +68,12 @@ target_include_directories(${PROJECT_NAME} PUBLIC ../LearningPathLibrary )
 
 target_compile_options(${PROJECT_NAME} PRIVATE -Wno-unknown-pragmas)
 
+if (SEEED_STUDIO_RDB OR SEEED_STUDIO_MINI)
+    target_include_directories(${PROJECT_NAME} PUBLIC 
+                            ../LearningPathLibrary/SEEED_STUDIO
+                            )
+endif (SEEED_STUDIO_RDB OR SEEED_STUDIO_MINI)
+
 if(AVNET OR AVNET_REV_2)
     add_subdirectory("../Drivers/AVNET_SK/HighLevel" drivers)
     target_link_libraries(${PROJECT_NAME} avnet_drivers)
