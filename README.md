@@ -10,13 +10,13 @@
 |Target Platform | Azure Sphere MT3620 |
 |Target Service | [Azure IoT Central](https://azure.microsoft.com/services/iot-central/?WT.mc_id=iot-0000-dglover) |
 |Developer Platform | Windows 10 or Ubuntu 18.04/20.04 |
-|Azure SDK | Azure Sphere SDK 20.10 or better |
+|Azure SDK | Azure Sphere SDK 20.11 or better |
 |Developer Tools| [Visual Studio (The free Community Edition or better)](https://visualstudio.microsoft.com/vs/?WT.mc_id=iot-0000-dglover) or [Visual Studio Code (Free OSS)](https://code.visualstudio.com/?WT.mc_id=iot-0000-dglover)|
 |Supported Hardware | [Avnet Azure Sphere MT3620 Starter Kit](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-sk-g-3074457345636825680) [Seeed Studio Azure Sphere MT3620 Development Kit](https://www.seeedstudio.com/Azure-Sphere-MT3620-Development-Kit-US-Version-p-3052.html) and the [Seeed Studio MT3620 Mini Dev Board](https://www.seeedstudio.com/MT3620-Mini-Dev-Board-p-2919.html) |
 |Source Code | [https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git](https://github.com/gloveboxes/Azure-Sphere-Learning-Path.git) |
 |Language| C|
 |Licence | [Review full MIT Licence](LICENSE). In summary. You are free to use, modify, and contribute back to the code in this project. No liability accepted.
-|Date| November 2020 |
+|Date| December 2020 |
 
 ---
 
@@ -58,8 +58,8 @@ Learning path overview:
 * Lab 7: Connect and control your room environment monitor with Azure IoT
 <!-- * Lab 8: Over-the-air (OTA) Deployment -->
 
-* [Build highly secure IoT solutions with Azure Sphere, Visual Studio Code, and IoT Central](docs/docs_vs_code_iot_central/Lab_0_Introduction_and_Lab_Set_Up/README.md)
-* [Build highly secure IoT solutions with Azure Sphere, Visual Studio Code, and IoT Hub](docs/docs_vs_code_iot_hub/Lab_0_Introduction_and_Lab_Set_Up/README.md)
+* [Develop highly secure IoT solutions with Azure Sphere and IoT Central](https://docs.microsoft.com/en-us/learn/modules/develop-secure-iot-solutions-azure-sphere-iot-central?WT.mc_id=iot-11692-dglover)
+* [Develop highly secure IoT solutions with Azure Sphere and IoT Hub](https://docs.microsoft.com/en-us/learn/modules/develop-secure-iot-solutions-azure-sphere-iot-hub/?WT.mc_id=iot-11692-dglover)
 
 ---
 
