@@ -1,0 +1,101 @@
+<h1 id="build-a-rover-combining-the-best-of-azure-sphere-security-with-freertos">Build a Rover combining the best of Azure Sphere security with FreeRTOS</h1>
+
+<p><img src="https://raw.githubusercontent.com/gloveboxes/Azure-Sphere-Rover-Bot-FreeRTOS-with-Azure-IoT/master/resources/architecture-twitter.png" alt="" /></p>
+
+<hr />
+
+<h2 id="what-you-will-learn">What you will learn</h2>
+
+<p>You will learn how to integrate a Real-time FreeRTOS application responsible for running a timing-sensitive ultrasonic distance sensor with the security and cloud connectivity of Azure Sphere.</p>
+
+<hr />
+
+<h2 id="julyot">#JulyOT</h2>
+
+<p>This is part of the #JulyOT <a target="_blank" href="http://aka.ms/julyot">IoT Tech Community</a> series, a collection of blog posts, hands-on-labs, and videos designed to demonstrate and teach developers how to build projects with Azure Internet of Things (IoT) services. Please also follow <a target="_blank" href="https://twitter.com/hashtag/JulyOT">#JulyOT</a> on Twitter.</p>
+
+<hr />
+
+<h2 id="source-code-and-learning-resources">Source code and learning resources</h2>
+
+<p>Source code: <a target="_blank" href="https://gloveboxes.github.io/Azure-Sphere-Rover-Bot-FreeRTOS-with-Azure-IoT/">Azure Sphere seeing eyed rover Real-time FreeRTOS sensors and Azure IoT</a>.</p>
+
+<p>Learning resources: <a target="_blank" href="https://github.com/gloveboxes/Azure-Sphere-Learning-Path">Azure Sphere Developer Learning Path</a>.</p>
+
+<hr />
+
+<h2 id="learn-more-about-azure-sphere">Learn more about Azure Sphere</h2>
+
+<p><a target="_blank" href="https://azure.microsoft.com/en-au/services/azure-sphere/?WT.mc_id=julyot-rover-dglover">Azure Sphere</a> is a comprehensive IoT security solution – including hardware, OS, and cloud components – to actively protect your devices, your business, and your customers.</p>
+
+<hr />
+
+<h2 id="application-architecture">Application architecture</h2>
+
+<p>The application running on the Azure Sphere consists of two parts.</p>
+
+<p><img src="https://raw.githubusercontent.com/gloveboxes/Azure-Sphere-Rover-Bot-FreeRTOS-with-Azure-IoT/master/resources/application-architecture.png" alt="" /></p>
+
+<h3 id="real-time-freertos-application">Real-time FreeRTOS Application</h3>
+
+<ul>
+<li>The Real-time FreeRTOS application running on one of the M4 cores that is responsible for running the timing-sensitive HC-SR04 ultrasonic distance sensor.</li>
+<li>Distance is measured every 100 milliseconds so the rover can decide the best route.</li>
+<li>The sensor requires precise microsecond timing to trigger the distance measurement process, so it is a perfect candidate for running on the Real-time core as a FreeRTOS Task.</li>
+<li>Every 5 seconds a FreeRTOS Task sends distance telemetry to the Azure Sphere A7 High-level application.</li>
+</ul>
+
+<h3 id="azure-iot-high-level-application">Azure IoT High-level Application</h3>
+
+<ul>
+<li>The application running on the Azure Sphere A7 High-level application core is responsible for less timing-sensitive tasks such as establishing WiFi/Network connectivity, negotiating security and connecting with Azure IoT Central, updating the device twin and send telemetry messages.</li>
+</ul>
+
+<h3 id="extending">Extending</h3>
+
+<ul>
+<li>I am thinking about extending this solution with a local TinyML module for smarter navigation.</li>
+</ul>
+
+<hr />
+
+<h2 id="parts-list">Parts list</h2>
+
+<ul>
+<li>1 x <a target="_blank" href="https://www.seeedstudio.com/mt3620-for-azure-sphere">Seeed Studio MT3620 Mini Dev Board</a></li>
+<li>1 x <a target="_blank" href="https://www.seeedstudio.com/MT3620-Grove-Breakout-p-4043.html">MT3620 Grove Breakout</a></li>
+<li>2 x <a target="_blank" href="https://www.seeedstudio.com/Grove-Ultrasonic-Distance-Sensor.html">Grove - Ultrasonic Distance Sensor</a></li>
+<li>1 x H-Bridge driver. Seeed Studio have a <a target="_blank" href="https://wiki.seeedstudio.com/Grove-I2C_Motor_Driver_V1.3/">Grove - I2C Motor Driver</a>, or you can wire up your own H-Bridge connector to the Grove Breakout board.</li>
+<li>1 x Rover chassis, motors, wheels etc</li>
+</ul>
+
+<p><img src="https://raw.githubusercontent.com/gloveboxes/Azure-Sphere-Rover-Bot-FreeRTOS-with-Azure-IoT/master/resources/IMG_0172_cropped.jpg" alt="" /></p>
+
+<hr />
+
+<h2 id="azure-iot-central">Azure IoT Central</h2>
+
+<p><a target="_blank" href="https://azure.microsoft.com/en-in/services/iot-central/?WT.mc_id=julyot-rover-dglover">Azure IoT Central</a> provides an easy way to connect, monitor, and manage your Internet of Things (IoT) assets at scale.</p>
+
+<p>I created a free trial of <a target="_blank" href="https://azure.microsoft.com/en-gb/services/iot-central/?WT.mc_id=julyot-rover-dglover">Azure IoT Central</a> and in no time I had the rover distance sensor charted and available for deeper analysis. By the way, you can continue to connect two devices for free to IoT Central after the trial period expires.</p>
+
+<p><img src="https://raw.githubusercontent.com/gloveboxes/Azure-Sphere-Rover-Bot-FreeRTOS-with-Azure-IoT/master/resources/iot-central-distance-chart.png" alt="" /></p>
+
+<h3 id="extend-and-integrate-azure-iot-central-applications-with-other-cloud-services">Extend and integrate Azure IoT Central applications with other cloud services</h3>
+
+<p>Azure IoT Central is also extensible using rules and workflows. For more information, review <a target="_blank" href="https://docs.microsoft.com/en-us/azure/iot-central/core/howto-configure-rules-advanced?WT.mc_id=julyot-rover-dglover">Use workflows to integrate your Azure IoT Central application with other cloud services</a></p>
+
+<hr />
+
+<h2 id="how-to-build-the-solution">How to build the solution</h2>
+
+<ol>
+<li>Set up your <a target="_blank" href="https://github.com/gloveboxes/Azure-Sphere-Learning-Path/tree/master/zdocs_visual_studio_iot_central/Lab_0_Introduction_and_Lab_Set_Up">Azure Sphere development environment</a>.</li>
+<li>Review <a target="_blank" href="https://github.com/gloveboxes/Azure-Sphere-Learning-Path/tree/master/zdocs_visual_studio_iot_central/Lab_5_FreeRTOS_and_Inter-Core_Messaging">Integrate FreeRTOS Real-time room sensors with Azure IoT</a>.</li>
+<li>Learn how to connect and Azure Sphere to <a target="_blank" href="https://github.com/gloveboxes/Azure-Sphere-Learning-Path/tree/master/zdocs_visual_studio_iot_central/Lab_2_Send_Telemetry_to_Azure_IoT_Central">Azure IoT Central</a> or <a target="_blank" href="https://github.com/gloveboxes/Azure-Sphere-Learning-Path/tree/master/zdocs_vs_code_iot_hub/Lab_2_Send_Telemetry_to_Azure_IoT_Hub">Azure IoT Hub</a>.</li>
+<li>The IoT Central Device Template Capabilities Model JSON file for this solution is included in the <strong>iot_central</strong> directory of this repo.</li>
+</ol>
+
+<hr />
+
+<p>Have fun and stay safe and be sure to follow us on <a target="_blank" href="https://twitter.com/hashtag/JulyOT?src=hash&amp;ref_src=twsrc%5Etfw">#JulyOT</a>.</p>

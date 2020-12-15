@@ -1,0 +1,74 @@
+{
+  "@id": "urn:azureSphereDeveloperLearningPath:RoverBot_325:1",
+  "@type": "CapabilityModel",
+  "implements": [
+    {
+      "@id": "urn:azureSphereDeveloperLearningPath:RoverBot_325:dilwglipf:1",
+      "@type": "InterfaceInstance",
+      "displayName": {
+        "en": "Interface"
+      },
+      "name": "RoverBot_5d0",
+      "schema": {
+        "@id": "urn:azureSphereDeveloperLearningPath:RoverBot_5d0:1",
+        "@type": "Interface",
+        "displayName": {
+          "en": "Interface"
+        },
+        "contents": [
+          {
+            "@id": "urn:azureSphereDeveloperLearningPath:RoverBot_5d0:DistanceLeft:1",
+            "@type": "Telemetry",
+            "displayName": {
+              "en": "DistanceLeft"
+            },
+            "name": "DistanceLeft",
+            "schema": "integer"
+          },
+          {
+            "@id": "urn:azureSphereDeveloperLearningPath:RoverBot_5d0:DistanceRight:1",
+            "@type": "Telemetry",
+            "displayName": {
+              "en": "DistanceRight"
+            },
+            "name": "DistanceRight",
+            "schema": "integer"
+          },
+          {
+            "@id": "urn:azureSphereDeveloperLearningPath:RoverBot_5d0:ReportDistanceLeft:1",
+            "@type": "Property",
+            "displayName": {
+              "en": "ReportDistanceLeft"
+            },
+            "name": "ReportDistanceLeft",
+            "schema": "integer"
+          },
+          {
+            "@id": "urn:azureSphereDeveloperLearningPath:RoverBot_5d0:ReportDistanceRight:1",
+            "@type": "Property",
+            "displayName": {
+              "en": "ReportDistanceRight"
+            },
+            "name": "ReportDistanceRight",
+            "schema": "integer"
+          },
+          {
+            "@id": "urn:azureSphereDeveloperLearningPath:RoverBot_5d0:MsgId:1",
+            "@type": "Telemetry",
+            "displayName": {
+              "en": "MsgId"
+            },
+            "name": "MsgId",
+            "schema": "integer"
+          }
+        ]
+      }
+    }
+  ],
+  "displayName": {
+    "en": "Rover Bot"
+  },
+  "@context": [
+    "http://azureiot.com/v1/contexts/IoTModel.json"
+  ]
+}

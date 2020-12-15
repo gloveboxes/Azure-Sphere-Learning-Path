@@ -1,0 +1,28 @@
+{
+    "cmake.generator": "Ninja",
+    "cmake.buildDirectory": "${workspaceRoot}/out/ARM-${buildType}",
+    "cmake.buildToolArgs": [ "-v" ],
+    "cmake.configureSettings": {
+        "CMAKE_TOOLCHAIN_FILE": "${command:azuresphere.AzureSphereSdkDir}/CMakeFiles/AzureSphereRTCoreToolchain.cmake",
+        "ARM_GNU_PATH": "${command:azuresphere.ArmGnuPath}"
+    },
+    "cmake.configureOnOpen": true,
+    "C_Cpp.default.configurationProvider": "vector-of-bool.cmake-tools",
+    "workbench.colorCustomizations": {
+        "activityBar.activeBackground": "#ff3333",
+        "activityBar.activeBorder": "#00df00",
+        "activityBar.background": "#ff3333",
+        "activityBar.foreground": "#e7e7e7",
+        "activityBar.inactiveForeground": "#e7e7e799",
+        "activityBarBadge.background": "#00df00",
+        "activityBarBadge.foreground": "#15202b",
+        "statusBar.background": "#ff0000",
+        "statusBar.foreground": "#e7e7e7",
+        "statusBarItem.hoverBackground": "#ff3333",
+        "titleBar.activeBackground": "#ff0000",
+        "titleBar.activeForeground": "#e7e7e7",
+        "titleBar.inactiveBackground": "#ff000099",
+        "titleBar.inactiveForeground": "#e7e7e799"
+    },
+    "peacock.color": "#ff0000"
+}
