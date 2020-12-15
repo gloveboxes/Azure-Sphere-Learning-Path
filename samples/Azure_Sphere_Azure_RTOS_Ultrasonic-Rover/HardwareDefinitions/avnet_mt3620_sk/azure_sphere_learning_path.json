@@ -1,0 +1,29 @@
+{
+    "Metadata": {
+        "Type": "Azure Sphere Hardware Definition",
+        "Version": 1
+    },
+    "Description":
+    {
+        "Name": "Sample hardware abstraction for MT3620 RDB",
+        "MainCoreHeaderFileTopContent": [
+            "/* Copyright (c) Microsoft Corporation. All rights reserved.",
+            "   Licensed under the MIT License. */",
+            "",
+            "// This file defines the mapping from the MT3620 reference development board (RDB) to the",
+            "// 'sample hardware' abstraction used by the samples at https://github.com/Azure/azure-sphere-samples.",
+            "// Some peripherals are on-board on the RDB, while other peripherals must be attached externally if needed.",
+            "// https://docs.microsoft.com/en-us/azure-sphere/app-development/manage-hardware-dependencies",
+            "// to enable apps to work across multiple hardware variants."
+        ]
+    },
+    "Imports" : [ {"Path": "avnet_mt3620_sk.json"} ],
+    "Peripherals": [
+        {"Name": "NETWORK_CONNECTED_LED", "Type": "Gpio", "Mapping": "AVNET_MT3620_SK_WLAN_STATUS_LED_YELLOW", "Comment": "AVNET: Network Connected"},
+        {"Name": "RELAY", "Type": "Gpio", "Mapping": "AVNET_MT3620_SK_GPIO0", "Comment": "Click Relay"},
+        {"Name": "I2cMaster2", "Type": "I2cMaster", "Mapping": "AVNET_MT3620_SK_ISU2_I2C", "Comment": "AVNET Start Kit Definition"},
+        {"Name": "LED_RED", "Type": "Gpio", "Mapping": "AVNET_MT3620_SK_USER_LED_RED", "Comment": "Red LED"},
+        {"Name": "LED_GREEN", "Type": "Gpio", "Mapping": "AVNET_MT3620_SK_APP_STATUS_LED_YELLOW", "Comment": "Green LED"},
+        {"Name": "LED_BLUE", "Type": "Gpio", "Mapping": "AVNET_MT3620_SK_USER_LED_BLUE", "Comment": "Blue LED"}
+    ]
+}

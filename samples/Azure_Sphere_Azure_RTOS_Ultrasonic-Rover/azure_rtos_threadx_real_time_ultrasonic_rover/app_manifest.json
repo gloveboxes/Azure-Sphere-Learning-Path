@@ -1,0 +1,21 @@
+{
+  "SchemaVersion": 1,
+  "Name": "demo_threadx",
+  "ComponentId": "6583cf17-d321-4d72-8283-0b7c5b56442b",
+  "EntryPoint": "/bin/app",
+  "CmdArgs": [],
+  "Capabilities": {
+    "Gpio": [
+      "$LED_RED_LEFT",
+      "$LED_GREEN_LEFT",
+      "$LED_BLUE_LEFT",
+      "$LED_RED_RIGHT",
+      "$LED_GREEN_RIGHT",
+      "$LED_BLUE_RIGHT",
+      "$HCSR04_LEFT",
+      "$HCSR04_RIGHT"
+    ],
+    "AllowedApplicationConnections": [ "25025d2c-66da-4448-bae1-ac26fcdd3627" ]
+  },
+  "ApplicationType": "RealTimeCapable"
+}

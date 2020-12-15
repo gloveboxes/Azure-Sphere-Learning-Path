@@ -58,8 +58,8 @@ Learning path overview:
 * Lab 7: Connect and control your room environment monitor with Azure IoT
 <!-- * Lab 8: Over-the-air (OTA) Deployment -->
 
-* [Develop highly secure IoT solutions with Azure Sphere and IoT Central](https://docs.microsoft.com/en-us/learn/modules/develop-secure-iot-solutions-azure-sphere-iot-central?WT.mc_id=iot-11692-dglover)
-* [Develop highly secure IoT solutions with Azure Sphere and IoT Hub](https://docs.microsoft.com/en-us/learn/modules/develop-secure-iot-solutions-azure-sphere-iot-hub/?WT.mc_id=iot-11692-dglover)
+* [Develop highly secure IoT solutions with Azure Sphere, Azure RTOS and IoT Central](https://docs.microsoft.com/en-us/learn/modules/develop-secure-iot-solutions-azure-sphere-iot-central?WT.mc_id=iot-10976-dglover)
+* [Develop highly secure IoT solutions with Azure Sphere, Azure RTOS and IoT Hub](https://docs.microsoft.com/en-us/learn/modules/develop-secure-iot-solutions-azure-sphere-iot-hub?WT.mc_id=iot-11691-dglover)
 
 ---
 
