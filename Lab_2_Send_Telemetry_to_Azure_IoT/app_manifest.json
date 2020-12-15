@@ -17,7 +17,9 @@
     "PowerControls": [
       "ForceReboot"
     ],
-    "AllowedConnections": [ ],
+    "AllowedConnections": [
+      
+     ],
     "DeviceAuthentication": "Replace_with_your_Azure_Sphere_Tenant_ID"
   },
   "ApplicationType": "Default"

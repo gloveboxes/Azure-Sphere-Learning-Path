@@ -17,7 +17,7 @@
       "ForceReboot"
     ],
     "AllowedConnections": [
-      "global.azure-devices-provisioning.net"
+
     ],
     "DeviceAuthentication": "Replace_with_your_Azure_Sphere_Tenant_ID",
     "AllowedApplicationConnections": [ "6583cf17-d321-4d72-8283-0b7c5b56442b" ]
