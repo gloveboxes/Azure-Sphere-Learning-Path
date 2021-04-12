@@ -18,13 +18,19 @@ typedef enum
 	LP_OUTPUT
 } LP_GPIO_DIRECTION;
 
+typedef enum {
+	LP_GPIO_DETECT_LOW,
+	LP_GPIO_DETECT_HIGH,
+	LP_GPIO_DETECT_BOTH
+} LP_GPIO_INPUT_DETECT;
+
 struct _lp_gpio
 {
 	int fd;
 	int pin;
 	GPIO_Value initialState;
 	bool invertPin;
-	// bool (*initialise)(struct _lp_gpio* gpio);
+	LP_GPIO_INPUT_DETECT detect;
 	char* name;
 	LP_GPIO_DIRECTION direction;
 	bool opened;

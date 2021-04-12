@@ -128,8 +128,18 @@ bool lp_gpioStateGet(LP_GPIO* peripheral, GPIO_Value_Type* oldState)
 	}
 	else
 	{
-		// Button is pressed if it is low and different than last known state.
-		isGpioOn = (newState != *oldState) && (newState == GPIO_Value_Low);
+		switch (peripheral->detect) {
+		case LP_GPIO_DETECT_LOW:
+			isGpioOn = (newState != *oldState) && (newState == GPIO_Value_Low);
+			break;
+		case LP_GPIO_DETECT_HIGH:
+			isGpioOn = (newState != *oldState) && (newState == GPIO_Value_High);
+			break;
+		case LP_GPIO_DETECT_BOTH:
+			isGpioOn = (newState != *oldState);
+			break;
+		}
+
 		*oldState = newState;
 	}
 	return isGpioOn;
