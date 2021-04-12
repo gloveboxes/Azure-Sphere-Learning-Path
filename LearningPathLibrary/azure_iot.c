@@ -62,6 +62,10 @@ void lp_azureInitialize(const char* idScope, const char* deviceTwinModelId)
 	_deviceTwinModelId = deviceTwinModelId;
 }
 
+bool lp_azureIsConnected(void) {
+	return iothubAuthenticated;
+}
+
 /// <summary>
 ///     Callback confirming message delivered to IoT Hub.
 /// </summary>

@@ -34,4 +34,5 @@ void lp_azureToDeviceStop(void);
 void lp_azureConnectionStringSet(const char* connectionString); // Note, do not use Connection Strings for Production - this is here for lab workaround
 void lp_azureInitialize(const char* idScope, const char* deviceTwinModelId);
 bool lp_azureConnect(void);
+bool lp_azureIsConnected(void);
 IOTHUB_DEVICE_CLIENT_LL_HANDLE lp_azureClientHandleGet(void);

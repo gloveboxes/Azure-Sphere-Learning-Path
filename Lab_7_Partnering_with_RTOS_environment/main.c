@@ -198,7 +198,7 @@ static void AzureIoTConnectionStatusHandler(EventLoopTimer* eventLoopTimer)
 		lp_terminate(ExitCode_ConsumeEventLoopTimeEvent);
 	}
 	else {
-		if (lp_azureConnect()) {
+		if (lp_azureIsConnected()) {
 			lp_gpioStateSet(&azureIotConnectedLed, toggleConnectionStatusLed);
 			toggleConnectionStatusLed = !toggleConnectionStatusLed;
 
